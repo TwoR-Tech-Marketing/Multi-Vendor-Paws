@@ -32,3 +32,13 @@ npm run dev
 - `src/lib/auth.ts` - auth helpers and identity subscription
 - `src/app/login` - vendor sign-in screen
 - `src/app/dashboard` - identity-protected dashboard
+
+## Planning Documents
+
+- `PROJECT_ARCHITECTURE.md` - target architecture for multi-vendor implementation
+- `PHASE3_TODO.md` - actionable checklist based on approved Phase 3 scope
+
+## Agent Rules
+
+- `AGENTS.md` - project-level agent instructions
+- `.cursor/rules/nextjs-senior-architecture.mdc` - always-on architecture rule

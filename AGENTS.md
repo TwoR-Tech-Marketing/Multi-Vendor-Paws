@@ -1,0 +1,195 @@
+<!-- BEGIN:nextjs-agent-rules -->
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+<!-- END:nextjs-agent-rules -->
+
+---
+description: Next.js senior engineering rules for clean, scalable feature-first web architecture
+alwaysApply: true
+---
+
+# Next.js Senior Engineering Rules (Unified Architecture)
+
+## 0) Mandatory Project Understanding
+- Before coding: inspect the existing project structure, app/router usage, feature organization, shared components, hooks, services, state management, API patterns, and styling system.
+- Reuse existing components, utilities, hooks, services, and design system elements before creating new ones.
+- Extend existing features instead of duplicating implementations.
+- Respect current project architecture and conventions; adapt only when necessary without breaking consistency.
+
+## 1) Architecture Baseline
+- Follow Feature-First architecture + Clean Code + SOLID principles.
+- Organize code by feature/domain whenever possible, not by generic file type only.
+- Keep shared cross-feature logic in common folders like `src/shared`, `src/components`, `src/lib`, or `src/core` depending on the project structure.
+- Keep feature-specific logic inside `src/features/<feature-name>/...`.
+- Prefer modular, scalable folder structures that support growth.
+
+## 2) Layer Responsibilities
+- Separate concerns clearly:
+  - `presentation`: pages, layouts, UI components, client interactions.
+  - `application`: orchestration logic, use cases, actions, feature services.
+  - `domain`: types, entities, business rules, contracts/interfaces.
+  - `infrastructure`: API clients, repository implementations, external services, adapters.
+- Do not mix API access, business rules, and rendering logic in the same file unless the project convention explicitly requires a minimal exception.
+- Keep server-only logic separate from client-side logic.
+
+## 3) Next.js App Structure
+- Follow the project’s routing approach consistently:
+  - If using **App Router**, use `app/` conventions properly (`page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `route.ts`).
+  - If using **Pages Router**, follow `pages/` conventions consistently.
+- Use **Server Components by default** when using App Router.
+- Add `"use client"` only when client-side interactivity, browser APIs, local state, effects, or event handlers are needed.
+- Avoid turning large trees into client components unnecessarily.
+- Keep route files minimal and delegate UI/logic to feature modules/components.
+
+## 4) UI Composition Pattern
+- Use **Page -> Section -> Component**.
+- Pages/routes: composition only; avoid heavy business logic.
+- Sections: connect data/state to UI, prepare view models, and organize page parts.
+- Components: pure and reusable UI, driven by props.
+- Avoid large inline JSX blocks when they can be extracted into meaningful components.
+- Avoid helper render functions for large UI blocks inside pages/components; extract them into separate components/files.
+
+## 5) Server and Client Responsibilities
+- Fetch data on the server whenever possible for performance, SEO, and security.
+- Use client components only for interactive UI concerns.
+- Do not access server-only resources from client components.
+- Keep secrets, tokens, and private environment variables strictly on the server.
+- Use server actions, route handlers, or backend services when appropriate instead of exposing sensitive logic to the client.
+
+## 6) Data Fetching and API Access
+- Centralize API access through reusable clients/services/repositories.
+- Do not scatter raw `fetch` calls across unrelated UI components if the project already has an abstraction.
+- Standardize request/response handling, error mapping, and typed return values.
+- Use typed API contracts with TypeScript.
+- Handle loading, empty, success, and error states explicitly.
+- Avoid leaking raw backend errors directly into the UI.
+- Prefer server-side fetching for initial page data when suitable.
+- Use caching and revalidation intentionally (`revalidate`, `fetch` cache options, SWR, React Query, or project-standard approach).
+
+## 7) State Management
+- Prefer the simplest effective state location:
+  - local component state for local UI concerns,
+  - URL/search params for shareable filter/sort/pagination state,
+  - server state tools for remote data caching,
+  - global state only when truly cross-cutting.
+- Do not introduce global state for data that can remain local or server-driven.
+- Keep business logic out of dumb/presentational components.
+- If the project uses Zustand, Redux, Context, React Query, or another pattern, follow the existing standard consistently.
+- Keep stores focused, minimal, and domain-oriented.
+
+## 8) Component Design
+- Build small, composable, reusable components.
+- Keep components focused on a single responsibility.
+- Prefer composition over inheritance.
+- Use controlled, explicit props interfaces.
+- Avoid overly generic abstractions unless they are clearly reusable and justified.
+- Co-locate feature-specific subcomponents with their feature.
+- Move truly shared UI primitives into the shared/common component layer.
+
+## 9) Hooks and Reusability
+- Extract repeated stateful logic into custom hooks.
+- Keep hooks focused and named clearly.
+- Do not put unrelated side effects into one hook.
+- Keep hooks free of presentation markup.
+- Reuse existing hooks before adding new ones.
+
+## 10) Styling and Design System
+- Follow the project’s existing styling approach consistently:
+  - CSS Modules, Tailwind, Styled Components, Emotion, SCSS, or another established pattern.
+- Reuse design tokens, theme variables, spacing scale, typography, and color system already defined by the project.
+- Do not hardcode colors, spacing, shadows, breakpoints, or typography values when project tokens exist.
+- Build responsive UI using the project’s breakpoint system and layout conventions.
+- Prefer reusable UI primitives and design system components over one-off styling.
+
+## 11) TypeScript Standards
+- Use TypeScript strictly and prefer explicit, safe typings.
+- Avoid `any`; use `unknown` when necessary and narrow properly.
+- Model domain entities, DTOs, and API responses explicitly.
+- Keep type definitions close to their domain unless shared broadly.
+- Use discriminated unions or typed result patterns for predictable state and error handling.
+- Ensure function inputs/outputs are well typed.
+
+## 12) Forms and Validation
+- Use the project’s standard form approach (e.g. React Hook Form, Formik, or native patterns).
+- Validate with a consistent schema strategy when available (e.g. Zod, Yup).
+- Keep validation schemas reusable and close to the feature/domain.
+- Show clear field-level and form-level errors.
+- Do not embed complex validation logic directly in UI markup.
+
+## 13) Error Handling
+- Handle errors explicitly and consistently across server and client boundaries.
+- Map infrastructure/backend errors into user-friendly messages.
+- Never expose stack traces, raw exceptions, or sensitive backend details to users.
+- Use route-level `error.tsx`, error boundaries, and fallback UI where appropriate.
+- Log operational details in the proper layer, not directly in user-facing UI.
+
+## 14) Performance
+- Optimize only where meaningful, but avoid obvious anti-patterns.
+- Minimize unnecessary client-side rendering.
+- Use dynamic imports/code splitting for heavy client-only modules when beneficial.
+- Memoize only when it provides real value and does not reduce clarity.
+- Optimize images using Next.js image handling where appropriate.
+- Avoid unnecessary re-renders by keeping props stable and component boundaries clear.
+- Be intentional about caching, revalidation, and data freshness.
+
+## 15) Accessibility
+- Use semantic HTML first.
+- Ensure keyboard accessibility, focus handling, and proper labeling.
+- Provide accessible names for buttons, inputs, dialogs, and interactive controls.
+- Do not rely solely on color to convey meaning.
+- Follow accessible patterns for modals, forms, navigation, and dynamic content.
+
+## 16) SEO and Metadata
+- Use Next.js metadata APIs consistently.
+- Ensure pages have meaningful titles, descriptions, and share metadata when relevant.
+- Prefer server-rendered content for SEO-sensitive pages.
+- Use proper heading hierarchy and semantic structure.
+
+## 17) Navigation and Routing
+- Use centralized route definitions/helpers if the project has them.
+- Keep navigation patterns consistent across the app.
+- Preserve type safety for routes and route params where possible.
+- Keep route-building logic reusable rather than hardcoding URLs in many places.
+
+## 18) Security
+- Keep secrets only on the server.
+- Sanitize and validate all external input.
+- Treat user-generated content carefully.
+- Protect authenticated routes and sensitive actions using the project’s auth patterns.
+- Do not trust client-side checks alone for authorization.
+- Avoid exposing internal implementation details in API responses or UI errors.
+
+## 19) Testing
+- Follow the project’s existing testing strategy.
+- Prefer tests for critical business logic, utilities, hooks, and key user flows.
+- Keep tests readable and behavior-focused.
+- Avoid brittle implementation-detail tests.
+- Mock external dependencies at the boundary layer.
+
+## 20) Code Quality Constraints
+- Keep files and components small enough to remain maintainable.
+- Split large modules when complexity grows.
+- Use clear naming for files, functions, components, hooks, and variables.
+- Remove dead code, commented-out code, and unused imports.
+- Avoid duplication and architecture drift.
+- Generated/changed code must be clean, scalable, reusable, and architecture-safe.
+
+## 21) Forbidden Practices
+- Business logic embedded directly in pages or presentational components.
+- Raw API calls scattered across UI without project-approved abstraction.
+- Unnecessary `"use client"` on server-capable components.
+- Hardcoded design tokens when project tokens/design system exist.
+- Large monolithic page/component files without decomposition.
+- Duplicated feature flows that bypass the current architecture.
+- Using `any` without strong justification.
+- Exposing secrets or sensitive logic to the client.
+
+---
+
+## This repo (Multi-Vendor-Paws) — current conventions
+- **Router**: App Router under `src/app/`.
+- **Auth**: Firebase auth wrappers in `src/lib/auth.ts`.
+- **Firebase**: Client init in `src/lib/firebase.ts`.
+- **Features**: Move toward `src/features/<feature>/` as modules are added.
+- **Styling**: Keep a consistent approach and avoid mixing too many style patterns.
