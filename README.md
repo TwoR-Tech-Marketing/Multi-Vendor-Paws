@@ -42,3 +42,9 @@ npm run dev
 
 - `AGENTS.md` - project-level agent instructions
 - `.cursor/rules/nextjs-senior-architecture.mdc` - always-on architecture rule
+
+## Prototype (client approval)
+
+- `docs/prototype` — desktop **website** UI prototype (vendor + admin portal)
+- Two brand themes: **Orange** (mobile app) and **Purple** (admin panel)
+- See `docs/prototype/README.md` for screen list and how to open
