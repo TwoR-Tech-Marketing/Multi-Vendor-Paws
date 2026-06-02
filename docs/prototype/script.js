@@ -21,12 +21,48 @@ const PAGE_META = {
 };
 
 const AUTH_PAGES = new Set(["login", "register"]);
-const MOBILE_BREAKPOINT = 900;
+/** Pages without the portal app side menu */
+const NO_PORTAL_NAV = new Set(["overview", "login", "register"]);
+const ADMIN_PAGES = new Set([
+  "admin-vendors",
+  "admin-products",
+  "admin-orders",
+  "audit-log",
+  "roles",
+]);
+
+const MOBILE_MAX_WIDTH = 767;
 
 let currentScreen = "overview";
 
 function isMobileViewport() {
-  return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
+  return window.matchMedia(`(max-width: ${MOBILE_MAX_WIDTH}px)`).matches;
+}
+
+function updatePortalChrome(screenId) {
+  const layout = document.getElementById("portalLayout");
+  const showNav = !NO_PORTAL_NAV.has(screenId);
+  layout?.classList.toggle("portal-layout--with-nav", showNav);
+  layout?.classList.toggle("portal-layout--no-nav", !showNav);
+
+  document.querySelectorAll(".portal-nav-item").forEach((item) => {
+    const navId = item.dataset.nav;
+    const isActive =
+      navId === screenId ||
+      (screenId === "product-form" && navId === "products") ||
+      (screenId === "order-detail" && navId === "orders");
+    item.classList.toggle("active", isActive);
+  });
+
+  const roleLabel = document.getElementById("portalRoleLabel");
+  if (roleLabel) {
+    roleLabel.textContent = ADMIN_PAGES.has(screenId) ? "Admin Portal" : "Vendor Portal";
+  }
+
+  const select = document.getElementById("protoScreenSelect");
+  if (select && select.value !== screenId) {
+    select.value = screenId;
+  }
 }
 
 function navigateTo(screenId, { updateHash = true } = {}) {
@@ -43,16 +79,13 @@ function navigateTo(screenId, { updateHash = true } = {}) {
     target.classList.add("active");
   }
 
-  document.querySelectorAll(".nav-item").forEach((item) => {
-    item.classList.toggle("active", item.dataset.nav === screenId);
-  });
-
   const meta = PAGE_META[screenId];
   document.getElementById("pageTitle").textContent = meta.title;
   document.getElementById("pageSubtitle").textContent = meta.subtitle;
 
-  const shell = document.getElementById("appShell");
-  shell?.classList.toggle("is-auth", AUTH_PAGES.has(screenId));
+  document.getElementById("appShell")?.classList.toggle("is-auth", AUTH_PAGES.has(screenId));
+
+  updatePortalChrome(screenId);
 
   if (updateHash) {
     const nextHash = `#/${screenId}`;
@@ -61,31 +94,33 @@ function navigateTo(screenId, { updateHash = true } = {}) {
     }
   }
 
-  closeDrawer();
+  closePortalDrawer();
   document.querySelector(".app-content")?.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/** @deprecated use navigateTo — kept for inline color buttons */
 function showScreen(screenId) {
   navigateTo(screenId);
 }
 
-function openDrawer() {
+function openPortalDrawer() {
   if (!isMobileViewport()) return;
-  document.body.classList.add("drawer-open");
-  document.getElementById("drawerToggle")?.setAttribute("aria-expanded", "true");
+  if (!document.getElementById("portalLayout")?.classList.contains("portal-layout--with-nav")) {
+    return;
+  }
+  document.body.classList.add("portal-drawer-open");
+  document.getElementById("portalMenuBtn")?.setAttribute("aria-expanded", "true");
 }
 
-function closeDrawer() {
-  document.body.classList.remove("drawer-open");
-  document.getElementById("drawerToggle")?.setAttribute("aria-expanded", "false");
+function closePortalDrawer() {
+  document.body.classList.remove("portal-drawer-open");
+  document.getElementById("portalMenuBtn")?.setAttribute("aria-expanded", "false");
 }
 
-function toggleDrawer() {
-  if (document.body.classList.contains("drawer-open")) {
-    closeDrawer();
+function togglePortalDrawer() {
+  if (document.body.classList.contains("portal-drawer-open")) {
+    closePortalDrawer();
   } else {
-    openDrawer();
+    openPortalDrawer();
   }
 }
 
@@ -121,6 +156,23 @@ function handleNavClick(event) {
   navigateTo(screenId);
 }
 
+function buildProtoScreenSelect() {
+  const select = document.getElementById("protoScreenSelect");
+  if (!select) return;
+
+  select.innerHTML = "";
+  Object.entries(PAGE_META).forEach(([id, meta]) => {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = meta.title;
+    select.appendChild(option);
+  });
+
+  select.addEventListener("change", () => {
+    navigateTo(select.value);
+  });
+}
+
 function initNavigation() {
   document.addEventListener("click", handleNavClick);
 
@@ -139,20 +191,20 @@ function initNavigation() {
     navigateTo("dashboard");
   });
 
-  document.getElementById("drawerToggle")?.addEventListener("click", toggleDrawer);
-  document.getElementById("drawerClose")?.addEventListener("click", closeDrawer);
-  document.getElementById("drawerBackdrop")?.addEventListener("click", closeDrawer);
+  document.getElementById("portalMenuBtn")?.addEventListener("click", togglePortalDrawer);
+  document.getElementById("portalDrawerClose")?.addEventListener("click", closePortalDrawer);
+  document.getElementById("portalBackdrop")?.addEventListener("click", closePortalDrawer);
 
   window.addEventListener("popstate", () => {
     navigateTo(getScreenFromHash(), { updateHash: false });
   });
 
   window.addEventListener("resize", () => {
-    if (!isMobileViewport()) closeDrawer();
+    if (!isMobileViewport()) closePortalDrawer();
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeDrawer();
+    if (event.key === "Escape") closePortalDrawer();
 
     const order = Object.keys(PAGE_META);
     const index = order.indexOf(currentScreen);
@@ -177,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* ignore */
   }
   setColorTheme(savedColor);
-
+  buildProtoScreenSelect();
   initNavigation();
 
   const initial = getScreenFromHash();

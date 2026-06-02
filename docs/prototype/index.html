@@ -31,107 +31,68 @@
       </div>
     </div>
     <div class="proto-bar-right">
-      <span class="scope-tag">Fixed scope · 30,000 EGP</span>
+      <div class="proto-screen-picker">
+        <label for="protoScreenSelect">Prototype screen</label>
+        <select id="protoScreenSelect" aria-label="Jump to prototype screen"></select>
+      </div>
     </div>
   </header>
 
+  <!-- Multi-Vendor website (what the client approves) -->
   <div class="app-shell" id="appShell">
-    <!-- Mobile drawer backdrop -->
-    <div class="drawer-backdrop" id="drawerBackdrop" aria-hidden="true"></div>
+    <div class="portal-layout portal-layout--no-nav" id="portalLayout">
+      <div class="portal-backdrop" id="portalBackdrop" aria-hidden="true"></div>
 
-    <!-- Site navigation: fixed sidebar (desktop) · slide drawer (mobile) -->
-    <aside class="site-sidebar" id="siteSidebar" aria-label="Main navigation">
-      <div class="sidebar-brand">
-        <div class="logo-mark"><span class="material-icons-round">storefront</span></div>
-        <div>
-          <strong>Tender Paws</strong>
-          <small>Vendor & Admin Portal</small>
-        </div>
-        <button type="button" class="drawer-close" id="drawerClose" aria-label="Close menu">
-          <span class="material-icons-round">close</span>
-        </button>
-      </div>
-
-      <nav class="sidebar-nav">
-        <div class="nav-group">
-          <p class="nav-group-title">Overview</p>
-          <button type="button" class="nav-item active" data-nav="overview">
-            <span class="material-icons-round">dashboard_customize</span> Scope Overview
+      <!-- App side menu (tablet/desktop) · drawer (mobile) -->
+      <aside class="portal-sidebar" id="portalSidebar" aria-label="Portal navigation">
+        <div class="portal-sidebar-brand">
+          <div class="logo-mark"><span class="material-icons-round">storefront</span></div>
+          <div>
+            <strong>Tender Paws</strong>
+            <small id="portalRoleLabel">Vendor Portal</small>
+          </div>
+          <button type="button" class="portal-drawer-close" id="portalDrawerClose" aria-label="Close menu">
+            <span class="material-icons-round">close</span>
           </button>
         </div>
 
-        <div class="nav-group">
-          <p class="nav-group-title">A · Onboarding & Store</p>
-          <button type="button" class="nav-item" data-nav="login">
-            <span class="material-icons-round">login</span> Vendor Login
-          </button>
-          <button type="button" class="nav-item" data-nav="register">
-            <span class="material-icons-round">person_add</span> Vendor Registration
-          </button>
-          <button type="button" class="nav-item" data-nav="store-setup">
-            <span class="material-icons-round">store</span> Store Profile Setup
-          </button>
-          <button type="button" class="nav-item" data-nav="account-status">
-            <span class="material-icons-round">verified_user</span> Account Status
-          </button>
-        </div>
-
-        <div class="nav-group">
-          <p class="nav-group-title">Vendor Console</p>
-          <button type="button" class="nav-item" data-nav="dashboard">
+        <nav class="portal-nav">
+          <p class="portal-nav-title">Vendor</p>
+          <button type="button" class="portal-nav-item" data-nav="dashboard">
             <span class="material-icons-round">space_dashboard</span> Dashboard
           </button>
-          <button type="button" class="nav-item" data-nav="products">
-            <span class="material-icons-round">inventory_2</span> Products List
+          <button type="button" class="portal-nav-item" data-nav="store-setup">
+            <span class="material-icons-round">store</span> Store Profile
           </button>
-          <button type="button" class="nav-item" data-nav="product-form">
-            <span class="material-icons-round">add_box</span> Add / Edit Product
+          <button type="button" class="portal-nav-item" data-nav="products">
+            <span class="material-icons-round">inventory_2</span> Products
           </button>
-          <button type="button" class="nav-item" data-nav="orders">
-            <span class="material-icons-round">receipt_long</span> Vendor Orders
+          <button type="button" class="portal-nav-item" data-nav="orders">
+            <span class="material-icons-round">receipt_long</span> Orders
           </button>
-          <button type="button" class="nav-item" data-nav="order-detail">
-            <span class="material-icons-round">local_shipping</span> Order Detail & Status
+          <button type="button" class="portal-nav-item" data-nav="earnings">
+            <span class="material-icons-round">payments</span> Earnings
           </button>
-          <button type="button" class="nav-item" data-nav="earnings">
-            <span class="material-icons-round">payments</span> Earnings & Payouts
-          </button>
-        </div>
 
-        <div class="nav-group">
-          <p class="nav-group-title">E · Admin Governance</p>
-          <button type="button" class="nav-item" data-nav="admin-vendors">
-            <span class="material-icons-round">groups</span> Manage Vendors
+          <p class="portal-nav-title">Admin</p>
+          <button type="button" class="portal-nav-item" data-nav="admin-vendors">
+            <span class="material-icons-round">groups</span> Vendors
           </button>
-          <button type="button" class="nav-item" data-nav="admin-products">
-            <span class="material-icons-round">category</span> Products Oversight
+          <button type="button" class="portal-nav-item" data-nav="admin-products">
+            <span class="material-icons-round">category</span> Products
           </button>
-          <button type="button" class="nav-item" data-nav="admin-orders">
-            <span class="material-icons-round">monitor_heart</span> Orders Monitoring
+          <button type="button" class="portal-nav-item" data-nav="admin-orders">
+            <span class="material-icons-round">monitor_heart</span> Orders
           </button>
-          <button type="button" class="nav-item" data-nav="audit-log">
+          <button type="button" class="portal-nav-item" data-nav="audit-log">
             <span class="material-icons-round">history</span> Audit Log
           </button>
-        </div>
+        </nav>
+      </aside>
 
-        <div class="nav-group">
-          <p class="nav-group-title">G · Access Control</p>
-          <button type="button" class="nav-item" data-nav="roles">
-            <span class="material-icons-round">admin_panel_settings</span> Roles & Permissions
-          </button>
-        </div>
-      </nav>
-
-      <div class="sidebar-note">
-        <span class="material-icons-round">info</span>
-        Buyer marketplace (C) stays in the mobile app — not in this web portal.
-      </div>
-    </aside>
-
-    <!-- Main website canvas -->
-    <div class="app-main">
+      <div class="portal-main">
       <header class="app-topbar" id="appTopbar">
-        <button type="button" class="icon-btn drawer-toggle" id="drawerToggle" aria-label="Open menu" aria-expanded="false">
+        <button type="button" class="icon-btn portal-menu-btn" id="portalMenuBtn" aria-label="Open menu" aria-expanded="false">
           <span class="material-icons-round">menu</span>
         </button>
         <div class="topbar-title">
@@ -539,6 +500,7 @@
             </div>
           </div>
         </section>
+      </div>
       </div>
     </div>
   </div>

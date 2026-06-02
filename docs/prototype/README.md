@@ -36,9 +36,14 @@ Selection is remembered in `localStorage`.
 
 ## Navigation
 
-- **Desktop:** fixed **side menu** (always visible on the left)
-- **Mobile / narrow:** **drawer** — tap ☰ menu, pick a page, drawer closes automatically
-- **Any screen:** click sidebar item, overview cards, table rows, or in-page buttons — all navigate instantly
+**Inside the website UI (what the client approves):**
+- **Tablet & desktop (768px+):** fixed **portal side menu** (Dashboard, Products, Orders, Admin…)
+- **Mobile (<768px):** same menu as a **drawer** — tap ☰ in the top bar
+
+**Prototype helper (top dark bar only):**
+- **Prototype screen** dropdown — jump between all demo pages while reviewing
+
+**In-page:** overview cards, tables, and buttons navigate between screens instantly.
 - **URL hash:** each page has a link like `#/dashboard` (shareable, browser back works)
 - **Keyboard:** ← → between screens, `Esc` closes mobile drawer
 - Sign in on login → Vendor Dashboard
