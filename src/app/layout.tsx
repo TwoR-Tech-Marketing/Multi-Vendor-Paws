@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 
 import "@/shared/theme/colors.css";
 import "./globals.css";
@@ -9,9 +9,18 @@ const inter = Inter({
   variable: "--font",
 });
 
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-display",
+});
+
 export const metadata: Metadata = {
-  title: "Tender Paws Vendor Portal",
-  description: "Multi-vendor vendor portal for Tender Paws",
+  title: "Pawlio — Vendor Portal",
+  description: "Sell pet products on Pawlio. Manage your store, orders, and earnings.",
+  icons: {
+    icon: [{ url: "/pawlio-logo.png", type: "image/png" }],
+    apple: "/pawlio-logo.png",
+  },
 };
 
 export default function RootLayout({
@@ -21,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.variable} suppressHydrationWarning>
+      <body className={`${inter.variable} ${plusJakarta.variable}`} suppressHydrationWarning>
         {children}
       </body>
     </html>
