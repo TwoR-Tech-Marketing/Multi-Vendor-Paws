@@ -62,7 +62,7 @@ export function LoginClient() {
 
         {submitted ? (
           <div className={`${styles.alert} ${styles.alertSuccess}`} role="status">
-            Application submitted. Sign in with your business email after admin approval.
+            Application submitted. Sign in with your business email to check your status.
           </div>
         ) : null}
 

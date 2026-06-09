@@ -87,7 +87,7 @@ export function AccountStatusClient() {
             <strong>{profile?.storeName ?? "—"}</strong>
           </div>
           <div className={styles.reviewRow}>
-            <span>Sign-in email</span>
+            <span>Email</span>
             <strong>{profile?.email || user.email}</strong>
           </div>
           <div className={styles.reviewRow}>

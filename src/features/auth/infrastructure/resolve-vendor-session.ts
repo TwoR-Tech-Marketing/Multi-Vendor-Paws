@@ -93,8 +93,37 @@ async function getSignupRequestByAuthUid(
     ),
   );
 
-  if (snap.empty) return null;
-  return snap.docs[0].data() as SignupRequestDoc;
+  if (!snap.empty) {
+    return snap.docs[0].data() as SignupRequestDoc;
+  }
+
+  return null;
+}
+
+async function getSignupRequestForUser(
+  uid: string,
+  email: string,
+): Promise<SignupRequestDoc | null> {
+  const byUid = await getSignupRequestByAuthUid(uid);
+  if (byUid) return byUid;
+
+  const normalized = email.trim().toLowerCase();
+  if (!normalized) return null;
+
+  const snap = await getDocs(
+    query(
+      collection(firestore, "vendor_signup_requests"),
+      where("email", "==", normalized),
+      limit(5),
+    ),
+  );
+
+  for (const docSnap of snap.docs) {
+    const data = docSnap.data() as SignupRequestDoc;
+    if (data.authUid === uid) return data;
+  }
+
+  return null;
 }
 
 async function getPendingSignupByContactEmail(
@@ -129,17 +158,19 @@ export async function resolveVendorSession(
   const uid = user.uid;
   const loginEmail = user.email?.trim().toLowerCase() ?? "";
 
-  const [userSnap, vendorSnap, signupByUid] = await Promise.all([
+  const [userSnap, vendorSnap, signupRequest] = await Promise.all([
     getDoc(doc(firestore, "users", uid)),
     getDoc(doc(firestore, "vendors", uid)),
-    getSignupRequestByAuthUid(uid),
+    getSignupRequestForUser(uid, loginEmail),
   ]);
 
   const userData = userSnap.exists() ? (userSnap.data() as UserDoc) : null;
   const vendorData = vendorSnap.exists() ? (vendorSnap.data() as VendorDoc) : null;
 
+  const isPendingSignup = signupRequest?.status === "pending";
+
   if (isVendorUser(userData, vendorData)) {
-    const profile = buildProfile(uid, userData, vendorData, signupByUid);
+    const profile = buildProfile(uid, userData, vendorData, signupRequest);
     if (profile.status === "active") {
       return {
         kind: "active",
@@ -151,18 +182,16 @@ export async function resolveVendorSession(
     return {
       kind: "pending",
       profile,
-      message:
-        "Your vendor application is pending admin review. You will be notified once it is approved.",
+      message: "Your vendor application is pending admin review.",
     };
   }
 
-  if (signupByUid?.status === "pending") {
-    const profile = buildProfile(uid, userData, vendorData, signupByUid);
+  if (signupRequest && isPendingSignup) {
+    const profile = buildProfile(uid, userData, vendorData, signupRequest);
     return {
       kind: "pending",
       profile,
-      message:
-        "Your vendor application is pending admin review. You will be notified once it is approved.",
+      message: "Your vendor application is pending admin review.",
     };
   }
 

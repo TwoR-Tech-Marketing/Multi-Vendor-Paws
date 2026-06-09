@@ -11,7 +11,7 @@ export function mapAuthError(error: unknown): string {
       case "auth/wrong-password":
         return VENDOR_LOGIN_FAILED_MESSAGE;
       case "auth/user-disabled":
-        return "Your account is pending admin approval. You can sign in once approved.";
+        return VENDOR_LOGIN_FAILED_MESSAGE;
       case "auth/too-many-requests":
         return "Too many attempts. Please try again later.";
       case "functions/already-exists":
