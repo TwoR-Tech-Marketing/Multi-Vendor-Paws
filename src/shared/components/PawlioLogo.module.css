@@ -1,0 +1,67 @@
+.wrap {
+  margin: 0 auto;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.1);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.image {
+  object-fit: contain;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brandInline {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.brandName {
+  margin-top: 14px;
+  font-family: var(--font-display), var(--font), sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed, #8b5cf6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brandInline .brandName {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.brandTagline {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.brandInline .wrap {
+  margin: 0;
+}

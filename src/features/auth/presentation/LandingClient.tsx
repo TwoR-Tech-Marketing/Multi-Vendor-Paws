@@ -1,7 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+
+import { PawlioBrand, PawlioLogo } from "@/shared/components/PawlioLogo";
 import type { ComponentType } from "react";
 import type { SVGProps } from "react";
 
@@ -205,23 +206,13 @@ export function LandingClient() {
 
       <div className={styles.shell}>
         <header className={styles.header}>
-          <Link href="/" className={styles.logo}>
-            <span className={styles.logoMarkWrap}>
-              <Image
-                src="/pawlio-logo.png"
-                alt="Pawlio"
-                width={40}
-                height={40}
-                className={styles.logoImage}
-                priority
-                unoptimized
-              />
-            </span>
-            <div className={styles.logoText}>
-              <strong className={styles.brandName}>Pawlio</strong>
-              <span>Vendor portal</span>
-            </div>
-          </Link>
+          <PawlioBrand
+            href="/"
+            size={48}
+            tagline="Vendor portal"
+            layout="inline"
+            priority
+          />
           <nav className={styles.nav}>
             <Link href="/login" className={styles.navLink}>
               Sign in
@@ -394,17 +385,7 @@ export function LandingClient() {
 
         <footer className={styles.footer}>
           <div className={styles.footerBrand}>
-            <span className={styles.footerLogoWrap}>
-              <Image
-                src="/pawlio-logo.png"
-                alt=""
-                width={28}
-                height={28}
-                className={styles.footerLogo}
-                aria-hidden
-                unoptimized
-              />
-            </span>
+            <PawlioLogo size={36} />
             <p>© {new Date().getFullYear()} Pawlio. Built with care for pet vendors.</p>
           </div>
           <div className={styles.footerLinks}>

@@ -6,6 +6,7 @@ import { sendPasswordResetEmail } from "firebase/auth";
 
 import { firebaseAuth } from "@/lib/firebase";
 import { mapAuthError } from "@/features/auth/domain/errors";
+import { PawlioLogo } from "@/shared/components/PawlioLogo";
 import styles from "./auth.module.css";
 
 export function ForgotPasswordClient() {
@@ -34,6 +35,7 @@ export function ForgotPasswordClient() {
     <main className={styles.page}>
       <section className={styles.card}>
         <div className={styles.brand}>
+          <PawlioLogo className={styles.logoMark} />
           <h2>Reset password</h2>
           <p>Enter your business email (the one you use to sign in).</p>
         </div>

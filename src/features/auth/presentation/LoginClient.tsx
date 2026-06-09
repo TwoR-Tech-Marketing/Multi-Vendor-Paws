@@ -10,6 +10,7 @@ import {
   VENDOR_LOGIN_FAILED_MESSAGE,
 } from "@/features/auth/domain/errors";
 import { resolveVendorSession } from "@/features/auth/infrastructure/resolve-vendor-session";
+import { PawlioLogo } from "@/shared/components/PawlioLogo";
 import styles from "./auth.module.css";
 
 export function LoginClient() {
@@ -55,7 +56,7 @@ export function LoginClient() {
     <main className={styles.page}>
       <section className={styles.card}>
         <div className={styles.brand}>
-          <div className={styles.logoMark}>🐾</div>
+          <PawlioLogo className={styles.logoMark} priority />
           <h2>Vendor sign in</h2>
           <p>Sign in with your business email and password.</p>
         </div>

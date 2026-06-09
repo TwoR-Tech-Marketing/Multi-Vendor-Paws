@@ -8,6 +8,7 @@ import type { User } from "firebase/auth";
 import { signOutVendor, subscribeAuthState } from "@/lib/auth";
 import { resolveVendorSession } from "@/features/auth/infrastructure/resolve-vendor-session";
 import type { VendorProfile } from "@/features/auth/domain/types";
+import { PawlioLogo } from "@/shared/components/PawlioLogo";
 import styles from "./auth.module.css";
 
 function formatExpiry(expiresAt: Date | null | undefined): string {
@@ -82,7 +83,7 @@ export function AccountStatusClient() {
     <main className={styles.page}>
       <section className={styles.statusCard}>
         <div className={styles.brand}>
-          <div className={styles.logoMark}>{isSuspended ? "🚫" : "⏳"}</div>
+          <PawlioLogo className={styles.logoMark} />
           <h2>Account status</h2>
           <p>
             {message ||
@@ -142,7 +143,7 @@ export function AccountStatusClient() {
         <p style={{ color: "var(--color-text-muted)", fontSize: 14, marginBottom: 20 }}>
           {isSuspended
             ? "You cannot access products, orders, or earnings while your account is suspended."
-            : "You will be able to access products and orders once an admin approves your application in the Tender Paws admin panel."}
+            : "You will be able to access products and orders once an admin approves your application in the Pawlio admin panel."}
         </p>
 
         <div className={styles.actions}>

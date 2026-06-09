@@ -8,6 +8,7 @@ import type { User } from "firebase/auth";
 import { signOutVendor, subscribeAuthState } from "@/lib/auth";
 import { resolveVendorSession } from "@/features/auth/infrastructure/resolve-vendor-session";
 import type { VendorProfile } from "@/features/auth/domain/types";
+import { PawlioLogo } from "@/shared/components/PawlioLogo";
 import styles from "./auth.module.css";
 
 export function DashboardClient() {
@@ -58,7 +59,7 @@ export function DashboardClient() {
     <main className={styles.landing}>
       <section className={styles.statusCard}>
         <div className={styles.brand}>
-          <div className={styles.logoMark}>🏪</div>
+          <PawlioLogo className={styles.logoMark} />
           <h2>{profile.storeName}</h2>
           <p>Welcome back, {profile.ownerName}. Your vendor portal is active.</p>
         </div>

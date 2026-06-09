@@ -10,6 +10,7 @@ import {
   submitVendorSignupRequest,
   uploadVendorLogo,
 } from "@/features/auth/infrastructure/vendor-signup.service";
+import { PawlioLogo } from "@/shared/components/PawlioLogo";
 import styles from "./auth.module.css";
 
 type FormState = Omit<VendorSignupPayload, "logoUrl"> & {
@@ -120,7 +121,8 @@ export function RegisterClient() {
     <main className={styles.page}>
       <section className={`${styles.card} ${styles.cardWide}`}>
         <div className={styles.brand}>
-          <h2>Become a Tender Paws vendor</h2>
+          <PawlioLogo className={styles.logoMark} />
+          <h2>Become a Pawlio vendor</h2>
           <p>
             Complete all steps. Your store will be reviewed before activation.
           </p>
@@ -351,7 +353,7 @@ export function RegisterClient() {
                   onChange={(e) => setAcceptedTerms(e.target.checked)}
                   required
                 />
-                I confirm the information is accurate and agree to Tender Paws vendor terms.
+                I confirm the information is accurate and agree to Pawlio vendor terms.
               </label>
               <div className={styles.actions}>
                 <button type="button" className={styles.btnSecondary} onClick={() => setStep(2)}>

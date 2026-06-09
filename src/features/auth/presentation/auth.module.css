@@ -26,15 +26,7 @@
 }
 
 .logoMark {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto;
-  border-radius: 14px;
-  background: var(--gradient-primary);
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 28px;
+  margin: 0 auto 4px;
 }
 
 .brand h1,
