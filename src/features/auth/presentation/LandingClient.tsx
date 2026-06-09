@@ -206,14 +206,17 @@ export function LandingClient() {
       <div className={styles.shell}>
         <header className={styles.header}>
           <Link href="/" className={styles.logo}>
-            <Image
-              src="/pawlio-logo.png"
-              alt="Pawlio"
-              width={48}
-              height={48}
-              className={styles.logoImage}
-              priority
-            />
+            <span className={styles.logoMarkWrap}>
+              <Image
+                src="/pawlio-logo.png"
+                alt="Pawlio"
+                width={40}
+                height={40}
+                className={styles.logoImage}
+                priority
+                unoptimized
+              />
+            </span>
             <div className={styles.logoText}>
               <strong className={styles.brandName}>Pawlio</strong>
               <span>Vendor portal</span>
@@ -391,14 +394,17 @@ export function LandingClient() {
 
         <footer className={styles.footer}>
           <div className={styles.footerBrand}>
-            <Image
-              src="/pawlio-logo.png"
-              alt=""
-              width={32}
-              height={32}
-              className={styles.footerLogo}
-              aria-hidden
-            />
+            <span className={styles.footerLogoWrap}>
+              <Image
+                src="/pawlio-logo.png"
+                alt=""
+                width={28}
+                height={28}
+                className={styles.footerLogo}
+                aria-hidden
+                unoptimized
+              />
+            </span>
             <p>© {new Date().getFullYear()} Pawlio. Built with care for pet vendors.</p>
           </div>
           <div className={styles.footerLinks}>

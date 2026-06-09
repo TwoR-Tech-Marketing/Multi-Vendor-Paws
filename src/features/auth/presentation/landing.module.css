@@ -126,11 +126,23 @@
   color: inherit;
 }
 
-.logoImage {
+.logoMarkWrap {
   width: 48px;
   height: 48px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid rgba(99, 102, 241, 0.14);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.1);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.logoImage {
+  width: 40px;
+  height: 40px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 10px rgba(99, 102, 241, 0.18));
 }
 
 .brandName {
@@ -878,11 +890,21 @@
   gap: 10px;
 }
 
+.footerLogoWrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
 .footerLogo {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(99, 102, 241, 0.15));
 }
 
 .footer p {
