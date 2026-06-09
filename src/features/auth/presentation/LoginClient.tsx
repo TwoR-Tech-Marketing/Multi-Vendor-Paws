@@ -37,7 +37,7 @@ export function LoginClient() {
         return;
       }
 
-      if (session.kind === "pending") {
+      if (session.kind === "pending" || session.kind === "suspended") {
         router.push("/account-status");
         return;
       }

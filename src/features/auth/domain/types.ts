@@ -15,6 +15,8 @@ export type VendorSignupPayload = {
   logoUrl?: string | null;
 };
 
+export type VendorRestrictionType = "ban" | "suspend";
+
 export type VendorProfile = {
   vendorId: string;
   ownerName: string;
@@ -22,6 +24,10 @@ export type VendorProfile = {
   storeName: string;
   status: VendorAccountStatus;
   approvalStatus?: string;
+  restrictionType?: VendorRestrictionType;
+  restrictionReason?: string;
+  restrictionExpiresAt?: Date | null;
+  isPermanentRestriction?: boolean;
 };
 
 export type VendorSignupRequestStatus = "pending" | "approved" | "rejected";

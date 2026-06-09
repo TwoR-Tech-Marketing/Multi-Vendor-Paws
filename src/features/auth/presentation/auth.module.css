@@ -394,6 +394,10 @@
   color: var(--color-warning);
 }
 
+.statusSuspended {
+  color: var(--color-error);
+}
+
 .statusActive {
   color: var(--color-success);
 }

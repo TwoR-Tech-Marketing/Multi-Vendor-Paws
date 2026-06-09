@@ -7,10 +7,12 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import type { Timestamp } from "firebase/firestore";
 import type { User } from "firebase/auth";
 
 import { firestore } from "@/lib/firebase";
 import type { VendorAccountStatus, VendorProfile } from "@/features/auth/domain/types";
+import { syncVendorAccess } from "@/features/auth/infrastructure/sync-vendor-access.service";
 
 type UserDoc = {
   role?: string;
@@ -18,6 +20,11 @@ type UserDoc = {
   ownerName?: string;
   email?: string;
   vendorId?: string;
+  is_banned?: boolean;
+  ban_reason?: string;
+  ban_expires_at?: Timestamp;
+  suspend_reason?: string;
+  suspend_expires_at?: Timestamp;
 };
 
 type VendorDoc = {
@@ -26,6 +33,11 @@ type VendorDoc = {
   approvalStatus?: string;
   ownerName?: string;
   email?: string;
+  isBanned?: boolean;
+  banReason?: string;
+  banExpiresAt?: Timestamp;
+  suspendReason?: string;
+  suspendExpiresAt?: Timestamp;
 };
 
 type SignupRequestDoc = {
@@ -40,6 +52,7 @@ type SignupRequestDoc = {
 export type VendorSessionKind =
   | "active"
   | "pending"
+  | "suspended"
   | "mobile_app_account"
   | "wrong_sign_in_email"
   | "not_vendor";
@@ -49,6 +62,59 @@ export type VendorSessionResolution = {
   profile: VendorProfile | null;
   message: string;
 };
+
+function toDate(value: Timestamp | undefined): Date | null {
+  if (!value?.toDate) return null;
+  return value.toDate();
+}
+
+function isExpired(expiresAt: Date | null | undefined): boolean {
+  if (!expiresAt) return false;
+  return expiresAt.getTime() <= Date.now();
+}
+
+function resolveRestriction(
+  userData: UserDoc | null,
+  vendorData: VendorDoc | null,
+): Pick<
+  VendorProfile,
+  | "restrictionType"
+  | "restrictionReason"
+  | "restrictionExpiresAt"
+  | "isPermanentRestriction"
+> {
+  if (vendorData?.isBanned || userData?.is_banned) {
+    const expiresAt = toDate(vendorData?.banExpiresAt ?? userData?.ban_expires_at);
+    return {
+      restrictionType: "ban",
+      restrictionReason:
+        vendorData?.banReason ?? userData?.ban_reason ?? "No reason provided.",
+      restrictionExpiresAt: expiresAt,
+      isPermanentRestriction: !expiresAt,
+    };
+  }
+
+  const isSuspended =
+    vendorData?.status === "suspended" ||
+    userData?.accountStatus === "suspended";
+
+  if (isSuspended) {
+    const expiresAt = toDate(
+      vendorData?.suspendExpiresAt ?? userData?.suspend_expires_at,
+    );
+    return {
+      restrictionType: "suspend",
+      restrictionReason:
+        vendorData?.suspendReason ??
+        userData?.suspend_reason ??
+        "No reason provided.",
+      restrictionExpiresAt: expiresAt,
+      isPermanentRestriction: !expiresAt,
+    };
+  }
+
+  return {};
+}
 
 function buildProfile(
   uid: string,
@@ -79,7 +145,26 @@ function buildProfile(
       "Your store",
     status,
     approvalStatus: vendorData?.approvalStatus,
+    ...resolveRestriction(userData, vendorData),
   };
+}
+
+function buildSuspendedMessage(profile: VendorProfile): string {
+  const reason = profile.restrictionReason ?? "policy violation";
+  const expiresAt = profile.restrictionExpiresAt;
+
+  if (profile.isPermanentRestriction) {
+    return `This account is suspended for ${reason}. Contact support if you believe this is a mistake.`;
+  }
+
+  const expiryLabel = expiresAt
+    ? expiresAt.toLocaleString(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+      })
+    : "the scheduled date";
+
+  return `This account is suspended for ${reason}. Access will be restored on ${expiryLabel}.`;
 }
 
 async function getSignupRequestByAuthUid(
@@ -152,25 +237,77 @@ function isVendorUser(userData: UserDoc | null, vendorData: VendorDoc | null) {
   return userData?.role === "vendor" || vendorData != null;
 }
 
-export async function resolveVendorSession(
-  user: User,
-): Promise<VendorSessionResolution> {
-  const uid = user.uid;
-  const loginEmail = user.email?.trim().toLowerCase() ?? "";
+function isRestricted(
+  userData: UserDoc | null,
+  vendorData: VendorDoc | null,
+): boolean {
+  if (vendorData?.isBanned || userData?.is_banned) {
+    const expiresAt = toDate(vendorData?.banExpiresAt ?? userData?.ban_expires_at);
+    return !isExpired(expiresAt);
+  }
 
+  const suspended =
+    vendorData?.status === "suspended" ||
+    userData?.accountStatus === "suspended";
+
+  if (!suspended) return false;
+
+  const expiresAt = toDate(
+    vendorData?.suspendExpiresAt ?? userData?.suspend_expires_at,
+  );
+  return !isExpired(expiresAt);
+}
+
+async function loadVendorSessionDocs(uid: string, loginEmail: string) {
   const [userSnap, vendorSnap, signupRequest] = await Promise.all([
     getDoc(doc(firestore, "users", uid)),
     getDoc(doc(firestore, "vendors", uid)),
     getSignupRequestForUser(uid, loginEmail),
   ]);
 
-  const userData = userSnap.exists() ? (userSnap.data() as UserDoc) : null;
-  const vendorData = vendorSnap.exists() ? (vendorSnap.data() as VendorDoc) : null;
+  return {
+    userData: userSnap.exists() ? (userSnap.data() as UserDoc) : null,
+    vendorData: vendorSnap.exists() ? (vendorSnap.data() as VendorDoc) : null,
+    signupRequest,
+  };
+}
+
+export async function resolveVendorSession(
+  user: User,
+): Promise<VendorSessionResolution> {
+  const uid = user.uid;
+  const loginEmail = user.email?.trim().toLowerCase() ?? "";
+
+  await syncVendorAccess();
+
+  let { userData, vendorData, signupRequest } = await loadVendorSessionDocs(
+    uid,
+    loginEmail,
+  );
+
+  if (isVendorUser(userData, vendorData) && isRestricted(userData, vendorData)) {
+    const lifted = await syncVendorAccess();
+    if (lifted) {
+      ({ userData, vendorData, signupRequest } = await loadVendorSessionDocs(
+        uid,
+        loginEmail,
+      ));
+    }
+  }
 
   const isPendingSignup = signupRequest?.status === "pending";
 
   if (isVendorUser(userData, vendorData)) {
     const profile = buildProfile(uid, userData, vendorData, signupRequest);
+
+    if (isRestricted(userData, vendorData)) {
+      return {
+        kind: "suspended",
+        profile,
+        message: buildSuspendedMessage(profile),
+      };
+    }
+
     if (profile.status === "active") {
       return {
         kind: "active",
