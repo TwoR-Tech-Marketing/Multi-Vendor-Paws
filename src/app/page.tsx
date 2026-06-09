@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { LandingClient } from "@/features/auth/presentation/LandingClient";
 
 export default function HomePage() {
-  redirect("/login");
+  return <LandingClient />;
 }

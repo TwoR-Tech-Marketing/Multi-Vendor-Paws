@@ -260,6 +260,14 @@ body.portal-drawer-open .portal-backdrop {
   font-weight: 700;
 }
 
+.portal-sidebar-footer {
+  margin-top: auto;
+  padding: 12px 8px 4px;
+  border-top: 1px solid var(--border);
+}
+
+.btn-block { width: 100%; justify-content: center; }
+
 .portal-main {
   flex: 1;
   display: flex;
@@ -473,6 +481,184 @@ body.portal-drawer-open .portal-backdrop {
 .auth-brand p { color: var(--text-muted); margin-top: 8px; font-size: 14px; }
 
 .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted); }
+
+.hidden { display: none !important; }
+
+.auth-alert {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.auth-alert-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* Sign up wizard */
+.signup-steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.signup-step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.signup-step span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--border);
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+}
+
+.signup-step.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.signup-step.active span,
+.signup-step.done span {
+  background: var(--gradient);
+  color: #fff;
+}
+
+.signup-step.done { color: var(--text); }
+
+.signup-panel { display: none; }
+.signup-panel.active { display: block; }
+
+.signup-panel-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.signup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.review-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.review-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.review-row span { color: var(--text-muted); }
+.review-terms { margin-top: 8px; font-size: 13px; }
+
+.logo-preview {
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: 12px;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+}
+
+.status-label { text-transform: capitalize; }
+.status-pending { color: #b45309; }
+.status-active { color: #166534; }
+.status-suspended { color: #b91c1c; }
+
+/* Landing */
+.landing-hero {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.landing-copy h2 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin: 12px 0;
+  line-height: 1.15;
+}
+
+.landing-copy p {
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 520px;
+}
+
+.landing-actions {
+  display: flex;
+  gap: 12px;
+  margin: 24px 0 16px;
+  flex-wrap: wrap;
+}
+
+.landing-hint {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.landing-hint code {
+  background: var(--surface-2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.landing-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.landing-feature {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.landing-feature .material-icons-round {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+}
+
+.landing-feature strong { display: block; font-size: 14px; }
+.landing-feature small { color: var(--text-muted); font-size: 12px; }
 
 /* ===== Forms ===== */
 .form-stack { display: flex; flex-direction: column; gap: 16px; }
@@ -816,6 +1002,18 @@ html[data-color="purple"] .phase-badge.admin {
   color: #92400e;
 }
 
+.status-banner.active {
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.status-banner.suspended {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
 .status-banner .material-icons-round { font-size: 32px; }
 
 .timeline {
@@ -978,4 +1176,5 @@ html[data-color="purple"] .phase-badge.admin {
   .hero-banner { flex-direction: column; }
   .form-grid-2 { grid-template-columns: 1fr; }
   .form-grid-2 .span-2 { grid-column: span 1; }
+  .landing-hero { grid-template-columns: 1fr; }
 }

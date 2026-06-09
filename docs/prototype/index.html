@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi-Vendor Paws — Website UI Prototype (Client Approval)</title>
+  <title>Tender Paws — Vendor Portal Prototype</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -15,8 +15,8 @@
     <div class="proto-bar-left">
       <span class="material-icons-round">pets</span>
       <div>
-        <strong>Multi-Vendor Paws</strong>
-        <span>Website UI prototype · Phase 3 scope</span>
+        <strong>Tender Paws Vendor Portal</strong>
+        <span>Phase 3 · Vendor app only</span>
       </div>
     </div>
     <div class="proto-bar-center">
@@ -57,9 +57,11 @@
         </div>
 
         <nav class="portal-nav">
-          <p class="portal-nav-title">Vendor</p>
           <button type="button" class="portal-nav-item" data-nav="dashboard">
             <span class="material-icons-round">space_dashboard</span> Dashboard
+          </button>
+          <button type="button" class="portal-nav-item" data-nav="account-status">
+            <span class="material-icons-round">verified_user</span> Account Status
           </button>
           <button type="button" class="portal-nav-item" data-nav="store-setup">
             <span class="material-icons-round">store</span> Store Profile
@@ -73,21 +75,11 @@
           <button type="button" class="portal-nav-item" data-nav="earnings">
             <span class="material-icons-round">payments</span> Earnings
           </button>
-
-          <p class="portal-nav-title">Admin</p>
-          <button type="button" class="portal-nav-item" data-nav="admin-vendors">
-            <span class="material-icons-round">groups</span> Vendors
-          </button>
-          <button type="button" class="portal-nav-item" data-nav="admin-products">
-            <span class="material-icons-round">category</span> Products
-          </button>
-          <button type="button" class="portal-nav-item" data-nav="admin-orders">
-            <span class="material-icons-round">monitor_heart</span> Orders
-          </button>
-          <button type="button" class="portal-nav-item" data-nav="audit-log">
-            <span class="material-icons-round">history</span> Audit Log
-          </button>
         </nav>
+
+        <div class="portal-sidebar-footer">
+          <button type="button" class="btn-ghost btn-block" id="sidebarSignOut">Sign out</button>
+        </div>
       </aside>
 
       <div class="portal-main">
@@ -100,40 +92,37 @@
           <p id="pageSubtitle">Phase 3 deliverables for client approval</p>
         </div>
         <div class="topbar-actions">
-          <div class="user-pill">
-            <span class="avatar">VH</span>
+          <div class="user-pill" id="userPill">
+            <span class="avatar" id="userAvatar">VH</span>
             <div>
-              <strong>Demo Vendor</strong>
-              <small>vendor@happytails.com</small>
+              <strong id="userName">Vendor</strong>
+              <small id="userEmail">vendor@happytails.com</small>
             </div>
           </div>
-          <button type="button" class="btn-ghost" data-nav="login">Sign out</button>
+          <button type="button" class="btn-ghost" id="topbarSignOut">Sign out</button>
         </div>
       </header>
 
       <div class="app-content">
-        <!-- OVERVIEW -->
-        <section class="page active" id="page-overview">
-          <div class="hero-banner">
-            <div>
-              <span class="badge">Client approval prototype</span>
-              <h2>Multi-Vendor Paws — Vendor & Admin Web Portal</h2>
-              <p>Desktop website for vendors to manage stores, products, and orders — plus admin governance. Marketplace buying remains in the Tender Paws mobile app.</p>
+        <!-- LANDING (public) -->
+        <section class="page active" id="page-landing">
+          <div class="landing-hero">
+            <div class="landing-copy">
+              <span class="badge">Tender Paws · Phase 3</span>
+              <h2>Sell on Tender Paws as a vendor</h2>
+              <p>Manage your store, products, and orders from one vendor portal. Buyers discover your products in the Tender Paws mobile app.</p>
+              <div class="landing-actions">
+                <button type="button" class="btn-primary" data-nav="register">Create vendor account</button>
+                <button type="button" class="btn-secondary" data-nav="login">Sign in</button>
+              </div>
+              <p class="landing-hint">Demo account: <code>vendor@happytails.com</code> / <code>password123</code></p>
             </div>
-            <div class="hero-stats">
-              <div><strong>8</strong><span>Vendor screens</span></div>
-              <div><strong>4</strong><span>Admin screens</span></div>
-              <div><strong>2</strong><span>Color options</span></div>
+            <div class="landing-features">
+              <div class="landing-feature"><span class="material-icons-round">store</span><div><strong>Store setup</strong><small>Name, logo, description, contacts</small></div></div>
+              <div class="landing-feature"><span class="material-icons-round">inventory_2</span><div><strong>Product catalog</strong><small>Add, edit, stock & status</small></div></div>
+              <div class="landing-feature"><span class="material-icons-round">receipt_long</span><div><strong>Order inbox</strong><small>Your orders only</small></div></div>
+              <div class="landing-feature"><span class="material-icons-round">payments</span><div><strong>Earnings</strong><small>Commission-ready payouts</small></div></div>
             </div>
-          </div>
-          <div class="scope-grid">
-            <article class="scope-card scope-link" data-nav="login" tabindex="0" role="link"><span class="scope-id">A</span><h3>Onboarding & Store Setup</h3><p>Registration, login, store profile, admin activation, active/suspended status.</p><span class="scope-go">Open screens →</span></article>
-            <article class="scope-card scope-link" data-nav="products" tabindex="0" role="link"><span class="scope-id">B</span><h3>Vendor Product Management</h3><p>CRUD products, images, price, stock, category, active/inactive, inventory.</p><span class="scope-go">Open screens →</span></article>
-            <article class="scope-card scope-muted"><span class="scope-id">C</span><h3>Marketplace (Mobile App)</h3><p>Multi-store browse, Halo labeling, storefront — mobile only, not this website.</p></article>
-            <article class="scope-card scope-link" data-nav="orders" tabindex="0" role="link"><span class="scope-id">D</span><h3>Orders</h3><p>Vendor order inbox, status updates, admin monitoring.</p><span class="scope-go">Open screens →</span></article>
-            <article class="scope-card scope-link" data-nav="admin-vendors" tabindex="0" role="link"><span class="scope-id">E</span><h3>Admin Governance</h3><p>Vendor list, approve/reject/suspend, products & orders visibility.</p><span class="scope-go">Open screens →</span></article>
-            <article class="scope-card scope-link" data-nav="earnings" tabindex="0" role="link"><span class="scope-id">F</span><h3>Financial Foundation</h3><p>Commission-ready ledger, earnings view, payout-ready records.</p><span class="scope-go">Open screens →</span></article>
-            <article class="scope-card scope-link" data-nav="roles" tabindex="0" role="link"><span class="scope-id">G</span><h3>Security & Access</h3><p>Vendor data isolation, admin vs vendor roles, audit trail.</p><span class="scope-go">Open screens →</span></article>
           </div>
         </section>
 
@@ -143,37 +132,132 @@
             <div class="auth-brand">
               <div class="logo-mark lg"><span class="material-icons-round">pets</span></div>
               <h2>Vendor sign in</h2>
-              <p>Access your store dashboard with Firebase identity.</p>
+              <p>Sign in to manage your store on Tender Paws.</p>
             </div>
-            <form class="form-stack" id="loginForm">
-              <label>Email<input type="email" placeholder="vendor@store.com" value="vendor@happytails.com"></label>
-              <label>Password<input type="password" placeholder="••••••••" value="password"></label>
+            <div class="auth-alert auth-alert-error hidden" id="loginError" role="alert"></div>
+            <form class="form-stack" id="loginForm" novalidate>
+              <label>Email address
+                <input type="email" name="email" id="loginEmail" placeholder="vendor@store.com" required autocomplete="email">
+              </label>
+              <label>Password
+                <input type="password" name="password" id="loginPassword" placeholder="Min. 8 characters" required autocomplete="current-password">
+              </label>
               <div class="form-row-between">
-                <label class="checkbox"><input type="checkbox" checked> Remember me</label>
-                <a href="#" class="link">Forgot password?</a>
+                <label class="checkbox"><input type="checkbox" id="loginRemember" checked> Remember me</label>
+                <a href="#/forgot-password" class="link" data-nav="forgot-password">Forgot password?</a>
               </div>
-              <button type="submit" class="btn-primary btn-block" data-nav="dashboard">Sign in to dashboard</button>
+              <button type="submit" class="btn-primary btn-block">Sign in</button>
             </form>
             <p class="auth-footer">New vendor? <a href="#/register" class="link" data-nav="register">Create account</a></p>
           </div>
         </section>
 
-        <!-- REGISTER -->
+        <!-- REGISTER (multi-step) -->
         <section class="page page-auth" id="page-register">
           <div class="auth-card wide">
             <div class="auth-brand">
-              <h2>Vendor registration</h2>
-              <p>Submit your details. Admin activates your store before you can sell.</p>
+              <h2>Become a Tender Paws vendor</h2>
+              <p>Complete all steps. Your store will be reviewed before activation (Phase 3 · Section A).</p>
             </div>
-            <form class="form-grid-2">
-              <label>Owner full name<input placeholder="Ahmed Hassan"></label>
-              <label>Business email<input type="email" placeholder="vendor@store.com"></label>
-              <label>Phone<input placeholder="+20 10x xxx xxxx"></label>
-              <label>Password<input type="password" placeholder="Min. 8 characters"></label>
-              <label class="span-2">Store name<input placeholder="Happy Tails Hub"></label>
-              <label class="span-2">Short description<textarea rows="2" placeholder="What does your store sell?"></textarea></label>
-              <button type="button" class="btn-primary span-2" data-nav="account-status">Submit for approval</button>
+
+            <div class="signup-steps" id="signupSteps">
+              <div class="signup-step active" data-step="1"><span>1</span> Account</div>
+              <div class="signup-step" data-step="2"><span>2</span> Store</div>
+              <div class="signup-step" data-step="3"><span>3</span> Review</div>
+            </div>
+
+            <div class="auth-alert auth-alert-error hidden" id="registerError" role="alert"></div>
+
+            <form id="registerForm" novalidate>
+              <!-- Step 1: Account -->
+              <div class="signup-panel active" data-panel="1">
+                <h3 class="signup-panel-title">Account details</h3>
+                <div class="form-grid-2">
+                  <label class="span-2">Owner full name *
+                    <input name="ownerName" required placeholder="Ahmed Hassan" minlength="2">
+                  </label>
+                  <label>Business email *
+                    <input type="email" name="email" required placeholder="vendor@store.com" autocomplete="email">
+                  </label>
+                  <label>Mobile phone *
+                    <input type="tel" name="phone" required placeholder="+20 10x xxx xxxx">
+                  </label>
+                  <label>Password *
+                    <input type="password" name="password" required minlength="8" placeholder="Min. 8 characters" autocomplete="new-password">
+                  </label>
+                  <label>Confirm password *
+                    <input type="password" name="confirmPassword" required minlength="8" placeholder="Repeat password" autocomplete="new-password">
+                  </label>
+                </div>
+                <div class="signup-actions">
+                  <button type="button" class="btn-secondary" data-nav="landing">Cancel</button>
+                  <button type="button" class="btn-primary" id="registerNext1">Continue to store setup</button>
+                </div>
+              </div>
+
+              <!-- Step 2: Store profile -->
+              <div class="signup-panel" data-panel="2">
+                <h3 class="signup-panel-title">Store profile</h3>
+                <div class="form-grid-2">
+                  <label class="span-2">Store name *
+                    <input name="storeName" required placeholder="Happy Tails Hub">
+                  </label>
+                  <label class="span-2">Store description *
+                    <textarea name="storeDescription" rows="3" required placeholder="What products do you sell? Who is your target customer?"></textarea>
+                  </label>
+                  <label>Store logo
+                    <div class="upload-box" id="logoUploadBox">
+                      <input type="file" accept="image/*" id="logoInput" hidden>
+                      <span class="material-icons-round">cloud_upload</span>
+                      <span>Click to upload logo</span>
+                    </div>
+                    <img id="logoPreview" class="logo-preview hidden" alt="Store logo preview">
+                  </label>
+                  <label>Business address *
+                    <input name="contactAddress" required placeholder="City, area, street">
+                  </label>
+                  <label>Contact phone *
+                    <input type="tel" name="contactPhone" required placeholder="+20 10x xxx xxxx">
+                  </label>
+                  <label>Contact email *
+                    <input type="email" name="contactEmail" required placeholder="contact@store.com">
+                  </label>
+                </div>
+                <div class="signup-actions">
+                  <button type="button" class="btn-secondary" id="registerBack2">Back</button>
+                  <button type="button" class="btn-primary" id="registerNext2">Review application</button>
+                </div>
+              </div>
+
+              <!-- Step 3: Review -->
+              <div class="signup-panel" data-panel="3">
+                <h3 class="signup-panel-title">Review & submit</h3>
+                <div class="review-grid" id="registerReview"></div>
+                <label class="checkbox review-terms">
+                  <input type="checkbox" id="registerTerms" required>
+                  I confirm the information is accurate and agree to Tender Paws vendor terms.
+                </label>
+                <div class="signup-actions">
+                  <button type="button" class="btn-secondary" id="registerBack3">Back</button>
+                  <button type="submit" class="btn-primary">Submit for admin approval</button>
+                </div>
+              </div>
             </form>
+          </div>
+        </section>
+
+        <!-- FORGOT PASSWORD -->
+        <section class="page page-auth" id="page-forgot-password">
+          <div class="auth-card">
+            <div class="auth-brand">
+              <h2>Reset password</h2>
+              <p>Enter your vendor email. We'll send a reset link (demo UI only).</p>
+            </div>
+            <form class="form-stack" id="forgotForm">
+              <label>Email address<input type="email" required placeholder="vendor@store.com"></label>
+              <button type="submit" class="btn-primary btn-block">Send reset link</button>
+            </form>
+            <p class="auth-footer"><a href="#/login" class="link" data-nav="login">Back to sign in</a></p>
           </div>
         </section>
 
@@ -209,25 +293,21 @@
 
         <!-- ACCOUNT STATUS -->
         <section class="page" id="page-account-status">
-          <div class="status-banner pending">
-            <span class="material-icons-round">hourglass_top</span>
+          <div class="status-banner pending" id="accountStatusBanner">
+            <span class="material-icons-round" id="accountStatusIcon">hourglass_top</span>
             <div>
-              <strong>Pending admin activation</strong>
-              <p>Your store profile was submitted. You cannot publish products until approved.</p>
+              <strong id="accountStatusTitle">Pending admin activation</strong>
+              <p id="accountStatusMessage">Your store profile was submitted. You cannot publish products until approved.</p>
             </div>
-          </div>
-          <div class="timeline">
-            <div class="timeline-item done"><span>Registration submitted</span><small>Jun 1, 2026</small></div>
-            <div class="timeline-item active"><span>Admin review</span><small>In progress</small></div>
-            <div class="timeline-item"><span>Store activated</span><small>—</small></div>
           </div>
           <div class="panel">
-            <h3>Status options (admin-controlled)</h3>
-            <div class="chip-row">
-              <span class="status-chip active-state">Active</span>
-              <span class="status-chip pending-state">Pending</span>
-              <span class="status-chip suspended-state">Suspended</span>
-            </div>
+            <h3>Your application</h3>
+            <div class="review-grid" id="accountStatusReview"></div>
+          </div>
+          <div class="timeline" id="accountTimeline">
+            <div class="timeline-item done"><span>Registration submitted</span><small id="timelineSubmitted">—</small></div>
+            <div class="timeline-item active" id="timelineReview"><span>Admin review</span><small>In progress</small></div>
+            <div class="timeline-item" id="timelineActive"><span>Store activated</span><small>—</small></div>
           </div>
         </section>
 
