@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import type { User } from "firebase/auth";
 
 import { signOutVendor, subscribeAuthState } from "@/lib/auth";
-import { getVendorProfile } from "@/features/auth/infrastructure/vendor-profile.repository";
+import { resolveVendorSession } from "@/features/auth/infrastructure/resolve-vendor-session";
 import type { VendorProfile } from "@/features/auth/domain/types";
 import styles from "./auth.module.css";
 
@@ -24,14 +24,14 @@ export function DashboardClient() {
         return;
       }
 
-      const vendorProfile = await getVendorProfile(nextUser.uid);
-      if (!vendorProfile || vendorProfile.status !== "active") {
+      const session = await resolveVendorSession(nextUser);
+      if (session.kind !== "active" || !session.profile) {
         router.replace("/account-status");
         return;
       }
 
       setUser(nextUser);
-      setProfile(vendorProfile);
+      setProfile(session.profile);
       setIsLoading(false);
     });
 

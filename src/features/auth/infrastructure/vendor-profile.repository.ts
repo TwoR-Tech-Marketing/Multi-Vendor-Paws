@@ -19,6 +19,7 @@ type VendorDoc = {
   email?: string;
 };
 
+/** Returns a vendor profile only for real vendor accounts — not mobile app users. */
 export async function getVendorProfile(uid: string): Promise<VendorProfile | null> {
   const userSnap = await getDoc(doc(firestore, "users", uid));
   const vendorSnap = await getDoc(doc(firestore, "vendors", uid));
@@ -26,7 +27,8 @@ export async function getVendorProfile(uid: string): Promise<VendorProfile | nul
   const userData = userSnap.exists() ? (userSnap.data() as UserDoc) : null;
   const vendorData = vendorSnap.exists() ? (vendorSnap.data() as VendorDoc) : null;
 
-  if (!userData && !vendorData) return null;
+  const isVendor = userData?.role === "vendor" || vendorData != null;
+  if (!isVendor) return null;
 
   const status =
     vendorData?.status ??

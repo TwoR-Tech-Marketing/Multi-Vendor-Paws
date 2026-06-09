@@ -4,15 +4,19 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import { signInVendor } from "@/lib/auth";
-import { mapAuthError } from "@/features/auth/domain/errors";
-import { getVendorProfile } from "@/features/auth/infrastructure/vendor-profile.repository";
+import { signInVendor, signOutVendor } from "@/lib/auth";
+import {
+  mapAuthError,
+  VENDOR_LOGIN_FAILED_MESSAGE,
+} from "@/features/auth/domain/errors";
+import { resolveVendorSession } from "@/features/auth/infrastructure/resolve-vendor-session";
 import styles from "./auth.module.css";
 
 export function LoginClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const submitted = searchParams.get("submitted") === "1";
+  const showLoginFailed = searchParams.get("invalid") === "1";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,14 +30,20 @@ export function LoginClient() {
 
     try {
       const credential = await signInVendor(email.trim(), password);
-      const profile = await getVendorProfile(credential.user.uid);
+      const session = await resolveVendorSession(credential.user);
 
-      if (!profile || profile.status !== "active") {
+      if (session.kind === "active") {
+        router.push("/dashboard");
+        return;
+      }
+
+      if (session.kind === "pending") {
         router.push("/account-status");
         return;
       }
 
-      router.push("/dashboard");
+      await signOutVendor();
+      setError(VENDOR_LOGIN_FAILED_MESSAGE);
     } catch (signInError) {
       setError(mapAuthError(signInError));
     } finally {
@@ -56,9 +66,9 @@ export function LoginClient() {
           </div>
         ) : null}
 
-        {error ? (
+        {(error || showLoginFailed) ? (
           <div className={`${styles.alert} ${styles.alertError}`} role="alert">
-            {error}
+            {error ?? VENDOR_LOGIN_FAILED_MESSAGE}
           </div>
         ) : null}
 
