@@ -1,4 +1,5 @@
 import styles from "./skeleton.module.css";
+import { skeletonClassName } from "./skeletonClassName";
 
 type SkeletonTextProps = {
   className?: string;
@@ -7,10 +8,11 @@ type SkeletonTextProps = {
 };
 
 export function SkeletonText({ className, size = "md", width = "100%" }: SkeletonTextProps) {
-  const sizeClass =
-    size === "sm" ? styles.textSm : size === "lg" ? styles.textLg : undefined;
-
-  const rootClassName = [styles.text, sizeClass, className].filter(Boolean).join(" ");
+  const rootClassName = skeletonClassName(
+    styles.text,
+    size === "sm" ? styles.textSm : size === "lg" ? styles.textLg : undefined,
+    className,
+  );
 
   return <span className={rootClassName} aria-hidden style={{ width }} />;
 }

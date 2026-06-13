@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 
 import styles from "./skeleton.module.css";
+import { skeletonClassName } from "./skeletonClassName";
 
 type SkeletonBoxProps = {
   className?: string;
@@ -15,7 +16,7 @@ export function SkeletonBox({
   height,
   borderRadius,
 }: SkeletonBoxProps) {
-  const rootClassName = [styles.box, className].filter(Boolean).join(" ");
+  const rootClassName = skeletonClassName(styles.box, className);
 
   return (
     <span

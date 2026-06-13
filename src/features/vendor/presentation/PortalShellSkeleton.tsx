@@ -1,19 +1,24 @@
+import { skeletonClassName } from "@/components/ui/skeleton";
 import { Strings } from "@/constants/strings";
 
 import styles from "./portal.module.css";
+
+function SkeletonBlock({ className }: { className: string }) {
+  return <div className={skeletonClassName(styles.skeletonBlock, className)} />;
+}
 
 export function PortalShellSkeleton() {
   return (
     <div className={styles.skeletonShell} role="status" aria-label={Strings.common.loading}>
       <aside className={styles.skeletonSidebar}>
-        <div className={`${styles.skeletonBlock} ${styles.skeletonBrand}`} />
+        <SkeletonBlock className={styles.skeletonBrand} />
         {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className={`${styles.skeletonBlock} ${styles.skeletonNavItem}`} />
+          <SkeletonBlock key={index} className={styles.skeletonNavItem} />
         ))}
       </aside>
       <div className={styles.skeletonMain}>
-        <div className={`${styles.skeletonBlock} ${styles.skeletonTopbar}`} />
-        <div className={`${styles.skeletonBlock} ${styles.skeletonPanel}`} />
+        <SkeletonBlock className={styles.skeletonTopbar} />
+        <SkeletonBlock className={styles.skeletonPanel} />
       </div>
     </div>
   );

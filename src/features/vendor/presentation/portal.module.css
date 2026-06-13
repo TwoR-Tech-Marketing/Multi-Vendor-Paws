@@ -495,7 +495,6 @@
 }
 
 .skeletonBlock {
-  composes: shimmer from "../../../components/ui/skeleton/skeleton.module.css";
   border-radius: var(--radius-sm);
 }
 

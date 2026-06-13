@@ -1,37 +1,41 @@
 .shimmer {
   position: relative;
   overflow: hidden;
-  background: var(--color-skeleton-base);
+  isolation: isolate;
+  background-color: var(--color-skeleton-base);
 }
 
 .shimmer::after {
   content: "";
   position: absolute;
   inset: 0;
-  transform: translateX(-100%);
+  z-index: 1;
+  transform: translateX(-120%);
   background: linear-gradient(
-    90deg,
+    105deg,
     transparent 0%,
-    var(--color-shimmer-highlight) 50%,
+    transparent 24%,
+    var(--color-shimmer-mid) 40%,
+    var(--color-shimmer-peak) 50%,
+    var(--color-shimmer-mid) 60%,
+    transparent 76%,
     transparent 100%
   );
-  animation: skeletonShimmer 1.4s ease-in-out infinite;
+  animation: skeletonShimmer 1.35s ease-in-out infinite;
 }
 
 @keyframes skeletonShimmer {
   100% {
-    transform: translateX(100%);
+    transform: translateX(120%);
   }
 }
 
 .box {
-  composes: shimmer;
   display: block;
   border-radius: var(--radius-sm);
 }
 
 .text {
-  composes: shimmer;
   display: block;
   height: 14px;
   border-radius: var(--radius-sm);
@@ -46,13 +50,11 @@
 }
 
 .avatar {
-  composes: shimmer;
   display: block;
   border-radius: var(--radius-full);
 }
 
 .card {
-  composes: shimmer;
   display: block;
   border-radius: var(--radius-lg);
 }

@@ -175,10 +175,73 @@ All brand values live in `src/styles/tokens.css` as CSS custom properties. This 
 
 ---
 
-## 6) Strings — No Hardcoded UI Copy
-All user-facing strings live in `src/constants/strings.ts`. No string literals directly in JSX.
+## 6) Strings & Localization (EN / AR) — No Hardcoded UI Copy
 
-**What belongs in strings.ts:**
+**Golden rule:** Never render static user-facing text in components. All copy — labels, headings, placeholders, `aria-label`, empty states, errors, toasts, button text — must come from the localization system.
+
+### i18n architecture (clean separation)
+
+```
+src/constants/strings.ts              ← English source of truth (default locale)
+src/shared/i18n/
+  types.ts                            ← AppStrings type (derived from English shape)
+  get-strings.ts                      ← getStrings(locale) — sole locale resolver
+  locales/ar.ts                       ← Arabic translations (must satisfy AppStrings)
+src/shared/preferences/
+  domain/types.ts                     ← AppLocale ('en' | 'ar'), storage keys
+  PreferencesContext.tsx              ← PreferencesProvider: theme, locale, dir, strings
+  PreferencesBootstrap.tsx              ← Pre-hydration script: applies theme/locale to <html>
+```
+
+| Layer | Responsibility |
+|-------|----------------|
+| `constants/strings.ts` | Define English keys and default copy only — not imported directly in locale-aware UI |
+| `i18n/locales/ar.ts` | Mirror every English key in Arabic; export `arStrings: AppStrings` |
+| `i18n/get-strings.ts` | Return `arStrings` or `Strings` based on `AppLocale` — no other locale branching |
+| `preferences/PreferencesContext` | Persist locale/theme, expose `useStrings()` and `usePreferences()` to presentation |
+
+### How to use strings in presentation (mandatory patterns)
+
+**Client components inside `PreferencesProvider`:**
+```typescript
+import { useStrings } from '@/shared/preferences/PreferencesContext';
+
+export function MySection() {
+  const strings = useStrings();
+  return <h1>{strings.pages.dashboard.title}</h1>;
+}
+```
+
+**Pure helpers / nav config (no React hook):** pass `AppStrings` in — do not import locale inside the helper.
+```typescript
+import type { AppStrings } from '@/shared/i18n/types';
+
+export function getPortalSidebarNavItems(strings: AppStrings) { /* ... */ }
+```
+
+**Server or non-provider context:** resolve explicitly — never assume English.
+```typescript
+import { getStrings } from '@/shared/i18n/get-strings';
+
+const strings = getStrings('en'); // or locale from cookies/headers when available
+```
+
+**Locale / RTL / language switcher:** use `usePreferences()` for `locale`, `dir`, `setLocale`. The provider sets `document.documentElement.lang` and `.dir` (`rtl` for Arabic). Prefer CSS logical properties (`margin-inline`, `text-align: start`) in new styles.
+
+### Adding or changing copy (workflow)
+
+1. Add the English key under the correct feature namespace in `src/constants/strings.ts`.
+2. Add the **same key** with Arabic translation in `src/shared/i18n/locales/ar.ts` (TypeScript `AppStrings` catches missing keys).
+3. Read it in UI via `useStrings()` — never as a JSX string literal.
+4. For dynamic segments, use a `{placeholder}` token in both locales and replace at runtime (e.g. `strings.notifications.unreadSummaryMany.replace('{count}', String(count))`).
+
+### Provider scope
+
+- Wrap every user-facing route tree with `PreferencesProvider` (portal: `VendorPortalLayout`; auth/landing: wrap in `(auth)` or root layout when those pages are localized).
+- Do **not** call `useStrings()` outside a `PreferencesProvider` ancestor — it will throw.
+- `PreferencesBootstrap` in root layout prevents theme/locale flash before hydration.
+
+**What belongs in strings.ts (both EN and AR):**
 - Button labels, CTA text
 - Page titles, section headings
 - Empty state messages
@@ -187,6 +250,15 @@ All user-facing strings live in `src/constants/strings.ts`. No string literals d
 - Status labels (Active, Suspended, Pending Review)
 - Toast/notification messages
 - Confirmation dialog copy
+
+**Production-ready copy (mandatory):**
+- Every string shown to vendors or buyers must read like polished product UI — never internal, technical, or developer-facing language.
+- Do not expose implementation details in UI copy: no references to "backend", "API", "Firebase", "integration", "stack", "mock data", "WIP", "TODO", or "being built".
+- Do not use placeholder sentences meant for engineering (e.g. "This section is being built…") — use customer-appropriate messaging (e.g. "Check back soon for updates").
+- Map all infrastructure errors to friendly `Strings.errors.*` messages; never show raw error codes, stack traces, or Firebase exception text.
+- Code comments and JSDoc are for developers only — they must never be rendered in JSX or returned from user-facing APIs.
+- When adding Arabic (`src/shared/i18n/locales/ar.ts`), mirror the same production tone — not literal developer translations of internal notes.
+- Keep **EN and AR in sync** — every new English key requires an Arabic counterpart before merge.
 
 **Structure by feature domain:**
 ```typescript
@@ -262,7 +334,7 @@ export const Strings = {
 
 ## 7) Loading States — Shimmer Skeletons (No Blank Screens)
 - **Never show blank screens, plain "Loading…" text, or spinners** (`<Spinner>`, `LoadingDots`, etc.) for page, section, or list content loading — always show **shimmer skeleton** placeholders that mirror the real layout shape.
-- All skeleton blocks use the shared **shimmer sweep animation** from `src/components/ui/skeleton/skeleton.module.css` (`--color-skeleton-base`, `--color-shimmer-highlight` in `src/shared/theme/colors.css`). Do not use opacity-only pulse animations for loading placeholders.
+- All skeleton blocks use the shared **shimmer sweep animation** from `src/components/ui/skeleton/skeleton.module.css` with `skeletonClassName()` (always apply the `.shimmer` class on the DOM node — do not rely on CSS Modules `composes` for pseudo-elements). Tokens: `--color-skeleton-base`, `--color-shimmer-mid`, `--color-shimmer-peak` in `src/shared/theme/colors.css`. Do not use opacity-only pulse animations for loading placeholders.
 - Build shared skeleton primitives in `src/components/ui/skeleton/`: `SkeletonBox`, `SkeletonText` (extend with `SkeletonAvatar`, `SkeletonCard` as needed).
 - Build feature-level skeleton screens: `AuthPageSkeleton`, `PortalShellSkeleton`, `PortalContentSkeleton`, `NotificationsSkeleton`, etc. — composed from shared primitives with real structural detail (rows, headers, badges), not a single flat rectangle.
 - Use `loading.tsx` at the route level for automatic Suspense fallback (`src/app/(portal)/loading.tsx`, `src/app/(auth)/loading.tsx`).
@@ -503,13 +575,17 @@ export const Routes = {
 - Raw Firebase calls in hooks, components, or pages.
 - Unnecessary `"use client"` on server-capable components.
 - Hardcoded hex values, pixel values, font names, or spacing values in component/module files.
-- Hardcoded UI strings as JSX literals — use `Strings.*`.
+- Hardcoded UI strings as JSX literals, `placeholder`, `aria-label`, or `title` attributes — use `useStrings()` / `getStrings()`.
+- Importing `Strings` directly in client components that must respect the active locale — use `useStrings()` instead.
+- English-only or Arabic-only partial translations — both `strings.ts` and `locales/ar.ts` must stay aligned via `AppStrings`.
+- UI copy in `application/` or `infrastructure/` layers — strings belong in constants + locale files; presentation reads them via hooks.
 - Hardcoded URL strings in components — use `Routes.*`.
 - Unstyled native `<select>` in portal or feature presentation UI — use `PortalSelect`.
 - Raw `<img>` for monochrome SVG UI icons — use `ThemedSvgIcon` with token colors.
 - Spinners for page, list, or section content loading — use skeleton components.
 - Large monolithic component/page files without decomposition.
 - Exposing raw Firebase errors, stack traces, or internal error codes to users.
+- Developer-facing or work-in-progress copy in UI (`Strings.*`, toasts, empty states, alerts) — all user-visible text must be production-ready.
 - Vendor accessing another vendor's data — isolation is non-negotiable.
 - `any` type without strong documented justification.
 - Secrets or Firebase Admin credentials in client-accessible code.
@@ -522,14 +598,14 @@ export const Routes = {
 - **Firebase**: Client init in `src/lib/firebase.ts`. Admin SDK on server only.
 - **Features**: `src/features/<feature-name>/` with `presentation/`, `application/`, `domain/`, `infrastructure/` layers.
 - **Styling**: CSS Modules with design tokens from `src/styles/tokens.css`.
-- **Strings**: All UI copy from `src/constants/strings.ts`.
+- **Strings & i18n**: English source in `src/constants/strings.ts`; Arabic in `src/shared/i18n/locales/ar.ts`; resolve via `getStrings(locale)`. Client UI: `useStrings()` from `PreferencesContext` — never hardcoded JSX text. See §6.
 - **Routes**: All URL paths from `src/constants/routes.ts`.
 - **Forms**: React Hook Form + Zod.
 - **Server state**: React Query for client-side Firebase reads.
 - **Global state**: Zustand for auth session and cross-cutting UI state only.
 - **Theme tokens**: `src/shared/theme/colors.css` (light + `[data-theme="dark"]`).
-- **Preferences**: `PreferencesProvider` in `src/shared/preferences/` — theme + locale persisted in `localStorage`.
-- **i18n**: `useStrings()` from `PreferencesContext`; Arabic in `src/shared/i18n/locales/ar.ts`.
+- **Preferences**: `PreferencesProvider` in `src/shared/preferences/` — theme + locale (`en` | `ar`) persisted in `localStorage`; sets `html[lang]` and `html[dir]`.
+- **i18n**: `useStrings()` for localized copy; `getStrings(locale)` for non-hook contexts; `AppStrings` type enforces EN/AR parity.
 - **Portal shell**: DineNorder POS-style sidebar (`PortalSidebar`, `sidebar.module.css`, assets in `public/portal-nav/`).
 - **Dropdowns**: use `PortalSelect` from `src/components/ui/select/` — POS custom dropdown with chevron (`public/ui/chevron-down.svg`), radio options, token colors. Never raw browser `<select>` in portal UI.
 - **Themed icons**: use `ThemedSvgIcon` / `ThemedImage` from `src/components/ui/themed-icon/` — SVG masks + `--color-icon*` tokens for light/dark alignment.

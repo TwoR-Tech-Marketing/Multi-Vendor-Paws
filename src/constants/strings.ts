@@ -6,7 +6,7 @@ export const Strings = {
     cancel: "Cancel",
     comingSoon: "Coming soon",
     comingSoonDescription:
-      "This section is being built. It will be available once vendor data and backend integrations are ready.",
+      "We're putting the finishing touches on this feature. Check back soon for updates.",
     backToHome: "Back to home",
     save: "Save changes",
   },

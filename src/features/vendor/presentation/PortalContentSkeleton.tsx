@@ -1,6 +1,11 @@
+import { skeletonClassName } from "@/components/ui/skeleton";
 import { Strings } from "@/constants/strings";
 
 import styles from "./portal.module.css";
+
+function SkeletonBlock({ className }: { className: string }) {
+  return <div className={skeletonClassName(styles.skeletonBlock, className)} />;
+}
 
 export function PortalContentSkeleton() {
   return (
@@ -9,8 +14,8 @@ export function PortalContentSkeleton() {
       role="status"
       aria-label={Strings.common.loading}
     >
-      <div className={`${styles.skeletonBlock} ${styles.contentSkeletonTitle}`} />
-      <div className={`${styles.skeletonBlock} ${styles.contentSkeletonPanel}`} />
+      <SkeletonBlock className={styles.contentSkeletonTitle} />
+      <SkeletonBlock className={styles.contentSkeletonPanel} />
     </div>
   );
 }
