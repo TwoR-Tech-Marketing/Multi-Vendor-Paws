@@ -1,20 +1,17 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Routes } from "@/constants/routes";
 import { Strings } from "@/constants/strings";
+import { portalNavAssets } from "@/features/vendor/presentation/portal-assets";
 import { PORTAL_SIDEBAR_NAV_ITEMS } from "@/features/vendor/presentation/portal-nav";
 import { usePortalSignOut } from "@/features/vendor/presentation/PortalSignOutContext";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
-import {
-  IconClose,
-  IconLogout,
-  IconStorefront,
-} from "@/features/vendor/presentation/PortalNavIcons";
+import { IconClose } from "@/features/vendor/presentation/PortalNavIcons";
 
-import styles from "./portal.module.css";
+import styles from "./sidebar.module.css";
 
 type PortalSidebarProps = {
   isOpen: boolean;
@@ -36,14 +33,9 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
       className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ""}`}
       aria-label="Portal navigation"
     >
-      <div className={styles.brand}>
-        <div className={styles.brandMark}>
-          <IconStorefront width={22} height={22} />
-        </div>
-        <div className={styles.brandText}>
-          <strong>{Strings.portal.brandName}</strong>
-          <small>{Strings.portal.brandTagline}</small>
-        </div>
+      <div className={styles.sidebarBg} aria-hidden />
+
+      <div className={styles.sidebarInner}>
         <button
           type="button"
           className={styles.drawerClose}
@@ -52,52 +44,99 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
         >
           <IconClose />
         </button>
-      </div>
 
-      <nav className={styles.nav}>
-        {PORTAL_SIDEBAR_NAV_ITEMS.map(({ id, href, label, Icon, requiresActiveAccount }) => {
-          const isActive = pathname === href || pathname.startsWith(`${href}/`);
-          const isDisabled = requiresActiveAccount && !isActiveVendor;
+        <div className={styles.logo}>
+          <Image
+            src={portalNavAssets.logo}
+            alt={Strings.portal.brandName}
+            width={46}
+            height={46}
+            className={styles.logoImage}
+            priority
+          />
+        </div>
 
-          if (isDisabled) {
-            return (
-              <span
-                key={id}
-                className={`${styles.navItem} ${styles.navItemDisabled}`}
-                title={Strings.nav.lockedHint}
-                aria-disabled="true"
-              >
-                <Icon />
-                {label}
-              </span>
+        <nav className={styles.navScroll}>
+          {PORTAL_SIDEBAR_NAV_ITEMS.map((item, index) => {
+            const isActive =
+              pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const isLocked = item.requiresActiveAccount && !isActiveVendor;
+            const isLast = index === PORTAL_SIDEBAR_NAV_ITEMS.length - 1;
+
+            const itemClassName = [
+              styles.navItem,
+              isActive ? styles.navItemActive : "",
+              isLocked ? styles.navItemLocked : "",
+            ]
+              .filter(Boolean)
+              .join(" ");
+
+            const itemContent = (
+              <>
+                <img
+                  className={styles.navIcon}
+                  src={item.icon}
+                  alt=""
+                  width={22}
+                  height={22}
+                  decoding="async"
+                />
+                <span className={styles.navLabel}>{item.label}</span>
+              </>
             );
-          }
 
-          return (
-            <Link
-              key={id}
-              href={href}
-              prefetch
-              scroll={false}
-              className={`${styles.navItem} ${isActive ? styles.navItemActive : ""}`}
-              onClick={onClose}
-              aria-current={isActive ? "page" : undefined}
-            >
-              <Icon />
-              {label}
-            </Link>
-          );
-        })}
-      </nav>
+            return (
+              <div key={item.id} className={styles.navGroup}>
+                {isLocked ? (
+                  <span
+                    className={itemClassName}
+                    title={Strings.nav.lockedHint}
+                    aria-disabled="true"
+                  >
+                    {itemContent}
+                  </span>
+                ) : (
+                  <Link
+                    href={item.href}
+                    prefetch
+                    scroll={false}
+                    className={itemClassName}
+                    onClick={onClose}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {itemContent}
+                  </Link>
+                )}
 
-      <div className={styles.sidebarFooter}>
+                {!isLast ? (
+                  <span className={styles.navRule} aria-hidden>
+                    <img
+                      className={styles.navRuleImage}
+                      src={portalNavAssets.navSeparator}
+                      alt=""
+                      decoding="async"
+                    />
+                  </span>
+                ) : null}
+              </div>
+            );
+          })}
+        </nav>
+
         <button
           type="button"
-          className={styles.sidebarLogout}
+          className={styles.logout}
           onClick={onSignOutClick}
           disabled={isLoggingOut}
         >
-          <IconLogout width={18} height={18} />
+          <img
+            className={styles.logoutIcon}
+            src={portalNavAssets.logout}
+            alt=""
+            width={18}
+            height={18}
+            decoding="async"
+          />
           <span>
             {isLoggingOut ? Strings.common.signingOut : Strings.nav.logOut}
           </span>

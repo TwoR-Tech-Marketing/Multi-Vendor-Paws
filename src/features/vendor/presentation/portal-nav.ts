@@ -1,14 +1,6 @@
-import type { ComponentType, SVGProps } from "react";
-
 import { Routes } from "@/constants/routes";
 import { Strings } from "@/constants/strings";
-
-import {
-  IconDashboard,
-  IconEarnings,
-  IconOrders,
-  IconProducts,
-} from "./PortalNavIcons";
+import { portalNavAssets } from "@/features/vendor/presentation/portal-assets";
 
 export type PortalNavId =
   | "dashboard"
@@ -21,7 +13,7 @@ export type PortalNavItem = {
   id: PortalNavId;
   href: string;
   label: string;
-  Icon: ComponentType<SVGProps<SVGSVGElement>>;
+  icon: string;
   requiresActiveAccount: boolean;
 };
 
@@ -30,28 +22,28 @@ export const PORTAL_SIDEBAR_NAV_ITEMS: PortalNavItem[] = [
     id: "dashboard",
     href: Routes.vendor.dashboard,
     label: Strings.nav.dashboard,
-    Icon: IconDashboard,
+    icon: portalNavAssets.navDashboard,
     requiresActiveAccount: false,
   },
   {
     id: "products",
     href: Routes.vendor.products,
     label: Strings.nav.products,
-    Icon: IconProducts,
+    icon: portalNavAssets.navProducts,
     requiresActiveAccount: true,
   },
   {
     id: "orders",
     href: Routes.vendor.orders,
     label: Strings.nav.orders,
-    Icon: IconOrders,
+    icon: portalNavAssets.navOrders,
     requiresActiveAccount: true,
   },
   {
     id: "earnings",
     href: Routes.vendor.earnings,
     label: Strings.nav.earnings,
-    Icon: IconEarnings,
+    icon: portalNavAssets.navEarnings,
     requiresActiveAccount: true,
   },
 ];

@@ -12,6 +12,7 @@
 
   /* Purple — admin / vendor portal brand */
   --color-primary: #6366f1;
+  --color-logout: #6366f1;
   --color-primary-2: #8b5cf6;
   --gradient-primary: linear-gradient(135deg, #667eea, #764ba2, #8b5cf6);
   --color-primary-soft: rgba(99, 102, 241, 0.12);
@@ -39,7 +40,7 @@
   --color-pending-surface: #fffbeb;
   --color-pending-border: #fde68a;
 
-  --sidebar-width: 280px;
+  --sidebar-width: 157px;
   --topbar-height: 64px;
   --nav-mobile-max: 767px;
 

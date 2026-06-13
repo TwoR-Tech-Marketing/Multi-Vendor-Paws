@@ -1,0 +1,237 @@
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.sidebarBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(15.5px);
+  -webkit-backdrop-filter: blur(15.5px);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.sidebarInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  min-height: 0;
+  padding: 28px var(--space-3) var(--space-6);
+  gap: var(--space-2);
+  overflow: hidden;
+}
+
+.drawerClose {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-text);
+  cursor: pointer;
+  place-items: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.logo {
+  width: 46px;
+  height: 46px;
+  margin-bottom: var(--space-3);
+  flex-shrink: 0;
+}
+
+.logoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.navScroll {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.navGroup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.navItem {
+  width: 118px;
+  min-height: 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font);
+  text-decoration: none;
+  color: var(--color-text);
+  position: relative;
+  border-radius: var(--radius-sm);
+  margin: var(--space-2) 0;
+  transition:
+    background-color var(--duration-base),
+    color var(--duration-base);
+}
+
+.navItem:hover:not(.navItemActive):not(.navItemLocked) {
+  background: var(--color-primary-soft);
+}
+
+.navItem:hover:not(.navItemActive):not(.navItemLocked) .navLabel {
+  color: var(--color-primary);
+}
+
+.navIcon {
+  width: 22px;
+  height: auto;
+  max-height: 26px;
+  object-fit: contain;
+  display: block;
+}
+
+.navItemActive {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.navItemActive .navIcon {
+  filter: brightness(0) invert(1);
+}
+
+.navItemLocked {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.navItemLocked:hover {
+  opacity: 0.55;
+}
+
+.navLabel {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.2;
+  text-align: center;
+  transition: color var(--duration-base);
+}
+
+.navRule {
+  width: 118px;
+  height: 1px;
+  margin: 0 auto;
+  display: block;
+  overflow: hidden;
+}
+
+.navRuleImage {
+  width: 100%;
+  height: 1px;
+  object-fit: fill;
+  display: block;
+}
+
+.logout {
+  flex-shrink: 0;
+  margin-top: auto;
+  width: 80px;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font);
+  color: var(--color-logout);
+}
+
+.logout:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.logoutIcon {
+  width: 18px;
+  height: auto;
+  display: block;
+}
+
+.logout span {
+  font-size: 16px;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 767px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+
+  .sidebarOpen .sidebarBg {
+    background: var(--color-surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  }
+
+  .drawerClose {
+    display: grid;
+  }
+
+  .sidebarInner {
+    padding-top: 52px;
+  }
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    position: sticky;
+    top: 0;
+    transform: none !important;
+  }
+}
