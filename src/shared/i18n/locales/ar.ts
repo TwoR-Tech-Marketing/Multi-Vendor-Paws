@@ -18,6 +18,7 @@ export const arStrings: AppStrings = {
     openMenu: "فتح القائمة",
     closeMenu: "إغلاق القائمة",
     openProfile: "فتح الملف الشخصي",
+    goBack: "رجوع",
   },
   nav: {
     dashboard: "لوحة التحكم",

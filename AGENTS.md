@@ -562,4 +562,10 @@ Vendor portal chrome (sidebar, top bar, settings, dropdowns, logout) follows the
 - Sidebar + profile use `--color-logout` (POS sign-out red `#952424`).
 - Confirm via shared `LogoutConfirmDialog`.
 
+**Page header back control**
+- Uses `PortalBackButton` + `usePortalCanGoBack()` — visible on **any** portal screen (including dashboard) when `window.history.length > 1`.
+- Back calls `router.back()` to return to the **previous screen in the browser history stack** (not a fixed dashboard route).
+- On first entry with no prior history, the back button is hidden.
+- RTL mirrors chevron via `[dir="rtl"]`.
+
 **Before adding new portal chrome UI**, check the POS project (`Pos_NextJs`) for an existing pattern and reuse or adapt — do not invent a third style.

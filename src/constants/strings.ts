@@ -16,6 +16,7 @@ export const Strings = {
     openMenu: "Open menu",
     closeMenu: "Close menu",
     openProfile: "Open profile",
+    goBack: "Go back",
   },
   nav: {
     dashboard: "Dashboard",

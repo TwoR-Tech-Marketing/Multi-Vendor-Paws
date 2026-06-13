@@ -1,6 +1,7 @@
 "use client";
 
 import { NotificationBellButton } from "@/features/vendor/presentation/NotificationBellButton";
+import { PortalBackButton } from "@/features/vendor/presentation/PortalBackButton";
 import { IconMenu } from "@/features/vendor/presentation/PortalNavIcons";
 import { StoreAvatarButton } from "@/features/vendor/presentation/StoreAvatarButton";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
@@ -10,6 +11,7 @@ import styles from "./portal.module.css";
 type PortalTopbarProps = {
   title: string;
   subtitle: string;
+  showBack: boolean;
   onMenuOpen: () => void;
   isMenuOpen: boolean;
 };
@@ -17,6 +19,7 @@ type PortalTopbarProps = {
 export function PortalTopbar({
   title,
   subtitle,
+  showBack,
   onMenuOpen,
   isMenuOpen,
 }: PortalTopbarProps) {
@@ -44,9 +47,12 @@ export function PortalTopbar({
       </div>
 
       <div className={styles.pageHeaderCard}>
-        <div className={styles.pageHeaderTitle}>
-          <h1>{title}</h1>
-          <p>{subtitle}</p>
+        <div className={styles.pageHeaderRow}>
+          {showBack ? <PortalBackButton /> : null}
+          <div className={styles.pageHeaderTitle}>
+            <h1>{title}</h1>
+            <p>{subtitle}</p>
+          </div>
         </div>
       </div>
     </header>

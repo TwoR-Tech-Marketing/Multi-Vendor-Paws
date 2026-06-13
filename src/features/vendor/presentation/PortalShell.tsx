@@ -9,6 +9,7 @@ import {
 } from "@/features/vendor/presentation/portal-nav";
 import { PortalSidebar } from "@/features/vendor/presentation/PortalSidebar";
 import { PortalTopbar } from "@/features/vendor/presentation/PortalTopbar";
+import { usePortalCanGoBack } from "@/features/vendor/presentation/usePortalCanGoBack";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./portal.module.css";
@@ -20,6 +21,7 @@ type PortalShellProps = {
 export function PortalShell({ children }: PortalShellProps) {
   const pathname = usePathname();
   const strings = useStrings();
+  const canGoBack = usePortalCanGoBack();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const navId = resolvePortalNavId(pathname);
@@ -53,6 +55,7 @@ export function PortalShell({ children }: PortalShellProps) {
         <PortalTopbar
           title={pageMeta.title}
           subtitle={pageMeta.subtitle}
+          showBack={canGoBack}
           onMenuOpen={openDrawer}
           isMenuOpen={isDrawerOpen}
         />
