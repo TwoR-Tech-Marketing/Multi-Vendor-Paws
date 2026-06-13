@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+import { Routes } from "@/constants/routes";
 import { signInVendor, signOutVendor } from "@/lib/auth";
 import {
   mapAuthError,
@@ -34,12 +35,12 @@ export function LoginClient() {
       const session = await resolveVendorSession(credential.user);
 
       if (session.kind === "active") {
-        router.push("/dashboard");
+        router.push(Routes.vendor.dashboard);
         return;
       }
 
       if (session.kind === "pending" || session.kind === "suspended") {
-        router.push("/account-status");
+        router.push(Routes.vendor.accountStatus);
         return;
       }
 

@@ -22,4 +22,25 @@
   --color-error: #b91c1c;
   --color-error-bg: #fee2e2;
   --color-error-border: #fecaca;
+
+  --color-success-surface: #dcfce7;
+  --color-warning-surface: #fef3c7;
+  --color-pending-surface: #fffbeb;
+  --color-pending-border: #fde68a;
+
+  --sidebar-width: 280px;
+  --topbar-height: 64px;
+  --nav-mobile-max: 767px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --radius-sm: 8px;
+  --radius-full: 9999px;
+
+  --duration-base: 200ms;
 }
