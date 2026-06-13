@@ -102,16 +102,17 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  color: var(--color-signout-text);
+  color: var(--color-logout);
 }
 
 .signOutText {
   font-size: 14px;
   line-height: 20px;
+  color: var(--color-logout);
 }
 
 .signOutArrow {
-  color: var(--color-signout-text);
+  color: var(--color-logout);
   flex-shrink: 0;
 }
 

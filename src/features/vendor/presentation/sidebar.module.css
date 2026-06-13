@@ -188,13 +188,24 @@
 
 .logoutIcon {
   width: 18px;
-  height: auto;
+  height: 18px;
   display: block;
+  flex-shrink: 0;
+  background-color: var(--color-logout);
+  mask-image: url("/portal-nav/logout.svg");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: url("/portal-nav/logout.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
 }
 
 .logout span {
   font-size: 16px;
   letter-spacing: 0.01em;
+  color: var(--color-logout);
 }
 
 @media (max-width: 767px) {

@@ -129,14 +129,7 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
           onClick={onSignOutClick}
           disabled={isLoggingOut}
         >
-          <img
-            className={styles.logoutIcon}
-            src={portalNavAssets.logout}
-            alt=""
-            width={18}
-            height={18}
-            decoding="async"
-          />
+          <span className={styles.logoutIcon} aria-hidden />
           <span>
             {isLoggingOut ? Strings.common.signingOut : Strings.nav.logOut}
           </span>

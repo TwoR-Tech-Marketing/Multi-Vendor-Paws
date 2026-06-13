@@ -12,7 +12,7 @@
 
   /* Purple — admin / vendor portal brand */
   --color-primary: #6366f1;
-  --color-logout: #6366f1;
+  --color-logout: #952424;
   --color-primary-2: #8b5cf6;
   --gradient-primary: linear-gradient(135deg, #667eea, #764ba2, #8b5cf6);
   --color-primary-soft: rgba(99, 102, 241, 0.12);
@@ -33,7 +33,7 @@
   --color-dialog-danger: #c50a00;
   --color-signout-surface: #ffe8e8;
   --color-signout-border: #ffd0d0;
-  --color-signout-text: #952424;
+  --color-signout-text: var(--color-logout);
 
   --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.18);
   --color-warning-surface: #fef3c7;
