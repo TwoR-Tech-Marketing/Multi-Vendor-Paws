@@ -3,14 +3,14 @@ import { skeletonClassName } from "./skeletonClassName";
 
 type SkeletonTextProps = {
   className?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   width?: number | string;
 };
 
 export function SkeletonText({ className, size = "md", width = "100%" }: SkeletonTextProps) {
   const rootClassName = skeletonClassName(
     styles.text,
-    size === "sm" ? styles.textSm : size === "lg" ? styles.textLg : undefined,
+    size === "sm" ? styles.textSm : size === "lg" ? styles.textLg : size === "xl" ? styles.textXl : undefined,
     className,
   );
 

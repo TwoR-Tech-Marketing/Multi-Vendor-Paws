@@ -332,12 +332,66 @@ export const Strings = {
 ---
 
 ## 7) Loading States — Shimmer Skeletons (No Blank Screens)
-- **Never show blank screens, plain "Loading…" text, or spinners** (`<Spinner>`, `LoadingDots`, etc.) for page, section, or list content loading — always show **shimmer skeleton** placeholders that mirror the real layout shape.
-- All skeleton blocks use the shared **shimmer sweep animation** from `src/components/ui/skeleton/skeleton.module.css` with `skeletonClassName()` (always apply the `.shimmer` class on the DOM node — do not rely on CSS Modules `composes` for pseudo-elements). Tokens: `--color-skeleton-base`, `--color-shimmer-mid`, `--color-shimmer-peak` in `src/shared/theme/colors.css`. Do not use opacity-only pulse animations for loading placeholders.
-- Build shared skeleton primitives in `src/components/ui/skeleton/`: `SkeletonBox`, `SkeletonText` (extend with `SkeletonAvatar`, `SkeletonCard` as needed).
-- Build feature-level skeleton screens: `AuthPageSkeleton`, `PortalShellSkeleton`, `PortalContentSkeleton`, `NotificationsSkeleton`, etc. — composed from shared primitives with real structural detail (rows, headers, badges), not a single flat rectangle.
-- Use `loading.tsx` at the route level for automatic Suspense fallback (`src/app/(portal)/loading.tsx`, `src/app/(auth)/loading.tsx`).
-- **Allowed spinners**: inline button loading state only (e.g. submit button while form is posting). Never full-page or list content.
+
+**Never show blank screens, plain "Loading…" text, or spinners** for page, section, or list content. Always show **shimmer skeleton** placeholders that mirror the real layout.
+
+### Visual style (light, white sweep)
+
+Shimmer uses a **soft light-gray base** with a **white highlight sweep** — not dark gray blocks.
+
+Tokens in `src/shared/theme/colors.css`:
+- `--color-skeleton-base` — light fill (e.g. `#eef1f5` light / `#3a4a61` dark)
+- `--color-skeleton-border` — subtle edge definition
+- `--color-shimmer-mid` / `--color-shimmer-peak` — white sweep gradient
+
+Animation lives in `src/components/ui/skeleton/skeleton.module.css`. Every shimmer element must include the `.shimmer` class via `skeletonClassName()` or a primitive that wraps `SkeletonBox` / `SkeletonText` (do **not** use CSS Modules `composes` for pseudo-elements).
+
+### One shimmer per visible shape (mandatory)
+
+**Each** UI element gets its **own** skeleton primitive — never one large block standing in for an entire section.
+
+| Real UI element | Skeleton primitive |
+|-----------------|-------------------|
+| Text line / heading | `SkeletonText` (`sm` / `md` / `lg` / `xl`) |
+| Generic block | `SkeletonBox` |
+| Input / select | `SkeletonField` |
+| Label + input pair | `SkeletonFormField` |
+| Button / CTA | `SkeletonButton` |
+| Icon (22px nav, etc.) | `SkeletonIcon` |
+| Avatar / logo circle | `SkeletonAvatar` |
+| Sidebar nav item (icon + label) | `SkeletonNavItem` |
+| List row (avatar + lines + meta) | `SkeletonListRow` |
+
+Structural dividers (1px rules) use static `var(--color-border)` — do not shimmer hairlines.
+
+### Shared primitives (`src/components/ui/skeleton/`)
+
+- `SkeletonBox`, `SkeletonText`, `SkeletonField`, `SkeletonFormField`, `SkeletonButton`, `SkeletonIcon`, `SkeletonAvatar`, `SkeletonNavItem`, `SkeletonListRow`
+- `skeletonClassName(...)` — joins `.shimmer` with layout classes for custom shapes
+
+### Feature-level skeleton screens
+
+Build dedicated skeleton components that **compose primitives** to match real layout:
+
+| Screen | File |
+|--------|------|
+| Full portal boot | `PortalShellSkeleton` — sidebar nav items, topbar actions, page header, content |
+| Generic portal page | `PortalContentSkeleton` — stat cards, panel grids, per-field rows |
+| Profile | `ProfileSkeleton` — banner, dual panels, session card meta rows |
+| Auth login | `AuthPageSkeleton` — logo, title lines, labeled fields, submit |
+| Notifications | `NotificationsSkeleton` — header, tabs, per-notification rows |
+
+Add `loading.tsx` at route level (`src/app/(portal)/loading.tsx`, `src/app/(auth)/loading.tsx`) pointing to the appropriate skeleton.
+
+### Adding a new loading state (checklist)
+
+1. Identify every visible part of the loaded UI (icons, labels, fields, buttons, rows).
+2. Map each part to a skeleton primitive — **one primitive per part**.
+3. Create `<Feature>Skeleton.tsx` + optional `.module.css` for layout only (no shimmer CSS duplication).
+4. Use `role="status"`, `aria-busy="true"`, and `aria-label={Strings.common.loading}` on the root.
+5. Wire into `loading.tsx`, section `isLoading` branch, or session bootstrap — never plain text.
+
+**Allowed spinners:** inline button loading state only (e.g. submit while posting). Never full-page or list content.
 
 ---
 
@@ -581,7 +635,8 @@ export const Routes = {
 - Hardcoded URL strings in components — use `Routes.*`.
 - Unstyled native `<select>` in portal or feature presentation UI — use `PortalSelect`.
 - Raw `<img>` for monochrome SVG UI icons — use `ThemedSvgIcon` with token colors.
-- Spinners for page, list, or section content loading — use skeleton components.
+- Spinners for page, list, or section content loading — use per-element shimmer skeletons (see §7).
+- Single large skeleton blocks representing entire sections — one primitive per visible shape.
 - Large monolithic component/page files without decomposition.
 - Exposing raw Firebase errors, stack traces, or internal error codes to users.
 - Developer-facing or work-in-progress copy in UI (`Strings.*`, toasts, empty states, alerts) — all user-visible text must be production-ready.

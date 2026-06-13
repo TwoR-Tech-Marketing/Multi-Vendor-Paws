@@ -18,8 +18,7 @@
   margin-top: 0;
 }
 
-.field {
-  width: 100%;
+.fieldGroup {
   margin-bottom: var(--space-4);
 }
 

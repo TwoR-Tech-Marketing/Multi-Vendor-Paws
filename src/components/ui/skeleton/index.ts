@@ -1,3 +1,10 @@
 export { SkeletonBox } from "./SkeletonBox";
 export { SkeletonText } from "./SkeletonText";
+export { SkeletonIcon } from "./SkeletonIcon";
+export { SkeletonAvatar } from "./SkeletonAvatar";
+export { SkeletonButton } from "./SkeletonButton";
+export { SkeletonField } from "./SkeletonField";
+export { SkeletonFormField } from "./SkeletonFormField";
+export { SkeletonNavItem } from "./SkeletonNavItem";
+export { SkeletonListRow } from "./SkeletonListRow";
 export { skeletonClassName } from "./skeletonClassName";

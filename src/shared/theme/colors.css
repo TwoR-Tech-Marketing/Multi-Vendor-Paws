@@ -72,9 +72,10 @@
 
   --duration-base: 200ms;
 
-  /* Shimmer skeleton */
-  --color-skeleton-base: #94a3b8;
-  --color-shimmer-mid: rgba(255, 255, 255, 0.85);
+  /* Shimmer skeleton — light base, white sweep */
+  --color-skeleton-base: #eef1f5;
+  --color-skeleton-border: rgba(255, 255, 255, 0.85);
+  --color-shimmer-mid: rgba(255, 255, 255, 0.92);
   --color-shimmer-peak: #ffffff;
 }
 
@@ -116,7 +117,8 @@
   --image-filter: none;
   --logo-image-filter: none;
 
-  --color-skeleton-base: #334155;
-  --color-shimmer-mid: rgba(255, 255, 255, 0.28);
-  --color-shimmer-peak: rgba(255, 255, 255, 0.58);
+  --color-skeleton-base: #3a4a61;
+  --color-skeleton-border: rgba(255, 255, 255, 0.08);
+  --color-shimmer-mid: rgba(255, 255, 255, 0.14);
+  --color-shimmer-peak: rgba(255, 255, 255, 0.32);
 }

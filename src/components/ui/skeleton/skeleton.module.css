@@ -3,6 +3,7 @@
   overflow: hidden;
   isolation: isolate;
   background-color: var(--color-skeleton-base);
+  border: 1px solid var(--color-skeleton-border);
 }
 
 .shimmer::after {
@@ -10,23 +11,23 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  transform: translateX(-120%);
+  transform: translateX(-130%);
   background: linear-gradient(
-    105deg,
+    100deg,
     transparent 0%,
-    transparent 24%,
-    var(--color-shimmer-mid) 40%,
+    transparent 28%,
+    var(--color-shimmer-mid) 42%,
     var(--color-shimmer-peak) 50%,
-    var(--color-shimmer-mid) 60%,
-    transparent 76%,
+    var(--color-shimmer-mid) 58%,
+    transparent 72%,
     transparent 100%
   );
-  animation: skeletonShimmer 1.35s ease-in-out infinite;
+  animation: skeletonShimmer 1.5s ease-in-out infinite;
 }
 
 @keyframes skeletonShimmer {
   100% {
-    transform: translateX(120%);
+    transform: translateX(130%);
   }
 }
 
@@ -49,12 +50,88 @@
   height: 18px;
 }
 
+.textXl {
+  height: 24px;
+}
+
+.icon {
+  display: block;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+}
+
 .avatar {
   display: block;
+  flex-shrink: 0;
   border-radius: var(--radius-full);
+}
+
+.field {
+  display: block;
+  width: 100%;
+  height: var(--control-height);
+  border-radius: var(--radius-control);
+}
+
+.button {
+  display: block;
+  height: var(--control-height);
+  border-radius: var(--radius-control);
 }
 
 .card {
   display: block;
   border-radius: var(--radius-lg);
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.navGroup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.navItem {
+  width: 118px;
+  min-height: 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 10px;
+  margin: var(--space-2) 0;
+}
+
+.navRule {
+  width: 118px;
+  height: 1px;
+  background: var(--color-border);
+  margin: 0;
+}
+
+.listRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.listRowBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.listRowMeta {
+  flex-shrink: 0;
 }

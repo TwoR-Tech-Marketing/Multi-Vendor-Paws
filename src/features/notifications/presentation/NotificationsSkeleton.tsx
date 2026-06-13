@@ -1,5 +1,12 @@
+import {
+  SkeletonBox,
+  SkeletonButton,
+  SkeletonField,
+  SkeletonFormField,
+  SkeletonListRow,
+  SkeletonText,
+} from "@/components/ui/skeleton";
 import { Strings } from "@/constants/strings";
-import { SkeletonBox, SkeletonText } from "@/components/ui/skeleton";
 
 import styles from "./notifications.module.css";
 import skeletonStyles from "./notificationsSkeleton.module.css";
@@ -14,7 +21,7 @@ export function NotificationsSkeleton() {
     >
       <div className={skeletonStyles.header}>
         <SkeletonText width={220} />
-        <SkeletonBox width={160} height={48} borderRadius="7px" />
+        <SkeletonButton width={160} />
       </div>
 
       <div className={skeletonStyles.tabs}>
@@ -23,8 +30,16 @@ export function NotificationsSkeleton() {
       </div>
 
       <div className={skeletonStyles.list}>
-        {Array.from({ length: 3 }).map((_, index) => (
-          <SkeletonBox key={index} className={skeletonStyles.card} height={120} />
+        {Array.from({ length: 4 }).map((_, index) => (
+          <article key={index} className={skeletonStyles.card}>
+            <SkeletonListRow
+              avatarSize={44}
+              titleWidth={index % 2 === 0 ? "68%" : "58%"}
+              bodyWidth={index % 2 === 0 ? "44%" : "52%"}
+              metaWidth={48}
+            />
+            <SkeletonField width="100%" />
+          </article>
         ))}
       </div>
     </section>

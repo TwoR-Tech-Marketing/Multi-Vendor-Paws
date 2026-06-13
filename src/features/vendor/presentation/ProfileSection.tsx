@@ -18,7 +18,7 @@ import { getVendorStoreProfile } from "@/features/vendor/infrastructure/vendor-s
 import { AccountStatusBanner } from "@/features/vendor/presentation/AccountStatusBanner";
 import { ProfileActiveSessionCard } from "@/features/vendor/presentation/ProfileActiveSessionCard";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
-import { PortalContentSkeleton } from "@/features/vendor/presentation/PortalContentSkeleton";
+import { ProfileSkeleton } from "@/features/vendor/presentation/ProfileSkeleton";
 
 import portalStyles from "./portal.module.css";
 import styles from "./profile.module.css";
@@ -374,7 +374,7 @@ export function ProfileSection() {
   }, [loadProfile]);
 
   if (isLoading) {
-    return <PortalContentSkeleton />;
+    return <ProfileSkeleton />;
   }
 
   if (loadError || !storeProfile) {
