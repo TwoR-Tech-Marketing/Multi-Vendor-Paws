@@ -1,9 +1,9 @@
 "use client";
 
-import { Strings } from "@/constants/strings";
 import { NotificationBellButton } from "@/features/vendor/presentation/NotificationBellButton";
 import { IconMenu } from "@/features/vendor/presentation/PortalNavIcons";
 import { StoreAvatarButton } from "@/features/vendor/presentation/StoreAvatarButton";
+import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./portal.module.css";
 
@@ -20,6 +20,8 @@ export function PortalTopbar({
   onMenuOpen,
   isMenuOpen,
 }: PortalTopbarProps) {
+  const strings = useStrings();
+
   return (
     <header className={styles.topbar}>
       <div className={styles.topbarTopRow}>
@@ -28,7 +30,7 @@ export function PortalTopbar({
             type="button"
             className={styles.menuBtn}
             onClick={onMenuOpen}
-            aria-label={Strings.portal.openMenu}
+            aria-label={strings.portal.openMenu}
             aria-expanded={isMenuOpen}
           >
             <IconMenu />

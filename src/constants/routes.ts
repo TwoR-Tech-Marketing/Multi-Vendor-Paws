@@ -11,5 +11,6 @@ export const Routes = {
     products: "/products",
     orders: "/orders",
     earnings: "/earnings",
+    settings: "/settings",
   },
 } as const;

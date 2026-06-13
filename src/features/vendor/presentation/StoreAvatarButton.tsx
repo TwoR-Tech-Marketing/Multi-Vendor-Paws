@@ -5,15 +5,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Routes } from "@/constants/routes";
-import { Strings } from "@/constants/strings";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { getStoreInitials } from "@/shared/lib/store-branding";
+import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./portal.module.css";
 
 export function StoreAvatarButton() {
   const pathname = usePathname();
   const { storeBranding } = usePortalSession();
+  const strings = useStrings();
   const isProfileActive = pathname.startsWith(Routes.vendor.profile);
   const initials = getStoreInitials(storeBranding.storeName);
 
@@ -23,7 +24,7 @@ export function StoreAvatarButton() {
       prefetch
       scroll={false}
       className={`${styles.storeAvatar} ${isProfileActive ? styles.storeAvatarActive : ""}`}
-      aria-label={Strings.portal.openProfile}
+      aria-label={strings.portal.openProfile}
       aria-current={isProfileActive ? "page" : undefined}
     >
       {storeBranding.logoUrl ? (

@@ -22,6 +22,7 @@ export const Strings = {
     products: "Products",
     orders: "Orders",
     earnings: "Earnings",
+    settings: "Settings",
     logOut: "Log out",
     lockedHint: "Available after admin approval",
   },
@@ -45,6 +46,10 @@ export const Strings = {
     earnings: {
       title: "Earnings",
       subtitle: "Sales, commission, and payouts",
+    },
+    settings: {
+      title: "Settings",
+      subtitle: "Appearance and language preferences",
     },
   },
   accountStatus: {
@@ -126,6 +131,17 @@ export const Strings = {
   notifications: {
     open: "Open notifications",
     comingSoon: "Notifications coming soon",
+  },
+  settings: {
+    appearanceTitle: "Appearance",
+    themeLabel: "Theme",
+    themeLight: "Light",
+    themeDark: "Dark",
+    languageTitle: "Language",
+    languageLabel: "Display language",
+    languageEnglish: "English",
+    languageArabic: "Arabic",
+    savedHint: "Preferences are saved on this device.",
   },
   errors: {
     generic: "Something went wrong. Please try again.",

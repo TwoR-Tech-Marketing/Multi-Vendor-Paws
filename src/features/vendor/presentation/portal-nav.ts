@@ -1,13 +1,14 @@
 import { Routes } from "@/constants/routes";
-import { Strings } from "@/constants/strings";
 import { portalNavAssets } from "@/features/vendor/presentation/portal-assets";
+import type { AppStrings } from "@/shared/i18n/types";
 
 export type PortalNavId =
   | "dashboard"
   | "profile"
   | "products"
   | "orders"
-  | "earnings";
+  | "earnings"
+  | "settings";
 
 export type PortalNavItem = {
   id: PortalNavId;
@@ -17,52 +18,65 @@ export type PortalNavItem = {
   requiresActiveAccount: boolean;
 };
 
-export const PORTAL_SIDEBAR_NAV_ITEMS: PortalNavItem[] = [
-  {
-    id: "dashboard",
-    href: Routes.vendor.dashboard,
-    label: Strings.nav.dashboard,
-    icon: portalNavAssets.navDashboard,
-    requiresActiveAccount: false,
-  },
-  {
-    id: "products",
-    href: Routes.vendor.products,
-    label: Strings.nav.products,
-    icon: portalNavAssets.navProducts,
-    requiresActiveAccount: true,
-  },
-  {
-    id: "orders",
-    href: Routes.vendor.orders,
-    label: Strings.nav.orders,
-    icon: portalNavAssets.navOrders,
-    requiresActiveAccount: true,
-  },
-  {
-    id: "earnings",
-    href: Routes.vendor.earnings,
-    label: Strings.nav.earnings,
-    icon: portalNavAssets.navEarnings,
-    requiresActiveAccount: true,
-  },
-];
+export function getPortalSidebarNavItems(strings: AppStrings): PortalNavItem[] {
+  return [
+    {
+      id: "dashboard",
+      href: Routes.vendor.dashboard,
+      label: strings.nav.dashboard,
+      icon: portalNavAssets.navDashboard,
+      requiresActiveAccount: false,
+    },
+    {
+      id: "products",
+      href: Routes.vendor.products,
+      label: strings.nav.products,
+      icon: portalNavAssets.navProducts,
+      requiresActiveAccount: true,
+    },
+    {
+      id: "orders",
+      href: Routes.vendor.orders,
+      label: strings.nav.orders,
+      icon: portalNavAssets.navOrders,
+      requiresActiveAccount: true,
+    },
+    {
+      id: "earnings",
+      href: Routes.vendor.earnings,
+      label: strings.nav.earnings,
+      icon: portalNavAssets.navEarnings,
+      requiresActiveAccount: true,
+    },
+    {
+      id: "settings",
+      href: Routes.vendor.settings,
+      label: strings.nav.settings,
+      icon: portalNavAssets.navSettings,
+      requiresActiveAccount: false,
+    },
+  ];
+}
 
 export type PortalPageMeta = {
   title: string;
   subtitle: string;
 };
 
-export const PORTAL_PAGE_META: Record<PortalNavId, PortalPageMeta> = {
-  dashboard: Strings.pages.dashboard,
-  profile: Strings.pages.profile,
-  products: Strings.pages.products,
-  orders: Strings.pages.orders,
-  earnings: Strings.pages.earnings,
-};
+export function getPortalPageMeta(strings: AppStrings): Record<PortalNavId, PortalPageMeta> {
+  return {
+    dashboard: strings.pages.dashboard,
+    profile: strings.pages.profile,
+    products: strings.pages.products,
+    orders: strings.pages.orders,
+    earnings: strings.pages.earnings,
+    settings: strings.pages.settings,
+  };
+}
 
 export function resolvePortalNavId(pathname: string): PortalNavId {
   if (pathname.startsWith(Routes.vendor.profile)) return "profile";
+  if (pathname.startsWith(Routes.vendor.settings)) return "settings";
   if (pathname.startsWith(Routes.vendor.products)) return "products";
   if (pathname.startsWith(Routes.vendor.orders)) return "orders";
   if (pathname.startsWith(Routes.vendor.earnings)) return "earnings";

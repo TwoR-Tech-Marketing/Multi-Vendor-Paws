@@ -4,12 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Strings } from "@/constants/strings";
 import { portalNavAssets } from "@/features/vendor/presentation/portal-assets";
-import { PORTAL_SIDEBAR_NAV_ITEMS } from "@/features/vendor/presentation/portal-nav";
+import { getPortalSidebarNavItems } from "@/features/vendor/presentation/portal-nav";
 import { usePortalSignOut } from "@/features/vendor/presentation/PortalSignOutContext";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { IconClose } from "@/features/vendor/presentation/PortalNavIcons";
+import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./sidebar.module.css";
 
@@ -20,6 +20,8 @@ type PortalSidebarProps = {
 
 export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
   const pathname = usePathname();
+  const strings = useStrings();
+  const navItems = getPortalSidebarNavItems(strings);
   const { isActiveVendor, isLoggingOut } = usePortalSession();
   const { requestSignOut } = usePortalSignOut();
 
@@ -40,7 +42,7 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
           type="button"
           className={styles.drawerClose}
           onClick={onClose}
-          aria-label={Strings.portal.closeMenu}
+          aria-label={strings.portal.closeMenu}
         >
           <IconClose />
         </button>
@@ -48,7 +50,7 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
         <div className={styles.logo}>
           <Image
             src={portalNavAssets.logo}
-            alt={Strings.portal.brandName}
+            alt={strings.portal.brandName}
             width={46}
             height={46}
             className={styles.logoImage}
@@ -57,11 +59,11 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
         </div>
 
         <nav className={styles.navScroll}>
-          {PORTAL_SIDEBAR_NAV_ITEMS.map((item, index) => {
+          {navItems.map((item, index) => {
             const isActive =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
             const isLocked = item.requiresActiveAccount && !isActiveVendor;
-            const isLast = index === PORTAL_SIDEBAR_NAV_ITEMS.length - 1;
+            const isLast = index === navItems.length - 1;
 
             const itemClassName = [
               styles.navItem,
@@ -90,7 +92,7 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
                 {isLocked ? (
                   <span
                     className={itemClassName}
-                    title={Strings.nav.lockedHint}
+                    title={strings.nav.lockedHint}
                     aria-disabled="true"
                   >
                     {itemContent}
@@ -131,7 +133,7 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
         >
           <span className={styles.logoutIcon} aria-hidden />
           <span>
-            {isLoggingOut ? Strings.common.signingOut : Strings.nav.logOut}
+            {isLoggingOut ? strings.common.signingOut : strings.nav.logOut}
           </span>
         </button>
       </div>

@@ -6,4 +6,5 @@ export const portalNavAssets = {
   navProducts: "/portal-nav/nav-inventory.svg",
   navOrders: "/portal-nav/nav-orders.svg",
   navEarnings: "/portal-nav/nav-reports.svg",
+  navSettings: "/portal-nav/nav-settings.svg",
 } as const;

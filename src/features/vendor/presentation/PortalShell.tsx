@@ -4,11 +4,12 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import {
-  PORTAL_PAGE_META,
+  getPortalPageMeta,
   resolvePortalNavId,
 } from "@/features/vendor/presentation/portal-nav";
 import { PortalSidebar } from "@/features/vendor/presentation/PortalSidebar";
 import { PortalTopbar } from "@/features/vendor/presentation/PortalTopbar";
+import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./portal.module.css";
 
@@ -18,10 +19,11 @@ type PortalShellProps = {
 
 export function PortalShell({ children }: PortalShellProps) {
   const pathname = usePathname();
+  const strings = useStrings();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const navId = resolvePortalNavId(pathname);
-  const pageMeta = PORTAL_PAGE_META[navId];
+  const pageMeta = getPortalPageMeta(strings)[navId];
 
   const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
   const openDrawer = useCallback(() => setIsDrawerOpen(true), []);

@@ -10,8 +10,8 @@ import {
 } from "react";
 
 import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
-import { Strings } from "@/constants/strings";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
+import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 type PortalSignOutContextValue = {
   requestSignOut: () => void;
@@ -35,6 +35,7 @@ type PortalSignOutProviderProps = {
 
 export function PortalSignOutProvider({ children }: PortalSignOutProviderProps) {
   const { signOut, isLoggingOut } = usePortalSession();
+  const strings = useStrings();
   const [open, setOpen] = useState(false);
 
   const requestSignOut = useCallback(() => {
@@ -58,12 +59,12 @@ export function PortalSignOutProvider({ children }: PortalSignOutProviderProps) 
       {children}
       <LogoutConfirmDialog
         open={open}
-        title={Strings.signOut.confirmTitle}
-        message={Strings.signOut.confirmMessage}
+        title={strings.signOut.confirmTitle}
+        message={strings.signOut.confirmMessage}
         confirmLabel={
-          isLoggingOut ? Strings.common.signingOut : Strings.signOut.confirmAction
+          isLoggingOut ? strings.common.signingOut : strings.signOut.confirmAction
         }
-        cancelLabel={Strings.common.cancel}
+        cancelLabel={strings.common.cancel}
         isConfirming={isLoggingOut}
         onCancel={onCancel}
         onConfirm={onConfirm}

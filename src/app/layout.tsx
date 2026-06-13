@@ -4,6 +4,8 @@ import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "@/shared/theme/colors.css";
 import "./globals.css";
 
+import { PreferencesBootstrap } from "@/shared/preferences/PreferencesBootstrap";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font",
@@ -29,7 +31,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <PreferencesBootstrap />
+      </head>
       <body className={`${inter.variable} ${plusJakarta.variable}`} suppressHydrationWarning>
         {children}
       </body>
