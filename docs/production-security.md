@@ -6,6 +6,32 @@
 - **Not used for auth after login:** long-lived Firebase client tokens in IndexedDB (client signs out after session exchange).
 - **Theme/locale:** `localStorage` only (`tp-vendor-theme`, `tp-vendor-locale`).
 
+## Local development setup
+
+Login will fail until Firebase Admin credentials are configured. **Easiest option:**
+
+1. Open [Firebase Console](https://console.firebase.google.com/) → project **pets-acd3f**
+2. **Project settings** → **Service accounts** → **Generate new private key** (downloads a `.json` file)
+3. Save that file as `firebase-service-account.json` in the project root (already gitignored)
+4. In `.env.local`:
+
+```env
+GOOGLE_APPLICATION_CREDENTIALS=./firebase-service-account.json
+FIREBASE_PROJECT_ID=pets-acd3f
+```
+
+5. Restart `npm run dev`
+
+**Alternative (Vercel / production):** copy `client_email` and `private_key` from the JSON into env vars:
+
+```env
+FIREBASE_PROJECT_ID=pets-acd3f
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxxxx@pets-acd3f.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY-----\n"
+```
+
+Never commit the JSON file or private key to git.
+
 ## Required server environment variables
 
 Set in hosting secrets (Vercel, etc.). Never prefix with `NEXT_PUBLIC_`.

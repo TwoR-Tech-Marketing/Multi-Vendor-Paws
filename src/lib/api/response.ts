@@ -17,3 +17,7 @@ export function apiForbidden() {
 export function apiGenericError(status = 500) {
   return apiError(Strings.errors.generic, status);
 }
+
+export function apiServerMisconfigured(message: string) {
+  return apiError(message, 503);
+}

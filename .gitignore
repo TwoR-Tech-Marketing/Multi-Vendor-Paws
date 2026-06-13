@@ -25,6 +25,10 @@ pnpm-debug.log*
 .env.test.local
 .env.production.local
 
+# Firebase service account (never commit)
+firebase-service-account.json
+*-firebase-adminsdk-*.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

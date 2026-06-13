@@ -1,4 +1,4 @@
-import { isProduction } from "@/lib/env.server";
+import { isProduction } from "@/lib/env.shared";
 
 export const SESSION_COOKIE_NAME = "__session";
 

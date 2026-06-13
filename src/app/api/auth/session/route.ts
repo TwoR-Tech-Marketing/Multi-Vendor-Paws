@@ -11,15 +11,28 @@ import {
   SESSION_COOKIE_MAX_AGE_MS,
   SESSION_COOKIE_NAME,
 } from "@/lib/auth-cookies";
-import { apiForbidden, apiGenericError, apiUnauthorized } from "@/lib/api/response";
+import { apiForbidden, apiGenericError, apiServerMisconfigured } from "@/lib/api/response";
 import { buildVendorSessionDto } from "@/lib/auth/session.server";
+import {
+  getFirebaseAdminSetupMessage,
+  isFirebaseAdminConfigured,
+} from "@/lib/firebase-admin.env";
 import { getAdminAuth } from "@/lib/firebase-admin";
+import { logger } from "@/shared/lib/logger";
 
 const bodySchema = z.object({
   idToken: z.string().min(1),
 });
 
 export async function POST(request: Request) {
+  if (!isFirebaseAdminConfigured()) {
+    const setupMessage = getFirebaseAdminSetupMessage();
+    logger.error("POST /api/auth/session: Firebase Admin not configured", {
+      setupMessage,
+    });
+    return apiServerMisconfigured(setupMessage);
+  }
+
   try {
     const body = bodySchema.parse(await request.json());
     const decoded = await getAdminAuth().verifyIdToken(body.idToken);
@@ -51,7 +64,10 @@ export async function POST(request: Request) {
     const response = NextResponse.json({ session: sessionDto });
     response.cookies.set(SESSION_COOKIE_NAME, sessionCookie, getSessionCookieOptions());
     return response;
-  } catch {
+  } catch (error) {
+    logger.error("POST /api/auth/session failed", {
+      message: error instanceof Error ? error.message : String(error),
+    });
     return apiGenericError();
   }
 }
