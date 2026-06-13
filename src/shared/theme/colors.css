@@ -71,6 +71,10 @@
   --control-height: 48px;
 
   --duration-base: 200ms;
+
+  /* Shimmer skeleton */
+  --color-skeleton-base: var(--color-surface-2);
+  --color-shimmer-highlight: rgba(255, 255, 255, 0.55);
 }
 
 [data-theme="dark"] {
@@ -110,4 +114,7 @@
   --color-tab-border: rgba(99, 102, 241, 0.35);
   --image-filter: none;
   --logo-image-filter: none;
+
+  --color-skeleton-base: var(--color-surface-2);
+  --color-shimmer-highlight: rgba(255, 255, 255, 0.1);
 }

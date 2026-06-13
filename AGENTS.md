@@ -260,11 +260,12 @@ export const Strings = {
 
 ---
 
-## 7) Loading States — Skeleton First
-- **Never use spinners (`<Spinner>`, `LoadingDots`, etc.) for page, section, or list content loading** — use skeleton components that mirror the real layout shape.
-- Build shared skeleton primitives in `src/components/ui/skeleton/`: `SkeletonBox`, `SkeletonText`, `SkeletonAvatar`, `SkeletonCard`.
-- Build feature-level skeleton screens: `VendorDashboardSkeleton`, `ProductListSkeleton`, `OrderListSkeleton` — composed from shared primitives with real structural detail (rows, headers, badges), not a single flat rectangle.
-- Use `loading.tsx` at the route level for automatic Suspense fallback.
+## 7) Loading States — Shimmer Skeletons (No Blank Screens)
+- **Never show blank screens, plain "Loading…" text, or spinners** (`<Spinner>`, `LoadingDots`, etc.) for page, section, or list content loading — always show **shimmer skeleton** placeholders that mirror the real layout shape.
+- All skeleton blocks use the shared **shimmer sweep animation** from `src/components/ui/skeleton/skeleton.module.css` (`--color-skeleton-base`, `--color-shimmer-highlight` in `src/shared/theme/colors.css`). Do not use opacity-only pulse animations for loading placeholders.
+- Build shared skeleton primitives in `src/components/ui/skeleton/`: `SkeletonBox`, `SkeletonText` (extend with `SkeletonAvatar`, `SkeletonCard` as needed).
+- Build feature-level skeleton screens: `AuthPageSkeleton`, `PortalShellSkeleton`, `PortalContentSkeleton`, `NotificationsSkeleton`, etc. — composed from shared primitives with real structural detail (rows, headers, badges), not a single flat rectangle.
+- Use `loading.tsx` at the route level for automatic Suspense fallback (`src/app/(portal)/loading.tsx`, `src/app/(auth)/loading.tsx`).
 - **Allowed spinners**: inline button loading state only (e.g. submit button while form is posting). Never full-page or list content.
 
 ---
@@ -393,6 +394,8 @@ type Result<T> =
 - Two roles: `admin` and `vendor`. Never trust client-side role checks alone.
 - Protect all vendor dashboard routes with a server-side auth guard.
 - Protect all admin routes with a server-side admin role check.
+- **Guest auth routes** (`/login`, `/register`, `/forgot-password`): wrap with `AuthGuestGuard` via `src/app/(auth)/layout.tsx`. If a session already exists, **`router.replace`** to the appropriate portal route (dashboard for active vendors, profile for pending/suspended) — never render the auth form or leave auth pages in the history stack.
+- After successful login or registration redirect, use **`router.replace`**, not `router.push`, so auth pages are not kept in the browser back stack.
 - Vendor data isolation is a hard requirement: a vendor can only read/write their own store data. Enforce this in repository implementations, not in UI.
 - Never expose another vendor's data via a client-side query — always filter by `vendorId` from the server session.
 

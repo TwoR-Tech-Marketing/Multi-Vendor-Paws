@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 
 import type { VendorSignupPayload } from "@/features/auth/domain/types";
 import { mapAuthError } from "@/features/auth/domain/errors";
+import { Routes } from "@/constants/routes";
 import {
   submitVendorSignupRequest,
   uploadVendorLogo,
@@ -109,7 +110,7 @@ export function RegisterClient() {
         logoUrl,
       });
 
-      router.push("/login?submitted=1");
+      router.replace(`${Routes.auth.login}?submitted=1`);
     } catch (submitError) {
       setError(mapAuthError(submitError));
     } finally {

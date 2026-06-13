@@ -495,9 +495,8 @@
 }
 
 .skeletonBlock {
-  background: var(--color-surface-2);
+  composes: shimmer from "../../../components/ui/skeleton/skeleton.module.css";
   border-radius: var(--radius-sm);
-  animation: pulse 1.4s ease-in-out infinite;
 }
 
 .skeletonBrand {
@@ -521,16 +520,6 @@
 
 .skeletonPanel {
   height: 280px;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.55;
-  }
 }
 
 @media (max-width: 767px) {

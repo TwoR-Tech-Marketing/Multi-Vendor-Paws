@@ -6,6 +6,7 @@ import { ThemedSvgIcon } from "@/components/ui/themed-icon/ThemedIcon";
 import { uiAssets } from "@/shared/assets/ui-assets";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
+import { NotificationsSkeleton } from "./NotificationsSkeleton";
 import styles from "./notifications.module.css";
 
 type NotificationTab = "all" | "unread";
@@ -69,11 +70,7 @@ export function NotificationsSection() {
         </button>
       </div>
 
-      {isLoading && visibleCount === 0 ? (
-        <p className={styles.loadingHint} role="status">
-          {t.loading}
-        </p>
-      ) : null}
+      {isLoading && visibleCount === 0 ? <NotificationsSkeleton /> : null}
 
       {!isLoading && visibleCount === 0 ? (
         <div className={styles.emptyState} role="status" aria-live="polite">

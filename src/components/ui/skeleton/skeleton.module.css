@@ -1,0 +1,58 @@
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-skeleton-base);
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-shimmer-highlight) 50%,
+    transparent 100%
+  );
+  animation: skeletonShimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.box {
+  composes: shimmer;
+  display: block;
+  border-radius: var(--radius-sm);
+}
+
+.text {
+  composes: shimmer;
+  display: block;
+  height: 14px;
+  border-radius: var(--radius-sm);
+}
+
+.textSm {
+  height: 12px;
+}
+
+.textLg {
+  height: 18px;
+}
+
+.avatar {
+  composes: shimmer;
+  display: block;
+  border-radius: var(--radius-full);
+}
+
+.card {
+  composes: shimmer;
+  display: block;
+  border-radius: var(--radius-lg);
+}

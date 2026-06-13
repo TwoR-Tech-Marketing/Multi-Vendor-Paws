@@ -35,12 +35,12 @@ export function LoginClient() {
       const session = await resolveVendorSession(credential.user);
 
       if (session.kind === "active") {
-        router.push(Routes.vendor.dashboard);
+        router.replace(Routes.vendor.dashboard);
         return;
       }
 
       if (session.kind === "pending" || session.kind === "suspended") {
-        router.push(Routes.vendor.profile);
+        router.replace(Routes.vendor.profile);
         return;
       }
 
