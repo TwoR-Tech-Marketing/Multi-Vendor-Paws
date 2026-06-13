@@ -19,6 +19,7 @@
   --color-icon-muted: var(--color-text-muted);
   --color-icon-accent: var(--color-primary);
   --color-icon-on-primary: #ffffff;
+  --color-tab-border: rgba(99, 102, 241, 0.3);
   --image-filter: none;
   --logo-image-filter: none;
 
@@ -106,6 +107,7 @@
 
   --color-icon: #e2e8f0;
   --color-icon-muted: #94a3b8;
+  --color-tab-border: rgba(99, 102, 241, 0.35);
   --image-filter: none;
   --logo-image-filter: none;
 }

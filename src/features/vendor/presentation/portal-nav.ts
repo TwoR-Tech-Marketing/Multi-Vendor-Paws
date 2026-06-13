@@ -8,7 +8,8 @@ export type PortalNavId =
   | "products"
   | "orders"
   | "earnings"
-  | "settings";
+  | "settings"
+  | "notifications";
 
 export type PortalNavItem = {
   id: PortalNavId;
@@ -71,12 +72,14 @@ export function getPortalPageMeta(strings: AppStrings): Record<PortalNavId, Port
     orders: strings.pages.orders,
     earnings: strings.pages.earnings,
     settings: strings.pages.settings,
+    notifications: strings.pages.notifications,
   };
 }
 
 export function resolvePortalNavId(pathname: string): PortalNavId {
   if (pathname.startsWith(Routes.vendor.profile)) return "profile";
   if (pathname.startsWith(Routes.vendor.settings)) return "settings";
+  if (pathname.startsWith(Routes.vendor.notifications)) return "notifications";
   if (pathname.startsWith(Routes.vendor.products)) return "products";
   if (pathname.startsWith(Routes.vendor.orders)) return "orders";
   if (pathname.startsWith(Routes.vendor.earnings)) return "earnings";

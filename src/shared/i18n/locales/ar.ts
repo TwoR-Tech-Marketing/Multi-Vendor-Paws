@@ -53,6 +53,10 @@ export const arStrings: AppStrings = {
       title: "الإعدادات",
       subtitle: "المظهر وتفضيلات اللغة",
     },
+    notifications: {
+      title: "الإشعارات",
+      subtitle: "الطلبات وتحديثات الحساب وتنبيهات المتجر",
+    },
   },
   accountStatus: {
     title: "طلبك",
@@ -132,7 +136,17 @@ export const arStrings: AppStrings = {
   },
   notifications: {
     open: "فتح الإشعارات",
-    comingSoon: "الإشعارات قريباً",
+    unreadSummaryZero: "لا توجد إشعارات غير مقروءة",
+    unreadSummaryOne: "لديك إشعار واحد غير مقروء",
+    unreadSummaryMany: "لديك {count} إشعارات غير مقروءة",
+    markAllAsRead: "تعليم الكل كمقروء",
+    markAllBusy: "يرجى الانتظار…",
+    tabAll: "الكل",
+    tabUnread: "غير مقروء",
+    emptyAllTitle: "لا توجد إشعارات",
+    emptyUnreadTitle: "لا توجد إشعارات غير مقروءة",
+    emptySubtitle: "لقد اطلعت على كل شيء.",
+    loading: "جاري تحميل الإشعارات…",
   },
   settings: {
     appearanceTitle: "المظهر",

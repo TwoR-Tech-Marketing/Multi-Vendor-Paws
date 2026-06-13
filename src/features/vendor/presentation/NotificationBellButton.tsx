@@ -1,26 +1,34 @@
 "use client";
 
-import { IconBell } from "@/features/vendor/presentation/PortalNavIcons";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { ThemedSvgIcon } from "@/components/ui/themed-icon/ThemedIcon";
+import { Routes } from "@/constants/routes";
+import { uiAssets } from "@/shared/assets/ui-assets";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./portal.module.css";
 
 export function NotificationBellButton() {
   const strings = useStrings();
+  const pathname = usePathname();
+  const isNotificationsActive = pathname.startsWith(Routes.vendor.notifications);
 
   return (
     <div className={styles.bellWrap}>
-      <button
-        type="button"
-        className={styles.bellBtn}
+      <Link
+        href={Routes.vendor.notifications}
+        prefetch
+        scroll={false}
+        className={`${styles.bellBtn} ${isNotificationsActive ? styles.bellBtnActive : ""}`}
         aria-label={strings.notifications.open}
-        disabled
-        title={strings.notifications.comingSoon}
+        aria-current={isNotificationsActive ? "page" : undefined}
       >
         <span className={styles.bellIcon} aria-hidden>
-          <IconBell width={22} height={22} />
+          <ThemedSvgIcon src={uiAssets.bellRead} tone="muted" width={22} height={29} />
         </span>
-      </button>
+      </Link>
     </div>
   );
 }

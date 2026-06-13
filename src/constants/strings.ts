@@ -51,6 +51,10 @@ export const Strings = {
       title: "Settings",
       subtitle: "Appearance and language preferences",
     },
+    notifications: {
+      title: "Notifications",
+      subtitle: "Orders, account updates, and store alerts",
+    },
   },
   accountStatus: {
     title: "Your application",
@@ -130,7 +134,17 @@ export const Strings = {
   },
   notifications: {
     open: "Open notifications",
-    comingSoon: "Notifications coming soon",
+    unreadSummaryZero: "You have no unread notifications",
+    unreadSummaryOne: "You have 1 unread notification",
+    unreadSummaryMany: "You have {count} unread notifications",
+    markAllAsRead: "Mark all as read",
+    markAllBusy: "Please wait…",
+    tabAll: "All",
+    tabUnread: "Unread",
+    emptyAllTitle: "No notifications",
+    emptyUnreadTitle: "No unread notifications",
+    emptySubtitle: "You're all caught up.",
+    loading: "Loading notifications…",
   },
   settings: {
     appearanceTitle: "Appearance",

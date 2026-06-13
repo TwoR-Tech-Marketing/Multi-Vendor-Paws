@@ -12,5 +12,6 @@ export const Routes = {
     orders: "/orders",
     earnings: "/earnings",
     settings: "/settings",
+    notifications: "/notifications",
   },
 } as const;

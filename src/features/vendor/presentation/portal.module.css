@@ -74,12 +74,24 @@
   border: none;
   background: transparent;
   padding: 0;
-  cursor: not-allowed;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-text-muted);
-  opacity: 0.85;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition:
+    background-color var(--duration-base),
+    box-shadow var(--duration-base);
+}
+
+.bellBtn:hover {
+  background: var(--color-surface-2);
+}
+
+.bellBtnActive {
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
 .bellIcon {
