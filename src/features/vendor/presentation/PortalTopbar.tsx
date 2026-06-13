@@ -1,5 +1,9 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { Routes } from "@/constants/routes";
 import { Strings } from "@/constants/strings";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { IconMenu } from "@/features/vendor/presentation/PortalNavIcons";
@@ -30,9 +34,11 @@ export function PortalTopbar({
   onMenuOpen,
   isMenuOpen,
 }: PortalTopbarProps) {
-  const { user, profile, isLoggingOut, signOut } = usePortalSession();
+  const pathname = usePathname();
+  const { profile, user } = usePortalSession();
   const email = user.email ?? profile.email;
   const initials = getInitials(profile.ownerName, email);
+  const isProfileActive = pathname.startsWith(Routes.vendor.profile);
 
   return (
     <header className={styles.topbar}>
@@ -52,21 +58,20 @@ export function PortalTopbar({
       </div>
 
       <div className={styles.topbarActions}>
-        <div className={styles.userPill}>
+        <Link
+          href={Routes.vendor.profile}
+          prefetch
+          scroll={false}
+          className={`${styles.profileBtn} ${isProfileActive ? styles.profileBtnActive : ""}`}
+          aria-label={Strings.portal.openProfile}
+          aria-current={isProfileActive ? "page" : undefined}
+        >
           <span className={styles.avatar}>{initials}</span>
           <div className={styles.userPillText}>
             <strong>{profile.ownerName}</strong>
             <small>{email}</small>
           </div>
-        </div>
-        <button
-          type="button"
-          className={styles.btnGhost}
-          onClick={signOut}
-          disabled={isLoggingOut}
-        >
-          {isLoggingOut ? Strings.common.signingOut : Strings.common.signOut}
-        </button>
+        </Link>
       </div>
     </header>
   );

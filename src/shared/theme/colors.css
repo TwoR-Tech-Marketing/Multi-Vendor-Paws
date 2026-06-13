@@ -24,6 +24,16 @@
   --color-error-border: #fecaca;
 
   --color-success-surface: #dcfce7;
+  --color-success-border: #bbf7d0;
+
+  --color-overlay: rgba(15, 23, 42, 0.35);
+  --color-dialog-cancel-bg: #f2f2f2;
+  --color-dialog-danger: #c50a00;
+  --color-signout-surface: #ffe8e8;
+  --color-signout-border: #ffd0d0;
+  --color-signout-text: #952424;
+
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.18);
   --color-warning-surface: #fef3c7;
   --color-pending-surface: #fffbeb;
   --color-pending-border: #fde68a;

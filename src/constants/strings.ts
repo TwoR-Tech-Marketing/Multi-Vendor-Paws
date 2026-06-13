@@ -3,11 +3,11 @@ export const Strings = {
     loading: "Loading...",
     signOut: "Sign out",
     signingOut: "Signing out...",
+    cancel: "Cancel",
     comingSoon: "Coming soon",
     comingSoonDescription:
       "This section is being built. It will be available once vendor data and backend integrations are ready.",
     backToHome: "Back to home",
-    cancel: "Cancel",
     save: "Save changes",
   },
   portal: {
@@ -15,14 +15,14 @@ export const Strings = {
     brandTagline: "Vendor Portal",
     openMenu: "Open menu",
     closeMenu: "Close menu",
+    openProfile: "Open profile",
   },
   nav: {
     dashboard: "Dashboard",
-    accountStatus: "Account Status",
-    storeSetup: "Store Profile",
     products: "Products",
     orders: "Orders",
     earnings: "Earnings",
+    logOut: "Log out",
     lockedHint: "Available after admin approval",
   },
   pages: {
@@ -30,13 +30,9 @@ export const Strings = {
       title: "Dashboard",
       subtitle: "Your store overview",
     },
-    accountStatus: {
-      title: "Account Status",
-      subtitle: "Application and activation status",
-    },
-    storeSetup: {
-      title: "Store Profile",
-      subtitle: "Name, logo, description, and contacts",
+    profile: {
+      title: "Profile",
+      subtitle: "Store details, account status, and change requests",
     },
     products: {
       title: "Products",
@@ -52,8 +48,14 @@ export const Strings = {
     },
   },
   accountStatus: {
-    title: "Account status",
+    title: "Your application",
+    activeTitle: "Store activated",
+    activeMessage:
+      "Your vendor account is active. You can manage products, orders, and earnings from the portal.",
     pendingMessage: "Your vendor application is pending admin review.",
+    pendingBannerTitle: "Pending admin activation",
+    pendingBannerMessage:
+      "Your store profile was submitted. You cannot publish products until approved.",
     suspendedProductsMessage:
       "You cannot access products, orders, or earnings while your account is suspended.",
     pendingProductsMessage:
@@ -66,6 +68,60 @@ export const Strings = {
     contactSupport: "Contact support",
     suspended: "suspended",
     pending: "pending",
+    active: "active",
+  },
+  profile: {
+    currentProfileTitle: "Current profile",
+    requestChangesTitle: "Request store info changes",
+    requestChangesHint:
+      "Updates are reviewed by the Tender Paws admin team before they go live.",
+    signInEmailNote: "Sign-in email cannot be changed here. Contact support if needed.",
+    uploadLogo: "Click to upload a new logo",
+    noLogo: "No logo",
+    submitChangeRequest: "Submit change request",
+    submittingChangeRequest: "Submitting...",
+    changeRequestSuccess:
+      "Change request submitted. An admin will review your updated store information.",
+    changeRequestError: "Could not submit your change request. Please try again.",
+    pendingChangeExists:
+      "You already have a pending change request. Wait for admin review before submitting another.",
+    pendingChangeBanner:
+      "A profile change request is pending admin review. You will be notified once it is processed.",
+    fields: {
+      ownerName: "Owner full name",
+      signInEmail: "Sign-in email",
+      phone: "Mobile phone",
+      storeName: "Store name",
+      storeDescription: "Store description",
+      contactPhone: "Contact phone",
+      contactEmail: "Store contact email",
+      contactAddress: "Business address",
+      logo: "Store logo",
+      updatedAt: "Last updated",
+    },
+    validation: {
+      ownerName: "Owner name is required.",
+      phone: "Mobile phone is required.",
+      storeName: "Store name is required.",
+      storeDescription: "Store description is required.",
+      contactPhone: "Contact phone is required.",
+      contactEmail: "Store contact email is required.",
+      contactAddress: "Business address is required.",
+    },
+  },
+  signOut: {
+    confirmTitle: "Sign out?",
+    confirmMessage:
+      "You'll be signed out of your current session. Any unsaved changes may be lost.",
+    confirmAction: "Yes, sign out",
+  },
+  session: {
+    title: "Active session",
+    device: "Device",
+    signedIn: "Signed in",
+    lastLogin: "Last login",
+    accountCreated: "Account created",
+    location: "Location",
   },
   errors: {
     generic: "Something went wrong. Please try again.",

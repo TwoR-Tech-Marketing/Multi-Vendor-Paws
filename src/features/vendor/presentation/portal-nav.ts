@@ -8,14 +8,11 @@ import {
   IconEarnings,
   IconOrders,
   IconProducts,
-  IconShield,
-  IconStore,
 } from "./PortalNavIcons";
 
 export type PortalNavId =
   | "dashboard"
-  | "accountStatus"
-  | "storeSetup"
+  | "profile"
   | "products"
   | "orders"
   | "earnings";
@@ -28,27 +25,13 @@ export type PortalNavItem = {
   requiresActiveAccount: boolean;
 };
 
-export const PORTAL_NAV_ITEMS: PortalNavItem[] = [
+export const PORTAL_SIDEBAR_NAV_ITEMS: PortalNavItem[] = [
   {
     id: "dashboard",
     href: Routes.vendor.dashboard,
     label: Strings.nav.dashboard,
     Icon: IconDashboard,
     requiresActiveAccount: false,
-  },
-  {
-    id: "accountStatus",
-    href: Routes.vendor.accountStatus,
-    label: Strings.nav.accountStatus,
-    Icon: IconShield,
-    requiresActiveAccount: false,
-  },
-  {
-    id: "storeSetup",
-    href: Routes.vendor.storeSetup,
-    label: Strings.nav.storeSetup,
-    Icon: IconStore,
-    requiresActiveAccount: true,
   },
   {
     id: "products",
@@ -80,16 +63,14 @@ export type PortalPageMeta = {
 
 export const PORTAL_PAGE_META: Record<PortalNavId, PortalPageMeta> = {
   dashboard: Strings.pages.dashboard,
-  accountStatus: Strings.pages.accountStatus,
-  storeSetup: Strings.pages.storeSetup,
+  profile: Strings.pages.profile,
   products: Strings.pages.products,
   orders: Strings.pages.orders,
   earnings: Strings.pages.earnings,
 };
 
 export function resolvePortalNavId(pathname: string): PortalNavId {
-  if (pathname.startsWith(Routes.vendor.accountStatus)) return "accountStatus";
-  if (pathname.startsWith(Routes.vendor.storeSetup)) return "storeSetup";
+  if (pathname.startsWith(Routes.vendor.profile)) return "profile";
   if (pathname.startsWith(Routes.vendor.products)) return "products";
   if (pathname.startsWith(Routes.vendor.orders)) return "orders";
   if (pathname.startsWith(Routes.vendor.earnings)) return "earnings";

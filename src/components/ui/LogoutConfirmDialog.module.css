@@ -1,0 +1,112 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 200;
+}
+
+.modal {
+  width: 100%;
+  max-width: 860px;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-4);
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.message {
+  margin: 0;
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.closeBtn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+}
+
+.buttonsRow {
+  display: flex;
+  gap: var(--space-4);
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+}
+
+.btnCancel,
+.btnDanger {
+  height: 48px;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font);
+  flex: 1 1 0;
+  max-width: 377px;
+}
+
+.btnCancel {
+  border: 1px solid var(--color-border);
+  background: var(--color-dialog-cancel-bg);
+  color: var(--color-text-muted);
+}
+
+.btnDanger {
+  border: none;
+  background: var(--color-dialog-danger);
+  color: #fff;
+}
+
+.btnDanger:disabled,
+.btnCancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .buttonsRow {
+    flex-direction: column-reverse;
+  }
+
+  .btnCancel,
+  .btnDanger {
+    max-width: none;
+    width: 100%;
+  }
+}

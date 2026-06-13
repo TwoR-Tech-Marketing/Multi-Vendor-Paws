@@ -1,0 +1,320 @@
+.profileGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  align-items: start;
+  margin-bottom: var(--space-4);
+}
+
+.sessionCard {
+  display: flex;
+  flex-direction: column;
+  min-height: 350px;
+}
+
+.sessionCardHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.sessionIconBadge {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+}
+
+.sessionDivider {
+  height: 1px;
+  background: var(--color-border);
+  margin-bottom: var(--space-4);
+}
+
+.sessionMetaList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+}
+
+.sessionMetaRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sessionMetaIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.sessionMetaText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sessionMetaLabel {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-text-muted);
+}
+
+.sessionMetaValue {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-text);
+}
+
+.signOutBtn {
+  width: 100%;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  border: 1.6px solid var(--color-signout-border);
+  background: var(--color-signout-surface);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-4);
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  font-family: var(--font);
+}
+
+.signOutBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.signOutLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-signout-text);
+}
+
+.signOutText {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.signOutArrow {
+  color: var(--color-signout-text);
+  flex-shrink: 0;
+}
+
+.logoPreview {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius);
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+}
+
+.logoPlaceholder {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius);
+  border: 1px dashed var(--color-border);
+  background: var(--color-surface-2);
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: var(--space-2);
+}
+
+.detailList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+}
+
+.detailRow span {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.detailRow strong {
+  text-align: right;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.detailRowBlock strong {
+  display: block;
+  text-align: left;
+  margin-top: var(--space-1);
+  line-height: 1.5;
+}
+
+.formStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.field input,
+.field textarea {
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: var(--font);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.field input:disabled,
+.field textarea:disabled {
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.readOnlyNote {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.uploadBox {
+  border: 2px dashed var(--color-border);
+  border-radius: 10px;
+  padding: var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.uploadBox input {
+  display: none;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.btnPrimary {
+  background: var(--gradient-primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: var(--font);
+  box-shadow: var(--color-primary-shadow);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.alert {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+}
+
+.alertInfo {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+}
+
+.alertSuccess {
+  background: var(--color-success-surface);
+  color: var(--color-success);
+  border: 1px solid var(--color-success-border);
+}
+
+.alertError {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  border: 1px solid var(--color-error-border);
+}
+
+.panelTitle {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 var(--space-4);
+}
+
+.statusBannerBody p {
+  font-size: 14px;
+  margin: var(--space-1) 0 var(--space-3);
+  line-height: 1.5;
+}
+
+.statusChipRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.statusChipLabel {
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.statusChipValue {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.65);
+}
+
+@media (max-width: 900px) {
+  .profileGrid {
+    grid-template-columns: 1fr;
+  }
+}

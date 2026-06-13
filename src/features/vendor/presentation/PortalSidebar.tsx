@@ -3,10 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { Routes } from "@/constants/routes";
 import { Strings } from "@/constants/strings";
+import { PORTAL_SIDEBAR_NAV_ITEMS } from "@/features/vendor/presentation/portal-nav";
+import { usePortalSignOut } from "@/features/vendor/presentation/PortalSignOutContext";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
-import { PORTAL_NAV_ITEMS } from "@/features/vendor/presentation/portal-nav";
-import { IconClose, IconStorefront } from "@/features/vendor/presentation/PortalNavIcons";
+import {
+  IconClose,
+  IconLogout,
+  IconStorefront,
+} from "@/features/vendor/presentation/PortalNavIcons";
 
 import styles from "./portal.module.css";
 
@@ -17,7 +23,13 @@ type PortalSidebarProps = {
 
 export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
   const pathname = usePathname();
-  const { isActiveVendor, isLoggingOut, signOut } = usePortalSession();
+  const { isActiveVendor, isLoggingOut } = usePortalSession();
+  const { requestSignOut } = usePortalSignOut();
+
+  function onSignOutClick() {
+    onClose();
+    requestSignOut();
+  }
 
   return (
     <aside
@@ -43,7 +55,7 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
       </div>
 
       <nav className={styles.nav}>
-        {PORTAL_NAV_ITEMS.map(({ id, href, label, Icon, requiresActiveAccount }) => {
+        {PORTAL_SIDEBAR_NAV_ITEMS.map(({ id, href, label, Icon, requiresActiveAccount }) => {
           const isActive = pathname === href || pathname.startsWith(`${href}/`);
           const isDisabled = requiresActiveAccount && !isActiveVendor;
 
@@ -81,11 +93,14 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
       <div className={styles.sidebarFooter}>
         <button
           type="button"
-          className={`${styles.btnGhost} ${styles.btnBlock}`}
-          onClick={signOut}
+          className={styles.sidebarLogout}
+          onClick={onSignOutClick}
           disabled={isLoggingOut}
         >
-          {isLoggingOut ? Strings.common.signingOut : Strings.common.signOut}
+          <IconLogout width={18} height={18} />
+          <span>
+            {isLoggingOut ? Strings.common.signingOut : Strings.nav.logOut}
+          </span>
         </button>
       </div>
     </aside>

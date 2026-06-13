@@ -7,8 +7,7 @@ export const Routes = {
   },
   vendor: {
     dashboard: "/dashboard",
-    accountStatus: "/account-status",
-    storeSetup: "/store-setup",
+    profile: "/profile",
     products: "/products",
     orders: "/orders",
     earnings: "/earnings",

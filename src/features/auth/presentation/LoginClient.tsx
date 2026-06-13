@@ -40,7 +40,7 @@ export function LoginClient() {
       }
 
       if (session.kind === "pending" || session.kind === "suspended") {
-        router.push(Routes.vendor.accountStatus);
+        router.push(Routes.vendor.profile);
         return;
       }
 

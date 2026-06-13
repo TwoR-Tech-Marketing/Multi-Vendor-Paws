@@ -211,6 +211,55 @@
   color: var(--color-text-muted);
 }
 
+.profileBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px var(--space-3) 6px 6px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--duration-base), box-shadow var(--duration-base);
+}
+
+.profileBtn:hover {
+  border-color: var(--color-primary);
+}
+
+.profileBtnActive {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.sidebarLogout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background var(--duration-base), color var(--duration-base);
+}
+
+.sidebarLogout:hover:not(:disabled) {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.sidebarLogout:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .btnGhost {
   background: transparent;
   border: 1px solid var(--color-border);
@@ -327,6 +376,12 @@
   background: var(--color-error-bg);
   border: 1px solid var(--color-error-border);
   color: var(--color-error);
+}
+
+.statusBannerActive {
+  background: var(--color-success-surface);
+  border: 1px solid var(--color-success-border);
+  color: var(--color-success);
 }
 
 .statusBanner strong {

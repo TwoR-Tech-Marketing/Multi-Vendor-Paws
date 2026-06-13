@@ -17,7 +17,7 @@ export function ActiveVendorGuard({ children }: ActiveVendorGuardProps) {
 
   useEffect(() => {
     if (!isActiveVendor) {
-      router.replace(Routes.vendor.accountStatus);
+      router.replace(Routes.vendor.profile);
     }
   }, [isActiveVendor, router]);
 
