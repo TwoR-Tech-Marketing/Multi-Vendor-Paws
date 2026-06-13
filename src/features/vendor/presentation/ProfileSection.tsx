@@ -341,7 +341,7 @@ function ProfileDetailsPanel({ profile }: ProfileDetailsPanelProps) {
 }
 
 export function ProfileSection() {
-  const { user, profile, sessionKind } = usePortalSession();
+  const { user, profile, sessionKind, refreshStoreBranding } = usePortalSession();
   const [storeProfile, setStoreProfile] = useState<VendorStoreProfile | null>(null);
   const [pendingChange, setPendingChange] =
     useState<VendorProfileChangeRequest | null>(null);
@@ -366,7 +366,8 @@ export function ProfileSection() {
     setStoreProfile(nextProfile);
     setPendingChange(pending);
     setIsLoading(false);
-  }, [user.email, user.uid]);
+    await refreshStoreBranding();
+  }, [refreshStoreBranding, user.email, user.uid]);
 
   useEffect(() => {
     void loadProfile();

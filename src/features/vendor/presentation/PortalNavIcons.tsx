@@ -14,6 +14,15 @@ const base = {
   "aria-hidden": true,
 };
 
+export function IconBell(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 4a4 4 0 0 0-4 4v2.5c0 .8-.3 1.6-.8 2.2L6 14.5h12l-1.2-1.8c-.5-.6-.8-1.4-.8-2.2V8a4 4 0 0 0-4-4z" />
+      <path d="M10 17a2 2 0 0 0 4 0" />
+    </svg>
+  );
+}
+
 export function IconDashboard(props: IconProps) {
   return (
     <svg {...base} {...props}>

@@ -16,6 +16,7 @@
   --gradient-primary: linear-gradient(135deg, #667eea, #764ba2, #8b5cf6);
   --color-primary-soft: rgba(99, 102, 241, 0.12);
   --color-primary-shadow: 0 8px 24px rgba(99, 102, 241, 0.28);
+  --color-store-avatar-surface: #eee9ff;
 
   --color-success: #166534;
   --color-warning: #b45309;

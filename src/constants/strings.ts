@@ -123,6 +123,10 @@ export const Strings = {
     accountCreated: "Account created",
     location: "Location",
   },
+  notifications: {
+    open: "Open notifications",
+    comingSoon: "Notifications coming soon",
+  },
   errors: {
     generic: "Something went wrong. Please try again.",
   },

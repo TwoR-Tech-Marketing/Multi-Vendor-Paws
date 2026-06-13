@@ -20,6 +20,7 @@ import {
   type VendorSessionKind,
 } from "@/features/auth/infrastructure/resolve-vendor-session";
 import type { VendorProfile } from "@/features/auth/domain/types";
+import { getVendorStoreProfile } from "@/features/vendor/infrastructure/vendor-store-profile.repository";
 import { PortalShellSkeleton } from "@/features/vendor/presentation/PortalShellSkeleton";
 
 type PortalSessionContextValue = {
@@ -28,6 +29,11 @@ type PortalSessionContextValue = {
   sessionKind: VendorSessionKind;
   isActiveVendor: boolean;
   isLoggingOut: boolean;
+  storeBranding: {
+    storeName: string;
+    logoUrl: string | null;
+  };
+  refreshStoreBranding: () => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -55,6 +61,31 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
   const [sessionKind, setSessionKind] = useState<VendorSessionKind | null>(null);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [storeBranding, setStoreBranding] = useState({
+    storeName: "Your store",
+    logoUrl: null as string | null,
+  });
+
+  const refreshStoreBranding = useCallback(async () => {
+    if (!user) return;
+
+    const storeProfile = await getVendorStoreProfile(
+      user.uid,
+      user.email?.trim().toLowerCase() ?? "",
+    );
+
+    if (!storeProfile) return;
+
+    setStoreBranding({
+      storeName: storeProfile.storeName,
+      logoUrl: storeProfile.logoUrl,
+    });
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    void refreshStoreBranding();
+  }, [user, refreshStoreBranding]);
 
   useEffect(() => {
     const unsubscribe = subscribeAuthState(async (nextUser) => {
@@ -85,6 +116,10 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
         setUser(nextUser);
         setProfile(session.profile!);
         setSessionKind(session.kind);
+        setStoreBranding({
+          storeName: session.profile!.storeName,
+          logoUrl: null,
+        });
         hasResolvedSessionRef.current = true;
         setIsBootstrapping(false);
         return;
@@ -113,9 +148,19 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
       sessionKind,
       isActiveVendor: sessionKind === "active",
       isLoggingOut,
+      storeBranding,
+      refreshStoreBranding,
       signOut,
     };
-  }, [user, profile, sessionKind, isLoggingOut, signOut]);
+  }, [
+    user,
+    profile,
+    sessionKind,
+    isLoggingOut,
+    storeBranding,
+    refreshStoreBranding,
+    signOut,
+  ]);
 
   if (isBootstrapping && !hasResolvedSessionRef.current) {
     return <PortalShellSkeleton />;
