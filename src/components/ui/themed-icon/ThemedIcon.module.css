@@ -1,0 +1,39 @@
+.icon {
+  display: block;
+  flex-shrink: 0;
+  background-color: var(--icon-color, var(--color-icon));
+  mask-image: var(--icon-src);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: var(--icon-src);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.toneDefault {
+  --icon-color: var(--color-icon);
+}
+
+.toneMuted {
+  --icon-color: var(--color-icon-muted);
+}
+
+.toneAccent {
+  --icon-color: var(--color-icon-accent);
+}
+
+.toneOnPrimary {
+  --icon-color: var(--color-icon-on-primary);
+}
+
+.toneLogout {
+  --icon-color: var(--color-logout);
+}
+
+.image {
+  display: block;
+  object-fit: contain;
+  filter: var(--image-filter, var(--logo-image-filter, none));
+}

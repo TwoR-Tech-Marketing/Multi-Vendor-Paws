@@ -14,6 +14,14 @@
 
   --color-sidebar-glass: rgba(255, 255, 255, 0.7);
 
+  /* Theme-aware icons (SVG masks + PNG filters) */
+  --color-icon: var(--color-text);
+  --color-icon-muted: var(--color-text-muted);
+  --color-icon-accent: var(--color-primary);
+  --color-icon-on-primary: #ffffff;
+  --image-filter: none;
+  --logo-image-filter: none;
+
   /* Purple — admin / vendor portal brand */
   --color-primary: #6366f1;
   --color-logout: #952424;
@@ -95,4 +103,9 @@
   --color-pending-border: #78350f;
 
   --color-sidebar-glass: rgba(30, 41, 59, 0.88);
+
+  --color-icon: #e2e8f0;
+  --color-icon-muted: #94a3b8;
+  --image-filter: none;
+  --logo-image-filter: none;
 }

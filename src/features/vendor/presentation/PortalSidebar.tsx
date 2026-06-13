@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { ThemedImage, ThemedSvgIcon } from "@/components/ui/themed-icon/ThemedIcon";
 import { portalNavAssets } from "@/features/vendor/presentation/portal-assets";
 import { getPortalSidebarNavItems } from "@/features/vendor/presentation/portal-nav";
 import { usePortalSignOut } from "@/features/vendor/presentation/PortalSignOutContext";
@@ -48,13 +48,12 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
         </button>
 
         <div className={styles.logo}>
-          <Image
+          <ThemedImage
             src={portalNavAssets.logo}
             alt={strings.portal.brandName}
             width={46}
             height={46}
             className={styles.logoImage}
-            priority
           />
         </div>
 
@@ -64,6 +63,7 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
               pathname === item.href || pathname.startsWith(`${item.href}/`);
             const isLocked = item.requiresActiveAccount && !isActiveVendor;
             const isLast = index === navItems.length - 1;
+            const iconTone = isActive ? "on-primary" : "default";
 
             const itemClassName = [
               styles.navItem,
@@ -75,13 +75,12 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
 
             const itemContent = (
               <>
-                <img
-                  className={styles.navIcon}
+                <ThemedSvgIcon
                   src={item.icon}
-                  alt=""
+                  className={styles.navIcon}
+                  tone={iconTone}
                   width={22}
                   height={22}
-                  decoding="async"
                 />
                 <span className={styles.navLabel}>{item.label}</span>
               </>
@@ -110,16 +109,7 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
                   </Link>
                 )}
 
-                {!isLast ? (
-                  <span className={styles.navRule} aria-hidden>
-                    <img
-                      className={styles.navRuleImage}
-                      src={portalNavAssets.navSeparator}
-                      alt=""
-                      decoding="async"
-                    />
-                  </span>
-                ) : null}
+                {!isLast ? <span className={styles.navRule} aria-hidden /> : null}
               </div>
             );
           })}
@@ -131,7 +121,13 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
           onClick={onSignOutClick}
           disabled={isLoggingOut}
         >
-          <span className={styles.logoutIcon} aria-hidden />
+          <ThemedSvgIcon
+            src={portalNavAssets.logout}
+            className={styles.logoutIcon}
+            tone="logout"
+            width={18}
+            height={18}
+          />
           <span>
             {isLoggingOut ? strings.common.signingOut : strings.nav.logOut}
           </span>

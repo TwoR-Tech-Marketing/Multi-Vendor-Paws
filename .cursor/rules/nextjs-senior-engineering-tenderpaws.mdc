@@ -502,6 +502,7 @@ export const Routes = {
 - Hardcoded UI strings as JSX literals — use `Strings.*`.
 - Hardcoded URL strings in components — use `Routes.*`.
 - Unstyled native `<select>` in portal or feature presentation UI — use `PortalSelect`.
+- Raw `<img>` for monochrome SVG UI icons — use `ThemedSvgIcon` with token colors.
 - Spinners for page, list, or section content loading — use skeleton components.
 - Large monolithic component/page files without decomposition.
 - Exposing raw Firebase errors, stack traces, or internal error codes to users.
@@ -527,6 +528,7 @@ export const Routes = {
 - **i18n**: `useStrings()` from `PreferencesContext`; Arabic in `src/shared/i18n/locales/ar.ts`.
 - **Portal shell**: DineNorder POS-style sidebar (`PortalSidebar`, `sidebar.module.css`, assets in `public/portal-nav/`).
 - **Dropdowns**: use `PortalSelect` from `src/components/ui/select/` — POS custom dropdown with chevron (`public/ui/chevron-down.svg`), radio options, token colors. Never raw browser `<select>` in portal UI.
+- **Themed icons**: use `ThemedSvgIcon` / `ThemedImage` from `src/components/ui/themed-icon/` — SVG masks + `--color-icon*` tokens for light/dark alignment.
 - **Logout color**: `--color-logout` in `colors.css` for sign-out icon and text.
 
 ---
@@ -544,6 +546,16 @@ Vendor portal chrome (sidebar, top bar, settings, dropdowns, logout) follows the
 - Chevron: `/ui/chevron-down.svg`, tinted with `var(--color-text-muted)` via CSS mask (supports light/dark theme).
 - Trigger: `--control-height`, `--radius-control`, `--color-select-border`; focus/open border uses `--color-primary`.
 - Do not use unstyled native `<select>` in portal or feature presentation layers.
+
+**Theme-aware icons (SVG + PNG)**
+- Never render monochrome UI SVGs as raw `<img>` with hardcoded `#333` / black fills — they will not adapt to dark mode.
+- Use `ThemedSvgIcon` from `src/components/ui/themed-icon/ThemedIcon.tsx`: SVG path as CSS `mask-image`, color from tokens (`--color-icon`, `--color-icon-muted`, `--color-icon-accent`, `--color-icon-on-primary`, `--color-logout`).
+- Tones: `default` (sidebar idle), `accent` (hover), `on-primary` (active pill), `logout`, `muted`.
+- Icon tokens live in `src/shared/theme/colors.css`; dark mode overrides `--color-icon` to a light value.
+- Separators/lines: prefer `background: var(--color-border)` over stroke SVGs when possible.
+- **PNG brand logos** (full-color, e.g. Pawlio): keep `--logo-image-filter: none` — do not invert colorful brand assets.
+- **Monochrome PNG icons** (if added later): use `ThemedImage` with `--image-filter` token, or prefer SVG + mask instead.
+- Do not hardcode `filter: brightness(0) invert(1)` on icons in component CSS — use token-driven masks or `--icon-color`.
 
 **Sign out**
 - Sidebar + profile use `--color-logout` (POS sign-out red `#952424`).

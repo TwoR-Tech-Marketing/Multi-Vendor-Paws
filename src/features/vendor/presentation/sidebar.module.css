@@ -63,9 +63,8 @@
 .logoImage {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  display: block;
   background: transparent;
+  filter: var(--logo-image-filter, none);
 }
 
 .navScroll {
@@ -118,21 +117,22 @@
   color: var(--color-primary);
 }
 
+.navItem:hover:not(.navItemActive):not(.navItemLocked) .navIcon {
+  --icon-color: var(--color-icon-accent);
+}
+
 .navIcon {
   width: 22px;
-  height: auto;
-  max-height: 26px;
-  object-fit: contain;
-  display: block;
+  height: 22px;
 }
 
 .navItemActive {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-icon-on-primary);
 }
 
 .navItemActive .navIcon {
-  filter: brightness(0) invert(1);
+  --icon-color: var(--color-icon-on-primary);
 }
 
 .navItemLocked {
@@ -157,14 +157,7 @@
   height: 1px;
   margin: 0 auto;
   display: block;
-  overflow: hidden;
-}
-
-.navRuleImage {
-  width: 100%;
-  height: 1px;
-  object-fit: fill;
-  display: block;
+  background: var(--color-border);
 }
 
 .logout {
@@ -191,17 +184,6 @@
 .logoutIcon {
   width: 18px;
   height: 18px;
-  display: block;
-  flex-shrink: 0;
-  background-color: var(--color-logout);
-  mask-image: url("/portal-nav/logout.svg");
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-  -webkit-mask-image: url("/portal-nav/logout.svg");
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
 }
 
 .logout span {
