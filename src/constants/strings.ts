@@ -160,5 +160,9 @@ export const Strings = {
   },
   errors: {
     generic: "Something went wrong. Please try again.",
+    unauthorized: "You don't have permission to view this page.",
+    forbidden: "This action is not allowed for your account.",
+    notFound: "Page not found.",
+    networkError: "Unable to connect. Check your internet and try again.",
   },
 } as const;

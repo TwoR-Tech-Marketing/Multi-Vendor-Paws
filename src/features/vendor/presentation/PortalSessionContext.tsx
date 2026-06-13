@@ -6,25 +6,20 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
-import type { User } from "firebase/auth";
 
 import { Routes } from "@/constants/routes";
-import { signOutVendor, subscribeAuthState } from "@/lib/auth";
-import {
-  resolveVendorSession,
-  type VendorSessionKind,
-} from "@/features/auth/infrastructure/resolve-vendor-session";
+import type { PortalUserDto, VendorSessionDto } from "@/features/auth/domain/session-dto";
 import type { VendorProfile } from "@/features/auth/domain/types";
-import { getVendorStoreProfile } from "@/features/vendor/infrastructure/vendor-store-profile.repository";
+import type { VendorSessionKind } from "@/features/auth/infrastructure/resolve-vendor-session";
 import { PortalShellSkeleton } from "@/features/vendor/presentation/PortalShellSkeleton";
+import { fetchCurrentSession, logoutServerSession } from "@/lib/auth-client";
 
 type PortalSessionContextValue = {
-  user: User;
+  user: PortalUserDto;
   profile: VendorProfile;
   sessionKind: VendorSessionKind;
   isActiveVendor: boolean;
@@ -53,120 +48,91 @@ type PortalSessionProviderProps = {
   children: ReactNode;
 };
 
+function mapSessionDto(dto: VendorSessionDto): PortalSessionContextValue {
+  return {
+    user: dto.user,
+    profile: dto.profile,
+    sessionKind: dto.sessionKind,
+    isActiveVendor: dto.sessionKind === "active",
+    isLoggingOut: false,
+    storeBranding: dto.storeBranding,
+    refreshStoreBranding: async () => {},
+    signOut: async () => {},
+  };
+}
+
 export function PortalSessionProvider({ children }: PortalSessionProviderProps) {
   const router = useRouter();
-  const hasResolvedSessionRef = useRef(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<VendorProfile | null>(null);
-  const [sessionKind, setSessionKind] = useState<VendorSessionKind | null>(null);
+  const [session, setSession] = useState<PortalSessionContextValue | null>(null);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [storeBranding, setStoreBranding] = useState({
-    storeName: "Your store",
-    logoUrl: null as string | null,
-  });
+
+  const bootstrap = useCallback(async () => {
+    const dto = await fetchCurrentSession();
+
+    if (!dto) {
+      router.replace(Routes.auth.login);
+      return null;
+    }
+
+    return mapSessionDto(dto);
+  }, [router]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      const next = await bootstrap();
+      if (cancelled) return;
+      if (next) {
+        setSession(next);
+      }
+      setIsBootstrapping(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [bootstrap]);
 
   const refreshStoreBranding = useCallback(async () => {
-    if (!user) return;
+    const dto = await fetchCurrentSession();
+    if (!dto) return;
 
-    const storeProfile = await getVendorStoreProfile(
-      user.uid,
-      user.email?.trim().toLowerCase() ?? "",
+    setSession((current) =>
+      current
+        ? {
+            ...current,
+            storeBranding: dto.storeBranding,
+            profile: dto.profile,
+            sessionKind: dto.sessionKind,
+            isActiveVendor: dto.sessionKind === "active",
+          }
+        : current,
     );
-
-    if (!storeProfile) return;
-
-    setStoreBranding({
-      storeName: storeProfile.storeName,
-      logoUrl: storeProfile.logoUrl,
-    });
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) return;
-    void refreshStoreBranding();
-  }, [user, refreshStoreBranding]);
-
-  useEffect(() => {
-    const unsubscribe = subscribeAuthState(async (nextUser) => {
-      if (!nextUser) {
-        if (!hasResolvedSessionRef.current) {
-          router.replace(Routes.auth.login);
-        }
-        return;
-      }
-
-      const session = await resolveVendorSession(nextUser);
-
-      if (
-        session.kind === "mobile_app_account" ||
-        session.kind === "wrong_sign_in_email" ||
-        session.kind === "not_vendor"
-      ) {
-        await signOutVendor();
-        router.replace(`${Routes.auth.login}?invalid=1`);
-        return;
-      }
-
-      if (
-        session.kind === "active" ||
-        session.kind === "pending" ||
-        session.kind === "suspended"
-      ) {
-        setUser(nextUser);
-        setProfile(session.profile!);
-        setSessionKind(session.kind);
-        setStoreBranding({
-          storeName: session.profile!.storeName,
-          logoUrl: null,
-        });
-        hasResolvedSessionRef.current = true;
-        setIsBootstrapping(false);
-        return;
-      }
-
-      await signOutVendor();
-      router.replace(Routes.auth.login);
-    });
-
-    return unsubscribe;
-  }, [router]);
+  }, []);
 
   const signOut = useCallback(async () => {
     setIsLoggingOut(true);
-    hasResolvedSessionRef.current = false;
-    await signOutVendor();
-    router.replace(Routes.auth.login);
+    try {
+      await logoutServerSession();
+    } finally {
+      router.replace(Routes.auth.login);
+    }
   }, [router]);
 
   const value = useMemo(() => {
-    if (!user || !profile || !sessionKind) return null;
+    if (!session) return null;
 
     return {
-      user,
-      profile,
-      sessionKind,
-      isActiveVendor: sessionKind === "active",
+      ...session,
       isLoggingOut,
-      storeBranding,
       refreshStoreBranding,
       signOut,
     };
-  }, [
-    user,
-    profile,
-    sessionKind,
-    isLoggingOut,
-    storeBranding,
-    refreshStoreBranding,
-    signOut,
-  ]);
+  }, [session, isLoggingOut, refreshStoreBranding, signOut]);
 
-  if (isBootstrapping && !hasResolvedSessionRef.current) {
-    return <PortalShellSkeleton />;
-  }
-
-  if (!value) {
+  if (isBootstrapping || !value) {
     return <PortalShellSkeleton />;
   }
 

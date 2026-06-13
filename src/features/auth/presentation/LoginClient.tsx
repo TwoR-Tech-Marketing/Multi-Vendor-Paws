@@ -5,12 +5,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { Routes } from "@/constants/routes";
-import { signInVendor, signOutVendor } from "@/lib/auth";
 import {
   mapAuthError,
   VENDOR_LOGIN_FAILED_MESSAGE,
 } from "@/features/auth/domain/errors";
-import { resolveVendorSession } from "@/features/auth/infrastructure/resolve-vendor-session";
+import { createServerSession } from "@/lib/auth-client";
+import { signInVendorForIdToken, signOutVendor } from "@/lib/auth";
 import { PawlioLogo } from "@/shared/components/PawlioLogo";
 import styles from "./auth.module.css";
 
@@ -31,22 +31,23 @@ export function LoginClient() {
     setIsSubmitting(true);
 
     try {
-      const credential = await signInVendor(email.trim(), password);
-      const session = await resolveVendorSession(credential.user);
+      const idToken = await signInVendorForIdToken(email.trim(), password);
+      const session = await createServerSession(idToken);
+      await signOutVendor();
 
-      if (session.kind === "active") {
+      if (session.sessionKind === "active") {
         router.replace(Routes.vendor.dashboard);
         return;
       }
 
-      if (session.kind === "pending" || session.kind === "suspended") {
+      if (session.sessionKind === "pending" || session.sessionKind === "suspended") {
         router.replace(Routes.vendor.profile);
         return;
       }
 
-      await signOutVendor();
       setError(VENDOR_LOGIN_FAILED_MESSAGE);
     } catch (signInError) {
+      await signOutVendor();
       setError(mapAuthError(signInError));
     } finally {
       setIsSubmitting(false);

@@ -4,17 +4,16 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
 import { Strings } from "@/constants/strings";
-import { uploadVendorLogo } from "@/features/auth/infrastructure/vendor-signup.service";
+import {
+  fetchVendorProfileFromApi,
+  submitVendorProfileChangeFromApi,
+} from "@/features/vendor/application/vendor-profile.api";
 import type {
   VendorProfileChangePayload,
   VendorProfileChangeRequest,
   VendorStoreProfile,
 } from "@/features/vendor/domain/types";
-import {
-  getPendingProfileChangeRequest,
-  submitProfileChangeRequest,
-} from "@/features/vendor/infrastructure/vendor-profile-change.repository";
-import { getVendorStoreProfile } from "@/features/vendor/infrastructure/vendor-store-profile.repository";
+import { uploadVendorLogo } from "@/features/auth/infrastructure/vendor-signup.service";
 import { AccountStatusBanner } from "@/features/vendor/presentation/AccountStatusBanner";
 import { ProfileActiveSessionCard } from "@/features/vendor/presentation/ProfileActiveSessionCard";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
@@ -64,7 +63,6 @@ function ProfileChangeRequestForm({
   disabled,
   onSubmitted,
 }: ProfileChangeRequestFormProps) {
-  const { user } = usePortalSession();
   const [form, setForm] = useState<FormState>(() => buildFormState(profile));
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(profile.logoUrl);
@@ -110,7 +108,7 @@ function ProfileChangeRequestForm({
         logoUrl = await uploadVendorLogo(logoFile);
       }
 
-      await submitProfileChangeRequest(profile.vendorId, user.uid, {
+      await submitVendorProfileChangeFromApi({
         ...form,
         logoUrl,
       });
@@ -341,7 +339,7 @@ function ProfileDetailsPanel({ profile }: ProfileDetailsPanelProps) {
 }
 
 export function ProfileSection() {
-  const { user, profile, sessionKind, refreshStoreBranding } = usePortalSession();
+  const { profile, sessionKind, refreshStoreBranding } = usePortalSession();
   const [storeProfile, setStoreProfile] = useState<VendorStoreProfile | null>(null);
   const [pendingChange, setPendingChange] =
     useState<VendorProfileChangeRequest | null>(null);
@@ -351,23 +349,19 @@ export function ProfileSection() {
   const loadProfile = useCallback(async () => {
     setLoadError(null);
 
-    const nextProfile = await getVendorStoreProfile(
-      user.uid,
-      user.email?.trim().toLowerCase() ?? "",
-    );
+    try {
+      const { profile: nextProfile, pendingChange: pending } =
+        await fetchVendorProfileFromApi();
 
-    if (!nextProfile) {
+      setStoreProfile(nextProfile);
+      setPendingChange(pending);
+      await refreshStoreBranding();
+    } catch {
       setLoadError(Strings.errors.generic);
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    const pending = await getPendingProfileChangeRequest(nextProfile.vendorId);
-    setStoreProfile(nextProfile);
-    setPendingChange(pending);
-    setIsLoading(false);
-    await refreshStoreBranding();
-  }, [refreshStoreBranding, user.email, user.uid]);
+  }, [refreshStoreBranding]);
 
   useEffect(() => {
     void loadProfile();

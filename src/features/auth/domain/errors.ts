@@ -1,9 +1,19 @@
 import { FirebaseError } from "firebase/app";
 
+import { Strings } from "@/constants/strings";
+import { ApiClientError } from "@/lib/auth-client";
+
 /** Generic message — do not reveal whether email exists or which email to use. */
 export const VENDOR_LOGIN_FAILED_MESSAGE = "Invalid email or password.";
 
 export function mapAuthError(error: unknown): string {
+  if (error instanceof ApiClientError) {
+    if (error.status === 401 || error.status === 403) {
+      return VENDOR_LOGIN_FAILED_MESSAGE;
+    }
+    return error.message || Strings.errors.generic;
+  }
+
   if (error instanceof FirebaseError) {
     switch (error.code) {
       case "auth/invalid-credential":

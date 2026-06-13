@@ -162,5 +162,9 @@ export const arStrings: AppStrings = {
   },
   errors: {
     generic: "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    unauthorized: "ليس لديك صلاحية لعرض هذه الصفحة.",
+    forbidden: "هذا الإجراء غير مسموح لحسابك.",
+    notFound: "الصفحة غير موجودة.",
+    networkError: "تعذر الاتصال. تحقق من الإنترنت وحاول مرة أخرى.",
   },
 };

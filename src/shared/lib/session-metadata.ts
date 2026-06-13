@@ -1,4 +1,4 @@
-import type { User } from "firebase/auth";
+import type { PortalUserDto } from "@/features/auth/domain/session-dto";
 
 export type VendorSessionMetadata = {
   deviceLabel: string;
@@ -8,7 +8,7 @@ export type VendorSessionMetadata = {
   locationLabel: string;
 };
 
-export function formatSessionTimestamp(value: string | undefined): string {
+export function formatSessionTimestamp(value: string | null | undefined): string {
   if (!value) return "—";
 
   const date = new Date(value);
@@ -87,7 +87,7 @@ function resolveLocationLabel(): string {
   return "—";
 }
 
-export function getVendorSessionMetadata(user: User): VendorSessionMetadata {
+export function getVendorSessionMetadata(user: PortalUserDto): VendorSessionMetadata {
   const userAgent =
     typeof navigator !== "undefined" ? navigator.userAgent : "";
 

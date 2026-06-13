@@ -516,14 +516,14 @@ type Result<T> =
 ---
 
 ## 14) Auth and Role-Based Access
-- Firebase auth is initialized in `src/lib/firebase.ts` and wrapped in `src/lib/auth.ts`.
-- Two roles: `admin` and `vendor`. Never trust client-side role checks alone.
-- Protect all vendor dashboard routes with a server-side auth guard.
-- Protect all admin routes with a server-side admin role check.
-- **Guest auth routes** (`/login`, `/register`, `/forgot-password`): wrap with `AuthGuestGuard` via `src/app/(auth)/layout.tsx`. If a session already exists, **`router.replace`** to the appropriate portal route (dashboard for active vendors, profile for pending/suspended) — never render the auth form or leave auth pages in the history stack.
-- After successful login or registration redirect, use **`router.replace`**, not `router.push`, so auth pages are not kept in the browser back stack.
-- Vendor data isolation is a hard requirement: a vendor can only read/write their own store data. Enforce this in repository implementations, not in UI.
-- Never expose another vendor's data via a client-side query — always filter by `vendorId` from the server session.
+- Firebase Auth (client) is used **only** for the login token exchange (`signInVendorForIdToken` in [`src/lib/auth.ts`](src/lib/auth.ts)).
+- **Production session:** httpOnly cookie `__session` via `POST /api/auth/session` — see [`docs/production-security.md`](docs/production-security.md).
+- Bootstrap portal session with `GET /api/auth/me` — not `onAuthStateChanged` + direct Firestore.
+- Two roles: `admin` and `vendor`. This app is **vendor-only**; admin uses the separate panel.
+- **Middleware** ([`src/middleware.ts`](src/middleware.ts)): portal routes require session cookie; auth routes redirect when cookie exists.
+- **Guest auth routes** (`/login`, `/register`, `/forgot-password`): `AuthGuestGuard` + middleware. Use **`router.replace`** after login/logout.
+- **BFF:** vendor data via [`src/app/api/vendor/*`](src/app/api/vendor/) — never direct Firestore reads from presentation.
+- Vendor data isolation: `vendorId` from verified server session only — never from client input.
 
 ---
 
@@ -605,12 +605,13 @@ export const Routes = {
 ---
 
 ## 21) Security
-- Vendor data isolation is enforced at the repository layer — `vendorId` from server session, never from client input.
-- All admin operations are protected by server-side role verification.
-- Sanitize and validate all external input before processing.
-- Protect sensitive routes using Next.js middleware + Firebase auth session cookies.
-- Never expose Firebase Admin SDK credentials or service account keys to the client bundle.
-- Do not trust client-side role checks for authorization — always verify on the server.
+- Vendor data isolation enforced in BFF routes + Admin SDK repositories — `vendorId` from verified session cookie, never client input.
+- Deploy [`firestore.rules`](firestore.rules) and enable **Firebase App Check** in production (see [`docs/production-security.md`](docs/production-security.md)).
+- Sanitize and validate all API input with Zod.
+- **Middleware** + **httpOnly session cookie** + **Firebase Admin** `verifySessionCookie` on every `/api/*` route.
+- Never expose Firebase Admin credentials, service account keys, or stack traces to clients.
+- Production: strip console logs, disable browser source maps, security headers in [`next.config.ts`](next.config.ts).
+- Client guards (`PortalSessionContext`, `AuthGuestGuard`) are UX only — authorization lives on the server.
 
 ---
 
@@ -626,7 +627,8 @@ export const Routes = {
 ## 23) Forbidden Practices
 - Business logic embedded in pages or presentational components.
 - Firebase imports outside `src/features/<feature>/infrastructure/` or `src/lib/`.
-- Raw Firebase calls in hooks, components, or pages.
+- Raw Firebase Firestore reads in presentation or hooks — use `/api/vendor/*` BFF routes.
+- Direct `firebase/firestore` imports outside server infrastructure (`*.admin.repository.ts`, [`src/lib/firebase-admin.ts`](src/lib/firebase-admin.ts)) for vendor data.
 - Unnecessary `"use client"` on server-capable components.
 - Hardcoded hex values, pixel values, font names, or spacing values in component/module files.
 - Hardcoded UI strings as JSX literals, `placeholder`, `aria-label`, or `title` attributes — use `useStrings()` / `getStrings()`.
@@ -649,15 +651,17 @@ export const Routes = {
 
 ## This repo (Multi-Vendor-Paws) — current conventions
 - **Router**: App Router under `src/app/`.
-- **Auth**: Firebase auth wrappers in `src/lib/auth.ts`. Roles: `admin` | `vendor`.
-- **Firebase**: Client init in `src/lib/firebase.ts`. Admin SDK on server only.
+- **Auth**: httpOnly session cookie (`__session`); client Firebase Auth for login token exchange only; [`src/lib/auth-client.ts`](src/lib/auth-client.ts) for session API.
+- **Firebase**: Client init in `src/lib/firebase.ts`; Admin SDK in `src/lib/firebase-admin.ts` (server-only).
+- **BFF**: Vendor APIs under `src/app/api/vendor/`; profile via [`src/features/vendor/application/vendor-profile.api.ts`](src/features/vendor/application/vendor-profile.api.ts).
+- **Security docs**: [`docs/production-security.md`](docs/production-security.md).
+- **Server state**: React Query calling `/api/vendor/*` — not direct Firestore from client components.
 - **Features**: `src/features/<feature-name>/` with `presentation/`, `application/`, `domain/`, `infrastructure/` layers.
-- **Styling**: CSS Modules with design tokens from `src/styles/tokens.css`.
-- **Strings & i18n**: English source in `src/constants/strings.ts`; Arabic in `src/shared/i18n/locales/ar.ts`; resolve via `getStrings(locale)`. Client UI: `useStrings()` from `PreferencesContext` — never hardcoded JSX text. See §6.
+- **Styling**: CSS Modules with design tokens from `src/shared/theme/colors.css`.
+- **Strings & i18n**: English source in `src/constants/strings.ts`; Arabic in `src/shared/i18n/locales/ar.ts`; `useStrings()` in client UI. See §6.
 - **Routes**: All URL paths from `src/constants/routes.ts`.
 - **Forms**: React Hook Form + Zod.
-- **Server state**: React Query for client-side Firebase reads.
-- **Global state**: Zustand for auth session and cross-cutting UI state only.
+- **Global state**: Zustand for cross-cutting UI state only (not auth session).
 - **Theme tokens**: `src/shared/theme/colors.css` (light + `[data-theme="dark"]`).
 - **Preferences**: `PreferencesProvider` in `src/shared/preferences/` — theme + locale (`en` | `ar`) persisted in `localStorage`; sets `html[lang]` and `html[dir]`.
 - **i18n**: `useStrings()` for localized copy; `getStrings(locale)` for non-hook contexts; `AppStrings` type enforces EN/AR parity.
