@@ -501,6 +501,7 @@ export const Routes = {
 - Hardcoded hex values, pixel values, font names, or spacing values in component/module files.
 - Hardcoded UI strings as JSX literals — use `Strings.*`.
 - Hardcoded URL strings in components — use `Routes.*`.
+- Unstyled native `<select>` in portal or feature presentation UI — use `PortalSelect`.
 - Spinners for page, list, or section content loading — use skeleton components.
 - Large monolithic component/page files without decomposition.
 - Exposing raw Firebase errors, stack traces, or internal error codes to users.
@@ -521,3 +522,31 @@ export const Routes = {
 - **Forms**: React Hook Form + Zod.
 - **Server state**: React Query for client-side Firebase reads.
 - **Global state**: Zustand for auth session and cross-cutting UI state only.
+- **Theme tokens**: `src/shared/theme/colors.css` (light + `[data-theme="dark"]`).
+- **Preferences**: `PreferencesProvider` in `src/shared/preferences/` — theme + locale persisted in `localStorage`.
+- **i18n**: `useStrings()` from `PreferencesContext`; Arabic in `src/shared/i18n/locales/ar.ts`.
+- **Portal shell**: DineNorder POS-style sidebar (`PortalSidebar`, `sidebar.module.css`, assets in `public/portal-nav/`).
+- **Dropdowns**: use `PortalSelect` from `src/components/ui/select/` — POS custom dropdown with chevron (`public/ui/chevron-down.svg`), radio options, token colors. Never raw browser `<select>` in portal UI.
+- **Logout color**: `--color-logout` in `colors.css` for sign-out icon and text.
+
+---
+
+## 24) Portal UI — POS Pattern Alignment
+Vendor portal chrome (sidebar, top bar, settings, dropdowns, logout) follows the **DineNorder POS** reference project patterns unless product explicitly diverges.
+
+**Sidebar**
+- Vertical nav: icon above label, separators between items, logo at top, logout pinned at bottom.
+- Width `--sidebar-width` (157px), frosted glass via `--color-sidebar-glass`.
+- Nav icons from `public/portal-nav/` (copied/adapted from POS Figma assets).
+
+**Dropdowns / selects**
+- Use shared `PortalSelect` — trigger + chevron (rotates when open) + popup list with radio-style selected state.
+- Chevron: `/ui/chevron-down.svg`, tinted with `var(--color-text-muted)` via CSS mask (supports light/dark theme).
+- Trigger: `--control-height`, `--radius-control`, `--color-select-border`; focus/open border uses `--color-primary`.
+- Do not use unstyled native `<select>` in portal or feature presentation layers.
+
+**Sign out**
+- Sidebar + profile use `--color-logout` (POS sign-out red `#952424`).
+- Confirm via shared `LogoutConfirmDialog`.
+
+**Before adding new portal chrome UI**, check the POS project (`Pos_NextJs`) for an existing pattern and reuse or adapt — do not invent a third style.

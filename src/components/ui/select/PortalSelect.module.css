@@ -1,0 +1,136 @@
+.container {
+  position: relative;
+  width: 100%;
+  max-width: var(--select-max-width, 280px);
+}
+
+.trigger {
+  width: 100%;
+  height: var(--control-height);
+  padding-inline: var(--space-4) calc(var(--space-4) + 28px);
+  background: var(--color-surface);
+  border: 1px solid var(--color-select-border);
+  border-radius: var(--radius-control);
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--color-text);
+  box-sizing: border-box;
+  outline: none;
+  cursor: pointer;
+  text-align: start;
+  transition: border-color var(--duration-base);
+  display: flex;
+  align-items: center;
+}
+
+.trigger:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.trigger:focus-visible,
+.triggerOpen {
+  border-color: var(--color-primary);
+}
+
+.chevron {
+  position: absolute;
+  inset-inline-end: 14px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  background-color: var(--color-text-muted);
+  mask-image: url("/ui/chevron-down.svg");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-image: url("/ui/chevron-down.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  transform: translateY(-50%);
+  transition: transform var(--duration-base);
+}
+
+.chevronOpen {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-3) 0;
+  z-index: 120;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--duration-base),
+    visibility var(--duration-base),
+    transform var(--duration-base);
+}
+
+.popupOpen {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px var(--space-4);
+  cursor: pointer;
+  transition: background-color var(--duration-base);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: start;
+  font-family: var(--font);
+}
+
+.option:hover {
+  background: var(--color-surface-2);
+}
+
+.radio {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color var(--duration-base);
+}
+
+.radioSelected {
+  border-color: var(--color-primary);
+}
+
+.radioDot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  transition: background-color var(--duration-base);
+}
+
+.radioDotSelected {
+  background: var(--color-primary);
+}
+
+.optionLabel {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: normal;
+}

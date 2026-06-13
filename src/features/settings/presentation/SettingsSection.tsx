@@ -1,5 +1,6 @@
 "use client";
 
+import { PortalSelect } from "@/components/ui/select/PortalSelect";
 import { usePreferences } from "@/shared/preferences/PreferencesContext";
 import type { AppLocale, ThemeMode } from "@/shared/preferences/domain/types";
 
@@ -61,15 +62,16 @@ export function SettingsSection() {
         <label className={styles.fieldLabel} htmlFor="display-language">
           {t.languageLabel}
         </label>
-        <select
+        <PortalSelect
           id="display-language"
-          className={styles.languageSelect}
           value={locale}
-          onChange={(event) => onLocaleChange(event.target.value as AppLocale)}
-        >
-          <option value="en">{t.languageEnglish}</option>
-          <option value="ar">{t.languageArabic}</option>
-        </select>
+          ariaLabel={t.languageLabel}
+          options={[
+            { value: "en", label: t.languageEnglish },
+            { value: "ar", label: t.languageArabic },
+          ]}
+          onChange={(next) => onLocaleChange(next as AppLocale)}
+        />
 
         <p className={styles.hint}>{t.savedHint}</p>
       </article>
