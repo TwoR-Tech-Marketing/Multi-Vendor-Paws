@@ -87,3 +87,23 @@ export async function vendorApiPatch<T>(path: string, body: unknown): Promise<T>
 
   return parseJson<T>(response);
 }
+
+export async function vendorApiPost<T>(path: string, body: unknown): Promise<T> {
+  const response = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+    credentials: "same-origin",
+  });
+
+  return parseJson<T>(response);
+}
+
+export async function vendorApiDelete<T>(path: string): Promise<T> {
+  const response = await fetch(path, {
+    method: "DELETE",
+    credentials: "same-origin",
+  });
+
+  return parseJson<T>(response);
+}

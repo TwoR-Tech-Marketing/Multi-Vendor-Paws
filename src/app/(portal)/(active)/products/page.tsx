@@ -1,5 +1,5 @@
-import { ComingSoonSection } from "@/features/vendor/presentation/ComingSoonSection";
+import { ProductsSection } from "@/features/products/presentation/ProductsSection";
 
 export default function ProductsPage() {
-  return <ComingSoonSection />;
+  return <ProductsSection />;
 }
