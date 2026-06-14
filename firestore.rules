@@ -2,6 +2,10 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // -----------------------------------------------------------------
+    // Helpers
+    // -----------------------------------------------------------------
     function isSignedIn() {
       return request.auth != null;
     }
@@ -10,55 +14,246 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
     function isVendor() {
       return isSignedIn()
         && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'vendor';
+        && userDoc().role == 'vendor';
     }
 
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // -----------------------------------------------------------------
+    // Users
+    // Read: any signed-in user — required for chat partner names, post
+    //   authors, like/gift senders, swipe deck owners. Tighten in a
+    //   future pass after public-profile subset is moved out.
+    // Write: only the owner or an admin.
+    // -----------------------------------------------------------------
     match /users/{uid} {
-      allow read, write: if isOwner(uid);
+      allow read: if isSignedIn();
+      allow write: if isOwner(uid) || isAdmin();
+
+      // Pet swipe deck reads strangers' paws; only owners can edit.
+      match /paws/{pawId} {
+        allow read: if isSignedIn();
+        allow write: if isOwner(uid) || isAdmin();
+      }
+      match /reviews/{reviewId}        { allow read, write: if isSignedIn(); }
+      match /notifications/{nid}       { allow read, write: if isOwner(uid); }
+      match /subscription_history/{eid} { allow read: if isOwner(uid) || isAdmin(); allow write: if isAdmin(); }
     }
 
+    // -----------------------------------------------------------------
+    // Vendor lifecycle (signup → vendor profile → moderation)
+    // -----------------------------------------------------------------
     match /vendors/{vendorId} {
-      allow read, write: if isOwner(vendorId) && isVendor();
+      // Public read so buyer apps can render storefronts.
+      allow read: if true;
+      // Vendor can update their own doc; admin moderation goes via Cloud Functions (Admin SDK bypasses rules).
+      allow write: if isOwner(vendorId) && isVendor();
     }
 
     match /vendor_signup_requests/{requestId} {
       allow create: if isSignedIn();
-      allow read: if isSignedIn()
-        && (resource.data.authUid == request.auth.uid
-          || resource.data.email == request.auth.token.email);
-      allow update, delete: if false;
+      allow read: if isSignedIn() && (
+        resource.data.authUid == request.auth.uid ||
+        resource.data.email == request.auth.token.email ||
+        isAdmin()
+      );
+      allow update, delete: if isAdmin();
     }
 
     match /vendor_profile_change_requests/{requestId} {
       allow create: if isSignedIn()
         && request.resource.data.authUid == request.auth.uid
         && request.resource.data.vendorId == request.auth.uid;
-      allow read: if isSignedIn()
-        && resource.data.authUid == request.auth.uid;
-      allow update, delete: if false;
+      allow read: if isSignedIn() && (
+        resource.data.authUid == request.auth.uid || isAdmin()
+      );
+      allow update, delete: if isAdmin();
     }
 
+    // -----------------------------------------------------------------
+    // PHASE 3 — Products (new top-level collection)
+    // -----------------------------------------------------------------
+    // Reads: any signed-in user (mobile buyers + admin panel).
+    // Writes: only the owning vendor; create stamps vendorId from auth.uid.
+    // Status changes + isHalo can only be flipped via Admin SDK / CFs.
     match /products/{productId} {
-      allow read, write: if isSignedIn()
-        && resource.data.vendorId == request.auth.uid;
-      allow create: if isSignedIn()
-        && request.resource.data.vendorId == request.auth.uid;
+      allow read: if isSignedIn();
+
+      allow create: if isVendor()
+        && request.resource.data.vendorId == request.auth.uid
+        && request.resource.data.isHalo == false;
+
+      allow update: if isVendor()
+        && resource.data.vendorId == request.auth.uid
+        && request.resource.data.vendorId == resource.data.vendorId
+        && request.resource.data.isHalo == resource.data.isHalo;
+
+      allow delete: if false; // archive via status field instead
+
+      match /inventoryLog/{entryId} {
+        allow read: if isOwner(get(/databases/$(database)/documents/products/$(productId)).data.vendorId)
+          || isAdmin();
+        allow write: if false; // server only
+      }
     }
 
+    // -----------------------------------------------------------------
+    // Legacy product catalog — kept open for the live mobile app + admin panel
+    // until both migrate to the top-level `products` collection.
+    // -----------------------------------------------------------------
+    match /store/{document=**} {
+      allow read, write: if true;
+    }
+
+    // -----------------------------------------------------------------
+    // Categories (governed by admin panel)
+    // -----------------------------------------------------------------
+    match /governorates/{id}             { allow read: if true;          allow write: if isAdmin(); }
+    match /category_governorates/{id}    { allow read: if true;          allow write: if isAdmin(); }
+    match /delivery_fees/{id}            { allow read: if true;          allow write: if isAdmin(); }
+    match /promo_codes/{id}              { allow read: if isSignedIn();  allow write: if true; } // mobile increments usedCount on checkout
+
+    // -----------------------------------------------------------------
+    // Orders — current mobile-app contract (single-seller buyer order)
+    // Vendor-side reads happen via `vendorOrders` (Phase 3 split).
+    //
+    // Mobile app performs an idempotency lookup `where idempotencyKey == X`
+    // before checkout — Firestore rejects that query under a per-doc
+    // user filter, so reads are open to any signed-in user. Order docs
+    // contain only the buyer's own data once written; sensitive
+    // tightening waits for mobile v1.1.
+    // -----------------------------------------------------------------
     match /orders/{orderId} {
-      allow read, update: if isSignedIn()
-        && resource.data.vendorId == request.auth.uid;
-      allow create: if false;
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        resource.data.userId == request.auth.uid ||
+        (resource.data.vendorIds is list && request.auth.uid in resource.data.vendorIds) ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
     }
 
+    // -----------------------------------------------------------------
+    // PHASE 3 — Vendor-scoped order slices (server-derived from /orders)
+    // -----------------------------------------------------------------
+    match /vendorOrders/{vendorOrderId} {
+      allow read: if isSignedIn() && (
+        resource.data.vendorId == request.auth.uid ||
+        resource.data.buyerUid == request.auth.uid ||
+        isAdmin()
+      );
+      // Vendor may update only status fields on their own slice.
+      allow update: if isVendor()
+        && resource.data.vendorId == request.auth.uid
+        && request.resource.data.vendorId == resource.data.vendorId
+        && request.resource.data.orderId == resource.data.orderId
+        && request.resource.data.buyerUid == resource.data.buyerUid;
+      allow create, delete: if false; // server only
+    }
+
+    // -----------------------------------------------------------------
+    // PHASE 3 — Earnings, payouts, commission config
+    // -----------------------------------------------------------------
     match /vendorEarnings/{vendorId}/entries/{entryId} {
-      allow read: if isOwner(vendorId) && isVendor();
+      allow read: if isOwner(vendorId) || isAdmin();
       allow write: if false;
     }
 
+    match /vendorEarningsSummary/{vendorId} {
+      allow read: if isOwner(vendorId) || isAdmin();
+      allow write: if false;
+    }
+
+    match /vendorPayouts/{payoutId} {
+      allow read: if isSignedIn() && (
+        resource.data.vendorId == request.auth.uid || isAdmin()
+      );
+      allow create: if isVendor()
+        && request.resource.data.vendorId == request.auth.uid
+        && request.resource.data.status == 'requested';
+      allow update, delete: if false; // server / admin only
+    }
+
+    match /commissionConfig/{docId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // -----------------------------------------------------------------
+    // Carts — buyer-owned, single doc per uid
+    // -----------------------------------------------------------------
+    match /carts/{buyerUid} {
+      allow read, write: if isOwner(buyerUid);
+    }
+
+    // -----------------------------------------------------------------
+    // Notifications (top-level — multi-pattern)
+    // Existing mobile app expects open reads while we transition.
+    // -----------------------------------------------------------------
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && (
+        resource.data.sentToId == request.auth.uid ||
+        resource.data.recipientUid == request.auth.uid ||
+        isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // -----------------------------------------------------------------
+    // Admin governance + audit
+    // -----------------------------------------------------------------
+    match /admins/{uid}                 { allow read: if isOwner(uid) || isAdmin(); allow write: if isAdmin(); }
+    match /admin_actions/{id}           { allow read: if isAdmin(); allow write: if isAdmin(); }
+    match /admin_notifications/{id}     { allow read: if isAdmin(); allow create: if isSignedIn(); allow update, delete: if isAdmin(); }
+    match /account_history_hub/{id}     { allow read: if isAdmin(); allow write: if false; }
+    match /error_logs/{id}              { allow create: if isSignedIn(); allow read, update, delete: if isAdmin(); }
+
+    // -----------------------------------------------------------------
+    // Legacy collections used by mobile app / admin panel — kept open
+    // until each is locked down individually in a follow-up pass.
+    // -----------------------------------------------------------------
+    match /communities_collection/{id}    { allow read, write: if isSignedIn(); }
+    match /community_posts/{id}           { allow read, write: if isSignedIn(); }
+    match /posts/{id}                     { allow read, write: if isSignedIn(); }
+    match /chats/{id}                     { allow read, write: if isSignedIn(); }
+    match /matches/{id}                   { allow read, write: if isSignedIn(); }
+    match /gifts/{id}                     { allow read, write: if isSignedIn(); }
+    match /review_reports/{id}            { allow read, write: if isSignedIn(); }
+    match /sponsored_campaigns/{id}       { allow read: if true; allow write: if isAdmin(); }
+    match /adaption_community/{id}        { allow read, write: if isSignedIn(); }
+    match /pet_data/{document=**}         { allow read: if true; allow write: if isAdmin(); }
+    match /services_places/{id}           { allow read: if true; allow write: if isAdmin(); }
+    match /friendly_pet_places/{id}       { allow read: if true; allow write: if isAdmin(); }
+    match /subscription_plans/{id}        { allow read: if isSignedIn(); allow write: if isAdmin(); }
+    match /subscription_plan_transactions/{id} { allow read: if isSignedIn(); allow create: if isSignedIn(); allow update, delete: if isAdmin(); }
+    match /subscription_offers/{id}       { allow read: if isSignedIn(); allow write: if isAdmin(); }
+    match /suggestions/{id}               { allow create: if isSignedIn(); allow read, update, delete: if isAdmin(); }
+    match /feature_controls/{id}          { allow read: if true; allow write: if isAdmin(); }
+    match /general/{id}                   { allow read: if true; allow write: if isAdmin(); }
+    match /app_content/{id}               { allow read: if true; allow write: if isAdmin(); }
+    match /item_count/{id}                { allow read: if true; allow write: if false; } // server only
+    match /item_usage/{id}                { allow read: if isAdmin(); allow create: if isSignedIn(); allow update, delete: if isAdmin(); }
+    match /purchases/{id}                 { allow read: if isSignedIn(); allow create: if isSignedIn(); allow update, delete: if isAdmin(); }
+    match /sticker_usage/{id}             { allow read: if isAdmin(); allow create: if isSignedIn(); allow update, delete: if isAdmin(); }
+    match /admin_user_chats/{document=**} { allow read, write: if isAdmin(); }
+    match /order_analytics/{id}           { allow read: if isAdmin(); allow create: if isSignedIn(); allow update, delete: if isAdmin(); }
+
+    // -----------------------------------------------------------------
+    // Default deny
+    // -----------------------------------------------------------------
     match /{document=**} {
       allow read, write: if false;
     }

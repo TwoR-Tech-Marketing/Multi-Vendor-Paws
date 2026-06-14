@@ -1,0 +1,290 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vendorId", "order": "ASCENDING" },
+        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vendorId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vendorId", "order": "ASCENDING" },
+        { "fieldPath": "categoryIds", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "isHalo", "order": "ASCENDING" },
+        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "categoryIds", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "pricePiastres", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "vendorOrders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vendorId", "order": "ASCENDING" },
+        { "fieldPath": "placedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "vendorOrders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vendorId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "placedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "vendorOrders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "buyerUid", "order": "ASCENDING" },
+        { "fieldPath": "placedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "entries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "vendorPayouts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vendorId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "requestedAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "notifications",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "recipientUid", "order": "ASCENDING" },
+        { "fieldPath": "readAt", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+
+    { "collectionGroup": "likes", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "pawId", "order": "ASCENDING" },
+      { "fieldPath": "timestamp", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "products", "queryScope": "COLLECTION_GROUP", "fields": [
+      { "fieldPath": "categoryId", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "products", "queryScope": "COLLECTION_GROUP", "fields": [
+      { "fieldPath": "categories", "arrayConfig": "CONTAINS" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "products", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isActive", "order": "ASCENDING" },
+      { "fieldPath": "quantity", "order": "ASCENDING" }
+    ]},
+    { "collectionGroup": "products", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isActive", "order": "ASCENDING" },
+      { "fieldPath": "quantity", "order": "DESCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+
+    { "collectionGroup": "orders", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "userId", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "Orders", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "User", "order": "ASCENDING" },
+      { "fieldPath": "orderDate", "order": "DESCENDING" }
+    ]},
+
+    { "collectionGroup": "categories", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isActive", "order": "ASCENDING" },
+      { "fieldPath": "order", "order": "ASCENDING" }
+    ]},
+    { "collectionGroup": "governorates", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isActive", "order": "ASCENDING" },
+      { "fieldPath": "name", "order": "ASCENDING" }
+    ]},
+    { "collectionGroup": "suggestions", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "status", "order": "ASCENDING" },
+      { "fieldPath": "timestamp", "order": "DESCENDING" }
+    ]},
+
+    { "collectionGroup": "notifications", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "sentToId", "arrayConfig": "CONTAINS" },
+      { "fieldPath": "created_at", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "notifications", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "sentToId", "arrayConfig": "CONTAINS" },
+      { "fieldPath": "type", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "notifications", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "senderId", "order": "ASCENDING" },
+      { "fieldPath": "type", "order": "ASCENDING" },
+      { "fieldPath": "created_at", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "notifications", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "sentToId", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "notifications", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "sentToId", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" },
+      { "fieldPath": "type", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "notifications", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "createdAt", "order": "DESCENDING" },
+      { "fieldPath": "type", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "notifications", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "type", "order": "ASCENDING" },
+      { "fieldPath": "created_at", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "notifications", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "type", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+
+    { "collectionGroup": "chats", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "members", "arrayConfig": "CONTAINS" },
+      { "fieldPath": "lastMessageTime", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "chats", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "participantIds", "arrayConfig": "CONTAINS" },
+      { "fieldPath": "last_message_time", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "chats", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "participants", "arrayConfig": "CONTAINS" },
+      { "fieldPath": "last_message_time", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "messages", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isHidden", "order": "ASCENDING" },
+      { "fieldPath": "timestamp", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "messages", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isRead", "order": "ASCENDING" },
+      { "fieldPath": "senderId", "order": "ASCENDING" }
+    ]},
+
+    { "collectionGroup": "posts", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "petType", "order": "ASCENDING" },
+      { "fieldPath": "petBreed", "order": "ASCENDING" }
+    ]},
+    { "collectionGroup": "posts", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "petType", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "posts", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "petBreed", "order": "ASCENDING" },
+      { "fieldPath": "petType", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+
+    { "collectionGroup": "adaption_community", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "breed", "order": "ASCENDING" },
+      { "fieldPath": "petType", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "adaption_community", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "petBreed", "order": "ASCENDING" },
+      { "fieldPath": "petType", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "adaption_community", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "petType", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "street_paws_community", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "communityId", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+
+    { "collectionGroup": "gifts", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "toUserId", "order": "ASCENDING" },
+      { "fieldPath": "timestamp", "order": "ASCENDING" }
+    ]},
+    { "collectionGroup": "gifts", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "toUserId", "order": "ASCENDING" },
+      { "fieldPath": "timestamp", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "gifts", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "toUserId", "order": "ASCENDING" },
+      { "fieldPath": "sentAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "gifts", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "fromUserId", "order": "ASCENDING" },
+      { "fieldPath": "timestamp", "order": "ASCENDING" }
+    ]},
+    { "collectionGroup": "gifts", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "fromUserId", "order": "ASCENDING" },
+      { "fieldPath": "timestamp", "order": "DESCENDING" }
+    ]},
+
+    { "collectionGroup": "paws", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "is_verified", "order": "ASCENDING" },
+      { "fieldPath": "verification_photo_url", "order": "ASCENDING" }
+    ]},
+    { "collectionGroup": "superLikes", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "pawId", "order": "ASCENDING" },
+      { "fieldPath": "timestamp", "order": "DESCENDING" }
+    ]},
+
+    { "collectionGroup": "purchases", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "userId", "order": "ASCENDING" },
+      { "fieldPath": "timestamp", "order": "ASCENDING" }
+    ]},
+    { "collectionGroup": "purchases", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "userId", "order": "ASCENDING" },
+      { "fieldPath": "timestamp", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "user_stickers", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "userId", "order": "ASCENDING" },
+      { "fieldPath": "purchaseDate", "order": "ASCENDING" }
+    ]},
+    { "collectionGroup": "user_stickers", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "userId", "order": "ASCENDING" },
+      { "fieldPath": "purchaseDate", "order": "DESCENDING" }
+    ]},
+
+    { "collectionGroup": "services_places", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "category", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "services_places", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "displayOrder", "order": "ASCENDING" },
+      { "fieldPath": "createdAt", "order": "ASCENDING" }
+    ]}
+  ],
+  "fieldOverrides": []
+}

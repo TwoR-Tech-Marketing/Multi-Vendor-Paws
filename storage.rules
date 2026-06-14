@@ -1,0 +1,51 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ---------------------------------------------------------------
+    // Phase 3 — Vendor-owned assets (logos, covers, product images, payouts)
+    // Anyone can read (storefront browsing); only the owning vendor can
+    // write under their own uid path.
+    // ---------------------------------------------------------------
+    match /vendors/{vendorId}/{rest=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.uid == vendorId
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // Vendor signup logo uploads (pre-auth allowed via app)
+    match /vendor_signup_requests/{requestId}/{file} {
+      allow read: if true;
+      allow write: if request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // ---------------------------------------------------------------
+    // Legacy paths used by the live mobile app + admin panel.
+    // Keeping these permissive so production keeps working.
+    // Tighten in Phase 4 once apps are updated.
+    // ---------------------------------------------------------------
+    match /store/{rest=**}            { allow read, write: if true; }
+    match /id_images/{file}           { allow read, write: if true; }
+    match /pet_type_images/{file}     { allow read, write: if true; }
+    match /communities/{rest=**}      { allow read, write: if true; }
+    match /community_posts/{rest=**}  { allow read, write: if true; }
+    match /services/{rest=**}         { allow read, write: if true; }
+    match /Services_Categories/{rest=**} { allow read, write: if true; }
+    match /service_places/{rest=**}   { allow read, write: if true; }
+    match /service_requests/{rest=**} { allow read, write: if true; }
+    match /friendly_pet_places/{rest=**} { allow read, write: if true; }
+    match /sponsored_campaigns/{rest=**} { allow read, write: if true; }
+    match /banners/{rest=**}          { allow read, write: if true; }
+    match /News/{rest=**}             { allow read, write: if true; }
+    match /feature_locks/{file}       { allow read, write: if true; }
+
+    // Default deny for any new top-level paths not listed above.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
