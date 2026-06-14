@@ -31,12 +31,40 @@ function toCategory(id: string, data: DocumentData): ProductCategory {
   };
 }
 
-export async function listProductCategoriesAdmin(): Promise<ProductCategory[]> {
+export type ListCategoriesOptions = {
+  /** When false (default), only active categories are returned. */
+  includeInactive?: boolean;
+};
+
+export async function listProductCategoriesAdmin(
+  options: ListCategoriesOptions = {},
+): Promise<ProductCategory[]> {
   const snap = await categoriesCollection().get();
   return snap.docs
     .map((doc) => toCategory(doc.id, doc.data()))
-    .filter((category) => category.isActive)
+    .filter((category) => options.includeInactive || category.isActive)
     .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+}
+
+export async function getProductCategoryAdmin(
+  categoryId: string,
+): Promise<ProductCategory | null> {
+  const snap = await categoriesCollection().doc(categoryId).get();
+  if (!snap.exists) return null;
+  return toCategory(snap.id, snap.data() ?? {});
+}
+
+export async function updateProductCategoryStatusAdmin(
+  categoryId: string,
+  isActive: boolean,
+): Promise<ProductCategory | null> {
+  const docRef = categoriesCollection().doc(categoryId);
+  const snap = await docRef.get();
+  if (!snap.exists) return null;
+
+  await docRef.update({ isActive });
+  const updated = await docRef.get();
+  return toCategory(updated.id, updated.data() ?? {});
 }
 
 export async function resolveCategoryNamesByIds(

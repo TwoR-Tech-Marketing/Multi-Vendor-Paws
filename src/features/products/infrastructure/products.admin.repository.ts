@@ -5,7 +5,6 @@ import {
   Timestamp,
   type DocumentData,
   type DocumentSnapshot,
-  type Query,
 } from "firebase-admin/firestore";
 
 import { APP_CURRENCY } from "@/features/products/domain/currency";
@@ -118,41 +117,40 @@ export async function listVendorProducts(
 ): Promise<ProductListPage> {
   const pageSize = clampPageSize(filter.pageSize);
 
-  let query: Query<DocumentData> = productsCollection()
-    .where("vendorId", "==", vendorId)
-    .orderBy("updatedAt", "desc")
-    .limit(pageSize + 1);
+  // Single-field query only — works without deploying composite indexes.
+  // Filter, sort, and paginate in memory (typical vendor catalogs are small).
+  const snap = await productsCollection().where("vendorId", "==", vendorId).get();
+
+  let items = snap.docs.map(toProduct);
 
   if (filter.status && filter.status !== "any") {
-    query = productsCollection()
-      .where("vendorId", "==", vendorId)
-      .where("status", "==", filter.status)
-      .orderBy("updatedAt", "desc")
-      .limit(pageSize + 1);
+    items = items.filter((product) => product.status === filter.status);
   }
 
   if (filter.categoryId) {
-    query = productsCollection()
-      .where("vendorId", "==", vendorId)
-      .where("categoryIds", "array-contains", filter.categoryId)
-      .orderBy("updatedAt", "desc")
-      .limit(pageSize + 1);
+    items = items.filter((product) =>
+      product.categoryIds.includes(filter.categoryId!),
+    );
   }
 
+  items.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+
   if (filter.cursor) {
-    const cursorSnap = await productsCollection().doc(filter.cursor).get();
-    if (cursorSnap.exists) {
-      query = query.startAfter(cursorSnap);
+    const cursorIndex = items.findIndex(
+      (product) => product.productId === filter.cursor,
+    );
+    if (cursorIndex >= 0) {
+      items = items.slice(cursorIndex + 1);
     }
   }
 
-  const snap = await query.get();
-  const docs = snap.docs.slice(0, pageSize);
-  const items = docs.map(toProduct);
-  const nextCursor =
-    snap.docs.length > pageSize ? docs[docs.length - 1].id : null;
+  const hasMore = items.length > pageSize;
+  const pageItems = items.slice(0, pageSize);
+  const nextCursor = hasMore
+    ? (pageItems[pageItems.length - 1]?.productId ?? null)
+    : null;
 
-  return { items, nextCursor };
+  return { items: pageItems, nextCursor };
 }
 
 export async function getVendorProduct(

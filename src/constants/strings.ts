@@ -235,6 +235,28 @@ export const Strings = {
       archived: "Archived",
     },
     stockLow: "{count} left",
+    tabsLabel: "Products sections",
+    tabs: {
+      catalog: "Catalog",
+      categories: "Categories",
+    },
+    categories: {
+      badge: "Categories",
+      title: "Platform categories",
+      subtitle:
+        "Activate or deactivate categories buyers can browse. Inactive categories are hidden when adding products.",
+      tableName: "Category",
+      tableStatus: "Status",
+      tableActions: "Actions",
+      activate: "Activate",
+      deactivate: "Deactivate",
+      activateSuccess: "{name} is now active for new products.",
+      deactivateSuccess: "{name} is now inactive and hidden from new listings.",
+      loadError: "We couldn't load categories. Please try again.",
+      updateError: "We couldn't update this category. Please try again.",
+      emptyTitle: "No categories found",
+      emptyDescription: "Platform categories will appear here once configured.",
+    },
     validation: {
       name: "Product name is required.",
       category: "Select a category.",

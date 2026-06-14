@@ -11,6 +11,8 @@ export type ProductCategoryOption = {
   categoryId: string;
   name: string;
   nameAr?: string | null;
+  order?: number;
+  isActive: boolean;
 };
 
 type SerializedProduct = Omit<Product, "createdAt" | "updatedAt" | "analytics"> & {
@@ -80,8 +82,17 @@ function buildListQuery(filter: ProductListFilter): string {
   return query ? `?${query}` : "";
 }
 
-export async function fetchProductCategoriesFromApi(): Promise<ProductCategoryOption[]> {
-  const data = await vendorApiGet<CategoriesResponse>("/api/vendor/categories");
+export async function fetchProductCategoriesFromApi(options?: {
+  includeInactive?: boolean;
+}): Promise<ProductCategoryOption[]> {
+  const params = new URLSearchParams();
+  if (options?.includeInactive) {
+    params.set("includeInactive", "true");
+  }
+  const query = params.toString();
+  const data = await vendorApiGet<CategoriesResponse>(
+    `/api/vendor/categories${query ? `?${query}` : ""}`,
+  );
   return data.items;
 }
 
@@ -124,6 +135,17 @@ export async function updateVendorProductFromApi(
 
 export async function archiveVendorProductFromApi(productId: string): Promise<void> {
   await vendorApiDelete<{ success: true }>(`/api/vendor/products/${productId}`);
+}
+
+export async function updateProductCategoryStatusFromApi(
+  categoryId: string,
+  isActive: boolean,
+): Promise<ProductCategoryOption> {
+  const data = await vendorApiPatch<{ category: ProductCategoryOption }>(
+    `/api/vendor/categories/${categoryId}`,
+    { isActive },
+  );
+  return data.category;
 }
 
 export type VendorProductStatusFilter = ProductStatus | "any";

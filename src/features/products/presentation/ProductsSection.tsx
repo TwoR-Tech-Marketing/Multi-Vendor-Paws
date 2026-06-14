@@ -39,22 +39,9 @@ export function ProductsSection() {
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const loadProducts = useCallback(async () => {
-    setError(null);
-    setIsLoading(true);
-
+  const loadCategories = useCallback(async () => {
     try {
-      const [productPage, categoryItems] = await Promise.all([
-        fetchVendorProductsFromApi({
-          status: statusFilter === "any" ? undefined : statusFilter,
-          categoryId: categoryFilter === "any" ? undefined : categoryFilter,
-          query: search.trim() || undefined,
-          pageSize: 50,
-        }),
-        fetchProductCategoriesFromApi(),
-      ]);
-
-      setProducts(productPage.items);
+      const categoryItems = await fetchProductCategoriesFromApi();
       setCategories(
         categoryItems.map((category) => ({
           value: category.categoryId,
@@ -62,11 +49,40 @@ export function ProductsSection() {
         })),
       );
     } catch {
+      // Category filter is optional — catalog can still load.
+    }
+  }, []);
+
+  const loadProducts = useCallback(async () => {
+    setError(null);
+    if (products.length === 0) {
+      setIsLoading(true);
+    }
+
+    try {
+      const productPage = await fetchVendorProductsFromApi({
+        status: statusFilter === "any" ? undefined : statusFilter,
+        categoryId: categoryFilter === "any" ? undefined : categoryFilter,
+        query: search.trim() || undefined,
+        pageSize: 50,
+      });
+      setProducts(productPage.items);
+    } catch {
       setError(strings.products.loadError);
     } finally {
       setIsLoading(false);
     }
-  }, [categoryFilter, search, statusFilter, strings.products.loadError]);
+  }, [
+    categoryFilter,
+    products.length,
+    search,
+    statusFilter,
+    strings.products.loadError,
+  ]);
+
+  useEffect(() => {
+    void loadCategories();
+  }, [loadCategories]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSearch(searchInput), 300);

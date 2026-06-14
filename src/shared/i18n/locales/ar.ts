@@ -237,6 +237,28 @@ export const arStrings: AppStrings = {
       archived: "مؤرشف",
     },
     stockLow: "متبقي {count}",
+    tabsLabel: "أقسام المنتجات",
+    tabs: {
+      catalog: "الكتالوج",
+      categories: "الفئات",
+    },
+    categories: {
+      badge: "الفئات",
+      title: "فئات المنصة",
+      subtitle:
+        "فعّل أو عطّل الفئات التي يتصفحها المشترون. الفئات غير النشطة تُخفى عند إضافة منتجات جديدة.",
+      tableName: "الفئة",
+      tableStatus: "الحالة",
+      tableActions: "إجراءات",
+      activate: "تفعيل",
+      deactivate: "إلغاء التفعيل",
+      activateSuccess: "أصبحت {name} نشطة للمنتجات الجديدة.",
+      deactivateSuccess: "أصبحت {name} غير نشطة ومخفية من العروض الجديدة.",
+      loadError: "تعذر تحميل الفئات. يرجى المحاولة مرة أخرى.",
+      updateError: "تعذر تحديث هذه الفئة. يرجى المحاولة مرة أخرى.",
+      emptyTitle: "لا توجد فئات",
+      emptyDescription: "ستظهر فئات المنصة هنا بعد إعدادها.",
+    },
     validation: {
       name: "اسم المنتج مطلوب.",
       category: "اختر فئة.",
