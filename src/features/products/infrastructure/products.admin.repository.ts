@@ -157,10 +157,14 @@ export async function getVendorProduct(
   vendorId: string,
   productId: string,
 ): Promise<Product | null> {
+  const product = await getProductById(productId);
+  if (!product || product.vendorId !== vendorId) return null;
+  return product;
+}
+
+export async function getProductById(productId: string): Promise<Product | null> {
   const snap = await productsCollection().doc(productId).get();
   if (!snap.exists) return null;
-  const data = snap.data() as ProductDoc;
-  if (data.vendorId !== vendorId) return null;
   return toProduct(snap);
 }
 

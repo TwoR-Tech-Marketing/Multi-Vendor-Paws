@@ -1,5 +1,5 @@
-import { ComingSoonSection } from "@/features/vendor/presentation/ComingSoonSection";
+import { EarningsSection } from "@/features/financials/presentation/EarningsSection";
 
 export default function EarningsPage() {
-  return <ComingSoonSection />;
+  return <EarningsSection />;
 }

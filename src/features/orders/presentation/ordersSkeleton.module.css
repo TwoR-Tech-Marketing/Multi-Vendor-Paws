@@ -1,0 +1,39 @@
+.sectionStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.filterSkeleton {
+  width: 180px;
+  height: var(--control-height);
+  border-radius: var(--radius-control);
+}
+
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.tableHeader,
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 0.6fr 0.8fr 0.9fr 1.1fr 0.8fr;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tableHeader {
+  background: var(--color-surface-2);
+}
+
+.actionSkeleton {
+  width: 88px;
+  height: var(--control-height);
+  border-radius: var(--radius-sm);
+}

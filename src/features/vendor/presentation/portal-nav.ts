@@ -87,6 +87,7 @@ export function resolvePortalNavId(pathname: string): PortalNavId {
 }
 
 const PRODUCT_EDIT_PATH = /^\/products\/[^/]+\/edit\/?$/;
+const ORDER_DETAIL_PATH = /^\/orders\/[^/]+\/?$/;
 
 export function resolvePortalPageMeta(pathname: string, strings: AppStrings): PortalPageMeta {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
@@ -102,6 +103,13 @@ export function resolvePortalPageMeta(pathname: string, strings: AppStrings): Po
     return {
       title: strings.pages.products.editTitle,
       subtitle: strings.pages.products.editSubtitle,
+    };
+  }
+
+  if (ORDER_DETAIL_PATH.test(normalizedPath) && normalizedPath !== Routes.vendor.orders) {
+    return {
+      title: strings.orders.detailTitle,
+      subtitle: strings.orders.detailSubtitle,
     };
   }
 
