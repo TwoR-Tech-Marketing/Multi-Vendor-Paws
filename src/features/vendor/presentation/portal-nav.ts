@@ -85,3 +85,26 @@ export function resolvePortalNavId(pathname: string): PortalNavId {
   if (pathname.startsWith(Routes.vendor.earnings)) return "earnings";
   return "dashboard";
 }
+
+const PRODUCT_EDIT_PATH = /^\/products\/[^/]+\/edit\/?$/;
+
+export function resolvePortalPageMeta(pathname: string, strings: AppStrings): PortalPageMeta {
+  const normalizedPath = pathname.replace(/\/$/, "") || "/";
+
+  if (normalizedPath === Routes.vendor.productNew) {
+    return {
+      title: strings.pages.products.newTitle,
+      subtitle: strings.pages.products.newSubtitle,
+    };
+  }
+
+  if (PRODUCT_EDIT_PATH.test(normalizedPath)) {
+    return {
+      title: strings.pages.products.editTitle,
+      subtitle: strings.pages.products.editSubtitle,
+    };
+  }
+
+  const navId = resolvePortalNavId(pathname);
+  return getPortalPageMeta(strings)[navId];
+}

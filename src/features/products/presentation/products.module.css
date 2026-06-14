@@ -5,126 +5,76 @@
   gap: var(--space-4);
 }
 
-/* ===== Tabs (compact, end-aligned) ===== */
-.tabBar {
-  display: inline-flex;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  width: fit-content;
-  max-width: 100%;
-  margin-inline-start: auto;
+/* ===== POS-style underline tabs ===== */
+.tabsBar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
 }
 
-.tab {
-  flex: 0 0 auto;
-  border: none;
-  background: transparent;
-  color: var(--color-text-muted);
-  font-size: 14px;
-  font-weight: 600;
-  padding: 10px var(--space-4);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-family: var(--font);
-  white-space: nowrap;
-  transition:
-    background var(--duration-base),
-    color var(--duration-base),
-    box-shadow var(--duration-base);
-}
-
-.tab:hover {
-  color: var(--color-text);
-  background: var(--color-surface-2);
-}
-
-.tabActive {
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  box-shadow: var(--shadow-sm);
-}
-
-/* ===== Command bar — filters + search + primary action ===== */
-.commandBar {
+.tabsHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  width: 100%;
+  padding-inline: var(--space-2);
 }
 
-.commandBarFilters {
+.tabsList {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  flex: 1 1 auto;
-  min-width: 0;
+  gap: var(--space-8);
 }
 
-.commandBarActions {
+.tabItem {
   display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  flex: 1 1 0;
-  min-width: 0;
-  justify-content: flex-end;
-}
-
-.filterSelect {
-  min-width: 148px;
-  max-width: 200px;
-}
-
-.searchBox {
-  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: var(--space-2);
-  flex: 1 1 auto;
-  width: clamp(280px, 32vw, 440px);
-  max-width: 100%;
-  min-width: 0;
-  padding-inline: var(--space-4);
-  height: var(--control-height);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface-2);
-  color: var(--color-text-muted);
-  transition:
-    border-color var(--duration-base),
-    box-shadow var(--duration-base),
-    background var(--duration-base);
-}
-
-.searchBox:focus-within {
-  border-color: var(--color-primary);
-  background: var(--color-surface);
-  box-shadow: 0 0 0 3px var(--color-primary-soft);
-}
-
-.searchBox input {
-  flex: 1;
   border: none;
   background: transparent;
-  font-size: 14px;
+  padding: 0;
+  cursor: pointer;
   font-family: var(--font);
-  color: var(--color-text);
-  min-width: 0;
 }
 
-.searchBox input:focus {
-  outline: none;
+.tabTextActive {
+  color: var(--color-primary);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.25;
 }
 
-.searchBox input::placeholder {
+.tabTextInactive {
   color: var(--color-text-muted);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.25;
+  transition: color var(--duration-base);
+}
+
+.tabItem:hover .tabTextInactive {
+  color: var(--color-text);
+}
+
+.tabIndicatorActive {
+  height: 2px;
+  width: 100%;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--color-primary);
+}
+
+.tabIndicatorInactive {
+  height: 2px;
+  width: 100%;
+  background: transparent;
+}
+
+.tabsDivider {
+  height: 1px;
+  width: 100%;
+  background: var(--color-border);
 }
 
 /* ===== Content panel ===== */
@@ -570,35 +520,6 @@
 
 /* ===== Responsive ===== */
 @media (max-width: 900px) {
-  .commandBar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .commandBarFilters {
-    flex-wrap: wrap;
-  }
-
-  .commandBarActions {
-    flex-direction: column-reverse;
-    align-items: stretch;
-    flex: 1 1 auto;
-  }
-
-  .searchBox {
-    width: 100%;
-    flex: 1 1 auto;
-  }
-
-  .btnPrimary {
-    width: 100%;
-  }
-
-  .filterSelect {
-    flex: 1 1 calc(50% - var(--space-2));
-    max-width: none;
-  }
-
   .formGrid {
     grid-template-columns: 1fr;
   }
@@ -609,11 +530,28 @@
   }
 }
 
-@media (max-width: 640px) {
-  .filterSelect {
-    flex: 1 1 100%;
+@media (max-width: 768px) {
+  .tabsHeader {
+    padding-inline: var(--space-1);
   }
 
+  .tabsList {
+    gap: var(--space-6);
+    overflow-x: auto;
+    max-width: 100%;
+    padding-bottom: var(--space-2);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .tabTextActive,
+  .tabTextInactive {
+    font-size: 16px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 640px) {
   .dataTable th:nth-child(4),
   .dataTable td:nth-child(4) {
     display: none;

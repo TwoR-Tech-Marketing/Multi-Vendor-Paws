@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
 
+import { PortalSelect } from "@/components/ui/select/PortalSelect";
 import type { ProductStatus } from "@/features/products/domain/types";
 import {
   countActiveProductFilters,
@@ -15,11 +16,6 @@ import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./ProductsFilterPopover.module.css";
 
-type FilterOption = {
-  value: string;
-  label: string;
-};
-
 type ProductsFilterPopoverProps = {
   open: boolean;
   onClose: () => void;
@@ -28,39 +24,6 @@ type ProductsFilterPopoverProps = {
   anchorRef: RefObject<HTMLButtonElement | null>;
   categoryOptions: { value: string; label: string }[];
 };
-
-function FilterOptionList({
-  options,
-  value,
-  onChange,
-}: {
-  options: FilterOption[];
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <div className={styles.optionList} role="radiogroup">
-      {options.map((option) => {
-        const selected = option.value === value;
-        return (
-          <button
-            key={option.value}
-            type="button"
-            role="radio"
-            aria-checked={selected}
-            className={`${styles.option} ${selected ? styles.optionSelected : ""}`}
-            onClick={() => onChange(option.value)}
-          >
-            <span className={`${styles.radio} ${selected ? styles.radioSelected : ""}`}>
-              <span className={`${styles.radioDot} ${selected ? styles.radioDotSelected : ""}`} />
-            </span>
-            <span className={styles.optionLabel}>{option.label}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 export function ProductsFilterPopover({
   open,
@@ -72,7 +35,7 @@ export function ProductsFilterPopover({
 }: ProductsFilterPopoverProps) {
   const strings = useStrings();
   const [draft, setDraft] = useState<ProductListFilters>(appliedFilters);
-  const popoverLayout = useAnchoredPopoverLayout(open, anchorRef, { maxWidthPx: 382 });
+  const popoverLayout = useAnchoredPopoverLayout(open, anchorRef, { maxWidthPx: 360 });
 
   useEffect(() => {
     if (open) setDraft(appliedFilters);
@@ -131,7 +94,8 @@ export function ProductsFilterPopover({
         className={styles.popover}
         style={{
           ...popoverLayout,
-          overflow: "hidden",
+          overflow: "visible",
+          overflowY: "visible",
         }}
         role="dialog"
         aria-modal="true"
@@ -166,28 +130,34 @@ export function ProductsFilterPopover({
         </div>
 
         <div className={styles.body}>
-          <section>
-            <h3 className={styles.sectionTitle}>{strings.products.filterStatus}</h3>
-            <FilterOptionList
-              options={statusOptions}
+          <div className={styles.formGroup}>
+            <span className={styles.sectionTitle}>{strings.products.filterStatus}</span>
+            <PortalSelect
+              className={styles.filterSelect}
               value={draft.status}
+              options={statusOptions}
               onChange={(value) =>
                 setDraft((current) => ({
                   ...current,
                   status: value as ProductStatus | "any",
                 }))
               }
+              ariaLabel={strings.products.filterStatus}
             />
-          </section>
+          </div>
 
-          <section>
-            <h3 className={styles.sectionTitle}>{strings.products.filterCategory}</h3>
-            <FilterOptionList
-              options={allCategoryOptions}
+          <div className={styles.formGroup}>
+            <span className={styles.sectionTitle}>{strings.products.filterCategory}</span>
+            <PortalSelect
+              className={styles.filterSelect}
               value={draft.categoryId}
-              onChange={(value) => setDraft((current) => ({ ...current, categoryId: value }))}
+              options={allCategoryOptions}
+              onChange={(value) =>
+                setDraft((current) => ({ ...current, categoryId: value }))
+              }
+              ariaLabel={strings.products.filterCategory}
             />
-          </section>
+          </div>
         </div>
 
         <div className={styles.footer}>

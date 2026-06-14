@@ -78,13 +78,6 @@ export function ProductFormSection({ mode, productId }: ProductFormSectionProps)
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const pageCopy =
-    mode === "create" ? strings.pages.products.newTitle : strings.pages.products.editTitle;
-  const pageSubtitle =
-    mode === "create"
-      ? strings.pages.products.newSubtitle
-      : strings.pages.products.editSubtitle;
-
   const statusOptions = useMemo(
     () => [
       { value: "active", label: strings.products.statusLabels.active },
@@ -288,12 +281,6 @@ export function ProductFormSection({ mode, productId }: ProductFormSectionProps)
 
   return (
     <section>
-      <div className={styles.formHeader}>
-        <span className={styles.phaseBadge}>{strings.products.phaseBadge}</span>
-        <h2>{pageCopy}</h2>
-        <p>{pageSubtitle}</p>
-      </div>
-
       {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
       {success ? (
         <div className={`${styles.alert} ${styles.alertSuccess}`}>{success}</div>

@@ -1,6 +1,5 @@
 import {
   SkeletonBox,
-  SkeletonButton,
   SkeletonText,
 } from "@/components/ui/skeleton";
 import { Strings } from "@/constants/strings";
@@ -15,14 +14,11 @@ export function ProductsSkeleton() {
       aria-label={Strings.common.loading}
       aria-busy="true"
     >
-      <div className={styles.commandBar}>
-        <div className={styles.commandBarFilters}>
+      <div className={styles.actionsRow}>
+        <SkeletonBox className={styles.searchSkeleton} />
+        <div className={styles.actionButtons}>
           <SkeletonBox className={styles.filterSkeleton} />
-          <SkeletonBox className={styles.filterSkeleton} />
-        </div>
-        <div className={styles.commandBarActions}>
-          <SkeletonBox className={styles.searchSkeleton} />
-          <SkeletonButton width={140} />
+          <SkeletonBox className={styles.exportSkeleton} />
         </div>
       </div>
 

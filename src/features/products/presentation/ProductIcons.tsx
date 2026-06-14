@@ -61,3 +61,33 @@ export function IconImageAdd(props: IconProps) {
     </svg>
   );
 }
+
+/** POS staff directory — filter funnel */
+export function IconFilter(props: IconProps) {
+  return (
+    <svg {...base} width={24} height={24} {...props}>
+      <path d="M22 3H2L10 12.46V19L14 21V12.46L22 3Z" />
+    </svg>
+  );
+}
+
+/** POS staff directory — export */
+export function IconExport(props: IconProps) {
+  return (
+    <svg {...base} width={24} height={24} {...props}>
+      <path d="M9 11V17L11 19V11L7 7H17L13 11V14" />
+      <path d="M22 22L2 2" />
+    </svg>
+  );
+}
+
+/** POS staff header — add circle */
+export function IconAddCircle(props: IconProps) {
+  return (
+    <svg {...base} width={24} height={24} {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M8 12h8" />
+      <path d="M12 16V8" />
+    </svg>
+  );
+}

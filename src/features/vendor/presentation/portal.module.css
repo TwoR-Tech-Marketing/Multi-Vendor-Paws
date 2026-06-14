@@ -220,6 +220,39 @@
   line-height: 1.4;
 }
 
+.pageHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+.headerPrimaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--gradient-primary);
+  color: var(--color-icon-on-primary);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: var(--color-primary-shadow);
+  transition: opacity var(--duration-base);
+}
+
+.headerPrimaryBtn:hover {
+  opacity: 0.92;
+}
+
 .menuBtn {
   display: none;
   background: var(--color-surface);

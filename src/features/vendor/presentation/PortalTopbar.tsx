@@ -2,6 +2,7 @@
 
 import { NotificationBellButton } from "@/features/vendor/presentation/NotificationBellButton";
 import { PortalBackButton } from "@/features/vendor/presentation/PortalBackButton";
+import { usePortalHeaderActions } from "@/features/vendor/presentation/PortalHeaderActionsContext";
 import { IconMenu } from "@/features/vendor/presentation/PortalNavIcons";
 import { StoreAvatarButton } from "@/features/vendor/presentation/StoreAvatarButton";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
@@ -24,6 +25,7 @@ export function PortalTopbar({
   isMenuOpen,
 }: PortalTopbarProps) {
   const strings = useStrings();
+  const { actions: headerActions } = usePortalHeaderActions();
 
   return (
     <header className={styles.topbar}>
@@ -53,6 +55,9 @@ export function PortalTopbar({
             <h1>{title}</h1>
             <p>{subtitle}</p>
           </div>
+          {headerActions ? (
+            <div className={styles.pageHeaderActions}>{headerActions}</div>
+          ) : null}
         </div>
       </div>
     </header>

@@ -3,10 +3,8 @@
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 
-import {
-  getPortalPageMeta,
-  resolvePortalNavId,
-} from "@/features/vendor/presentation/portal-nav";
+import { resolvePortalPageMeta } from "@/features/vendor/presentation/portal-nav";
+import { PortalHeaderActionsProvider } from "@/features/vendor/presentation/PortalHeaderActionsContext";
 import { PortalSidebar } from "@/features/vendor/presentation/PortalSidebar";
 import { PortalTopbar } from "@/features/vendor/presentation/PortalTopbar";
 import { usePortalCanGoBack } from "@/features/vendor/presentation/usePortalCanGoBack";
@@ -24,8 +22,7 @@ export function PortalShell({ children }: PortalShellProps) {
   const canGoBack = usePortalCanGoBack();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const navId = resolvePortalNavId(pathname);
-  const pageMeta = getPortalPageMeta(strings)[navId];
+  const pageMeta = resolvePortalPageMeta(pathname, strings);
 
   const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
   const openDrawer = useCallback(() => setIsDrawerOpen(true), []);
@@ -49,18 +46,20 @@ export function PortalShell({ children }: PortalShellProps) {
         aria-hidden="true"
       />
 
-      <PortalSidebar isOpen={isDrawerOpen} onClose={closeDrawer} />
+      <PortalHeaderActionsProvider>
+        <PortalSidebar isOpen={isDrawerOpen} onClose={closeDrawer} />
 
-      <div className={styles.main}>
-        <PortalTopbar
-          title={pageMeta.title}
-          subtitle={pageMeta.subtitle}
-          showBack={canGoBack}
-          onMenuOpen={openDrawer}
-          isMenuOpen={isDrawerOpen}
-        />
-        <div className={styles.content}>{children}</div>
-      </div>
+        <div className={styles.main}>
+          <PortalTopbar
+            title={pageMeta.title}
+            subtitle={pageMeta.subtitle}
+            showBack={canGoBack}
+            onMenuOpen={openDrawer}
+            isMenuOpen={isDrawerOpen}
+          />
+          <div className={styles.content}>{children}</div>
+        </div>
+      </PortalHeaderActionsProvider>
     </div>
   );
 }

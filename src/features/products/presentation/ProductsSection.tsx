@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
-import { PortalSelect } from "@/components/ui/select/PortalSelect";
 import { Routes } from "@/constants/routes";
 import {
   archiveVendorProductFromApi,
@@ -13,8 +12,13 @@ import {
   fetchVendorProductsFromApi,
 } from "@/features/products/application/products.api";
 import { formatEgp } from "@/features/products/domain/currency";
-import type { Product, ProductStatus } from "@/features/products/domain/types";
-import { IconEdit, IconPlus, IconSearch, IconTrash } from "@/features/products/presentation/ProductIcons";
+import type { Product } from "@/features/products/domain/types";
+import { IconEdit, IconTrash } from "@/features/products/presentation/ProductIcons";
+import {
+  EMPTY_PRODUCT_LIST_FILTERS,
+  type ProductListFilters,
+} from "@/features/products/lib/productListFilters";
+import { ProductsListActions } from "@/features/products/presentation/ProductsListActions";
 import { ProductStatusBadge } from "@/features/products/presentation/ProductStatusBadge";
 import { ProductsSkeleton } from "@/features/products/presentation/ProductsSkeleton";
 import { IconProducts } from "@/features/vendor/presentation/PortalNavIcons";
@@ -24,16 +28,13 @@ import styles from "./products.module.css";
 
 const LOW_STOCK_THRESHOLD = 15;
 
-type StatusFilter = ProductStatus | "any";
-
 export function ProductsSection() {
   const strings = useStrings();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<{ value: string; label: string }[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("any");
-  const [categoryFilter, setCategoryFilter] = useState("any");
+  const [filters, setFilters] = useState<ProductListFilters>(EMPTY_PRODUCT_LIST_FILTERS);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -62,8 +63,8 @@ export function ProductsSection() {
 
     try {
       const productPage = await fetchVendorProductsFromApi({
-        status: statusFilter === "any" ? undefined : statusFilter,
-        categoryId: categoryFilter === "any" ? undefined : categoryFilter,
+        status: filters.status === "any" ? undefined : filters.status,
+        categoryId: filters.categoryId === "any" ? undefined : filters.categoryId,
         query: search.trim() || undefined,
         pageSize: 50,
       });
@@ -74,10 +75,10 @@ export function ProductsSection() {
       setIsLoading(false);
     }
   }, [
-    categoryFilter,
+    filters.categoryId,
+    filters.status,
     products.length,
     search,
-    statusFilter,
     strings.products.loadError,
   ]);
 
@@ -94,32 +95,13 @@ export function ProductsSection() {
     void loadProducts();
   }, [loadProducts]);
 
-  const statusOptions = useMemo(
-    () => [
-      { value: "any", label: strings.products.filterAllStatuses },
-      { value: "active", label: strings.products.statusLabels.active },
-      { value: "inactive", label: strings.products.statusLabels.inactive },
-      { value: "out_of_stock", label: strings.products.statusLabels.out_of_stock },
-    ],
-    [strings.products],
-  );
-
-  const categoryOptions = useMemo(
-    () => [
-      { value: "any", label: strings.products.filterAllCategories },
-      ...categories,
-    ],
-    [categories, strings.products.filterAllCategories],
-  );
-
   const isFiltered =
-    search.trim().length > 0 || statusFilter !== "any" || categoryFilter !== "any";
+    search.trim().length > 0 || filters.status !== "any" || filters.categoryId !== "any";
 
   function clearFilters() {
     setSearchInput("");
     setSearch("");
-    setStatusFilter("any");
-    setCategoryFilter("any");
+    setFilters(EMPTY_PRODUCT_LIST_FILTERS);
   }
 
   async function confirmDelete() {
@@ -147,41 +129,14 @@ export function ProductsSection() {
 
   return (
     <section className={styles.sectionStack}>
-      <div className={styles.commandBar}>
-        <div className={styles.commandBarFilters}>
-          <PortalSelect
-            className={styles.filterSelect}
-            value={statusFilter}
-            options={statusOptions}
-            onChange={(value) => setStatusFilter(value as StatusFilter)}
-            ariaLabel={strings.products.filterStatus}
-          />
-          <PortalSelect
-            className={styles.filterSelect}
-            value={categoryFilter}
-            options={categoryOptions}
-            onChange={setCategoryFilter}
-            ariaLabel={strings.products.filterCategory}
-          />
-        </div>
-
-        <div className={styles.commandBarActions}>
-          <label className={styles.searchBox}>
-            <IconSearch />
-            <input
-              type="search"
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-              placeholder={strings.products.searchPlaceholder}
-              aria-label={strings.products.searchPlaceholder}
-            />
-          </label>
-          <Link href={Routes.vendor.productNew} className={styles.btnPrimary}>
-            <IconPlus />
-            {strings.products.addProduct}
-          </Link>
-        </div>
-      </div>
+      <ProductsListActions
+        searchQuery={searchInput}
+        onSearchChange={setSearchInput}
+        filters={filters}
+        onFilterChange={setFilters}
+        categoryOptions={categories}
+        productsToExport={products}
+      />
 
       {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
       {success ? (
