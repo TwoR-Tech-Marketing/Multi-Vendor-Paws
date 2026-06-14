@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 
 import { Routes } from "@/constants/routes";
 import { CategoriesSection } from "@/features/products/presentation/CategoriesSection";
 import { IconAddCircle } from "@/features/products/presentation/ProductIcons";
 import { ProductsSection } from "@/features/products/presentation/ProductsSection";
-import { usePortalHeaderActions } from "@/features/vendor/presentation/PortalHeaderActionsContext";
-import portalStyles from "@/features/vendor/presentation/portal.module.css";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./products.module.css";
@@ -24,7 +22,6 @@ export function ProductsPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const strings = useStrings();
-  const { setActions } = usePortalHeaderActions();
   const activeTab = resolveTab(searchParams.get("tab"));
 
   const setTab = useCallback(
@@ -40,22 +37,6 @@ export function ProductsPageClient() {
     },
     [router, searchParams],
   );
-
-  useEffect(() => {
-    if (activeTab !== "catalog") {
-      setActions(null);
-      return;
-    }
-
-    setActions(
-      <Link href={Routes.vendor.productNew} className={portalStyles.headerPrimaryBtn}>
-        <IconAddCircle width={20} height={20} />
-        {strings.products.addProduct}
-      </Link>,
-    );
-
-    return () => setActions(null);
-  }, [activeTab, setActions, strings.products.addProduct]);
 
   return (
     <div className={styles.page}>
@@ -109,6 +90,13 @@ export function ProductsPageClient() {
               />
             </button>
           </div>
+
+          {activeTab === "catalog" ? (
+            <Link href={Routes.vendor.productNew} className={styles.addProductBtn}>
+              <IconAddCircle width={20} height={20} />
+              {strings.products.addProduct}
+            </Link>
+          ) : null}
         </div>
         <div className={styles.tabsDivider} aria-hidden />
       </div>

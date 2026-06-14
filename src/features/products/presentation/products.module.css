@@ -77,6 +77,32 @@
   background: var(--color-border);
 }
 
+.addProductBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--gradient-primary);
+  color: var(--color-icon-on-primary);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: var(--color-primary-shadow);
+  transition: opacity var(--duration-base);
+}
+
+.addProductBtn:hover {
+  opacity: 0.92;
+}
+
 /* ===== Content panel ===== */
 .panel {
   background: var(--color-surface);
@@ -532,6 +558,9 @@
 
 @media (max-width: 768px) {
   .tabsHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
     padding-inline: var(--space-1);
   }
 
@@ -548,6 +577,10 @@
   .tabTextInactive {
     font-size: 16px;
     white-space: nowrap;
+  }
+
+  .addProductBtn {
+    width: 100%;
   }
 }
 
