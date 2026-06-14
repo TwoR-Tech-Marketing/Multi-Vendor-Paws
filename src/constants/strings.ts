@@ -194,6 +194,7 @@ export const Strings = {
       "Add your first product to start selling through the Tender Paws mobile app.",
     emptyFilteredTitle: "No matching products",
     emptyFilteredDescription: "Try adjusting your search or filters.",
+    clearFilters: "Clear filters",
     loadError: "We couldn't load your products. Please try again.",
     saveError: "We couldn't save this product. Please try again.",
     deleteError: "We couldn't remove this product. Please try again.",

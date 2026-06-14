@@ -1,35 +1,41 @@
-.toolbar {
+.commandBar {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  margin-bottom: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
 }
 
-.toolbarRight {
+.commandBarFilters {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-  margin-inline-start: auto;
+  flex: 1 1 auto;
 }
 
-.filters {
+.commandBarActions {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-3);
-  margin-bottom: var(--space-4);
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: flex-end;
 }
 
 .filterSkeleton {
-  width: 160px;
+  width: 148px;
   height: var(--control-height);
   border-radius: var(--radius-control);
 }
 
 .searchSkeleton {
-  width: min(100%, 280px);
+  flex: 1 1 auto;
+  width: clamp(280px, 32vw, 440px);
+  max-width: 100%;
   height: var(--control-height);
   border-radius: var(--radius-control);
 }
@@ -48,7 +54,7 @@
   grid-template-columns: 2.2fr 1fr 0.8fr 0.7fr 0.9fr 0.8fr;
   gap: var(--space-4);
   align-items: center;
-  padding: 14px 16px;
+  padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -59,13 +65,13 @@
 .productCell {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .thumbSkeleton {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
   flex-shrink: 0;
 }
 
@@ -85,10 +91,47 @@
 .actionSkeleton {
   width: 36px;
   height: 36px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
+}
+
+.categoryRow {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 1fr;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.categoryActionSkeleton {
+  width: 120px;
+  height: var(--control-height);
+  border-radius: var(--radius-control);
+  justify-self: end;
+}
+
+.sectionStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
 @media (max-width: 900px) {
+  .commandBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .commandBarActions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    flex: 1 1 auto;
+  }
+
+  .searchSkeleton {
+    width: 100%;
+  }
+
   .tableHeader,
   .row {
     grid-template-columns: 2fr 0.8fr 0.7fr 0.9fr 0.8fr;

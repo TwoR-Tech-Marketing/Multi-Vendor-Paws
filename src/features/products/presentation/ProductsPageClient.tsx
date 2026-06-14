@@ -36,7 +36,7 @@ export function ProductsPageClient() {
   );
 
   return (
-    <div>
+    <div className={styles.page}>
       <div className={styles.tabBar} role="tablist" aria-label={strings.products.tabsLabel}>
         <button
           type="button"

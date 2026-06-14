@@ -7,8 +7,8 @@ import {
   updateProductCategoryStatusFromApi,
 } from "@/features/products/application/products.api";
 import type { ProductCategoryOption } from "@/features/products/application/products.api";
+import { CategoriesSkeleton } from "@/features/products/presentation/CategoriesSkeleton";
 import { ProductStatusBadge } from "@/features/products/presentation/ProductStatusBadge";
-import { ProductsSkeleton } from "@/features/products/presentation/ProductsSkeleton";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./products.module.css";
@@ -84,16 +84,12 @@ export function CategoriesSection() {
   }
 
   if (isLoading) {
-    return <ProductsSkeleton />;
+    return <CategoriesSkeleton />;
   }
 
   return (
-    <section>
-      <div className={styles.formHeader}>
-        <span className={styles.phaseBadge}>{strings.products.categories.badge}</span>
-        <h2>{strings.products.categories.title}</h2>
-        <p>{strings.products.categories.subtitle}</p>
-      </div>
+    <section className={styles.sectionStack}>
+      <p className={styles.sectionHint}>{strings.products.categories.subtitle}</p>
 
       {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
       {success ? (

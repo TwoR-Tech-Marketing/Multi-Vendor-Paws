@@ -17,6 +17,7 @@ import type { Product, ProductStatus } from "@/features/products/domain/types";
 import { IconEdit, IconPlus, IconSearch, IconTrash } from "@/features/products/presentation/ProductIcons";
 import { ProductStatusBadge } from "@/features/products/presentation/ProductStatusBadge";
 import { ProductsSkeleton } from "@/features/products/presentation/ProductsSkeleton";
+import { IconProducts } from "@/features/vendor/presentation/PortalNavIcons";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./products.module.css";
@@ -114,6 +115,13 @@ export function ProductsSection() {
   const isFiltered =
     search.trim().length > 0 || statusFilter !== "any" || categoryFilter !== "any";
 
+  function clearFilters() {
+    setSearchInput("");
+    setSearch("");
+    setStatusFilter("any");
+    setCategoryFilter("any");
+  }
+
   async function confirmDelete() {
     if (!deleteTarget) return;
 
@@ -138,10 +146,26 @@ export function ProductsSection() {
   }
 
   return (
-    <section>
-      <div className={styles.toolbar}>
-        <span className={styles.phaseBadge}>{strings.products.phaseBadge}</span>
-        <div className={styles.toolbarRight}>
+    <section className={styles.sectionStack}>
+      <div className={styles.commandBar}>
+        <div className={styles.commandBarFilters}>
+          <PortalSelect
+            className={styles.filterSelect}
+            value={statusFilter}
+            options={statusOptions}
+            onChange={(value) => setStatusFilter(value as StatusFilter)}
+            ariaLabel={strings.products.filterStatus}
+          />
+          <PortalSelect
+            className={styles.filterSelect}
+            value={categoryFilter}
+            options={categoryOptions}
+            onChange={setCategoryFilter}
+            ariaLabel={strings.products.filterCategory}
+          />
+        </div>
+
+        <div className={styles.commandBarActions}>
           <label className={styles.searchBox}>
             <IconSearch />
             <input
@@ -159,23 +183,6 @@ export function ProductsSection() {
         </div>
       </div>
 
-      <div className={styles.filtersRow}>
-        <PortalSelect
-          className={styles.filterSelect}
-          value={statusFilter}
-          options={statusOptions}
-          onChange={(value) => setStatusFilter(value as StatusFilter)}
-          ariaLabel={strings.products.filterStatus}
-        />
-        <PortalSelect
-          className={styles.filterSelect}
-          value={categoryFilter}
-          options={categoryOptions}
-          onChange={setCategoryFilter}
-          ariaLabel={strings.products.filterCategory}
-        />
-      </div>
-
       {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
       {success ? (
         <div className={`${styles.alert} ${styles.alertSuccess}`}>{success}</div>
@@ -184,6 +191,9 @@ export function ProductsSection() {
       <article className={styles.panel}>
         {products.length === 0 ? (
           <div className={styles.emptyState}>
+            <div className={styles.emptyIcon} aria-hidden>
+              <IconProducts width={26} height={26} />
+            </div>
             <h3>
               {isFiltered
                 ? strings.products.emptyFilteredTitle
@@ -194,16 +204,13 @@ export function ProductsSection() {
                 ? strings.products.emptyFilteredDescription
                 : strings.products.emptyDescription}
             </p>
-            {!isFiltered ? (
-              <Link href={Routes.vendor.productNew} className={styles.btnPrimary}>
-                <IconPlus />
-                {strings.products.addProduct}
-              </Link>
-            ) : (
-              <button type="button" className={styles.btnSecondary} onClick={() => void loadProducts()}>
-                {strings.common.retry}
-              </button>
-            )}
+            {isFiltered ? (
+              <div className={styles.emptyStateAction}>
+                <button type="button" className={styles.btnSecondary} onClick={clearFilters}>
+                  {strings.products.clearFilters}
+                </button>
+              </div>
+            ) : null}
           </div>
         ) : (
           <div className={styles.tableWrap}>

@@ -9,18 +9,21 @@ import styles from "./productsSkeleton.module.css";
 
 export function ProductsSkeleton() {
   return (
-    <section role="status" aria-label={Strings.common.loading} aria-busy="true">
-      <div className={styles.toolbar}>
-        <SkeletonText width="96px" />
-        <div className={styles.toolbarRight}>
+    <section
+      className={styles.sectionStack}
+      role="status"
+      aria-label={Strings.common.loading}
+      aria-busy="true"
+    >
+      <div className={styles.commandBar}>
+        <div className={styles.commandBarFilters}>
+          <SkeletonBox className={styles.filterSkeleton} />
+          <SkeletonBox className={styles.filterSkeleton} />
+        </div>
+        <div className={styles.commandBarActions}>
           <SkeletonBox className={styles.searchSkeleton} />
           <SkeletonButton width={140} />
         </div>
-      </div>
-
-      <div className={styles.filters}>
-        <SkeletonBox className={styles.filterSkeleton} />
-        <SkeletonBox className={styles.filterSkeleton} />
       </div>
 
       <article className={styles.panel}>

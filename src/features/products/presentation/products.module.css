@@ -1,78 +1,112 @@
-.tabBar {
+/* ===== Page shell ===== */
+.page {
   display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
-  padding: 4px;
-  background: var(--color-surface-2);
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ===== Tabs (compact, end-aligned) ===== */
+.tabBar {
+  display: inline-flex;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
   width: fit-content;
   max-width: 100%;
+  margin-inline-start: auto;
 }
 
 .tab {
+  flex: 0 0 auto;
   border: none;
   background: transparent;
   color: var(--color-text-muted);
   font-size: 14px;
   font-weight: 600;
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 10px var(--space-4);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-family: var(--font);
-  transition: background var(--duration-fast), color var(--duration-fast);
+  white-space: nowrap;
+  transition:
+    background var(--duration-base),
+    color var(--duration-base),
+    box-shadow var(--duration-base);
 }
 
 .tab:hover {
   color: var(--color-text);
+  background: var(--color-surface-2);
 }
 
 .tabActive {
-  background: var(--color-surface);
+  background: var(--color-primary-soft);
   color: var(--color-primary);
   box-shadow: var(--shadow-sm);
 }
 
-.toolbar {
+/* ===== Command bar — filters + search + primary action ===== */
+.commandBar {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  margin-bottom: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
 }
 
-.toolbarRight {
+.commandBarFilters {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-  margin-inline-start: auto;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
-.phaseBadge {
-  display: inline-flex;
+.commandBarActions {
+  display: flex;
   align-items: center;
-  padding: 6px 12px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  gap: var(--space-3);
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+.filterSelect {
+  min-width: 148px;
+  max-width: 200px;
 }
 
 .searchBox {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  min-width: min(100%, 280px);
-  padding: 0 14px;
+  flex: 1 1 auto;
+  width: clamp(280px, 32vw, 440px);
+  max-width: 100%;
+  min-width: 0;
+  padding-inline: var(--space-4);
   height: var(--control-height);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
   color: var(--color-text-muted);
+  transition:
+    border-color var(--duration-base),
+    box-shadow var(--duration-base),
+    background var(--duration-base);
+}
+
+.searchBox:focus-within {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
 .searchBox input {
@@ -89,16 +123,11 @@
   outline: none;
 }
 
-.filtersRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
+.searchBox input::placeholder {
+  color: var(--color-text-muted);
 }
 
-.filterSelect {
-  min-width: 160px;
-}
-
+/* ===== Content panel ===== */
 .panel {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -119,11 +148,11 @@
 
 .dataTable th {
   text-align: start;
-  padding: 14px 16px;
-  font-size: 12px;
+  padding: var(--space-3) var(--space-4);
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   color: var(--color-text-muted);
   background: var(--color-surface-2);
   border-bottom: 1px solid var(--color-border);
@@ -131,9 +160,13 @@
 }
 
 .dataTable td {
-  padding: 14px 16px;
+  padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--color-border);
   vertical-align: middle;
+}
+
+.dataTable tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .dataTable tbody tr:hover {
@@ -143,14 +176,14 @@
 .productCell {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 220px;
+  gap: var(--space-3);
+  min-width: 200px;
 }
 
 .thumb {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   overflow: hidden;
@@ -165,8 +198,9 @@
 
 .productMeta strong {
   display: block;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text);
+  line-height: 1.35;
 }
 
 .productMeta small {
@@ -189,14 +223,17 @@
   width: 36px;
   height: 36px;
   border: 1px solid var(--color-border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: var(--color-surface);
   color: var(--color-text-muted);
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: color var(--duration-fast), border-color var(--duration-fast),
-    background var(--duration-fast);
+  text-decoration: none;
+  transition:
+    color var(--duration-base),
+    border-color var(--duration-base),
+    background var(--duration-base);
 }
 
 .iconBtn:hover {
@@ -211,13 +248,14 @@
   background: var(--color-error-bg);
 }
 
+/* ===== Status pills ===== */
 .pill {
   display: inline-flex;
   align-items: center;
   padding: 4px 10px;
   border-radius: var(--radius-full);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -239,29 +277,39 @@
 .pillMuted {
   background: var(--color-surface-2);
   color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
 }
 
 .stockLow {
   color: var(--color-warning);
-  font-weight: 700;
+  font-weight: 600;
 }
 
+/* ===== Buttons ===== */
 .btnPrimary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
+  height: var(--control-height);
+  padding-inline: var(--space-4);
   background: var(--gradient-primary);
-  color: #fff;
+  color: var(--color-icon-on-primary);
   border: none;
-  border-radius: 10px;
-  padding: 12px 18px;
-  font-weight: 700;
+  border-radius: var(--radius-control);
+  font-weight: 600;
   font-size: 14px;
+  line-height: 1;
   cursor: pointer;
   font-family: var(--font);
   box-shadow: var(--color-primary-shadow);
   text-decoration: none;
+  white-space: nowrap;
+  transition: opacity var(--duration-base);
+}
+
+.btnPrimary:hover {
+  opacity: 0.92;
 }
 
 .btnPrimary:disabled {
@@ -274,42 +322,75 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
+  height: var(--control-height);
+  padding-inline: var(--space-4);
   background: var(--color-surface);
   color: var(--color-text);
   border: 1px solid var(--color-border);
-  border-radius: 10px;
-  padding: 12px 18px;
+  border-radius: var(--radius-control);
   font-weight: 600;
   font-size: 14px;
+  line-height: 1;
   cursor: pointer;
   font-family: var(--font);
   text-decoration: none;
+  white-space: nowrap;
+  transition:
+    border-color var(--duration-base),
+    background var(--duration-base);
 }
 
+.btnSecondary:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+/* ===== Empty state ===== */
 .emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: var(--space-12) var(--space-6);
   text-align: center;
+}
+
+.emptyIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  display: grid;
+  place-items: center;
+  margin-bottom: var(--space-4);
 }
 
 .emptyState h3 {
   margin: 0 0 var(--space-2);
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
 .emptyState p {
-  margin: 0 0 var(--space-6);
+  margin: 0;
+  max-width: 360px;
   color: var(--color-text-muted);
   font-size: 14px;
   line-height: 1.6;
 }
 
+.emptyStateAction {
+  margin-top: var(--space-6);
+}
+
+/* ===== Alerts ===== */
 .alert {
-  padding: 12px 14px;
-  border-radius: 10px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 600;
-  margin-bottom: var(--space-4);
 }
 
 .alertError {
@@ -324,6 +405,20 @@
   border: 1px solid var(--color-success-border);
 }
 
+.sectionStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sectionHint {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* ===== Form (create / edit) ===== */
 .formPanel {
   padding: var(--space-6);
 }
@@ -350,7 +445,7 @@
 .field textarea {
   padding: 12px 14px;
   border: 1px solid var(--color-border);
-  border-radius: 10px;
+  border-radius: var(--radius-control);
   font-size: 14px;
   font-family: var(--font);
   background: var(--color-surface);
@@ -379,7 +474,7 @@
 .uploadTile {
   position: relative;
   aspect-ratio: 1;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 2px dashed var(--color-border);
   background: var(--color-surface-2);
   overflow: hidden;
@@ -417,7 +512,7 @@
   display: flex;
   gap: 4px;
   padding: 6px;
-  background: linear-gradient(transparent, rgba(15, 23, 42, 0.72));
+  background: var(--color-overlay);
 }
 
 .uploadTileBtn {
@@ -428,13 +523,13 @@
   font-size: 10px;
   font-weight: 700;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--color-surface);
   color: var(--color-text);
 }
 
 .uploadTileBtnPrimary {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-icon-on-primary);
 }
 
 .formActions {
@@ -445,33 +540,67 @@
 }
 
 .formHeader {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-2);
 }
 
 .formHeader h2 {
   margin: var(--space-2) 0 0;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
+  color: var(--color-text);
 }
 
 .formHeader p {
   margin: var(--space-1) 0 0;
   color: var(--color-text-muted);
   font-size: 14px;
+  line-height: 1.5;
 }
 
+.phaseBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ===== Responsive ===== */
 @media (max-width: 900px) {
-  .formGrid {
-    grid-template-columns: 1fr;
+  .commandBar {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .toolbarRight {
-    width: 100%;
-    margin-inline-start: 0;
+  .commandBarFilters {
+    flex-wrap: wrap;
+  }
+
+  .commandBarActions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    flex: 1 1 auto;
   }
 
   .searchBox {
     width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .btnPrimary {
+    width: 100%;
+  }
+
+  .filterSelect {
+    flex: 1 1 calc(50% - var(--space-2));
+    max-width: none;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
   }
 
   .dataTable th:nth-child(2),
@@ -481,6 +610,10 @@
 }
 
 @media (max-width: 640px) {
+  .filterSelect {
+    flex: 1 1 100%;
+  }
+
   .dataTable th:nth-child(4),
   .dataTable td:nth-child(4) {
     display: none;
