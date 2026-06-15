@@ -11,7 +11,10 @@ export function OrdersSkeleton() {
       aria-label={Strings.common.loading}
       aria-busy="true"
     >
-      <SkeletonBox className={styles.filterSkeleton} />
+      <div className={styles.actionsRow}>
+        <SkeletonBox className={styles.searchSkeleton} />
+        <SkeletonBox className={styles.filterSkeleton} />
+      </div>
       <article className={styles.panel}>
         <div className={styles.tableHeader}>
           <SkeletonText width="12%" />

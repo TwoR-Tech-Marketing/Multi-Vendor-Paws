@@ -136,6 +136,31 @@
   line-height: 1.6;
 }
 
+.btnSecondary {
+  margin-top: var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--control-height);
+  padding-inline: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-base),
+    background var(--duration-base);
+}
+
+.btnSecondary:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
 .alert {
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-sm);

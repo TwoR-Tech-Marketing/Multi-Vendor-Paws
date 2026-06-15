@@ -1,20 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import { PortalSelect } from "@/components/ui/select/PortalSelect";
 import { Routes } from "@/constants/routes";
 import { fetchVendorOrdersFromApi } from "@/features/orders/application/orders.api";
-import type { VendorOrder, VendorOrderStatus } from "@/features/orders/domain/types";
+import type { VendorOrder } from "@/features/orders/domain/types";
+import {
+  countActiveOrderFilters,
+  EMPTY_ORDER_LIST_FILTERS,
+  type OrderListFilters,
+} from "@/features/orders/lib/orderListFilters";
 import { OrderStatusBadge } from "@/features/orders/presentation/OrderStatusBadge";
+import { OrdersListActions } from "@/features/orders/presentation/OrdersListActions";
 import { OrdersSkeleton } from "@/features/orders/presentation/OrdersSkeleton";
 import { formatEgp } from "@/features/products/domain/currency";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./orders.module.css";
-
-type StatusFilter = VendorOrderStatus | "any";
 
 function formatOrderRef(orderId: string): string {
   return `#${orderId.slice(0, 8).toUpperCase()}`;
@@ -30,16 +33,25 @@ function formatDate(date: Date): string {
 export function OrdersSection() {
   const strings = useStrings();
   const [orders, setOrders] = useState<VendorOrder[]>([]);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("any");
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState<OrderListFilters>(EMPTY_ORDER_LIST_FILTERS);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const loadOrders = useCallback(async () => {
     setError(null);
-    setIsLoading(true);
+    if (orders.length === 0) {
+      setIsLoading(true);
+    }
+
     try {
       const page = await fetchVendorOrdersFromApi({
-        status: statusFilter === "any" ? undefined : statusFilter,
+        status: filters.status === "any" ? undefined : filters.status,
+        query: search.trim() || undefined,
+        datePreset: filters.datePreset === "any" ? undefined : filters.datePreset,
+        dateFrom: filters.dateFrom || undefined,
+        dateTo: filters.dateTo || undefined,
         pageSize: 50,
       });
       setOrders(page.items);
@@ -48,37 +60,44 @@ export function OrdersSection() {
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, strings.orders.loadError]);
+  }, [
+    filters.dateFrom,
+    filters.datePreset,
+    filters.dateTo,
+    filters.status,
+    orders.length,
+    search,
+    strings.orders.loadError,
+  ]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSearch(searchInput), 300);
+    return () => window.clearTimeout(timer);
+  }, [searchInput]);
 
   useEffect(() => {
     void loadOrders();
   }, [loadOrders]);
 
-  const statusOptions = useMemo(
-    () => [
-      { value: "any", label: strings.orders.filterAllStatuses },
-      { value: "pending", label: strings.orders.statusLabels.pending },
-      { value: "confirmed", label: strings.orders.statusLabels.confirmed },
-      { value: "shipped", label: strings.orders.statusLabels.shipped },
-      { value: "delivered", label: strings.orders.statusLabels.delivered },
-      { value: "cancelled", label: strings.orders.statusLabels.cancelled },
-    ],
-    [strings.orders],
-  );
+  const isFiltered =
+    search.trim().length > 0 || countActiveOrderFilters(filters) > 0;
 
-  if (isLoading) return <OrdersSkeleton />;
+  function clearFilters() {
+    setSearchInput("");
+    setSearch("");
+    setFilters(EMPTY_ORDER_LIST_FILTERS);
+  }
+
+  if (isLoading && orders.length === 0) return <OrdersSkeleton />;
 
   return (
     <section className={styles.sectionStack}>
-      <div className={styles.filtersRow}>
-        <PortalSelect
-          className={styles.filterSelect}
-          value={statusFilter}
-          options={statusOptions}
-          onChange={(value) => setStatusFilter(value as StatusFilter)}
-          ariaLabel={strings.orders.filterStatus}
-        />
-      </div>
+      <OrdersListActions
+        searchQuery={searchInput}
+        onSearchChange={setSearchInput}
+        filters={filters}
+        onFilterChange={setFilters}
+      />
 
       {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
 
@@ -86,15 +105,18 @@ export function OrdersSection() {
         {orders.length === 0 ? (
           <div className={styles.emptyState}>
             <h3>
-              {statusFilter !== "any"
-                ? strings.orders.emptyFilteredTitle
-                : strings.orders.emptyTitle}
+              {isFiltered ? strings.orders.emptyFilteredTitle : strings.orders.emptyTitle}
             </h3>
             <p>
-              {statusFilter !== "any"
+              {isFiltered
                 ? strings.orders.emptyFilteredDescription
                 : strings.orders.emptyDescription}
             </p>
+            {isFiltered ? (
+              <button type="button" className={styles.btnSecondary} onClick={clearFilters}>
+                {strings.orders.clearFilters}
+              </button>
+            ) : null}
           </div>
         ) : (
           <div className={styles.tableWrap}>

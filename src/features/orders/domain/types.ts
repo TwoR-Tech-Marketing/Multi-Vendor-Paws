@@ -47,8 +47,20 @@ export type VendorOrder = {
   paymentMethod: string | null;
 };
 
+export type OrderDatePreset =
+  | "any"
+  | "today"
+  | "yesterday"
+  | "last7"
+  | "last30"
+  | "custom";
+
 export type VendorOrderListFilter = {
   status?: VendorOrderStatus | "any";
+  query?: string;
+  datePreset?: OrderDatePreset;
+  dateFrom?: string;
+  dateTo?: string;
   cursor?: string;
   pageSize?: number;
 };
@@ -56,6 +68,7 @@ export type VendorOrderListFilter = {
 export type VendorOrderListPage = {
   items: VendorOrder[];
   nextCursor: string | null;
+  total: number;
 };
 
 export type UpdateVendorOrderStatusInput = {

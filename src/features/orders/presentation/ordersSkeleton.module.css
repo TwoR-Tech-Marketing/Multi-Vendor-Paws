@@ -4,10 +4,24 @@
   gap: var(--space-4);
 }
 
-.filterSkeleton {
-  width: 180px;
+.actionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  width: 100%;
+}
+
+.searchSkeleton {
+  flex: 1 1 220px;
   height: var(--control-height);
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-sm);
+}
+
+.filterSkeleton {
+  width: 120px;
+  height: var(--control-height);
+  border-radius: var(--radius-sm);
 }
 
 .panel {

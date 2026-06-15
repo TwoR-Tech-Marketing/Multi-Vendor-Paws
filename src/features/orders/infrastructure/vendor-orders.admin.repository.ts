@@ -15,6 +15,10 @@ import type {
   VendorOrderListPage,
   VendorOrderStatus,
 } from "@/features/orders/domain/types";
+import {
+  orderMatchesDateFilter,
+  orderMatchesSearchQuery,
+} from "@/features/orders/lib/orderListFilters";
 import { syncVendorOrdersForVendor } from "@/features/orders/infrastructure/orders-split.admin.service";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 
@@ -119,7 +123,23 @@ export async function listVendorOrders(
     items = items.filter((order) => order.status === filter.status);
   }
 
+  if (filter.query?.trim()) {
+    items = items.filter((order) => orderMatchesSearchQuery(order, filter.query!));
+  }
+
+  if (filter.datePreset && filter.datePreset !== "any") {
+    items = items.filter((order) =>
+      orderMatchesDateFilter(order.placedAt, {
+        datePreset: filter.datePreset!,
+        dateFrom: filter.dateFrom ?? "",
+        dateTo: filter.dateTo ?? "",
+      }),
+    );
+  }
+
   items.sort((a, b) => b.placedAt.getTime() - a.placedAt.getTime());
+
+  const total = items.length;
 
   if (filter.cursor) {
     const cursorIndex = items.findIndex((order) => order.vendorOrderId === filter.cursor);
@@ -132,7 +152,7 @@ export async function listVendorOrders(
     ? (pageItems[pageItems.length - 1]?.vendorOrderId ?? null)
     : null;
 
-  return { items: pageItems, nextCursor };
+  return { items: pageItems, nextCursor, total };
 }
 
 export async function getVendorOrder(

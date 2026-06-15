@@ -37,6 +37,12 @@ function deserializeVendorOrder(order: VendorOrderResponse): VendorOrder {
 function buildListQuery(filter: VendorOrderListFilter): string {
   const params = new URLSearchParams();
   if (filter.status && filter.status !== "any") params.set("status", filter.status);
+  if (filter.query?.trim()) params.set("q", filter.query.trim());
+  if (filter.datePreset && filter.datePreset !== "any") {
+    params.set("datePreset", filter.datePreset);
+  }
+  if (filter.dateFrom) params.set("dateFrom", filter.dateFrom);
+  if (filter.dateTo) params.set("dateTo", filter.dateTo);
   if (filter.cursor) params.set("cursor", filter.cursor);
   if (filter.pageSize) params.set("pageSize", String(filter.pageSize));
   const query = params.toString();
