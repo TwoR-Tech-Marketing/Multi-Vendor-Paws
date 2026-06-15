@@ -29,6 +29,16 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    // Mobile checkout decrements stock on `products/{id}` inside a transaction.
+    function isCheckoutStockDecrement() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['stock', 'updatedAt'])
+        && request.resource.data.stock is int
+        && resource.data.stock is int
+        && request.resource.data.stock >= 0
+        && request.resource.data.stock < resource.data.stock;
+    }
+
     // -----------------------------------------------------------------
     // Users
     // Read: any signed-in user — required for chat partner names, post
@@ -96,7 +106,8 @@ service cloud.firestore {
       allow update: if isVendor()
         && resource.data.vendorId == request.auth.uid
         && request.resource.data.vendorId == resource.data.vendorId
-        && request.resource.data.isHalo == resource.data.isHalo;
+        && request.resource.data.isHalo == resource.data.isHalo
+        || (isSignedIn() && isCheckoutStockDecrement());
 
       allow delete: if false; // archive via status field instead
 
