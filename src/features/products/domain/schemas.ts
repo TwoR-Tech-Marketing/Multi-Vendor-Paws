@@ -82,5 +82,10 @@ export const updateProductSchema = z
     message: "At least one field must change.",
   });
 
+export const importProductsSchema = z.object({
+  products: z.array(createProductSchema).min(1).max(100),
+});
+
 export type CreateProductPayload = z.infer<typeof createProductSchema>;
 export type UpdateProductPayload = z.infer<typeof updateProductSchema>;
+export type ImportProductsPayload = z.infer<typeof importProductsSchema>;

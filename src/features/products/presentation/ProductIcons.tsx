@@ -81,6 +81,17 @@ export function IconExport(props: IconProps) {
   );
 }
 
+/** POS staff directory — import */
+export function IconImport(props: IconProps) {
+  return (
+    <svg {...base} width={24} height={24} {...props}>
+      <path d="M12 3v12" />
+      <path d="M8 11l4 4 4-4" />
+      <path d="M4 21h16" />
+    </svg>
+  );
+}
+
 /** POS staff header — add circle */
 export function IconAddCircle(props: IconProps) {
   return (

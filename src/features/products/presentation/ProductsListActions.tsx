@@ -3,16 +3,19 @@
 import { useMemo, useRef, useState } from "react";
 
 import type { Product } from "@/features/products/domain/types";
+import type { ProductCategoryOption } from "@/features/products/application/products.api";
 import {
   countActiveProductFilters,
   getProductFilterChipLabels,
 } from "@/features/products/lib/productListFilters";
 import { ProductsExportDialog } from "@/features/products/presentation/ProductsExportDialog";
+import { ProductsImportDialog } from "@/features/products/presentation/ProductsImportDialog";
 import { ProductsFilterPopover } from "@/features/products/presentation/ProductsFilterPopover";
 import type { ProductListFilters } from "@/features/products/lib/productListFilters";
 import {
   IconExport,
   IconFilter,
+  IconImport,
   IconSearch,
 } from "@/features/products/presentation/ProductIcons";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
@@ -25,7 +28,9 @@ type ProductsListActionsProps = {
   filters: ProductListFilters;
   onFilterChange: (filters: ProductListFilters) => void;
   categoryOptions: { value: string; label: string }[];
+  categoryItems: ProductCategoryOption[];
   productsToExport: Product[];
+  onImportComplete: () => void;
 };
 
 export function ProductsListActions({
@@ -34,11 +39,14 @@ export function ProductsListActions({
   filters,
   onFilterChange,
   categoryOptions,
+  categoryItems,
   productsToExport,
+  onImportComplete,
 }: ProductsListActionsProps) {
   const strings = useStrings();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const filterAnchorRef = useRef<HTMLButtonElement>(null);
 
   const activeFilterCount = countActiveProductFilters(filters);
@@ -100,6 +108,16 @@ export function ProductsListActions({
 
         <button
           type="button"
+          className={styles.importButton}
+          onClick={() => setImportOpen(true)}
+          aria-haspopup="dialog"
+        >
+          <IconImport className={styles.importIcon} />
+          <span className={styles.importText}>{strings.products.import.label}</span>
+        </button>
+
+        <button
+          type="button"
           className={styles.exportButton}
           onClick={() => setExportOpen(true)}
           aria-haspopup="dialog"
@@ -126,6 +144,15 @@ export function ProductsListActions({
         open={exportOpen}
         onClose={() => setExportOpen(false)}
         products={productsToExport}
+      />
+
+      <ProductsImportDialog
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        categories={categoryItems}
+        onImported={() => {
+          onImportComplete();
+        }}
       />
     </div>
   );

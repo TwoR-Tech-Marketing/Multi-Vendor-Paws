@@ -137,6 +137,23 @@ export async function archiveVendorProductFromApi(productId: string): Promise<vo
   await vendorApiDelete<{ success: true }>(`/api/vendor/products/${productId}`);
 }
 
+export type ImportProductsResult = {
+  createdCount: number;
+  failedCount: number;
+};
+
+export async function importVendorProductsFromApi(
+  products: CreateProductPayload[],
+): Promise<ImportProductsResult> {
+  const data = await vendorApiPost<ImportProductsResult>("/api/vendor/products/import", {
+    products,
+  });
+  return {
+    createdCount: data.createdCount,
+    failedCount: data.failedCount,
+  };
+}
+
 export async function updateProductCategoryStatusFromApi(
   categoryId: string,
   isActive: boolean,

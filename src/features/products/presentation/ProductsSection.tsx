@@ -10,6 +10,7 @@ import {
   archiveVendorProductFromApi,
   fetchProductCategoriesFromApi,
   fetchVendorProductsFromApi,
+  type ProductCategoryOption,
 } from "@/features/products/application/products.api";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { Product } from "@/features/products/domain/types";
@@ -32,6 +33,7 @@ export function ProductsSection() {
   const strings = useStrings();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<{ value: string; label: string }[]>([]);
+  const [categoryItems, setCategoryItems] = useState<ProductCategoryOption[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<ProductListFilters>(EMPTY_PRODUCT_LIST_FILTERS);
@@ -44,6 +46,7 @@ export function ProductsSection() {
   const loadCategories = useCallback(async () => {
     try {
       const categoryItems = await fetchProductCategoriesFromApi();
+      setCategoryItems(categoryItems);
       setCategories(
         categoryItems.map((category) => ({
           value: category.categoryId,
@@ -135,7 +138,12 @@ export function ProductsSection() {
         filters={filters}
         onFilterChange={setFilters}
         categoryOptions={categories}
+        categoryItems={categoryItems}
         productsToExport={products}
+        onImportComplete={() => {
+          void loadProducts();
+          setSuccess(strings.products.importSuccess);
+        }}
       />
 
       {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
