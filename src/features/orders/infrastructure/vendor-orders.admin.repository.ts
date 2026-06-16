@@ -61,8 +61,12 @@ type VendorOrderDoc = {
   placedAt?: Timestamp;
   updatedAt?: Timestamp;
   vendorStoreName?: string | null;
+  store?: VendorOrder["store"];
+  fulfillmentOwner?: "admin" | "vendor";
+  adminEditable?: boolean;
   deliveryAddress?: string | null;
   paymentMethod?: string | null;
+  paymentStatus?: string | null;
 };
 
 function vendorOrdersCollection() {
@@ -103,8 +107,12 @@ function toVendorOrder(snap: DocumentSnapshot<DocumentData>): VendorOrder {
     placedAt: data.placedAt?.toDate() ?? new Date(0),
     updatedAt: data.updatedAt?.toDate() ?? new Date(0),
     vendorStoreName: data.vendorStoreName ?? null,
+    store: data.store ?? null,
+    fulfillmentOwner: data.fulfillmentOwner ?? "vendor",
+    adminEditable: data.adminEditable ?? data.vendorId === "platformVendor",
     deliveryAddress: data.deliveryAddress ?? null,
     paymentMethod: data.paymentMethod ?? null,
+    paymentStatus: data.paymentStatus ?? null,
   };
 }
 

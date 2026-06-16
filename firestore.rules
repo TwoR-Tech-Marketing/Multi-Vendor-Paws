@@ -169,8 +169,14 @@ service cloud.firestore {
         && resource.data.vendorId == request.auth.uid
         && request.resource.data.vendorId == resource.data.vendorId
         && request.resource.data.orderId == resource.data.orderId
-        && request.resource.data.buyerUid == resource.data.buyerUid;
-      allow create, delete: if false; // server only
+        && request.resource.data.buyerUid == resource.data.buyerUid
+        || (isAdmin()
+          && resource.data.adminEditable == true
+          && request.resource.data.vendorId == resource.data.vendorId
+          && request.resource.data.orderId == resource.data.orderId
+          && request.resource.data.buyerUid == resource.data.buyerUid);
+      allow create: if false;
+      allow delete: if isAdmin() && resource.data.adminEditable == true;
     }
 
     // -----------------------------------------------------------------

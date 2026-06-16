@@ -13,6 +13,7 @@ import type {
   VendorOrderLineItem,
   VendorOrderStatus,
 } from "@/features/orders/domain/types";
+import { PLATFORM_VENDOR_ID } from "@/features/products/domain/platform-vendor.constants";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 
 type RawLineItem = {
@@ -21,6 +22,8 @@ type RawLineItem = {
   imageUrl: string | null;
   quantity: number;
   unitPricePiastres: number;
+  vendorId: string | null;
+  vendorStoreName: string | null;
 };
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -89,6 +92,8 @@ function extractLineItems(orderData: Record<string, unknown>): RawLineItem[] {
         imageUrl: readString(row, ["imageUrl", "image", "primaryImageUrl"]),
         quantity,
         unitPricePiastres,
+        vendorId: readString(row, ["vendorId", "vendor_id"]),
+        vendorStoreName: readString(row, ["vendorStoreName", "storeName", "vendor_store_name"]),
       });
     }
 
@@ -100,6 +105,67 @@ function extractLineItems(orderData: Record<string, unknown>): RawLineItem[] {
 
 function vendorOrderDocId(orderId: string, vendorId: string): string {
   return `${orderId}_${vendorId}`;
+}
+
+function mapParentStatus(status: string | null): VendorOrderStatus {
+  const normalized = (status ?? "pending").toLowerCase();
+  if (normalized === "inprogress") return "pending";
+  if (["pending", "confirmed", "shipped", "delivered", "cancelled"].includes(normalized)) {
+    return normalized as VendorOrderStatus;
+  }
+  if (normalized === "completed") return "delivered";
+  return "pending";
+}
+
+async function resolveVendorStore(
+  vendorId: string,
+  orderData: Record<string, unknown>,
+  fallbackStoreName: string | null,
+) {
+  const stores = Array.isArray(orderData.stores) ? orderData.stores : [];
+  const fromOrder = stores
+    .map((entry) => asRecord(entry))
+    .find((entry) => entry && readString(entry, ["vendorId"]) === vendorId);
+
+  if (fromOrder) {
+    return {
+      vendorId,
+      storeName:
+        readString(fromOrder, ["storeName", "name"]) ??
+        fallbackStoreName ??
+        (vendorId === PLATFORM_VENDOR_ID ? "Tender Paws" : null),
+      logoUrl: readString(fromOrder, ["logoUrl"]),
+      contactPhone: readString(fromOrder, ["contactPhone", "phone"]),
+      contactEmail: readString(fromOrder, ["contactEmail", "email"]),
+      contactAddress: readString(fromOrder, ["contactAddress", "address"]),
+    };
+  }
+
+  const vendorSnap = await getAdminFirestore().collection("vendors").doc(vendorId).get();
+  if (!vendorSnap.exists) {
+    return {
+      vendorId,
+      storeName:
+        fallbackStoreName ?? (vendorId === PLATFORM_VENDOR_ID ? "Tender Paws" : null),
+      logoUrl: null,
+      contactPhone: null,
+      contactEmail: null,
+      contactAddress: null,
+    };
+  }
+
+  const vendorData = vendorSnap.data() as Record<string, unknown>;
+  return {
+    vendorId,
+    storeName:
+      readString(vendorData, ["storeName"]) ??
+      fallbackStoreName ??
+      (vendorId === PLATFORM_VENDOR_ID ? "Tender Paws" : null),
+    logoUrl: readString(vendorData, ["logoUrl"]),
+    contactPhone: readString(vendorData, ["contactPhone", "phone"]),
+    contactEmail: readString(vendorData, ["contactEmail", "email"]),
+    contactAddress: readString(vendorData, ["contactAddress"]),
+  };
 }
 
 export async function splitParentOrderIfNeeded(orderId: string): Promise<number> {
@@ -128,7 +194,7 @@ export async function splitParentOrderIfNeeded(orderId: string): Promise<number>
 
   for (const raw of rawItems) {
     const product = await getProductById(raw.productId);
-    const vendorId = product?.vendorId ?? legacyVendorId;
+    const vendorId = raw.vendorId ?? product?.vendorId ?? legacyVendorId;
     if (!vendorId) continue;
 
     const lineTotalPiastres = raw.unitPricePiastres * raw.quantity;
@@ -139,6 +205,8 @@ export async function splitParentOrderIfNeeded(orderId: string): Promise<number>
       quantity: raw.quantity,
       unitPricePiastres: raw.unitPricePiastres,
       lineTotalPiastres,
+      vendorId,
+      vendorStoreName: raw.vendorStoreName ?? product?.vendorStoreName ?? null,
     };
 
     const bucket = grouped.get(vendorId) ?? [];
@@ -159,7 +227,9 @@ export async function splitParentOrderIfNeeded(orderId: string): Promise<number>
   }
 
   let created = 0;
-  const parentStatus = (readString(orderData, ["status"]) ?? "pending") as VendorOrderStatus;
+  const parentStatus = mapParentStatus(readString(orderData, ["status"]));
+  const deliveryLocation = asRecord(orderData.deliveryLocation);
+  const vendorCount = grouped.size;
 
   for (const [vendorId, lineItems] of grouped.entries()) {
     const docId = vendorOrderDocId(orderId, vendorId);
@@ -173,14 +243,24 @@ export async function splitParentOrderIfNeeded(orderId: string): Promise<number>
     const discountPiastres = toPiastresFromPrice(
       readNumber(orderData, ["discount", "discountPiastres"]) ?? 0,
     );
-    const totalPiastres = Math.max(0, subtotalPiastres + deliveryFeePiastres - discountPiastres);
+    const perVendorDelivery =
+      vendorCount > 0 ? Math.round(deliveryFeePiastres / vendorCount) : deliveryFeePiastres;
+    const perVendorDiscount =
+      vendorCount > 0 ? Math.round(discountPiastres / vendorCount) : discountPiastres;
+    const totalPiastres = Math.max(
+      0,
+      subtotalPiastres + perVendorDelivery - perVendorDiscount,
+    );
     const commissionRatePercent = await resolveCommissionRatePercent(vendorId);
     const commissionPiastres = computeCommissionPiastres(totalPiastres, commissionRatePercent);
     const netPiastres = totalPiastres - commissionPiastres;
 
-    const firstProduct =
-      lineItems.length > 0 ? await getProductById(lineItems[0].productId) : null;
-    const vendorStoreName = firstProduct?.vendorStoreName ?? null;
+    const store = await resolveVendorStore(
+      vendorId,
+      orderData,
+      lineItems[0]?.vendorStoreName ?? null,
+    );
+    const adminEditable = vendorId === PLATFORM_VENDOR_ID;
 
     await db.collection("vendorOrders").doc(docId).set({
       vendorOrderId: docId,
@@ -201,8 +281,8 @@ export async function splitParentOrderIfNeeded(orderId: string): Promise<number>
       lineItems,
       itemCount: lineItems.reduce((sum, item) => sum + item.quantity, 0),
       subtotalPiastres,
-      deliveryFeePiastres,
-      discountPiastres,
+      deliveryFeePiastres: perVendorDelivery,
+      discountPiastres: perVendorDiscount,
       totalPiastres,
       commissionRatePercent,
       commissionPiastres,
@@ -210,9 +290,14 @@ export async function splitParentOrderIfNeeded(orderId: string): Promise<number>
       currency: "EGP",
       placedAt: Timestamp.fromDate(placedAt),
       updatedAt: Timestamp.now(),
-      vendorStoreName,
+      vendorStoreName: store.storeName,
+      store,
+      fulfillmentOwner: adminEditable ? "admin" : "vendor",
+      adminEditable,
       deliveryAddress: readString(orderData, ["address", "deliveryAddress"]),
+      deliveryLocation,
       paymentMethod: readString(orderData, ["paymentMethod", "paymentType"]),
+      paymentStatus: readString(orderData, ["paymentStatus"]),
     });
 
     created += 1;

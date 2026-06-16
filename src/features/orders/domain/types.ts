@@ -12,6 +12,17 @@ export type VendorOrderLineItem = {
   quantity: number;
   unitPricePiastres: number;
   lineTotalPiastres: number;
+  vendorId?: string | null;
+  vendorStoreName?: string | null;
+};
+
+export type VendorStoreSnapshot = {
+  vendorId: string;
+  storeName: string | null;
+  logoUrl: string | null;
+  contactPhone: string | null;
+  contactEmail: string | null;
+  contactAddress: string | null;
 };
 
 export type VendorOrderStatusEvent = {
@@ -43,8 +54,12 @@ export type VendorOrder = {
   placedAt: Date;
   updatedAt: Date;
   vendorStoreName: string | null;
+  store: VendorStoreSnapshot | null;
+  fulfillmentOwner: "admin" | "vendor";
+  adminEditable: boolean;
   deliveryAddress: string | null;
   paymentMethod: string | null;
+  paymentStatus: string | null;
 };
 
 export type OrderDatePreset =
