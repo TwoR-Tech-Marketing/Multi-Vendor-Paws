@@ -10,7 +10,6 @@ import {
 import { APP_CURRENCY } from "@/features/products/domain/currency";
 import {
   computeCommissionPiastres,
-  resolveCommissionRatePercent,
 } from "@/features/financials/infrastructure/commission.admin.repository";
 import type {
   VendorEarningsEntry,
@@ -114,6 +113,31 @@ export async function getVendorEarningsPage(vendorId: string): Promise<VendorEar
   return { summary, entries };
 }
 
+export function resolveSaleEarningAmounts(vendorOrder: VendorOrder): {
+  amountPiastres: number;
+  commissionPiastres: number;
+  netPiastres: number;
+} {
+  const amountPiastres = vendorOrder.totalPiastres;
+  const storedCommission = vendorOrder.commissionPiastres ?? 0;
+  const commissionPiastres =
+    storedCommission > 0
+      ? storedCommission
+      : vendorOrder.commissionRatePercent > 0
+        ? computeCommissionPiastres(amountPiastres, vendorOrder.commissionRatePercent)
+        : 0;
+
+  const storedNet = vendorOrder.netPiastres ?? 0;
+  const netPiastres =
+    storedNet > 0 &&
+    storedNet <= amountPiastres &&
+    storedCommission > 0
+      ? storedNet
+      : amountPiastres - commissionPiastres;
+
+  return { amountPiastres, commissionPiastres, netPiastres };
+}
+
 export async function recordSaleEarningForDeliveredOrder(
   vendorOrder: VendorOrder,
   actorUid: string,
@@ -130,21 +154,15 @@ export async function recordSaleEarningForDeliveredOrder(
 
   if (!existing.empty) return false;
 
-  const commissionPiastres =
-    vendorOrder.commissionPiastres > 0
-      ? vendorOrder.commissionPiastres
-      : computeCommissionPiastres(
-          vendorOrder.totalPiastres,
-          vendorOrder.commissionRatePercent,
-        );
-  const netPiastres = vendorOrder.totalPiastres - commissionPiastres;
+  const { amountPiastres, commissionPiastres, netPiastres } =
+    resolveSaleEarningAmounts(vendorOrder);
 
   await db.runTransaction(async (tx) => {
     const entryRef = entriesRef.doc();
     tx.set(entryRef, {
       vendorId: vendorOrder.vendorId,
       type: "sale",
-      amountPiastres: vendorOrder.totalPiastres,
+      amountPiastres,
       commissionPiastres,
       netPiastres,
       vendorOrderId: vendorOrder.vendorOrderId,
@@ -170,7 +188,7 @@ export async function recordSaleEarningForDeliveredOrder(
       summaryRef,
       {
         vendorId: vendorOrder.vendorId,
-        totalSalesPiastres: (current.totalSalesPiastres ?? 0) + vendorOrder.totalPiastres,
+        totalSalesPiastres: (current.totalSalesPiastres ?? 0) + amountPiastres,
         totalCommissionPiastres:
           (current.totalCommissionPiastres ?? 0) + commissionPiastres,
         netEarningsPiastres: (current.netEarningsPiastres ?? 0) + netPiastres,

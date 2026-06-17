@@ -456,6 +456,8 @@ export const Strings = {
     emptyTitle: "No earnings yet",
     emptyDescription:
       "Earnings appear here when you mark orders as delivered. Commission is calculated automatically.",
+    goToOrders: "View orders",
+    viewOrder: "View order",
     loadError: "We couldn't load your earnings. Please try again.",
     typeLabels: {
       sale: "Sale",

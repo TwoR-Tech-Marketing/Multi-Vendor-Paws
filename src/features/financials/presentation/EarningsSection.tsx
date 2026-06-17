@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
+import { Routes } from "@/constants/routes";
 import { fetchVendorEarningsFromApi } from "@/features/financials/application/earnings.api";
 import type {
   VendorEarningsEntry,
@@ -49,7 +51,14 @@ export function EarningsSection() {
 
   return (
     <section className={styles.sectionStack}>
-      {error ? <div className={styles.alertError}>{error}</div> : null}
+      {error ? (
+        <div className={styles.alertError}>
+          <p>{error}</p>
+          <button type="button" className={styles.retryButton} onClick={() => void loadEarnings()}>
+            {strings.common.retry}
+          </button>
+        </div>
+      ) : null}
 
       <div className={styles.statsGrid}>
         <article className={styles.statCard}>
@@ -86,6 +95,9 @@ export function EarningsSection() {
           <div className={styles.emptyState}>
             <h3>{strings.earnings.emptyTitle}</h3>
             <p>{strings.earnings.emptyDescription}</p>
+            <Link href={Routes.vendor.orders} className={styles.emptyCta}>
+              {strings.earnings.goToOrders}
+            </Link>
           </div>
         ) : (
           <div className={styles.tableWrap}>
@@ -105,7 +117,19 @@ export function EarningsSection() {
                   <tr key={entry.entryId}>
                     <td>{formatDate(entry.createdAt)}</td>
                     <td>{strings.earnings.typeLabels[entry.type]}</td>
-                    <td>{entry.description ?? "—"}</td>
+                    <td>
+                      {entry.vendorOrderId ? (
+                        <Link
+                          href={Routes.vendor.orderDetail(entry.vendorOrderId)}
+                          className={styles.orderLink}
+                          aria-label={strings.earnings.viewOrder}
+                        >
+                          {entry.description ?? "—"}
+                        </Link>
+                      ) : (
+                        (entry.description ?? "—")
+                      )}
+                    </td>
                     <td>{formatEgp(entry.amountPiastres)}</td>
                     <td>{formatEgp(entry.commissionPiastres)}</td>
                     <td>{formatEgp(entry.netPiastres)}</td>
