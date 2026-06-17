@@ -158,7 +158,9 @@ export async function recordSaleEarningForDeliveredOrder(
     resolveSaleEarningAmounts(vendorOrder);
 
   await db.runTransaction(async (tx) => {
+    const summarySnap = await tx.get(summaryRef);
     const entryRef = entriesRef.doc();
+
     tx.set(entryRef, {
       vendorId: vendorOrder.vendorId,
       type: "sale",
@@ -173,7 +175,6 @@ export async function recordSaleEarningForDeliveredOrder(
       createdBy: actorUid,
     });
 
-    const summarySnap = await tx.get(summaryRef);
     const current = summarySnap.exists
       ? (summarySnap.data() as EarningsSummaryDoc)
       : {

@@ -8,13 +8,13 @@ import {
 } from "firebase-admin/firestore";
 
 import { recordSaleEarningForDeliveredOrder } from "@/features/financials/infrastructure/vendor-earnings.admin.repository";
-import type {
-  UpdateVendorOrderStatusInput,
-  VendorOrder,
-  VendorOrderListFilter,
-  VendorOrderListPage,
-  VendorOrderStatus,
+import {
   VENDOR_ORDER_STATUS_VALUES,
+  type UpdateVendorOrderStatusInput,
+  type VendorOrder,
+  type VendorOrderListFilter,
+  type VendorOrderListPage,
+  type VendorOrderStatus,
 } from "@/features/orders/domain/types";
 import {
   orderMatchesDateFilter,
@@ -71,6 +71,20 @@ function clampPageSize(pageSize?: number): number {
   return Math.min(pageSize, MAX_PAGE_SIZE);
 }
 
+function toStatusHistoryTimestamp(at: unknown): Timestamp {
+  if (at instanceof Timestamp) return at;
+  if (at instanceof Date) return Timestamp.fromDate(at);
+  if (
+    at &&
+    typeof at === "object" &&
+    "toDate" in at &&
+    typeof (at as { toDate: () => Date }).toDate === "function"
+  ) {
+    return Timestamp.fromDate((at as { toDate: () => Date }).toDate());
+  }
+  return Timestamp.fromDate(new Date(0));
+}
+
 function toVendorOrder(snap: DocumentSnapshot<DocumentData>): VendorOrder {
   const data = snap.data() as VendorOrderDoc;
   return {
@@ -83,7 +97,7 @@ function toVendorOrder(snap: DocumentSnapshot<DocumentData>): VendorOrder {
     status: data.status,
     statusHistory: (data.statusHistory ?? []).map((event) => ({
       status: event.status,
-      at: event.at.toDate(),
+      at: toStatusHistoryTimestamp(event.at).toDate(),
       by: event.by,
       note: event.note ?? null,
     })),
@@ -196,7 +210,12 @@ export async function updateVendorOrderStatus(
 
     const now = Timestamp.now();
     const statusHistory = [
-      ...current.statusHistory,
+      ...current.statusHistory.map((event) => ({
+        status: event.status,
+        at: Timestamp.fromDate(event.at),
+        by: event.by,
+        note: event.note ?? null,
+      })),
       {
         status: input.status,
         at: now,
@@ -227,7 +246,14 @@ export async function updateVendorOrderStatus(
   if (!updated) return null;
 
   if (input.status === "delivered") {
-    await recordSaleEarningForDeliveredOrder(updated, actorUid);
+    try {
+      await recordSaleEarningForDeliveredOrder(updated, actorUid);
+    } catch (error) {
+      console.error(
+        `Failed to record sale earning for vendor order ${vendorOrderId}:`,
+        error,
+      );
+    }
   }
 
   const fresh = await docRef.get();

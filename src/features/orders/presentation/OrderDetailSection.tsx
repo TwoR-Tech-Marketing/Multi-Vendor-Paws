@@ -8,6 +8,7 @@ import {
   fetchVendorOrderFromApi,
   updateVendorOrderStatusFromApi,
 } from "@/features/orders/application/orders.api";
+import { ApiClientError } from "@/lib/auth-client";
 import {
   VENDOR_ORDER_STATUS_VALUES,
   type VendorOrder,
@@ -85,8 +86,8 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
       setNote("");
       setSuccess(strings.orders.updateSuccess);
       setNextStatus(updated.status);
-    } catch {
-      setError(strings.orders.updateError);
+    } catch (err) {
+      setError(err instanceof ApiClientError ? err.message : strings.orders.updateError);
     } finally {
       setIsUpdating(false);
     }

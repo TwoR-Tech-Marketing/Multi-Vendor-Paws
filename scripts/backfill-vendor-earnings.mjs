@@ -103,7 +103,9 @@ async function recordSaleEarning(vendorOrder) {
     resolveSaleEarningAmounts(vendorOrder);
 
   await db.runTransaction(async (tx) => {
+    const summarySnap = await tx.get(summaryRef);
     const entryRef = entriesRef.doc();
+
     tx.set(entryRef, {
       vendorId: vendorOrder.vendorId,
       type: "sale",
@@ -118,7 +120,6 @@ async function recordSaleEarning(vendorOrder) {
       createdBy: "backfill",
     });
 
-    const summarySnap = await tx.get(summaryRef);
     const current = summarySnap.exists ? summarySnap.data() : {};
     tx.set(
       summaryRef,
