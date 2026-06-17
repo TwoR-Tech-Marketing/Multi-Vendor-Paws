@@ -161,6 +161,14 @@
       ]
     },
     {
+      "collectionGroup": "vendor_profile_change_requests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vendorId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "vendorOrders",
       "queryScope": "COLLECTION",
       "fields": [

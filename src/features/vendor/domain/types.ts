@@ -43,5 +43,7 @@ export type VendorProfileChangeRequest = VendorProfileChangePayload & {
   authUid: string;
   status: VendorProfileChangeRequestStatus;
   createdAt?: Date | null;
-  reviewNotes?: string;
+  reviewedAt?: Date | null;
+  reviewedBy?: string | null;
+  reviewNotes?: string | null;
 };

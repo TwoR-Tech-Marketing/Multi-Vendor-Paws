@@ -96,6 +96,11 @@ export const Strings = {
     uploadLogo: "Click to upload a new logo",
     noLogo: "No logo",
     submitChangeRequest: "Submit change request",
+    requestChangesCta: "Request changes",
+    cancelChanges: "Cancel",
+    rejectedChangeBanner: "Your last change request was declined: {reason}",
+    rejectedChangeBannerNoReason:
+      "Your last change request was declined. You can submit a new request below.",
     submittingChangeRequest: "Submitting...",
     changeRequestSuccess:
       "Change request submitted. An admin will review your updated store information.",

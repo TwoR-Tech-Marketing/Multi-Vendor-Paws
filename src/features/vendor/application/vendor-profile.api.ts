@@ -13,13 +13,18 @@ type SerializedVendorStoreProfile = Omit<
   restrictionExpiresAt: string | null;
 };
 
-type SerializedChangeRequest = Omit<VendorProfileChangeRequest, "createdAt"> & {
+type SerializedChangeRequest = Omit<
+  VendorProfileChangeRequest,
+  "createdAt" | "reviewedAt"
+> & {
   createdAt: string | null;
+  reviewedAt: string | null;
 };
 
 type VendorProfileResponse = {
   profile: SerializedVendorStoreProfile;
   pendingChange: SerializedChangeRequest | null;
+  lastRejectedChange: SerializedChangeRequest | null;
 };
 
 function parseDate(value: string | null): Date | null {
@@ -43,12 +48,14 @@ function deserializeChangeRequest(
   return {
     ...request,
     createdAt: parseDate(request.createdAt),
+    reviewedAt: parseDate(request.reviewedAt),
   };
 }
 
 export async function fetchVendorProfileFromApi(): Promise<{
   profile: VendorStoreProfile;
   pendingChange: VendorProfileChangeRequest | null;
+  lastRejectedChange: VendorProfileChangeRequest | null;
 }> {
   const data = await vendorApiGet<VendorProfileResponse>("/api/vendor/profile");
 
@@ -56,6 +63,9 @@ export async function fetchVendorProfileFromApi(): Promise<{
     profile: deserializeProfile(data.profile),
     pendingChange: data.pendingChange
       ? deserializeChangeRequest(data.pendingChange)
+      : null,
+    lastRejectedChange: data.lastRejectedChange
+      ? deserializeChangeRequest(data.lastRejectedChange)
       : null,
   };
 }

@@ -7,6 +7,7 @@ import type {
   VendorStoreProfile,
 } from "@/features/vendor/domain/types";
 import {
+  getLatestRejectedProfileChangeRequestAdmin,
   getPendingProfileChangeRequestAdmin,
   submitProfileChangeRequestAdmin,
 } from "@/features/vendor/infrastructure/vendor-profile-change.admin.repository";
@@ -28,6 +29,7 @@ function serializeChangeRequest(request: VendorProfileChangeRequest) {
   return {
     ...request,
     createdAt: request.createdAt?.toISOString() ?? null,
+    reviewedAt: request.reviewedAt?.toISOString() ?? null,
   };
 }
 
@@ -36,9 +38,10 @@ export async function GET() {
   if (!context) return apiUnauthorized();
 
   try {
-    const [profile, pendingChange] = await Promise.all([
+    const [profile, pendingChange, lastRejectedChange] = await Promise.all([
       getVendorStoreProfileAdmin(context.uid, context.session.user.email),
       getPendingProfileChangeRequestAdmin(context.vendorId),
+      getLatestRejectedProfileChangeRequestAdmin(context.vendorId),
     ]);
 
     if (!profile) {
@@ -48,6 +51,9 @@ export async function GET() {
     return NextResponse.json({
       profile: serializeProfile(profile),
       pendingChange: pendingChange ? serializeChangeRequest(pendingChange) : null,
+      lastRejectedChange: lastRejectedChange
+        ? serializeChangeRequest(lastRejectedChange)
+        : null,
     });
   } catch {
     return apiGenericError();

@@ -98,6 +98,11 @@ export const arStrings: AppStrings = {
     uploadLogo: "انقر لرفع شعار جديد",
     noLogo: "لا يوجد شعار",
     submitChangeRequest: "إرسال طلب التعديل",
+    requestChangesCta: "طلب تعديل",
+    cancelChanges: "إلغاء",
+    rejectedChangeBanner: "تم رفض آخر طلب تعديل: {reason}",
+    rejectedChangeBannerNoReason:
+      "تم رفض آخر طلب تعديل. يمكنك إرسال طلب جديد أدناه.",
     submittingChangeRequest: "جاري الإرسال...",
     changeRequestSuccess:
       "تم إرسال طلب التعديل. ستقوم الإدارة بمراجعة معلومات متجرك المحدثة.",

@@ -287,6 +287,34 @@
   border: 1px solid var(--color-error-border);
 }
 
+.alertWarning {
+  background: var(--color-warning-surface);
+  color: var(--color-warning);
+  border: 1px solid var(--color-border);
+}
+
+.btnSecondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: var(--font);
+}
+
+.btnSecondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.uploadBoxDisabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .panelTitle {
   font-size: 16px;
   font-weight: 700;
