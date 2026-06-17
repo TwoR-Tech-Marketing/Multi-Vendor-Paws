@@ -1,0 +1,92 @@
+.sectionStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.settingsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-6);
+  box-shadow: var(--shadow);
+}
+
+.metaRows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.commissionSkeleton {
+  height: 88px;
+  margin: var(--space-4) 0;
+  border-radius: var(--radius-sm);
+}
+
+.snapshotGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.snapshotSkeleton {
+  height: 88px;
+  border-radius: var(--radius-sm);
+}
+
+.shortcutsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.shortcutSkeleton {
+  height: 72px;
+  border-radius: var(--radius-sm);
+}
+
+.segmentSkeleton {
+  height: 40px;
+  width: 180px;
+  border-radius: var(--radius-sm);
+}
+
+.helpGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+
+@media (max-width: 900px) {
+  .snapshotGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .shortcutsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .helpGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .settingsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .shortcutsGrid {
+    grid-template-columns: 1fr;
+  }
+}

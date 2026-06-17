@@ -192,6 +192,10 @@ export const arStrings: AppStrings = {
     termsOfService: "شروط الخدمة",
     privacyPolicy: "سياسة الخصوصية",
     vendorAgreement: "اتفاقية البائع",
+    loadError: "تعذر تحميل إعداداتك. يرجى المحاولة مرة أخرى.",
+    snapshotInactiveHint:
+      "تظهر إحصائيات الطلبات والأرباح بعد تفعيل متجرك.",
+    legalPlaceholder: "ستُنشر المستندات القانونية هنا قريباً.",
   },
   errors: {
     generic: "حدث خطأ ما. يرجى المحاولة مرة أخرى.",

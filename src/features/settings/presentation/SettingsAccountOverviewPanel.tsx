@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 import { Routes } from "@/constants/routes";
-import { SETTINGS_PREVIEW } from "@/features/settings/presentation/settings-preview";
+import type { VendorSessionKind } from "@/features/auth/infrastructure/resolve-vendor-session";
+import type { VendorAccountStatus } from "@/features/auth/domain/types";
 import type { AppStrings } from "@/shared/i18n/types";
 
 import portalStyles from "@/features/vendor/presentation/portal.module.css";
@@ -9,10 +10,50 @@ import styles from "./settings.module.css";
 
 type SettingsAccountOverviewPanelProps = {
   strings: AppStrings;
+  storeName: string;
+  email: string;
+  sessionKind: VendorSessionKind;
+  status: VendorAccountStatus;
 };
 
-export function SettingsAccountOverviewPanel({ strings }: SettingsAccountOverviewPanelProps) {
+function resolveStatusPresentation(
+  strings: AppStrings,
+  sessionKind: VendorSessionKind,
+  status: VendorAccountStatus,
+): { label: string; className: string } {
+  if (sessionKind === "suspended") {
+    return {
+      label: strings.accountStatus.suspended,
+      className: styles.statusSuspended,
+    };
+  }
+  if (sessionKind === "active") {
+    return {
+      label: strings.accountStatus.active,
+      className: styles.statusActive,
+    };
+  }
+  if (status === "suspended") {
+    return {
+      label: strings.accountStatus.suspended,
+      className: styles.statusSuspended,
+    };
+  }
+  return {
+    label: strings.accountStatus.pending,
+    className: styles.statusPending,
+  };
+}
+
+export function SettingsAccountOverviewPanel({
+  strings,
+  storeName,
+  email,
+  sessionKind,
+  status,
+}: SettingsAccountOverviewPanelProps) {
   const t = strings.settings;
+  const statusPresentation = resolveStatusPresentation(strings, sessionKind, status);
 
   return (
     <article className={portalStyles.panel} aria-labelledby="settings-account-title">
@@ -23,17 +64,17 @@ export function SettingsAccountOverviewPanel({ strings }: SettingsAccountOvervie
       <dl className={styles.metaList}>
         <div className={styles.metaRow}>
           <dt>{t.storeNameLabel}</dt>
-          <dd>{SETTINGS_PREVIEW.storeName}</dd>
+          <dd>{storeName}</dd>
         </div>
         <div className={styles.metaRow}>
           <dt>{t.emailLabel}</dt>
-          <dd>{SETTINGS_PREVIEW.email}</dd>
+          <dd>{email}</dd>
         </div>
         <div className={styles.metaRow}>
           <dt>{t.statusLabel}</dt>
           <dd>
-            <span className={`${styles.statusValue} ${styles.statusActive}`}>
-              {strings.accountStatus.active}
+            <span className={`${styles.statusValue} ${statusPresentation.className}`}>
+              {statusPresentation.label}
             </span>
           </dd>
         </div>

@@ -153,6 +153,11 @@ export async function listVendorProducts(
   return { items: pageItems, nextCursor };
 }
 
+export async function countVendorProducts(vendorId: string): Promise<number> {
+  const snap = await productsCollection().where("vendorId", "==", vendorId).get();
+  return snap.size;
+}
+
 export async function getVendorProduct(
   vendorId: string,
   productId: string,

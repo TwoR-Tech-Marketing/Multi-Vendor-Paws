@@ -1,4 +1,6 @@
-import { SETTINGS_PREVIEW } from "@/features/settings/presentation/settings-preview";
+import Link from "next/link";
+
+import { Routes } from "@/constants/routes";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
 
@@ -7,9 +9,19 @@ import styles from "./settings.module.css";
 
 type SettingsStoreSnapshotPanelProps = {
   strings: AppStrings;
+  productCount: number;
+  openOrders: number;
+  netEarningsPiastres: number;
+  isActiveVendor: boolean;
 };
 
-export function SettingsStoreSnapshotPanel({ strings }: SettingsStoreSnapshotPanelProps) {
+export function SettingsStoreSnapshotPanel({
+  strings,
+  productCount,
+  openOrders,
+  netEarningsPiastres,
+  isActiveVendor,
+}: SettingsStoreSnapshotPanelProps) {
   const t = strings.settings;
 
   return (
@@ -19,21 +31,40 @@ export function SettingsStoreSnapshotPanel({ strings }: SettingsStoreSnapshotPan
       </h2>
 
       <div className={styles.snapshotGrid}>
-        <div className={styles.snapshotCard}>
+        <Link href={Routes.vendor.products} className={styles.snapshotCard}>
           <span className={styles.snapshotLabel}>{t.snapshotProducts}</span>
-          <p className={styles.snapshotValue}>{SETTINGS_PREVIEW.productCount}</p>
-        </div>
-        <div className={styles.snapshotCard}>
-          <span className={styles.snapshotLabel}>{t.snapshotOpenOrders}</span>
-          <p className={styles.snapshotValue}>{SETTINGS_PREVIEW.openOrders}</p>
-        </div>
-        <div className={`${styles.snapshotCard} ${styles.snapshotCardHighlight}`}>
-          <span className={styles.snapshotLabel}>{t.snapshotNetEarnings}</span>
-          <p className={styles.snapshotValue}>
-            {formatEgp(SETTINGS_PREVIEW.netEarningsPiastres)}
-          </p>
-        </div>
+          <p className={styles.snapshotValue}>{productCount}</p>
+        </Link>
+        {isActiveVendor ? (
+          <Link href={Routes.vendor.orders} className={styles.snapshotCard}>
+            <span className={styles.snapshotLabel}>{t.snapshotOpenOrders}</span>
+            <p className={styles.snapshotValue}>{openOrders}</p>
+          </Link>
+        ) : (
+          <div className={styles.snapshotCard}>
+            <span className={styles.snapshotLabel}>{t.snapshotOpenOrders}</span>
+            <p className={styles.snapshotValue}>{openOrders}</p>
+          </div>
+        )}
+        {isActiveVendor ? (
+          <Link
+            href={Routes.vendor.earnings}
+            className={`${styles.snapshotCard} ${styles.snapshotCardHighlight}`}
+          >
+            <span className={styles.snapshotLabel}>{t.snapshotNetEarnings}</span>
+            <p className={styles.snapshotValue}>{formatEgp(netEarningsPiastres)}</p>
+          </Link>
+        ) : (
+          <div className={`${styles.snapshotCard} ${styles.snapshotCardHighlight}`}>
+            <span className={styles.snapshotLabel}>{t.snapshotNetEarnings}</span>
+            <p className={styles.snapshotValue}>{formatEgp(netEarningsPiastres)}</p>
+          </div>
+        )}
       </div>
+
+      {!isActiveVendor ? (
+        <p className={styles.hint}>{t.snapshotInactiveHint}</p>
+      ) : null}
     </article>
   );
 }

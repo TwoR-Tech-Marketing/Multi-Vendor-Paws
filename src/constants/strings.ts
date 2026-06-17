@@ -190,6 +190,10 @@ export const Strings = {
     termsOfService: "Terms of service",
     privacyPolicy: "Privacy policy",
     vendorAgreement: "Vendor agreement",
+    loadError: "We couldn't load your settings. Please try again.",
+    snapshotInactiveHint:
+      "Order and earnings stats appear after your store is activated.",
+    legalPlaceholder: "Legal documents will be published here soon.",
   },
   errors: {
     generic: "Something went wrong. Please try again.",

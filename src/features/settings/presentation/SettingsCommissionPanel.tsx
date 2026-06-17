@@ -1,4 +1,3 @@
-import { SETTINGS_PREVIEW } from "@/features/settings/presentation/settings-preview";
 import type { AppStrings } from "@/shared/i18n/types";
 
 import portalStyles from "@/features/vendor/presentation/portal.module.css";
@@ -6,9 +5,13 @@ import styles from "./settings.module.css";
 
 type SettingsCommissionPanelProps = {
   strings: AppStrings;
+  commissionRatePercent: number;
 };
 
-export function SettingsCommissionPanel({ strings }: SettingsCommissionPanelProps) {
+export function SettingsCommissionPanel({
+  strings,
+  commissionRatePercent,
+}: SettingsCommissionPanelProps) {
   const t = strings.settings;
 
   return (
@@ -19,7 +22,7 @@ export function SettingsCommissionPanel({ strings }: SettingsCommissionPanelProp
 
       <div className={styles.commissionHighlight}>
         <span className={styles.commissionLabel}>{t.commissionRateLabel}</span>
-        <p className={styles.commissionValue}>{SETTINGS_PREVIEW.commissionRatePercent}%</p>
+        <p className={styles.commissionValue}>{commissionRatePercent}%</p>
       </div>
 
       <p className={styles.hint}>{t.commissionHint}</p>

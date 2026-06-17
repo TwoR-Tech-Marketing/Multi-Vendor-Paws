@@ -1,11 +1,17 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
+
 import { PortalSelect } from "@/components/ui/select/PortalSelect";
+import { fetchVendorSettingsFromApi } from "@/features/settings/application/settings.api";
+import type { VendorSettingsSnapshot } from "@/features/settings/domain/types";
 import { SettingsAccountOverviewPanel } from "@/features/settings/presentation/SettingsAccountOverviewPanel";
 import { SettingsCommissionPanel } from "@/features/settings/presentation/SettingsCommissionPanel";
 import { SettingsHelpLegalPanel } from "@/features/settings/presentation/SettingsHelpLegalPanel";
 import { SettingsShortcutsPanel } from "@/features/settings/presentation/SettingsShortcutsPanel";
+import { SettingsSkeleton } from "@/features/settings/presentation/SettingsSkeleton";
 import { SettingsStoreSnapshotPanel } from "@/features/settings/presentation/SettingsStoreSnapshotPanel";
+import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { usePreferences } from "@/shared/preferences/PreferencesContext";
 import type { AppLocale, ThemeMode } from "@/shared/preferences/domain/types";
 
@@ -13,8 +19,30 @@ import portalStyles from "@/features/vendor/presentation/portal.module.css";
 import styles from "./settings.module.css";
 
 export function SettingsSection() {
+  const { profile, sessionKind, isActiveVendor } = usePortalSession();
   const { theme, locale, setTheme, setLocale, strings } = usePreferences();
   const t = strings.settings;
+
+  const [snapshot, setSnapshot] = useState<VendorSettingsSnapshot | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadSettings = useCallback(async () => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      const data = await fetchVendorSettingsFromApi();
+      setSnapshot(data);
+    } catch {
+      setError(t.loadError);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [t.loadError]);
+
+  useEffect(() => {
+    void loadSettings();
+  }, [loadSettings]);
 
   function onThemeChange(next: ThemeMode) {
     setTheme(next);
@@ -24,14 +52,45 @@ export function SettingsSection() {
     setLocale(next);
   }
 
+  if (isLoading) return <SettingsSkeleton />;
+
   return (
     <div className={styles.sectionStack}>
+      {error ? (
+        <div className={styles.alertError}>
+          <p>{error}</p>
+          <button type="button" className={styles.retryButton} onClick={() => void loadSettings()}>
+            {strings.common.retry}
+          </button>
+        </div>
+      ) : null}
+
       <div className={styles.settingsGrid}>
-        <SettingsAccountOverviewPanel strings={strings} />
-        <SettingsCommissionPanel strings={strings} />
+        <SettingsAccountOverviewPanel
+          strings={strings}
+          storeName={profile.storeName}
+          email={profile.email}
+          sessionKind={sessionKind}
+          status={profile.status}
+        />
+        {snapshot ? (
+          <SettingsCommissionPanel
+            strings={strings}
+            commissionRatePercent={snapshot.commissionRatePercent}
+          />
+        ) : null}
       </div>
 
-      <SettingsStoreSnapshotPanel strings={strings} />
+      {snapshot ? (
+        <SettingsStoreSnapshotPanel
+          strings={strings}
+          productCount={snapshot.productCount}
+          openOrders={snapshot.openOrders}
+          netEarningsPiastres={snapshot.netEarningsPiastres}
+          isActiveVendor={isActiveVendor}
+        />
+      ) : null}
+
       <SettingsShortcutsPanel strings={strings} />
 
       <div className={styles.settingsGrid}>
