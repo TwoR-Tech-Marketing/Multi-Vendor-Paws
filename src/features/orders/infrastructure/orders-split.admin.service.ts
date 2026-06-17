@@ -2,8 +2,12 @@ import "server-only";
 
 import { Timestamp } from "firebase-admin/firestore";
 
-import { egpToPiastres } from "@/features/products/domain/currency";
 import { getProductById } from "@/features/products/infrastructure/products.admin.repository";
+import {
+  readLineItemUnitPricePiastres,
+  readOrderDeliveryFeePiastres,
+  readOrderDiscountPiastres,
+} from "@/features/orders/domain/order-amounts";
 import {
   computeCommissionPiastres,
   ensureDefaultCommissionConfig,
@@ -49,12 +53,6 @@ function readNumber(record: Record<string, unknown>, keys: string[]): number | n
   return null;
 }
 
-function toPiastresFromPrice(value: number): number {
-  if (!Number.isFinite(value) || value < 0) return 0;
-  if (Number.isInteger(value) && value >= 100) return value;
-  return egpToPiastres(value);
-}
-
 function extractLineItems(orderData: Record<string, unknown>): RawLineItem[] {
   const candidates = [
     orderData.items,
@@ -78,9 +76,7 @@ function extractLineItems(orderData: Record<string, unknown>): RawLineItem[] {
       if (!productId) continue;
 
       const quantity = Math.max(1, Math.floor(readNumber(row, ["quantity", "qty", "count"]) ?? 1));
-      const unitRaw =
-        readNumber(row, ["unitPricePiastres", "pricePiastres", "price", "unitPrice"]) ?? 0;
-      const unitPricePiastres = toPiastresFromPrice(unitRaw);
+      const unitPricePiastres = readLineItemUnitPricePiastres(row);
       const name =
         readString(row, ["name", "productName", "title"]) ??
         readString(asRecord(row.product) ?? {}, ["name", "title"]) ??
@@ -168,7 +164,10 @@ async function resolveVendorStore(
   };
 }
 
-export async function splitParentOrderIfNeeded(orderId: string): Promise<number> {
+export async function splitParentOrderIfNeeded(
+  orderId: string,
+  options?: { overwriteExisting?: boolean },
+): Promise<number> {
   await ensureDefaultCommissionConfig();
 
   const db = getAdminFirestore();
@@ -234,15 +233,11 @@ export async function splitParentOrderIfNeeded(orderId: string): Promise<number>
   for (const [vendorId, lineItems] of grouped.entries()) {
     const docId = vendorOrderDocId(orderId, vendorId);
     const existing = await db.collection("vendorOrders").doc(docId).get();
-    if (existing.exists) continue;
+    if (existing.exists && !options?.overwriteExisting) continue;
 
     const subtotalPiastres = lineItems.reduce((sum, item) => sum + item.lineTotalPiastres, 0);
-    const deliveryFeePiastres = toPiastresFromPrice(
-      readNumber(orderData, ["deliveryFee", "deliveryFeePiastres", "shippingFee"]) ?? 0,
-    );
-    const discountPiastres = toPiastresFromPrice(
-      readNumber(orderData, ["discount", "discountPiastres"]) ?? 0,
-    );
+    const deliveryFeePiastres = readOrderDeliveryFeePiastres(orderData);
+    const discountPiastres = readOrderDiscountPiastres(orderData);
     const perVendorDelivery =
       vendorCount > 0 ? Math.round(deliveryFeePiastres / vendorCount) : deliveryFeePiastres;
     const perVendorDiscount =
@@ -262,43 +257,53 @@ export async function splitParentOrderIfNeeded(orderId: string): Promise<number>
     );
     const adminEditable = vendorId === PLATFORM_VENDOR_ID;
 
-    await db.collection("vendorOrders").doc(docId).set({
-      vendorOrderId: docId,
-      orderId,
-      vendorId,
-      buyerUid,
-      buyerDisplayName,
-      buyerPhone,
-      status: parentStatus,
-      statusHistory: [
-        {
-          status: parentStatus,
-          at: Timestamp.fromDate(placedAt),
-          by: "system",
-          note: null,
-        },
-      ],
-      lineItems,
-      itemCount: lineItems.reduce((sum, item) => sum + item.quantity, 0),
-      subtotalPiastres,
-      deliveryFeePiastres: perVendorDelivery,
-      discountPiastres: perVendorDiscount,
-      totalPiastres,
-      commissionRatePercent,
-      commissionPiastres,
-      netPiastres,
-      currency: "EGP",
-      placedAt: Timestamp.fromDate(placedAt),
-      updatedAt: Timestamp.now(),
-      vendorStoreName: store.storeName,
-      store,
-      fulfillmentOwner: adminEditable ? "admin" : "vendor",
-      adminEditable,
-      deliveryAddress: readString(orderData, ["address", "deliveryAddress"]),
-      deliveryLocation,
-      paymentMethod: readString(orderData, ["paymentMethod", "paymentType"]),
-      paymentStatus: readString(orderData, ["paymentStatus"]),
-    });
+    const existingData = existing.exists
+      ? (existing.data() as Record<string, unknown>)
+      : null;
+    const statusHistory = Array.isArray(existingData?.statusHistory)
+      ? existingData.statusHistory
+      : [
+          {
+            status: parentStatus,
+            at: Timestamp.fromDate(placedAt),
+            by: "system",
+            note: null,
+          },
+        ];
+
+    await db.collection("vendorOrders").doc(docId).set(
+      {
+        vendorOrderId: docId,
+        orderId,
+        vendorId,
+        buyerUid,
+        buyerDisplayName,
+        buyerPhone,
+        status: existingData?.status ?? parentStatus,
+        statusHistory,
+        lineItems,
+        itemCount: lineItems.reduce((sum, item) => sum + item.quantity, 0),
+        subtotalPiastres,
+        deliveryFeePiastres: perVendorDelivery,
+        discountPiastres: perVendorDiscount,
+        totalPiastres,
+        commissionRatePercent,
+        commissionPiastres,
+        netPiastres,
+        currency: "EGP",
+        placedAt: Timestamp.fromDate(placedAt),
+        updatedAt: Timestamp.now(),
+        vendorStoreName: store.storeName,
+        store,
+        fulfillmentOwner: adminEditable ? "admin" : "vendor",
+        adminEditable,
+        deliveryAddress: readString(orderData, ["address", "deliveryAddress"]),
+        deliveryLocation,
+        paymentMethod: readString(orderData, ["paymentMethod", "paymentType"]),
+        paymentStatus: readString(orderData, ["paymentStatus"]),
+      },
+      { merge: false },
+    );
 
     created += 1;
   }
