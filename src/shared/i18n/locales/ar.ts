@@ -414,7 +414,7 @@ export const arStrings: AppStrings = {
     loadError: "تعذر تحميل طلباتك. يرجى المحاولة مرة أخرى.",
     updateError: "تعذر تحديث هذا الطلب. يرجى المحاولة مرة أخرى.",
     updateSuccess: "تم تحديث حالة الطلب.",
-    invalidStatusTransition: "لا يمكن تطبيق تغيير الحالة هذا.",
+    invalidStatusTransition: "اختر حالة مختلفة لتحديث هذا الطلب.",
     detailTitle: "تفاصيل الطلب",
     detailSubtitle: "راجع العناصر وحدّث حالة التنفيذ",
     customerSection: "العميل",

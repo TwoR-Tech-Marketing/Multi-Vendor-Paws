@@ -76,6 +76,14 @@
     transform var(--duration-base);
 }
 
+.popupFixed {
+  position: fixed;
+  inset-inline: auto;
+  z-index: var(--z-index-popover, 300);
+  max-height: min(320px, calc(100vh - var(--space-4)));
+  overflow-y: auto;
+}
+
 .popupOpen {
   opacity: 1;
   visibility: visible;

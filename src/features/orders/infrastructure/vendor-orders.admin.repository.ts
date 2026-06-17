@@ -14,6 +14,7 @@ import type {
   VendorOrderListFilter,
   VendorOrderListPage,
   VendorOrderStatus,
+  VENDOR_ORDER_STATUS_VALUES,
 } from "@/features/orders/domain/types";
 import {
   orderMatchesDateFilter,
@@ -25,14 +26,6 @@ import { getAdminFirestore } from "@/lib/firebase-admin";
 const VENDOR_ORDERS_COLLECTION = "vendorOrders";
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50;
-
-const ALLOWED_STATUS_TRANSITIONS: Record<VendorOrderStatus, VendorOrderStatus[]> = {
-  pending: ["confirmed", "cancelled"],
-  confirmed: ["shipped", "cancelled"],
-  shipped: ["delivered", "cancelled"],
-  delivered: [],
-  cancelled: [],
-};
 
 type VendorOrderDoc = {
   vendorOrderId?: string;
@@ -197,8 +190,7 @@ export async function updateVendorOrderStatus(
     const current = toVendorOrder(snap);
     if (current.vendorId !== vendorId) return null;
 
-    const allowed = ALLOWED_STATUS_TRANSITIONS[current.status];
-    if (!allowed.includes(input.status) || input.status === current.status) {
+    if (!isValidStatusTransition(current.status, input.status)) {
       return null;
     }
 
@@ -246,5 +238,8 @@ export function isValidStatusTransition(
   from: VendorOrderStatus,
   to: VendorOrderStatus,
 ): boolean {
-  return ALLOWED_STATUS_TRANSITIONS[from].includes(to);
+  return (
+    from !== to &&
+    (VENDOR_ORDER_STATUS_VALUES as readonly string[]).includes(to)
+  );
 }

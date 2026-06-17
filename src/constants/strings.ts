@@ -412,7 +412,7 @@ export const Strings = {
     loadError: "We couldn't load your orders. Please try again.",
     updateError: "We couldn't update this order. Please try again.",
     updateSuccess: "Order status updated.",
-    invalidStatusTransition: "That status change is not allowed.",
+    invalidStatusTransition: "Choose a different status to update this order.",
     detailTitle: "Order details",
     detailSubtitle: "Review items and update fulfillment status",
     customerSection: "Customer",

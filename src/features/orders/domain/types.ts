@@ -1,9 +1,12 @@
-export type VendorOrderStatus =
-  | "pending"
-  | "confirmed"
-  | "shipped"
-  | "delivered"
-  | "cancelled";
+export const VENDOR_ORDER_STATUS_VALUES = [
+  "pending",
+  "confirmed",
+  "shipped",
+  "delivered",
+  "cancelled",
+] as const;
+
+export type VendorOrderStatus = (typeof VENDOR_ORDER_STATUS_VALUES)[number];
 
 export type VendorOrderLineItem = {
   productId: string;

@@ -8,21 +8,17 @@ import {
   fetchVendorOrderFromApi,
   updateVendorOrderStatusFromApi,
 } from "@/features/orders/application/orders.api";
-import type { VendorOrder, VendorOrderStatus } from "@/features/orders/domain/types";
+import {
+  VENDOR_ORDER_STATUS_VALUES,
+  type VendorOrder,
+  type VendorOrderStatus,
+} from "@/features/orders/domain/types";
 import { OrderStatusBadge } from "@/features/orders/presentation/OrderStatusBadge";
 import { OrdersSkeleton } from "@/features/orders/presentation/OrdersSkeleton";
 import { formatEgp } from "@/features/products/domain/currency";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./orders.module.css";
-
-const NEXT_STATUS: Record<VendorOrderStatus, VendorOrderStatus[]> = {
-  pending: ["confirmed", "cancelled"],
-  confirmed: ["shipped", "cancelled"],
-  shipped: ["delivered", "cancelled"],
-  delivered: [],
-  cancelled: [],
-};
 
 type OrderDetailSectionProps = {
   vendorOrderId: string;
@@ -38,7 +34,7 @@ function formatDate(date: Date): string {
 export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
   const strings = useStrings();
   const [order, setOrder] = useState<VendorOrder | null>(null);
-  const [nextStatus, setNextStatus] = useState<VendorOrderStatus>("confirmed");
+  const [nextStatus, setNextStatus] = useState<VendorOrderStatus>("pending");
   const [note, setNote] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -51,8 +47,7 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
     try {
       const data = await fetchVendorOrderFromApi(vendorOrderId);
       setOrder(data);
-      const options = NEXT_STATUS[data.status];
-      setNextStatus(options[0] ?? data.status);
+      setNextStatus(data.status);
     } catch {
       setError(strings.orders.loadError);
     } finally {
@@ -64,16 +59,17 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
     void loadOrder();
   }, [loadOrder]);
 
-  const statusOptions = useMemo(() => {
-    if (!order) return [];
-    return NEXT_STATUS[order.status].map((status) => ({
-      value: status,
-      label: strings.orders.statusLabels[status],
-    }));
-  }, [order, strings.orders.statusLabels]);
+  const statusOptions = useMemo(
+    () =>
+      VENDOR_ORDER_STATUS_VALUES.map((status) => ({
+        value: status,
+        label: strings.orders.statusLabels[status],
+      })),
+    [strings.orders.statusLabels],
+  );
 
   async function handleUpdateStatus() {
-    if (!order || statusOptions.length === 0) return;
+    if (!order || nextStatus === order.status) return;
 
     setIsUpdating(true);
     setError(null);
@@ -88,8 +84,7 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
       setOrder(updated);
       setNote("");
       setSuccess(strings.orders.updateSuccess);
-      const options = NEXT_STATUS[updated.status];
-      setNextStatus(options[0] ?? updated.status);
+      setNextStatus(updated.status);
     } catch {
       setError(strings.orders.updateError);
     } finally {
@@ -187,31 +182,29 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
                 </div>
               </dl>
 
-              {statusOptions.length > 0 ? (
-                <div className={styles.statusForm}>
-                  <label>
-                    {strings.orders.updateStatus}
-                    <PortalSelect
-                      value={nextStatus}
-                      options={statusOptions}
-                      onChange={(value) => setNextStatus(value as VendorOrderStatus)}
-                      ariaLabel={strings.orders.updateStatus}
-                    />
-                  </label>
-                  <label>
-                    {strings.orders.statusNote}
-                    <textarea value={note} onChange={(event) => setNote(event.target.value)} />
-                  </label>
-                  <button
-                    type="button"
-                    className={styles.btnPrimary}
-                    disabled={isUpdating}
-                    onClick={() => void handleUpdateStatus()}
-                  >
-                    {strings.orders.updateStatus}
-                  </button>
-                </div>
-              ) : null}
+              <div className={styles.statusForm}>
+                <label>
+                  {strings.orders.updateStatus}
+                  <PortalSelect
+                    value={nextStatus}
+                    options={statusOptions}
+                    onChange={(value) => setNextStatus(value as VendorOrderStatus)}
+                    ariaLabel={strings.orders.updateStatus}
+                  />
+                </label>
+                <label>
+                  {strings.orders.statusNote}
+                  <textarea value={note} onChange={(event) => setNote(event.target.value)} />
+                </label>
+                <button
+                  type="button"
+                  className={styles.btnPrimary}
+                  disabled={isUpdating || nextStatus === order.status}
+                  onClick={() => void handleUpdateStatus()}
+                >
+                  {strings.orders.updateStatus}
+                </button>
+              </div>
             </div>
           </article>
         </div>
