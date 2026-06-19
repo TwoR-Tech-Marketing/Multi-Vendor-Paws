@@ -241,11 +241,50 @@ service cloud.firestore {
     // -----------------------------------------------------------------
     // Legacy collections used by mobile app / admin panel — kept open
     // until each is locked down individually in a follow-up pass.
+    // Subcollections (messages, comments) must be declared explicitly;
+    // parent rules do not inherit to subcollections.
     // -----------------------------------------------------------------
-    match /communities_collection/{id}    { allow read, write: if isSignedIn(); }
-    match /community_posts/{id}           { allow read, write: if isSignedIn(); }
-    match /posts/{id}                     { allow read, write: if isSignedIn(); }
-    match /chats/{id}                     { allow read, write: if isSignedIn(); }
+    match /communities_collection/{id} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /community_posts/{postId} {
+      allow read, write: if isSignedIn();
+      match /comments/{commentId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+
+    match /posts/{postId} {
+      allow read, write: if isSignedIn();
+      match /comments/{commentId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+
+    match /chats/{chatId} {
+      allow read, write: if isSignedIn();
+      match /messages/{messageId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+
+    // Per-community post collections (collection_name from communities_collection).
+    match /adaption_community/{postId} {
+      allow read, write: if isSignedIn();
+      match /comments/{commentId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+
+    match /{communityCollection}/{postId} {
+      allow read, write: if isSignedIn()
+        && communityCollection.matches('^community[_-].+');
+      match /comments/{commentId} {
+        allow read, write: if isSignedIn();
+      }
+    }
+
     match /matches/{id}                   { allow read, write: if isSignedIn(); }
     match /gifts/{id}                     { allow read, write: if isSignedIn(); }
     match /review_reports/{id}            { allow read, write: if isSignedIn(); }
