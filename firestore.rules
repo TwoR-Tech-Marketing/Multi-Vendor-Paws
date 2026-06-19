@@ -304,7 +304,31 @@ service cloud.firestore {
     match /item_usage/{id}                { allow read: if isAdmin(); allow create: if isSignedIn(); allow update, delete: if isAdmin(); }
     match /purchases/{id}                 { allow read: if isSignedIn(); allow create: if isSignedIn(); allow update, delete: if isAdmin(); }
     match /sticker_usage/{id}             { allow read: if isAdmin(); allow create: if isSignedIn(); allow update, delete: if isAdmin(); }
-    match /admin_user_chats/{document=**} { allow read, write: if isAdmin(); }
+
+    // Admin ↔ user support chat (admin panel + mobile support inbox).
+    match /admin_user_chats/{chatId} {
+      allow read, write: if isAdmin();
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      match /messages/{messageId} {
+        allow read: if isAdmin()
+          || (isSignedIn()
+            && get(/databases/$(database)/documents/admin_user_chats/$(chatId)).data.userId
+              == request.auth.uid);
+        allow create: if isAdmin()
+          || (isSignedIn()
+            && get(/databases/$(database)/documents/admin_user_chats/$(chatId)).data.userId
+              == request.auth.uid
+            && request.resource.data.senderId == request.auth.uid
+            && request.resource.data.senderType == 'user');
+        allow update: if isAdmin()
+          || (isSignedIn()
+            && get(/databases/$(database)/documents/admin_user_chats/$(chatId)).data.userId
+              == request.auth.uid);
+      }
+    }
+
     match /order_analytics/{id}           { allow read: if isAdmin(); allow create: if isSignedIn(); allow update, delete: if isAdmin(); }
 
     // -----------------------------------------------------------------

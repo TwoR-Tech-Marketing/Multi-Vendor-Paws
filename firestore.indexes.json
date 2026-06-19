@@ -408,6 +408,10 @@
     { "collectionGroup": "services_places", "queryScope": "COLLECTION", "fields": [
       { "fieldPath": "displayOrder", "order": "ASCENDING" },
       { "fieldPath": "createdAt", "order": "ASCENDING" }
+    ]},
+    { "collectionGroup": "admin_user_chats", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "userId", "order": "ASCENDING" },
+      { "fieldPath": "lastMessageTime", "order": "DESCENDING" }
     ]}
   ],
   "fieldOverrides": []
