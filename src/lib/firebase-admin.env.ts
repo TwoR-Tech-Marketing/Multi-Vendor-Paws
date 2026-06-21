@@ -76,7 +76,7 @@ export function getFirebaseAdminEnv() {
         getProjectId() ??
         requireEnv("FIREBASE_PROJECT_ID"),
       clientEmail: serviceAccount.client_email,
-      privateKey: serviceAccount.private_key,
+      privateKey: normalizePrivateKey(serviceAccount.private_key),
     };
   }
 
@@ -88,8 +88,13 @@ export function getFirebaseAdminEnv() {
   return {
     projectId,
     clientEmail: requireEnv("FIREBASE_CLIENT_EMAIL"),
-    privateKey: requireEnv("FIREBASE_PRIVATE_KEY").replace(/\\n/g, "\n"),
+    privateKey: normalizePrivateKey(requireEnv("FIREBASE_PRIVATE_KEY")),
   };
+}
+
+function normalizePrivateKey(raw: string): string {
+  const trimmed = raw.trim().replace(/^["']|["']$/g, "");
+  return trimmed.replace(/\\n/g, "\n");
 }
 
 export function getFirebaseAdminSetupMessage(): string {

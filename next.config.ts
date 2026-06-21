@@ -41,7 +41,11 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
-  serverExternalPackages: ["firebase-admin"],
+  serverExternalPackages: [
+    "firebase-admin",
+    "@google-cloud/firestore",
+    "google-auth-library",
+  ],
   compiler: {
     removeConsole:
       process.env.NODE_ENV === "production"
