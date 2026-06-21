@@ -5,6 +5,12 @@ alwaysApply: true
 
 # Next.js Senior Engineering Rules — TenderPaws Multi-Vendor
 
+## Ponytail integration
+
+When Ponytail (`.cursor/rules/ponytail.mdc`) and these rules conflict, **these rules win** for i18n, feature-first layers, Firebase boundaries, shimmer skeletons, design tokens, BFF auth, and production-ready copy. Ponytail still applies to avoiding unnecessary deps, abstractions, and file count within those constraints.
+
+---
+
 ## 0) Mandatory Project Understanding
 - Before coding: inspect the existing project structure, app/router usage, feature organization, shared components, hooks, services, state management, API patterns, and styling system.
 - Reuse existing components, utilities, hooks, services, and design system elements before creating new ones.
