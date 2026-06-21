@@ -193,20 +193,23 @@ async function getPendingSignupByContactEmail(
   email: string,
 ): Promise<(SignupRequestDoc & { signInEmail: string }) | null> {
   const normalized = email.trim().toLowerCase();
+  // ponytail: single-field query + in-memory filter avoids composite index on login
   const snap = await getAdminFirestore()
     .collection("vendor_signup_requests")
     .where("contactEmail", "==", normalized)
-    .where("status", "==", "pending")
-    .limit(1)
+    .limit(5)
     .get();
 
-  if (snap.empty) return null;
+  for (const docSnap of snap.docs) {
+    const data = docSnap.data() as SignupRequestDoc;
+    if (data.status !== "pending") continue;
+    return {
+      ...data,
+      signInEmail: data.email ?? "",
+    };
+  }
 
-  const data = snap.docs[0].data() as SignupRequestDoc;
-  return {
-    ...data,
-    signInEmail: data.email ?? "",
-  };
+  return null;
 }
 
 function isVendorUser(userData: UserDoc | null, vendorData: VendorDoc | null) {

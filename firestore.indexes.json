@@ -169,6 +169,14 @@
       ]
     },
     {
+      "collectionGroup": "vendor_signup_requests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "contactEmail", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "vendorOrders",
       "queryScope": "COLLECTION",
       "fields": [
