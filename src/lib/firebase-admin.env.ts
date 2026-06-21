@@ -46,9 +46,9 @@ function readServiceAccountFromFile(): ServiceAccountJson | null {
 export function getMissingFirebaseAdminEnvKeys(): string[] {
   const projectId = getProjectId();
   const serviceAccount = readServiceAccountFromFile();
-  const hasInlineCredentials =
-    Boolean(process.env.FIREBASE_CLIENT_EMAIL?.trim()) &&
-    Boolean(process.env.FIREBASE_PRIVATE_KEY?.trim());
+  const hasClientEmail = Boolean(process.env.FIREBASE_CLIENT_EMAIL?.trim());
+  const hasPrivateKey = Boolean(process.env.FIREBASE_PRIVATE_KEY?.trim());
+  const hasInlineCredentials = hasClientEmail && hasPrivateKey;
   const hasFileCredentials =
     Boolean(serviceAccount?.client_email) && Boolean(serviceAccount?.private_key);
 
@@ -57,8 +57,12 @@ export function getMissingFirebaseAdminEnvKeys(): string[] {
     missing.push("FIREBASE_PROJECT_ID");
   }
   if (!hasInlineCredentials && !hasFileCredentials) {
-    missing.push("FIREBASE_CLIENT_EMAIL");
-    missing.push("FIREBASE_PRIVATE_KEY");
+    if (!hasClientEmail && !serviceAccount?.client_email) {
+      missing.push("FIREBASE_CLIENT_EMAIL");
+    }
+    if (!hasPrivateKey && !serviceAccount?.private_key) {
+      missing.push("FIREBASE_PRIVATE_KEY");
+    }
   }
   return missing;
 }

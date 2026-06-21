@@ -20,6 +20,36 @@ import {
 import { getAdminAuth } from "@/lib/firebase-admin";
 import { logger } from "@/shared/lib/logger";
 
+function mapSessionError(error: unknown): ReturnType<typeof apiGenericError> | null {
+  if (!(error instanceof Error)) return null;
+
+  const message = error.message.toLowerCase();
+
+  if (
+    message.includes("private key") ||
+    message.includes("decoder") ||
+    message.includes("secretorprivatekey")
+  ) {
+    return apiServerMisconfigured(
+      "Firebase Admin private key is invalid. Re-check FIREBASE_PRIVATE_KEY in Vercel.",
+    );
+  }
+
+  if (message.includes("insufficient permission") || message.includes("permission_denied")) {
+    return apiServerMisconfigured(
+      "Firebase service account cannot access Firestore. Check IAM roles for the service account.",
+    );
+  }
+
+  if (message.includes("failed_precondition") || message.includes("index")) {
+    return apiServerMisconfigured(
+      "Firestore index required. Check Vercel function logs for the index creation link.",
+    );
+  }
+
+  return null;
+}
+
 const bodySchema = z.object({
   idToken: z.string().min(1),
 });
@@ -58,15 +88,27 @@ export async function POST(request: Request) {
     });
 
     if (!sessionDto) {
-      return apiGenericError();
+      logger.error("POST /api/auth/session: session DTO could not be built", {
+        uid: decoded.uid,
+        email,
+        sessionKind: resolution.kind,
+      });
+      return apiForbidden();
     }
 
     const response = NextResponse.json({ session: sessionDto });
     response.cookies.set(SESSION_COOKIE_NAME, sessionCookie, getSessionCookieOptions());
     return response;
   } catch (error) {
+    const mapped = mapSessionError(error);
+    if (mapped) return mapped;
+
     logger.error("POST /api/auth/session failed", {
       message: error instanceof Error ? error.message : String(error),
+      code:
+        error instanceof Error && "code" in error
+          ? String((error as { code?: string }).code)
+          : undefined,
     });
     return apiGenericError();
   }
