@@ -21,21 +21,27 @@ export function AuthGuestGuard({ children }: AuthGuestGuardProps) {
     let cancelled = false;
 
     async function checkSession() {
-      const session = await fetchCurrentSession();
-      if (cancelled) return;
+      try {
+        const session = await fetchCurrentSession();
+        if (cancelled) return;
 
-      if (!session) {
-        setStatus("guest");
-        return;
-      }
+        if (!session) {
+          setStatus("guest");
+          return;
+        }
 
-      if (session.sessionKind === "active") {
-        router.replace(Routes.vendor.dashboard);
-        return;
-      }
+        if (session.sessionKind === "active") {
+          router.replace(Routes.vendor.dashboard);
+          return;
+        }
 
-      if (session.sessionKind === "pending" || session.sessionKind === "suspended") {
-        router.replace(Routes.vendor.profile);
+        if (session.sessionKind === "pending" || session.sessionKind === "suspended") {
+          router.replace(Routes.vendor.profile);
+        }
+      } catch {
+        if (!cancelled) {
+          setStatus("guest");
+        }
       }
     }
 

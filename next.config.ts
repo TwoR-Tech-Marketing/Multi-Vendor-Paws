@@ -41,6 +41,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
+  serverExternalPackages: ["firebase-admin"],
   compiler: {
     removeConsole:
       process.env.NODE_ENV === "production"

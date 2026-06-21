@@ -48,7 +48,7 @@ export async function fetchCurrentSession(): Promise<VendorSessionDto | null> {
     cache: "no-store",
   });
 
-  if (response.status === 401) {
+  if (response.status === 401 || !response.ok) {
     return null;
   }
 
