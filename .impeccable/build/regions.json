@@ -1,0 +1,435 @@
+{
+  "regions": [
+    {
+      "id": "logo",
+      "kind": "control",
+      "pixelBox": {
+        "x": 28,
+        "y": 15,
+        "w": 172,
+        "h": 50
+      },
+      "note": "Pawlio logo mark and wordmark, home link"
+    },
+    {
+      "id": "nav-links",
+      "kind": "control",
+      "pixelBox": {
+        "x": 244,
+        "y": 27,
+        "w": 344,
+        "h": 30
+      },
+      "note": "nav links For stores, For clinics, For groomers in dark ink"
+    },
+    {
+      "id": "nav-utility",
+      "kind": "control",
+      "pixelBox": {
+        "x": 1056,
+        "y": 27,
+        "w": 188,
+        "h": 30
+      },
+      "note": "Arabic language switch with globe icon, divider, Sign in link"
+    },
+    {
+      "id": "headline",
+      "kind": "text",
+      "pixelBox": {
+        "x": 37,
+        "y": 94,
+        "w": 600,
+        "h": 112
+      },
+      "note": "two-line hand-lettered black headline: Your pet business, on the street every pet owner walks."
+    },
+    {
+      "id": "headline-ar",
+      "kind": "text",
+      "pixelBox": {
+        "x": 32,
+        "y": 212,
+        "w": 500,
+        "h": 52
+      },
+      "note": "Arabic headline pair in black, one line"
+    },
+    {
+      "id": "lead",
+      "kind": "text",
+      "pixelBox": {
+        "x": 34,
+        "y": 276,
+        "w": 352,
+        "h": 112
+      },
+      "note": "four-line body copy in dark grey about stores, clinics and groomers on one app"
+    },
+    {
+      "id": "btn-join",
+      "kind": "control",
+      "pixelBox": {
+        "x": 38,
+        "y": 396,
+        "w": 152,
+        "h": 56
+      },
+      "note": "primary button Join Pawlio, deep green fill, off-white text"
+    },
+    {
+      "id": "btn-signin",
+      "kind": "control",
+      "pixelBox": {
+        "x": 202,
+        "y": 396,
+        "w": 125,
+        "h": 56
+      },
+      "note": "secondary button Sign in, off-white fill, dark outline"
+    },
+    {
+      "id": "sign-store",
+      "kind": "chrome",
+      "pixelBox": {
+        "x": 529,
+        "y": 159,
+        "w": 206,
+        "h": 119
+      },
+      "note": "flat deep green enamel sign panel with thin light border"
+    },
+    {
+      "id": "sign-store-title",
+      "kind": "text",
+      "parentId": "sign-store",
+      "pixelBox": {
+        "x": 550,
+        "y": 178,
+        "w": 163,
+        "h": 32
+      },
+      "note": "off-white sign lettering Pet store / متجر"
+    },
+    {
+      "id": "sign-store-sub",
+      "kind": "text",
+      "parentId": "sign-store",
+      "pixelBox": {
+        "x": 578,
+        "y": 215,
+        "w": 107,
+        "h": 25
+      },
+      "note": "off-white line Sell products"
+    },
+    {
+      "id": "sign-store-cta",
+      "kind": "text",
+      "parentId": "sign-store",
+      "pixelBox": {
+        "x": 557,
+        "y": 244,
+        "w": 138,
+        "h": 21
+      },
+      "note": "arrow and Open your shop in off-white"
+    },
+    {
+      "id": "door-store",
+      "kind": "plate",
+      "pixelBox": {
+        "x": 534,
+        "y": 276,
+        "w": 200,
+        "h": 224
+      },
+      "note": "painted deep green panelled shop door with pilaster frame and brass handle, soft shadow on the wall",
+      "bleed": true
+    },
+    {
+      "id": "sign-clinic",
+      "kind": "chrome",
+      "pixelBox": {
+        "x": 770,
+        "y": 159,
+        "w": 209,
+        "h": 119
+      },
+      "note": "flat marigold enamel sign panel with thin light border"
+    },
+    {
+      "id": "sign-clinic-title",
+      "kind": "text",
+      "parentId": "sign-clinic",
+      "pixelBox": {
+        "x": 785,
+        "y": 178,
+        "w": 186,
+        "h": 32
+      },
+      "note": "black sign lettering Vet clinic / عيادة بيطرية"
+    },
+    {
+      "id": "sign-clinic-sub",
+      "kind": "text",
+      "parentId": "sign-clinic",
+      "pixelBox": {
+        "x": 795,
+        "y": 215,
+        "w": 164,
+        "h": 25
+      },
+      "note": "black line Take paid appointments"
+    },
+    {
+      "id": "sign-clinic-cta",
+      "kind": "text",
+      "parentId": "sign-clinic",
+      "pixelBox": {
+        "x": 800,
+        "y": 244,
+        "w": 138,
+        "h": 21
+      },
+      "note": "arrow and Open your shop in black"
+    },
+    {
+      "id": "door-clinic",
+      "kind": "plate",
+      "pixelBox": {
+        "x": 776,
+        "y": 276,
+        "w": 200,
+        "h": 226
+      },
+      "note": "painted marigold panelled shop door with pilaster frame and brass handle, soft shadow on the wall",
+      "bleed": true
+    },
+    {
+      "id": "sign-groomer",
+      "kind": "chrome",
+      "pixelBox": {
+        "x": 1015,
+        "y": 159,
+        "w": 218,
+        "h": 119
+      },
+      "note": "flat oxblood enamel sign panel with thin light border"
+    },
+    {
+      "id": "sign-groomer-title",
+      "kind": "text",
+      "parentId": "sign-groomer",
+      "pixelBox": {
+        "x": 1035,
+        "y": 178,
+        "w": 178,
+        "h": 32
+      },
+      "note": "off-white sign lettering Groomer / جرومنج"
+    },
+    {
+      "id": "sign-groomer-sub",
+      "kind": "text",
+      "parentId": "sign-groomer",
+      "pixelBox": {
+        "x": 1040,
+        "y": 215,
+        "w": 148,
+        "h": 25
+      },
+      "note": "off-white line Fill your grooming chair"
+    },
+    {
+      "id": "sign-groomer-cta",
+      "kind": "text",
+      "parentId": "sign-groomer",
+      "pixelBox": {
+        "x": 1050,
+        "y": 244,
+        "w": 138,
+        "h": 21
+      },
+      "note": "arrow and Open your shop in off-white"
+    },
+    {
+      "id": "door-groomer",
+      "kind": "plate",
+      "pixelBox": {
+        "x": 1021,
+        "y": 276,
+        "w": 204,
+        "h": 226
+      },
+      "note": "painted oxblood panelled shop door with pilaster frame and brass handle, soft shadow on the wall",
+      "bleed": true
+    },
+    {
+      "id": "wall",
+      "kind": "texture",
+      "pixelBox": {
+        "x": 412,
+        "y": 75,
+        "w": 100,
+        "h": 62
+      },
+      "note": "clean patch of cool pale green limewashed plaster wall"
+    },
+    {
+      "id": "plinth",
+      "kind": "chrome",
+      "pixelBox": {
+        "x": 0,
+        "y": 456,
+        "w": 1280,
+        "h": 42
+      },
+      "note": "darker sage plinth band along the base of the wall"
+    },
+    {
+      "id": "pavement",
+      "kind": "plate",
+      "pixelBox": {
+        "x": 0,
+        "y": 494,
+        "w": 1280,
+        "h": 48
+      },
+      "note": "full-width strip of pale stone pavement slabs with joints and a kerb edge"
+    },
+    {
+      "id": "how-heading",
+      "kind": "text",
+      "pixelBox": {
+        "x": 456,
+        "y": 522,
+        "w": 354,
+        "h": 40
+      },
+      "note": "hand-lettered heading How it works flanked by short black rules"
+    },
+    {
+      "id": "step1-card",
+      "kind": "plate",
+      "pixelBox": {
+        "x": 166,
+        "y": 552,
+        "w": 156,
+        "h": 106
+      },
+      "note": "small torn paper note card pinned to the wall, slightly tilted"
+    },
+    {
+      "id": "step1-label",
+      "kind": "text",
+      "parentId": "step1-card",
+      "pixelBox": {
+        "x": 206,
+        "y": 569,
+        "w": 75,
+        "h": 71
+      },
+      "note": "hand-lettered 1 Apply on the paper note"
+    },
+    {
+      "id": "step1-caption",
+      "kind": "text",
+      "pixelBox": {
+        "x": 190,
+        "y": 662,
+        "w": 95,
+        "h": 40
+      },
+      "note": "small caption Tell us about your business"
+    },
+    {
+      "id": "arrow-1",
+      "kind": "chrome",
+      "pixelBox": {
+        "x": 354,
+        "y": 604,
+        "w": 60,
+        "h": 24
+      },
+      "note": "black right arrow icon"
+    },
+    {
+      "id": "step2-palette",
+      "kind": "plate",
+      "pixelBox": {
+        "x": 438,
+        "y": 566,
+        "w": 154,
+        "h": 130
+      },
+      "note": "sign painter's wooden palette with green, marigold and oxblood paint and two brushes"
+    },
+    {
+      "id": "step2-title",
+      "kind": "text",
+      "pixelBox": {
+        "x": 602,
+        "y": 577,
+        "w": 108,
+        "h": 58
+      },
+      "note": "hand-lettered 2 We review"
+    },
+    {
+      "id": "step2-caption",
+      "kind": "text",
+      "pixelBox": {
+        "x": 602,
+        "y": 644,
+        "w": 152,
+        "h": 40
+      },
+      "note": "small caption We check every business before going live"
+    },
+    {
+      "id": "arrow-2",
+      "kind": "chrome",
+      "pixelBox": {
+        "x": 777,
+        "y": 604,
+        "w": 60,
+        "h": 24
+      },
+      "note": "black right arrow icon"
+    },
+    {
+      "id": "step3-sign",
+      "kind": "plate",
+      "pixelBox": {
+        "x": 862,
+        "y": 548,
+        "w": 132,
+        "h": 158
+      },
+      "note": "small green hanging OPEN sign on a dark post"
+    },
+    {
+      "id": "step3-title",
+      "kind": "text",
+      "pixelBox": {
+        "x": 1000,
+        "y": 590,
+        "w": 90,
+        "h": 46
+      },
+      "note": "hand-lettered Arabic مفتوح"
+    },
+    {
+      "id": "step3-caption",
+      "kind": "text",
+      "pixelBox": {
+        "x": 1004,
+        "y": 641,
+        "w": 128,
+        "h": 62
+      },
+      "note": "small caption Open for pet owners and start getting booked"
+    }
+  ]
+}

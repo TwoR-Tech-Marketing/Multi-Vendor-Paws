@@ -1,0 +1,2494 @@
+{
+  "tool": "comp-spec",
+  "version": 1,
+  "createdAt": "2026-10-19T16:47:25.710Z",
+  "comp": ".impeccable/mocks/decision/assigned.png",
+  "warnings": [
+    "region door-store: \"bleed\": true set in the regions file (the clipped-artwork refusal is overridden: the page crops it there)",
+    "region door-clinic: \"bleed\": true set in the regions file (the clipped-artwork refusal is overridden: the page crops it there)",
+    "region door-groomer: \"bleed\": true set in the regions file (the clipped-artwork refusal is overridden: the page crops it there)"
+  ],
+  "uncoveredInkCells": [
+    "B5"
+  ],
+  "compSize": {
+    "width": 1280,
+    "height": 720
+  },
+  "aspect": 1.7778,
+  "orientation": "landscape",
+  "palette": [
+    {
+      "hex": "#d9dcbd",
+      "coverage": 0.7539
+    },
+    {
+      "hex": "#203f29",
+      "coverage": 0.0839
+    },
+    {
+      "hex": "#5b1e1a",
+      "coverage": 0.0585
+    },
+    {
+      "hex": "#8c9476",
+      "coverage": 0.0528
+    },
+    {
+      "hex": "#dab044",
+      "coverage": 0.051
+    }
+  ],
+  "bands": [
+    {
+      "y": 0.0694,
+      "strength": 0.2858
+    },
+    {
+      "y": 0.1528,
+      "strength": 0.468
+    },
+    {
+      "y": 0.1944,
+      "strength": 0.5838
+    },
+    {
+      "y": 0.2222,
+      "strength": 0.9201
+    },
+    {
+      "y": 0.2639,
+      "strength": 0.2813
+    },
+    {
+      "y": 0.3472,
+      "strength": 0.3903
+    },
+    {
+      "y": 0.3889,
+      "strength": 0.3503
+    },
+    {
+      "y": 0.4167,
+      "strength": 0.235
+    },
+    {
+      "y": 0.4861,
+      "strength": 0.2499
+    },
+    {
+      "y": 0.5556,
+      "strength": 0.3021
+    },
+    {
+      "y": 0.6389,
+      "strength": 0.4971
+    },
+    {
+      "y": 0.6944,
+      "strength": 0.7366
+    },
+    {
+      "y": 0.875,
+      "strength": 0.2077
+    }
+  ],
+  "regions": [
+    {
+      "id": "logo",
+      "kind": "control",
+      "note": "Pawlio logo mark and wordmark, home link",
+      "grid": null,
+      "box": {
+        "x": 0.0219,
+        "y": 0.0208,
+        "w": 0.1344,
+        "h": 0.0694
+      },
+      "px": {
+        "x": 28,
+        "y": 15,
+        "w": 172,
+        "h": 50
+      },
+      "aspect": 3.44,
+      "palette": [
+        {
+          "hex": "#dbe2c6",
+          "coverage": 0.7577
+        },
+        {
+          "hex": "#17351e",
+          "coverage": 0.1041
+        },
+        {
+          "hex": "#0d0f0b",
+          "coverage": 0.0866
+        },
+        {
+          "hex": "#424436",
+          "coverage": 0.0299
+        },
+        {
+          "hex": "#7a8270",
+          "coverage": 0.0216
+        }
+      ],
+      "detail": {
+        "energy": 35.5464
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      }
+    },
+    {
+      "id": "nav-links",
+      "kind": "control",
+      "note": "nav links For stores, For clinics, For groomers in dark ink",
+      "grid": null,
+      "box": {
+        "x": 0.1906,
+        "y": 0.0375,
+        "w": 0.2687,
+        "h": 0.0417
+      },
+      "px": {
+        "x": 244,
+        "y": 27,
+        "w": 344,
+        "h": 30
+      },
+      "aspect": 11.4667,
+      "palette": [
+        {
+          "hex": "#dadec3",
+          "coverage": 0.8736
+        },
+        {
+          "hex": "#0b0c08",
+          "coverage": 0.0445
+        },
+        {
+          "hex": "#a0a391",
+          "coverage": 0.0314
+        },
+        {
+          "hex": "#666757",
+          "coverage": 0.027
+        },
+        {
+          "hex": "#373727",
+          "coverage": 0.0235
+        }
+      ],
+      "detail": {
+        "energy": 55.2606
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      }
+    },
+    {
+      "id": "nav-utility",
+      "kind": "control",
+      "note": "Arabic language switch with globe icon, divider, Sign in link",
+      "grid": null,
+      "box": {
+        "x": 0.825,
+        "y": 0.0375,
+        "w": 0.1469,
+        "h": 0.0417
+      },
+      "px": {
+        "x": 1056,
+        "y": 27,
+        "w": 188,
+        "h": 30
+      },
+      "aspect": 6.2667,
+      "palette": [
+        {
+          "hex": "#cdd5b0",
+          "coverage": 0.8331
+        },
+        {
+          "hex": "#b0b19b",
+          "coverage": 0.0658
+        },
+        {
+          "hex": "#3f3f2f",
+          "coverage": 0.0482
+        },
+        {
+          "hex": "#0d0e0a",
+          "coverage": 0.0401
+        },
+        {
+          "hex": "#72725e",
+          "coverage": 0.0128
+        }
+      ],
+      "detail": {
+        "energy": 38.2789
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      }
+    },
+    {
+      "id": "headline",
+      "kind": "text",
+      "note": "two-line hand-lettered black headline: Your pet business, on the street every pet owner walks.",
+      "grid": null,
+      "box": {
+        "x": 0.0289,
+        "y": 0.1306,
+        "w": 0.4688,
+        "h": 0.1556
+      },
+      "px": {
+        "x": 37,
+        "y": 94,
+        "w": 600,
+        "h": 112
+      },
+      "aspect": 5.3571,
+      "palette": [
+        {
+          "hex": "#e4e7ca",
+          "coverage": 0.7148
+        },
+        {
+          "hex": "#090908",
+          "coverage": 0.1815
+        },
+        {
+          "hex": "#29492f",
+          "coverage": 0.0534
+        },
+        {
+          "hex": "#32372b",
+          "coverage": 0.0273
+        },
+        {
+          "hex": "#9ea092",
+          "coverage": 0.0228
+        }
+      ],
+      "detail": {
+        "energy": 96.4334
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 2,
+          "glyphs": 43,
+          "capHeightPx": 40.3,
+          "inkIsDark": true,
+          "allCaps": false,
+          "advance": 0.4353,
+          "advTall": 0.4235,
+          "advX": 0.4471,
+          "gap": 0.0789,
+          "xRatio": 0.6888,
+          "stemW": 0.1465,
+          "contrast": 0.9545,
+          "serif": 0.7814,
+          "densTall": 0.4652,
+          "densX": 0.5961,
+          "weight": 0.4652
+        },
+        "widthClass": "condensed",
+        "weightClass": "regular",
+        "chosen": {
+          "family": "Maiden Orange",
+          "weight": 400,
+          "fontSizePx": 56,
+          "source": "index",
+          "fp": {
+            "lines": 1,
+            "glyphs": 25,
+            "capHeightPx": 40,
+            "inkIsDark": true,
+            "allCaps": false,
+            "advance": 0.425,
+            "advTall": 0.375,
+            "advX": 0.425,
+            "gap": 0.05,
+            "xRatio": 0.7018,
+            "stemW": 0.1374,
+            "contrast": 0.9583,
+            "serif": 1.9029,
+            "densTall": 0.5102,
+            "densX": 0.6679,
+            "weight": 0.5102
+          },
+          "stamp": "872a52d6777d"
+        }
+      }
+    },
+    {
+      "id": "headline-ar",
+      "kind": "text",
+      "note": "Arabic headline pair in black, one line",
+      "grid": null,
+      "box": {
+        "x": 0.025,
+        "y": 0.2944,
+        "w": 0.3906,
+        "h": 0.0722
+      },
+      "px": {
+        "x": 32,
+        "y": 212,
+        "w": 500,
+        "h": 52
+      },
+      "aspect": 9.6154,
+      "palette": [
+        {
+          "hex": "#e6e7c9",
+          "coverage": 0.8852
+        },
+        {
+          "hex": "#0a0a09",
+          "coverage": 0.0671
+        },
+        {
+          "hex": "#8e8e7f",
+          "coverage": 0.0241
+        },
+        {
+          "hex": "#34352a",
+          "coverage": 0.0159
+        },
+        {
+          "hex": "#595f51",
+          "coverage": 0.0078
+        }
+      ],
+      "detail": {
+        "energy": 55.4499
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 20,
+          "capHeightPx": 22.7,
+          "inkIsDark": true,
+          "allCaps": true,
+          "advance": 0.6822,
+          "advTall": 0.2861,
+          "advX": null,
+          "gap": 0.132,
+          "xRatio": null,
+          "stemW": 0.1027,
+          "contrast": 0.6278,
+          "serif": 0.9784,
+          "densTall": 0.5839,
+          "densX": null,
+          "weight": 0.5839
+        },
+        "widthClass": "compressed",
+        "weightClass": "bold",
+        "chosen": {
+          "family": "Reem Kufi",
+          "weight": 400,
+          "fontSizePx": 25,
+          "source": "index",
+          "fp": {
+            "lines": 1,
+            "glyphs": 18,
+            "capHeightPx": 25.8,
+            "inkIsDark": true,
+            "allCaps": false,
+            "advance": 1.0452,
+            "advTall": 0.7549,
+            "advX": 0.3097,
+            "gap": 0.1549,
+            "xRatio": 0.3198,
+            "stemW": 0.1148,
+            "contrast": 1.0335,
+            "serif": null,
+            "densTall": 0.4643,
+            "densX": 0.5666,
+            "weight": 0.4643
+          },
+          "stamp": "0db84dae63e8"
+        }
+      }
+    },
+    {
+      "id": "lead",
+      "kind": "text",
+      "note": "four-line body copy in dark grey about stores, clinics and groomers on one app",
+      "grid": null,
+      "box": {
+        "x": 0.0266,
+        "y": 0.3833,
+        "w": 0.275,
+        "h": 0.1556
+      },
+      "px": {
+        "x": 34,
+        "y": 276,
+        "w": 352,
+        "h": 112
+      },
+      "aspect": 3.1429,
+      "palette": [
+        {
+          "hex": "#e4e7ca",
+          "coverage": 0.8806
+        },
+        {
+          "hex": "#18190f",
+          "coverage": 0.0395
+        },
+        {
+          "hex": "#a2a290",
+          "coverage": 0.0372
+        },
+        {
+          "hex": "#505040",
+          "coverage": 0.0347
+        },
+        {
+          "hex": "#7b7b6c",
+          "coverage": 0.0079
+        }
+      ],
+      "detail": {
+        "energy": 50.8627
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 4,
+          "glyphs": 118,
+          "capHeightPx": 13.8,
+          "inkIsDark": true,
+          "allCaps": false,
+          "advance": 0.549,
+          "advTall": 0.4032,
+          "advX": 0.5494,
+          "gap": 0.1098,
+          "xRatio": 0.7078,
+          "stemW": 0.1462,
+          "contrast": 0.9992,
+          "serif": 0.535,
+          "densTall": 0.4929,
+          "densX": 0.5481,
+          "weight": 0.4929
+        },
+        "widthClass": "condensed",
+        "weightClass": "medium",
+        "chosen": {
+          "family": "Reddit Sans Condensed",
+          "weight": 300,
+          "fontSizePx": 18,
+          "source": "index",
+          "fp": {
+            "lines": 1,
+            "glyphs": 28,
+            "capHeightPx": 13.9,
+            "inkIsDark": true,
+            "allCaps": false,
+            "advance": 0.5035,
+            "advTall": 0.3237,
+            "advX": 0.5215,
+            "gap": 0.1079,
+            "xRatio": 0.7142,
+            "stemW": 0.1419,
+            "contrast": 0.9663,
+            "serif": 0.8158,
+            "densTall": 0.5341,
+            "densX": 0.5605,
+            "weight": 0.5341
+          },
+          "stamp": "49775e207faf"
+        }
+      }
+    },
+    {
+      "id": "btn-join",
+      "kind": "control",
+      "note": "primary button Join Pawlio, deep green fill, off-white text",
+      "grid": null,
+      "box": {
+        "x": 0.0297,
+        "y": 0.55,
+        "w": 0.1187,
+        "h": 0.0778
+      },
+      "px": {
+        "x": 38,
+        "y": 396,
+        "w": 152,
+        "h": 56
+      },
+      "aspect": 2.7143,
+      "palette": [
+        {
+          "hex": "#1a3d29",
+          "coverage": 0.7324
+        },
+        {
+          "hex": "#e0e4c9",
+          "coverage": 0.2261
+        },
+        {
+          "hex": "#f5f7f6",
+          "coverage": 0.0239
+        },
+        {
+          "hex": "#8f9f8d",
+          "coverage": 0.0093
+        },
+        {
+          "hex": "#506250",
+          "coverage": 0.0083
+        }
+      ],
+      "detail": {
+        "energy": 25.7047
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      }
+    },
+    {
+      "id": "btn-signin",
+      "kind": "control",
+      "note": "secondary button Sign in, off-white fill, dark outline",
+      "grid": null,
+      "box": {
+        "x": 0.1578,
+        "y": 0.55,
+        "w": 0.0977,
+        "h": 0.0778
+      },
+      "px": {
+        "x": 202,
+        "y": 396,
+        "w": 125,
+        "h": 56
+      },
+      "aspect": 2.2321,
+      "palette": [
+        {
+          "hex": "#f2f2d6",
+          "coverage": 0.8715
+        },
+        {
+          "hex": "#0d0c09",
+          "coverage": 0.0662
+        },
+        {
+          "hex": "#38392b",
+          "coverage": 0.0267
+        },
+        {
+          "hex": "#b9baa9",
+          "coverage": 0.0242
+        },
+        {
+          "hex": "#f1efef",
+          "coverage": 0.0115
+        }
+      ],
+      "detail": {
+        "energy": 28.2758
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      }
+    },
+    {
+      "id": "sign-store",
+      "kind": "chrome",
+      "note": "flat deep green enamel sign panel with thin light border",
+      "grid": null,
+      "box": {
+        "x": 0.4133,
+        "y": 0.2208,
+        "w": 0.1609,
+        "h": 0.1653
+      },
+      "px": {
+        "x": 529,
+        "y": 159,
+        "w": 206,
+        "h": 119
+      },
+      "aspect": 1.7311,
+      "palette": [
+        {
+          "hex": "#25452b",
+          "coverage": 0.827
+        },
+        {
+          "hex": "#f1f6e8",
+          "coverage": 0.0519
+        },
+        {
+          "hex": "#4b644c",
+          "coverage": 0.0497
+        },
+        {
+          "hex": "#152716",
+          "coverage": 0.0482
+        },
+        {
+          "hex": "#b7c4b1",
+          "coverage": 0.0232
+        }
+      ],
+      "detail": {
+        "energy": 30.7487
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": true
+      }
+    },
+    {
+      "id": "sign-store-title",
+      "kind": "text",
+      "note": "off-white sign lettering Pet store / متجر",
+      "grid": null,
+      "parentId": "sign-store",
+      "box": {
+        "x": 0.4297,
+        "y": 0.2472,
+        "w": 0.1273,
+        "h": 0.0444
+      },
+      "px": {
+        "x": 550,
+        "y": 178,
+        "w": 163,
+        "h": 32
+      },
+      "aspect": 5.0938,
+      "palette": [
+        {
+          "hex": "#26452a",
+          "coverage": 0.7831
+        },
+        {
+          "hex": "#f0f4e3",
+          "coverage": 0.1254
+        },
+        {
+          "hex": "#808d76",
+          "coverage": 0.0322
+        },
+        {
+          "hex": "#b4c0ad",
+          "coverage": 0.0305
+        },
+        {
+          "hex": "#1b2918",
+          "coverage": 0.0288
+        }
+      ],
+      "detail": {
+        "energy": 43.1153
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 9,
+          "capHeightPx": 20,
+          "inkIsDark": false,
+          "allCaps": true,
+          "advance": null,
+          "advTall": null,
+          "advX": null,
+          "gap": 0.0749,
+          "xRatio": null,
+          "stemW": 0.1402,
+          "contrast": 0.8563,
+          "serif": 2.3812,
+          "densTall": null,
+          "densX": null,
+          "weight": null
+        },
+        "widthClass": "normal",
+        "weightClass": "regular"
+      }
+    },
+    {
+      "id": "sign-store-sub",
+      "kind": "text",
+      "note": "off-white line Sell products",
+      "grid": null,
+      "parentId": "sign-store",
+      "box": {
+        "x": 0.4516,
+        "y": 0.2986,
+        "w": 0.0836,
+        "h": 0.0347
+      },
+      "px": {
+        "x": 578,
+        "y": 215,
+        "w": 107,
+        "h": 25
+      },
+      "aspect": 4.28,
+      "palette": [
+        {
+          "hex": "#26452a",
+          "coverage": 0.7547
+        },
+        {
+          "hex": "#eff4e6",
+          "coverage": 0.1289
+        },
+        {
+          "hex": "#596c55",
+          "coverage": 0.0503
+        },
+        {
+          "hex": "#1b2919",
+          "coverage": 0.0346
+        },
+        {
+          "hex": "#b8c0ae",
+          "coverage": 0.0314
+        }
+      ],
+      "detail": {
+        "energy": 40.0298
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 12,
+          "capHeightPx": 15.7,
+          "inkIsDark": false,
+          "allCaps": false,
+          "advance": 0.4452,
+          "advTall": 0.4134,
+          "advX": 0.4452,
+          "gap": 0.0954,
+          "xRatio": 0.6339,
+          "stemW": 0.1483,
+          "contrast": 0.9296,
+          "serif": 1.4243,
+          "densTall": 0.5365,
+          "densX": 0.5993,
+          "weight": 0.5365
+        },
+        "widthClass": "condensed",
+        "weightClass": "medium"
+      }
+    },
+    {
+      "id": "sign-store-cta",
+      "kind": "text",
+      "note": "arrow and Open your shop in off-white",
+      "grid": null,
+      "parentId": "sign-store",
+      "box": {
+        "x": 0.4352,
+        "y": 0.3389,
+        "w": 0.1078,
+        "h": 0.0292
+      },
+      "px": {
+        "x": 557,
+        "y": 244,
+        "w": 138,
+        "h": 21
+      },
+      "aspect": 6.5714,
+      "palette": [
+        {
+          "hex": "#244429",
+          "coverage": 0.7349
+        },
+        {
+          "hex": "#eef5e9",
+          "coverage": 0.0973
+        },
+        {
+          "hex": "#93a493",
+          "coverage": 0.0604
+        },
+        {
+          "hex": "#465444",
+          "coverage": 0.0537
+        },
+        {
+          "hex": "#6c7e68",
+          "coverage": 0.0537
+        }
+      ],
+      "detail": {
+        "energy": 44.622
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 13,
+          "capHeightPx": 13,
+          "inkIsDark": false,
+          "allCaps": false,
+          "advance": 0.501,
+          "advTall": 0.7322,
+          "advX": 0.501,
+          "gap": 0.0771,
+          "xRatio": 0.6729,
+          "stemW": 0.1554,
+          "contrast": 0.8824,
+          "serif": 0.5783,
+          "densTall": 0.4744,
+          "densX": 0.6019,
+          "weight": 0.4744
+        },
+        "widthClass": "condensed",
+        "weightClass": "regular"
+      }
+    },
+    {
+      "id": "door-store",
+      "kind": "plate",
+      "note": "painted deep green panelled shop door with pilaster frame and brass handle, soft shadow on the wall",
+      "grid": null,
+      "bleed": true,
+      "box": {
+        "x": 0.4172,
+        "y": 0.3833,
+        "w": 0.1563,
+        "h": 0.3111
+      },
+      "px": {
+        "x": 534,
+        "y": 276,
+        "w": 200,
+        "h": 224
+      },
+      "aspect": 0.8929,
+      "palette": [
+        {
+          "hex": "#25432e",
+          "coverage": 0.6029
+        },
+        {
+          "hex": "#0c2113",
+          "coverage": 0.2865
+        },
+        {
+          "hex": "#d4d6b7",
+          "coverage": 0.0431
+        },
+        {
+          "hex": "#5e7253",
+          "coverage": 0.0344
+        },
+        {
+          "hex": "#a2ab86",
+          "coverage": 0.0331
+        }
+      ],
+      "detail": {
+        "energy": 12.0005
+      },
+      "medium": "raster",
+      "plate": "assets/plates/door-store.png",
+      "text": null
+    },
+    {
+      "id": "sign-clinic",
+      "kind": "chrome",
+      "note": "flat marigold enamel sign panel with thin light border",
+      "grid": null,
+      "box": {
+        "x": 0.6016,
+        "y": 0.2208,
+        "w": 0.1633,
+        "h": 0.1653
+      },
+      "px": {
+        "x": 770,
+        "y": 159,
+        "w": 209,
+        "h": 119
+      },
+      "aspect": 1.7563,
+      "palette": [
+        {
+          "hex": "#e0b749",
+          "coverage": 0.8034
+        },
+        {
+          "hex": "#dcc174",
+          "coverage": 0.0736
+        },
+        {
+          "hex": "#b28b30",
+          "coverage": 0.0499
+        },
+        {
+          "hex": "#180b08",
+          "coverage": 0.0484
+        },
+        {
+          "hex": "#47320b",
+          "coverage": 0.0248
+        }
+      ],
+      "detail": {
+        "energy": 33.3458
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": true
+      }
+    },
+    {
+      "id": "sign-clinic-title",
+      "kind": "text",
+      "note": "black sign lettering Vet clinic / عيادة بيطرية",
+      "grid": null,
+      "parentId": "sign-clinic",
+      "box": {
+        "x": 0.6133,
+        "y": 0.2472,
+        "w": 0.1453,
+        "h": 0.0444
+      },
+      "px": {
+        "x": 785,
+        "y": 178,
+        "w": 186,
+        "h": 32
+      },
+      "aspect": 5.8125,
+      "palette": [
+        {
+          "hex": "#dfb749",
+          "coverage": 0.7639
+        },
+        {
+          "hex": "#170b08",
+          "coverage": 0.0988
+        },
+        {
+          "hex": "#d7b867",
+          "coverage": 0.0694
+        },
+        {
+          "hex": "#614b11",
+          "coverage": 0.034
+        },
+        {
+          "hex": "#8e7434",
+          "coverage": 0.034
+        }
+      ],
+      "detail": {
+        "energy": 45.6573
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 14,
+          "capHeightPx": 18,
+          "inkIsDark": true,
+          "allCaps": true,
+          "advance": 0.5983,
+          "advTall": 0.9044,
+          "advX": null,
+          "gap": 0.1113,
+          "xRatio": null,
+          "stemW": 0.1358,
+          "contrast": 0.7994,
+          "serif": 0.96,
+          "densTall": 0.3639,
+          "densX": null,
+          "weight": 0.3639
+        },
+        "widthClass": "wide",
+        "weightClass": "regular"
+      }
+    },
+    {
+      "id": "sign-clinic-sub",
+      "kind": "text",
+      "note": "black line Take paid appointments",
+      "grid": null,
+      "parentId": "sign-clinic",
+      "box": {
+        "x": 0.6211,
+        "y": 0.2986,
+        "w": 0.1281,
+        "h": 0.0347
+      },
+      "px": {
+        "x": 795,
+        "y": 215,
+        "w": 164,
+        "h": 25
+      },
+      "aspect": 6.56,
+      "palette": [
+        {
+          "hex": "#e0b849",
+          "coverage": 0.7239
+        },
+        {
+          "hex": "#dabb6f",
+          "coverage": 0.0913
+        },
+        {
+          "hex": "#150908",
+          "coverage": 0.0826
+        },
+        {
+          "hex": "#342109",
+          "coverage": 0.0543
+        },
+        {
+          "hex": "#a38c48",
+          "coverage": 0.0478
+        }
+      ],
+      "detail": {
+        "energy": 47.5836
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 20,
+          "capHeightPx": 14,
+          "inkIsDark": true,
+          "allCaps": false,
+          "advance": 0.4645,
+          "advTall": 0.393,
+          "advX": 0.4645,
+          "gap": 0.1072,
+          "xRatio": 0.6624,
+          "stemW": 0.1524,
+          "contrast": 0.9676,
+          "serif": 0.4778,
+          "densTall": 0.5331,
+          "densX": 0.6237,
+          "weight": 0.5331
+        },
+        "widthClass": "condensed",
+        "weightClass": "medium"
+      }
+    },
+    {
+      "id": "sign-clinic-cta",
+      "kind": "text",
+      "note": "arrow and Open your shop in black",
+      "grid": null,
+      "parentId": "sign-clinic",
+      "box": {
+        "x": 0.625,
+        "y": 0.3389,
+        "w": 0.1078,
+        "h": 0.0292
+      },
+      "px": {
+        "x": 800,
+        "y": 244,
+        "w": 138,
+        "h": 21
+      },
+      "aspect": 6.5714,
+      "palette": [
+        {
+          "hex": "#e3b84b",
+          "coverage": 0.7669
+        },
+        {
+          "hex": "#1b0c08",
+          "coverage": 0.1047
+        },
+        {
+          "hex": "#ddc074",
+          "coverage": 0.0541
+        },
+        {
+          "hex": "#412908",
+          "coverage": 0.0372
+        },
+        {
+          "hex": "#9c8439",
+          "coverage": 0.0372
+        }
+      ],
+      "detail": {
+        "energy": 39.8912
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 13,
+          "capHeightPx": 13,
+          "inkIsDark": true,
+          "allCaps": false,
+          "advance": 0.4987,
+          "advTall": 0.6905,
+          "advX": 0.4987,
+          "gap": 0.1151,
+          "xRatio": 0.6414,
+          "stemW": 0.1529,
+          "contrast": 0.8582,
+          "serif": 0.5164,
+          "densTall": 0.4634,
+          "densX": 0.6098,
+          "weight": 0.4634
+        },
+        "widthClass": "condensed",
+        "weightClass": "regular"
+      }
+    },
+    {
+      "id": "door-clinic",
+      "kind": "plate",
+      "note": "painted marigold panelled shop door with pilaster frame and brass handle, soft shadow on the wall",
+      "grid": null,
+      "bleed": true,
+      "box": {
+        "x": 0.6062,
+        "y": 0.3833,
+        "w": 0.1563,
+        "h": 0.3139
+      },
+      "px": {
+        "x": 776,
+        "y": 276,
+        "w": 200,
+        "h": 226
+      },
+      "aspect": 0.885,
+      "palette": [
+        {
+          "hex": "#d6ab3f",
+          "coverage": 0.5451
+        },
+        {
+          "hex": "#9d751b",
+          "coverage": 0.2213
+        },
+        {
+          "hex": "#75530b",
+          "coverage": 0.1295
+        },
+        {
+          "hex": "#d6d3b3",
+          "coverage": 0.0556
+        },
+        {
+          "hex": "#a2a484",
+          "coverage": 0.0485
+        }
+      ],
+      "detail": {
+        "energy": 14.565
+      },
+      "medium": "raster",
+      "plate": "assets/plates/door-clinic.png",
+      "text": null
+    },
+    {
+      "id": "sign-groomer",
+      "kind": "chrome",
+      "note": "flat oxblood enamel sign panel with thin light border",
+      "grid": null,
+      "box": {
+        "x": 0.793,
+        "y": 0.2208,
+        "w": 0.1703,
+        "h": 0.1653
+      },
+      "px": {
+        "x": 1015,
+        "y": 159,
+        "w": 218,
+        "h": 119
+      },
+      "aspect": 1.8319,
+      "palette": [
+        {
+          "hex": "#571c18",
+          "coverage": 0.785
+        },
+        {
+          "hex": "#7e443b",
+          "coverage": 0.076
+        },
+        {
+          "hex": "#f7efe0",
+          "coverage": 0.0555
+        },
+        {
+          "hex": "#937869",
+          "coverage": 0.0446
+        },
+        {
+          "hex": "#412214",
+          "coverage": 0.0389
+        }
+      ],
+      "detail": {
+        "energy": 36.1501
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      }
+    },
+    {
+      "id": "sign-groomer-title",
+      "kind": "text",
+      "note": "off-white sign lettering Groomer / جرومنج",
+      "grid": null,
+      "parentId": "sign-groomer",
+      "box": {
+        "x": 0.8086,
+        "y": 0.2472,
+        "w": 0.1391,
+        "h": 0.0444
+      },
+      "px": {
+        "x": 1035,
+        "y": 178,
+        "w": 178,
+        "h": 32
+      },
+      "aspect": 5.5625,
+      "palette": [
+        {
+          "hex": "#571b18",
+          "coverage": 0.7347
+        },
+        {
+          "hex": "#f7efdd",
+          "coverage": 0.1146
+        },
+        {
+          "hex": "#3b170d",
+          "coverage": 0.0581
+        },
+        {
+          "hex": "#a48478",
+          "coverage": 0.0502
+        },
+        {
+          "hex": "#d5b9ad",
+          "coverage": 0.0424
+        }
+      ],
+      "detail": {
+        "energy": 51.0015
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 11,
+          "capHeightPx": 21.1,
+          "inkIsDark": false,
+          "allCaps": false,
+          "advance": 0.4493,
+          "advTall": null,
+          "advX": 0.4493,
+          "gap": 0.0828,
+          "xRatio": 0.6066,
+          "stemW": 0.135,
+          "contrast": 0.8391,
+          "serif": 0.6938,
+          "densTall": null,
+          "densX": 0.5922,
+          "weight": 0.5922
+        },
+        "widthClass": "condensed",
+        "weightClass": "bold"
+      }
+    },
+    {
+      "id": "sign-groomer-sub",
+      "kind": "text",
+      "note": "off-white line Fill your grooming chair",
+      "grid": null,
+      "parentId": "sign-groomer",
+      "box": {
+        "x": 0.8125,
+        "y": 0.2986,
+        "w": 0.1156,
+        "h": 0.0347
+      },
+      "px": {
+        "x": 1040,
+        "y": 215,
+        "w": 148,
+        "h": 25
+      },
+      "aspect": 5.92,
+      "palette": [
+        {
+          "hex": "#571b17",
+          "coverage": 0.7458
+        },
+        {
+          "hex": "#c8afa2",
+          "coverage": 0.0815
+        },
+        {
+          "hex": "#987a6c",
+          "coverage": 0.0624
+        },
+        {
+          "hex": "#3a190f",
+          "coverage": 0.06
+        },
+        {
+          "hex": "#f8f4e5",
+          "coverage": 0.0504
+        }
+      ],
+      "detail": {
+        "energy": 50.1837
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 18,
+          "capHeightPx": 14.6,
+          "inkIsDark": false,
+          "allCaps": false,
+          "advance": 0.4803,
+          "advTall": 0.1544,
+          "advX": 0.4803,
+          "gap": 0.1029,
+          "xRatio": 0.6636,
+          "stemW": 0.1519,
+          "contrast": 0.9326,
+          "serif": 0.3619,
+          "densTall": 0.8031,
+          "densX": 0.603,
+          "weight": 0.8031
+        },
+        "widthClass": "condensed",
+        "weightClass": "black"
+      }
+    },
+    {
+      "id": "sign-groomer-cta",
+      "kind": "text",
+      "note": "arrow and Open your shop in off-white",
+      "grid": null,
+      "parentId": "sign-groomer",
+      "box": {
+        "x": 0.8203,
+        "y": 0.3389,
+        "w": 0.1078,
+        "h": 0.0292
+      },
+      "px": {
+        "x": 1050,
+        "y": 244,
+        "w": 138,
+        "h": 21
+      },
+      "aspect": 6.5714,
+      "palette": [
+        {
+          "hex": "#571b18",
+          "coverage": 0.7729
+        },
+        {
+          "hex": "#f7f1e4",
+          "coverage": 0.0881
+        },
+        {
+          "hex": "#997769",
+          "coverage": 0.0508
+        },
+        {
+          "hex": "#7a4f47",
+          "coverage": 0.0441
+        },
+        {
+          "hex": "#ecd2c7",
+          "coverage": 0.0441
+        }
+      ],
+      "detail": {
+        "energy": 46.5665
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 13,
+          "capHeightPx": 13,
+          "inkIsDark": false,
+          "allCaps": false,
+          "advance": 0.4987,
+          "advTall": 0.6138,
+          "advX": 0.4987,
+          "gap": 0.0767,
+          "xRatio": 0.6444,
+          "stemW": 0.1572,
+          "contrast": 0.9014,
+          "serif": 1.1303,
+          "densTall": 0.5039,
+          "densX": 0.6095,
+          "weight": 0.5039
+        },
+        "widthClass": "condensed",
+        "weightClass": "medium"
+      }
+    },
+    {
+      "id": "door-groomer",
+      "kind": "plate",
+      "note": "painted oxblood panelled shop door with pilaster frame and brass handle, soft shadow on the wall",
+      "grid": null,
+      "bleed": true,
+      "box": {
+        "x": 0.7977,
+        "y": 0.3833,
+        "w": 0.1594,
+        "h": 0.3139
+      },
+      "px": {
+        "x": 1021,
+        "y": 276,
+        "w": 204,
+        "h": 226
+      },
+      "aspect": 0.9027,
+      "palette": [
+        {
+          "hex": "#5e211c",
+          "coverage": 0.6501
+        },
+        {
+          "hex": "#310c09",
+          "coverage": 0.2246
+        },
+        {
+          "hex": "#160908",
+          "coverage": 0.055
+        },
+        {
+          "hex": "#80705f",
+          "coverage": 0.0354
+        },
+        {
+          "hex": "#d3d5b5",
+          "coverage": 0.0349
+        }
+      ],
+      "detail": {
+        "energy": 11.4261
+      },
+      "medium": "raster",
+      "plate": "assets/plates/door-groomer.png",
+      "text": null
+    },
+    {
+      "id": "wall",
+      "kind": "texture",
+      "note": "clean patch of cool pale green limewashed plaster wall",
+      "grid": null,
+      "box": {
+        "x": 0.3219,
+        "y": 0.1042,
+        "w": 0.0781,
+        "h": 0.0861
+      },
+      "px": {
+        "x": 412,
+        "y": 75,
+        "w": 100,
+        "h": 62
+      },
+      "aspect": 1.6129,
+      "palette": [
+        {
+          "hex": "#dee5c9",
+          "coverage": 0.7842
+        },
+        {
+          "hex": "#090908",
+          "coverage": 0.1819
+        },
+        {
+          "hex": "#464841",
+          "coverage": 0.0183
+        },
+        {
+          "hex": "#636355",
+          "coverage": 0.0085
+        },
+        {
+          "hex": "#b2b2a5",
+          "coverage": 0.0071
+        }
+      ],
+      "detail": {
+        "energy": 16.9688
+      },
+      "medium": "raster",
+      "plate": "assets/plates/wall.png",
+      "text": null
+    },
+    {
+      "id": "plinth",
+      "kind": "chrome",
+      "note": "darker sage plinth band along the base of the wall",
+      "grid": null,
+      "box": {
+        "x": 0,
+        "y": 0.6333,
+        "w": 1,
+        "h": 0.0583
+      },
+      "px": {
+        "x": 0,
+        "y": 456,
+        "w": 1280,
+        "h": 42
+      },
+      "aspect": 30.4762,
+      "palette": [
+        {
+          "hex": "#889375",
+          "coverage": 0.5058
+        },
+        {
+          "hex": "#213e29",
+          "coverage": 0.133
+        },
+        {
+          "hex": "#531c18",
+          "coverage": 0.127
+        },
+        {
+          "hex": "#cbcdaf",
+          "coverage": 0.127
+        },
+        {
+          "hex": "#c99e38",
+          "coverage": 0.1071
+        }
+      ],
+      "detail": {
+        "energy": 29.6709
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      }
+    },
+    {
+      "id": "pavement",
+      "kind": "plate",
+      "note": "full-width strip of pale stone pavement slabs with joints and a kerb edge",
+      "grid": null,
+      "box": {
+        "x": 0,
+        "y": 0.6861,
+        "w": 1,
+        "h": 0.0667
+      },
+      "px": {
+        "x": 0,
+        "y": 494,
+        "w": 1280,
+        "h": 48
+      },
+      "aspect": 26.6667,
+      "palette": [
+        {
+          "hex": "#cec9ae",
+          "coverage": 0.9124
+        },
+        {
+          "hex": "#9d9580",
+          "coverage": 0.048
+        },
+        {
+          "hex": "#67644f",
+          "coverage": 0.0282
+        },
+        {
+          "hex": "#080808",
+          "coverage": 0.008
+        },
+        {
+          "hex": "#304030",
+          "coverage": 0.0034
+        }
+      ],
+      "detail": {
+        "energy": 22.769
+      },
+      "medium": "raster",
+      "plate": "assets/plates/pavement.png",
+      "text": null
+    },
+    {
+      "id": "how-heading",
+      "kind": "text",
+      "note": "hand-lettered heading How it works flanked by short black rules",
+      "grid": null,
+      "box": {
+        "x": 0.3563,
+        "y": 0.725,
+        "w": 0.2766,
+        "h": 0.0556
+      },
+      "px": {
+        "x": 456,
+        "y": 522,
+        "w": 354,
+        "h": 40
+      },
+      "aspect": 8.85,
+      "palette": [
+        {
+          "hex": "#e2e2c7",
+          "coverage": 0.8265
+        },
+        {
+          "hex": "#090908",
+          "coverage": 0.1197
+        },
+        {
+          "hex": "#adad9f",
+          "coverage": 0.0257
+        },
+        {
+          "hex": "#545444",
+          "coverage": 0.0165
+        },
+        {
+          "hex": "#303022",
+          "coverage": 0.0116
+        }
+      ],
+      "detail": {
+        "energy": 64.9553
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 14,
+          "capHeightPx": 19.5,
+          "inkIsDark": true,
+          "allCaps": false,
+          "advance": null,
+          "advTall": null,
+          "advX": null,
+          "gap": 0.1541,
+          "xRatio": 0.4824,
+          "stemW": 0.2245,
+          "contrast": 1.4732,
+          "serif": 1.0634,
+          "densTall": null,
+          "densX": null,
+          "weight": null
+        },
+        "widthClass": "normal",
+        "weightClass": "bold"
+      }
+    },
+    {
+      "id": "step1-card",
+      "kind": "plate",
+      "note": "small torn paper note card pinned to the wall, slightly tilted",
+      "grid": null,
+      "box": {
+        "x": 0.1297,
+        "y": 0.7667,
+        "w": 0.1219,
+        "h": 0.1472
+      },
+      "px": {
+        "x": 166,
+        "y": 552,
+        "w": 156,
+        "h": 106
+      },
+      "aspect": 1.4717,
+      "palette": [
+        {
+          "hex": "#e2d9bd",
+          "coverage": 0.8882
+        },
+        {
+          "hex": "#a2a286",
+          "coverage": 0.043
+        },
+        {
+          "hex": "#6e6b4f",
+          "coverage": 0.0328
+        },
+        {
+          "hex": "#0b0a09",
+          "coverage": 0.0306
+        },
+        {
+          "hex": "#424033",
+          "coverage": 0.0054
+        }
+      ],
+      "detail": {
+        "energy": 18.5757
+      },
+      "medium": "raster",
+      "plate": "assets/plates/step1-card.png",
+      "text": null
+    },
+    {
+      "id": "step1-label",
+      "kind": "text",
+      "note": "hand-lettered 1 Apply on the paper note",
+      "grid": null,
+      "parentId": "step1-card",
+      "box": {
+        "x": 0.1609,
+        "y": 0.7903,
+        "w": 0.0586,
+        "h": 0.0986
+      },
+      "px": {
+        "x": 206,
+        "y": 569,
+        "w": 75,
+        "h": 71
+      },
+      "aspect": 1.0563,
+      "palette": [
+        {
+          "hex": "#e8d9bc",
+          "coverage": 0.8462
+        },
+        {
+          "hex": "#0a0909",
+          "coverage": 0.094
+        },
+        {
+          "hex": "#5a4f46",
+          "coverage": 0.0222
+        },
+        {
+          "hex": "#393122",
+          "coverage": 0.0188
+        },
+        {
+          "hex": "#817e6e",
+          "coverage": 0.0188
+        }
+      ],
+      "detail": {
+        "energy": 17.0201
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": true,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 5,
+          "capHeightPx": 24.3,
+          "inkIsDark": true,
+          "allCaps": false,
+          "advance": 0.1443,
+          "advTall": 0.1443,
+          "advX": null,
+          "gap": 0.1134,
+          "xRatio": 0.5658,
+          "stemW": 0.1243,
+          "contrast": 0.9045,
+          "serif": null,
+          "densTall": 0.7669,
+          "densX": null,
+          "weight": 0.7669
+        },
+        "widthClass": "compressed",
+        "weightClass": "black"
+      }
+    },
+    {
+      "id": "step1-caption",
+      "kind": "text",
+      "note": "small caption Tell us about your business",
+      "grid": null,
+      "box": {
+        "x": 0.1484,
+        "y": 0.9194,
+        "w": 0.0742,
+        "h": 0.0556
+      },
+      "px": {
+        "x": 190,
+        "y": 662,
+        "w": 95,
+        "h": 40
+      },
+      "aspect": 2.375,
+      "palette": [
+        {
+          "hex": "#dbdec6",
+          "coverage": 0.8205
+        },
+        {
+          "hex": "#262716",
+          "coverage": 0.0591
+        },
+        {
+          "hex": "#525442",
+          "coverage": 0.0591
+        },
+        {
+          "hex": "#979788",
+          "coverage": 0.0386
+        },
+        {
+          "hex": "#080808",
+          "coverage": 0.0227
+        }
+      ],
+      "detail": {
+        "energy": 36.5458
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 2,
+          "glyphs": 21,
+          "capHeightPx": 12.5,
+          "inkIsDark": true,
+          "allCaps": false,
+          "advance": 0.5188,
+          "advTall": 0.3997,
+          "advX": 0.5196,
+          "gap": 0.0799,
+          "xRatio": 0.6991,
+          "stemW": 0.1579,
+          "contrast": 1.0368,
+          "serif": null,
+          "densTall": 0.533,
+          "densX": 0.5758,
+          "weight": 0.533
+        },
+        "widthClass": "condensed",
+        "weightClass": "medium"
+      }
+    },
+    {
+      "id": "arrow-1",
+      "kind": "chrome",
+      "note": "black right arrow icon",
+      "grid": null,
+      "box": {
+        "x": 0.2766,
+        "y": 0.8389,
+        "w": 0.0469,
+        "h": 0.0333
+      },
+      "px": {
+        "x": 354,
+        "y": 604,
+        "w": 60,
+        "h": 24
+      },
+      "aspect": 2.5,
+      "palette": [
+        {
+          "hex": "#dae2c8",
+          "coverage": 0.7925
+        },
+        {
+          "hex": "#090909",
+          "coverage": 0.1572
+        },
+        {
+          "hex": "#737868",
+          "coverage": 0.0189
+        },
+        {
+          "hex": "#adad98",
+          "coverage": 0.0189
+        },
+        {
+          "hex": "#404030",
+          "coverage": 0.0126
+        }
+      ],
+      "detail": {
+        "energy": 14.318
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      }
+    },
+    {
+      "id": "step2-palette",
+      "kind": "plate",
+      "note": "sign painter's wooden palette with green, marigold and oxblood paint and two brushes",
+      "grid": null,
+      "box": {
+        "x": 0.3422,
+        "y": 0.7861,
+        "w": 0.1203,
+        "h": 0.1806
+      },
+      "px": {
+        "x": 438,
+        "y": 566,
+        "w": 154,
+        "h": 130
+      },
+      "aspect": 1.1846,
+      "palette": [
+        {
+          "hex": "#e0e3c6",
+          "coverage": 0.5554
+        },
+        {
+          "hex": "#cfbd99",
+          "coverage": 0.3111
+        },
+        {
+          "hex": "#503f20",
+          "coverage": 0.0626
+        },
+        {
+          "hex": "#746a4d",
+          "coverage": 0.0388
+        },
+        {
+          "hex": "#355427",
+          "coverage": 0.0321
+        }
+      ],
+      "detail": {
+        "energy": 21.1133
+      },
+      "medium": "raster",
+      "plate": "assets/plates/step2-palette.png",
+      "text": null
+    },
+    {
+      "id": "step2-title",
+      "kind": "text",
+      "note": "hand-lettered 2 We review",
+      "grid": null,
+      "box": {
+        "x": 0.4703,
+        "y": 0.8014,
+        "w": 0.0844,
+        "h": 0.0806
+      },
+      "px": {
+        "x": 602,
+        "y": 577,
+        "w": 108,
+        "h": 58
+      },
+      "aspect": 1.8621,
+      "palette": [
+        {
+          "hex": "#e5e7c9",
+          "coverage": 0.8415
+        },
+        {
+          "hex": "#0b0a08",
+          "coverage": 0.094
+        },
+        {
+          "hex": "#a4a495",
+          "coverage": 0.0295
+        },
+        {
+          "hex": "#3a3a2c",
+          "coverage": 0.0252
+        },
+        {
+          "hex": "#6a6d63",
+          "coverage": 0.0098
+        }
+      ],
+      "detail": {
+        "energy": 24.6543
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 1,
+          "glyphs": 7,
+          "capHeightPx": 21.7,
+          "inkIsDark": true,
+          "allCaps": true,
+          "advance": 0.4384,
+          "advTall": 0.8075,
+          "advX": null,
+          "gap": 0.0692,
+          "xRatio": null,
+          "stemW": 0.1325,
+          "contrast": 0.9156,
+          "serif": 1.4196,
+          "densTall": 0.4695,
+          "densX": null,
+          "weight": 0.4695
+        },
+        "widthClass": "wide",
+        "weightClass": "regular"
+      }
+    },
+    {
+      "id": "step2-caption",
+      "kind": "text",
+      "note": "small caption We check every business before going live",
+      "grid": null,
+      "box": {
+        "x": 0.4703,
+        "y": 0.8944,
+        "w": 0.1187,
+        "h": 0.0556
+      },
+      "px": {
+        "x": 602,
+        "y": 644,
+        "w": 152,
+        "h": 40
+      },
+      "aspect": 3.8,
+      "palette": [
+        {
+          "hex": "#dce1c8",
+          "coverage": 0.7663
+        },
+        {
+          "hex": "#363824",
+          "coverage": 0.0653
+        },
+        {
+          "hex": "#8c8d7a",
+          "coverage": 0.0639
+        },
+        {
+          "hex": "#b9baa8",
+          "coverage": 0.0552
+        },
+        {
+          "hex": "#121209",
+          "coverage": 0.0493
+        }
+      ],
+      "detail": {
+        "energy": 48.4564
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 2,
+          "glyphs": 31,
+          "capHeightPx": 11.9,
+          "inkIsDark": true,
+          "allCaps": false,
+          "advance": 0.5343,
+          "advTall": 0.514,
+          "advX": 0.5425,
+          "gap": 0.0831,
+          "xRatio": 0.6919,
+          "stemW": 0.1483,
+          "contrast": 0.9719,
+          "serif": 0.2992,
+          "densTall": 0.5065,
+          "densX": 0.5931,
+          "weight": 0.5065
+        },
+        "widthClass": "condensed",
+        "weightClass": "medium"
+      }
+    },
+    {
+      "id": "arrow-2",
+      "kind": "chrome",
+      "note": "black right arrow icon",
+      "grid": null,
+      "box": {
+        "x": 0.607,
+        "y": 0.8389,
+        "w": 0.0469,
+        "h": 0.0333
+      },
+      "px": {
+        "x": 777,
+        "y": 604,
+        "w": 60,
+        "h": 24
+      },
+      "aspect": 2.5,
+      "palette": [
+        {
+          "hex": "#dbdfc7",
+          "coverage": 0.8187
+        },
+        {
+          "hex": "#090909",
+          "coverage": 0.15
+        },
+        {
+          "hex": "#5d5d53",
+          "coverage": 0.0187
+        },
+        {
+          "hex": "#283020",
+          "coverage": 0.0125
+        }
+      ],
+      "detail": {
+        "energy": 13.6512
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      }
+    },
+    {
+      "id": "step3-sign",
+      "kind": "plate",
+      "note": "small green hanging OPEN sign on a dark post",
+      "grid": null,
+      "box": {
+        "x": 0.6734,
+        "y": 0.7611,
+        "w": 0.1031,
+        "h": 0.2194
+      },
+      "px": {
+        "x": 862,
+        "y": 548,
+        "w": 132,
+        "h": 158
+      },
+      "aspect": 0.8354,
+      "palette": [
+        {
+          "hex": "#dce0c3",
+          "coverage": 0.6258
+        },
+        {
+          "hex": "#1b3723",
+          "coverage": 0.2985
+        },
+        {
+          "hex": "#acb79a",
+          "coverage": 0.0302
+        },
+        {
+          "hex": "#475941",
+          "coverage": 0.0276
+        },
+        {
+          "hex": "#0c1809",
+          "coverage": 0.0179
+        }
+      ],
+      "detail": {
+        "energy": 20.3631
+      },
+      "medium": "raster",
+      "plate": "assets/plates/step3-sign.png",
+      "text": null
+    },
+    {
+      "id": "step3-title",
+      "kind": "text",
+      "note": "hand-lettered Arabic مفتوح",
+      "grid": null,
+      "box": {
+        "x": 0.7813,
+        "y": 0.8194,
+        "w": 0.0703,
+        "h": 0.0639
+      },
+      "px": {
+        "x": 1000,
+        "y": 590,
+        "w": 90,
+        "h": 46
+      },
+      "aspect": 1.9565,
+      "palette": [
+        {
+          "hex": "#d9dcc0",
+          "coverage": 0.8787
+        },
+        {
+          "hex": "#090909",
+          "coverage": 0.0732
+        },
+        {
+          "hex": "#a8a999",
+          "coverage": 0.0251
+        },
+        {
+          "hex": "#7b806d",
+          "coverage": 0.0126
+        },
+        {
+          "hex": "#282818",
+          "coverage": 0.0105
+        }
+      ],
+      "detail": {
+        "energy": 16.1432
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": null,
+        "measuredAt": "2026-10-19T16:50:38.257Z",
+        "note": "no separable lettering in the crop; size by the region box"
+      }
+    },
+    {
+      "id": "step3-caption",
+      "kind": "text",
+      "note": "small caption Open for pet owners and start getting booked",
+      "grid": null,
+      "box": {
+        "x": 0.7844,
+        "y": 0.8903,
+        "w": 0.1,
+        "h": 0.0861
+      },
+      "px": {
+        "x": 1004,
+        "y": 641,
+        "w": 128,
+        "h": 62
+      },
+      "aspect": 2.0645,
+      "palette": [
+        {
+          "hex": "#d6d9bc",
+          "coverage": 0.8967
+        },
+        {
+          "hex": "#8e8f7e",
+          "coverage": 0.0337
+        },
+        {
+          "hex": "#282b17",
+          "coverage": 0.0325
+        },
+        {
+          "hex": "#565644",
+          "coverage": 0.0292
+        },
+        {
+          "hex": "#a8b193",
+          "coverage": 0.0079
+        }
+      ],
+      "detail": {
+        "energy": 31.1095
+      },
+      "medium": "semantic",
+      "plate": null,
+      "text": null,
+      "surface": {
+        "flat": false,
+        "rules": false
+      },
+      "type": {
+        "comp": {
+          "lines": 3,
+          "glyphs": 32,
+          "capHeightPx": 11.8,
+          "inkIsDark": true,
+          "allCaps": false,
+          "advance": 0.5387,
+          "advTall": 0.627,
+          "advX": 0.5284,
+          "gap": 0.0834,
+          "xRatio": 0.6955,
+          "stemW": 0.1511,
+          "contrast": 1.0289,
+          "serif": 0.3249,
+          "densTall": 0.483,
+          "densX": 0.5887,
+          "weight": 0.483
+        },
+        "widthClass": "condensed",
+        "weightClass": "medium"
+      }
+    }
+  ],
+  "compSha256": "0fbe4c4883ccda9e7561565b81ed03e1e0148b38dfbb719912599cf3561ac38c",
+  "regionsSource": {
+    "path": ".impeccable/build/regions.json",
+    "sha256": "9c49bbe097dfe6a542fb21a1ce63e7607bd46cc75b00c8db37a0a9ea8e045104"
+  }
+}

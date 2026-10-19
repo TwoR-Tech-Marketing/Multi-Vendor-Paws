@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Scaffold reference: assigned.png</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Maiden+Orange:wght@400&family=Reem+Kufi:wght@400&family=Reddit+Sans+Condensed:wght@300&display=swap">
+  <link rel="stylesheet" href="layout.css">
+  <style>html,body{margin:0}body{background:#d9dcbd}.region{box-sizing:border-box}.region.text p{white-space:pre-wrap}</style>
+</head>
+<body>
+<!-- Reference only. Every region sits at its measured box inside a comp-aspect frame. Take the boxes (layout.css), keep your own semantic structure. -->
+<main class="comp-frame" style="max-width:1280px">
+  <div class="r-logo region control" data-region="logo"><!-- Pawlio logo mark and wordmark, home link: match the control's lettering and visible shape to the crop (comp-spec.mjs --crop logo); a control need not have button chrome --></div>
+  <div class="r-nav-links region control" data-region="nav-links"><!-- nav links For stores, For clinics, For groomers in dark ink: match the control's lettering and visible shape to the crop (comp-spec.mjs --crop nav-links); a control need not have button chrome --></div>
+  <div class="r-nav-utility region control" data-region="nav-utility"><!-- Arabic language switch with globe icon, divider, Sign in link: match the control's lettering and visible shape to the crop (comp-spec.mjs --crop nav-utility); a control need not have button chrome --></div>
+  <div class="r-headline region text" data-region="headline"><!-- two-line hand-lettered black headline: Your pet business, on the street every pet owner walks. --><p style="font-size:var(--r-headline-font);font-family:var(--r-headline-family),sans-serif;font-weight:var(--r-headline-weight);line-height:1.05;margin:0">headline</p></div>
+  <div class="r-headline-ar region text" data-region="headline-ar"><!-- Arabic headline pair in black, one line --><p style="font-size:var(--r-headline-ar-font);font-family:var(--r-headline-ar-family),sans-serif;font-weight:var(--r-headline-ar-weight);line-height:1.05;margin:0">headline-ar</p></div>
+  <div class="r-lead region text" data-region="lead"><!-- four-line body copy in dark grey about stores, clinics and groomers on one app --><p style="font-size:var(--r-lead-font);font-family:var(--r-lead-family),sans-serif;font-weight:var(--r-lead-weight);line-height:1.05;margin:0">lead</p></div>
+  <div class="r-btn-join region control" data-region="btn-join"><!-- primary button Join Pawlio, deep green fill, off-white text: match the control's lettering and visible shape to the crop (comp-spec.mjs --crop btn-join); a control need not have button chrome --></div>
+  <div class="r-btn-signin region control" data-region="btn-signin"><!-- secondary button Sign in, off-white fill, dark outline: match the control's lettering and visible shape to the crop (comp-spec.mjs --crop btn-signin); a control need not have button chrome --></div>
+  <div class="r-sign-store region chrome" data-region="sign-store"><!-- flat deep green enamel sign panel with thin light border --></div>
+  <div class="r-sign-store-title region text" data-region="sign-store-title"><!-- off-white sign lettering Pet store / متجر --><p style="font-size:var(--r-sign-store-title-font);line-height:1.05;margin:0">sign-store-title</p></div>
+  <div class="r-sign-store-sub region text" data-region="sign-store-sub"><!-- off-white line Sell products --><p style="font-size:var(--r-sign-store-sub-font);line-height:1.05;margin:0">sign-store-sub</p></div>
+  <div class="r-sign-store-cta region text" data-region="sign-store-cta"><!-- arrow and Open your shop in off-white --><p style="font-size:var(--r-sign-store-cta-font);line-height:1.05;margin:0">sign-store-cta</p></div>
+  <figure class="r-door-store region plate" data-region="door-store"><img src="../../../assets/plates/door-store.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top left"></figure>
+  <div class="r-sign-clinic region chrome" data-region="sign-clinic"><!-- flat marigold enamel sign panel with thin light border --></div>
+  <div class="r-sign-clinic-title region text" data-region="sign-clinic-title"><!-- black sign lettering Vet clinic / عيادة بيطرية --><p style="font-size:var(--r-sign-clinic-title-font);line-height:1.05;margin:0">sign-clinic-title</p></div>
+  <div class="r-sign-clinic-sub region text" data-region="sign-clinic-sub"><!-- black line Take paid appointments --><p style="font-size:var(--r-sign-clinic-sub-font);line-height:1.05;margin:0">sign-clinic-sub</p></div>
+  <div class="r-sign-clinic-cta region text" data-region="sign-clinic-cta"><!-- arrow and Open your shop in black --><p style="font-size:var(--r-sign-clinic-cta-font);line-height:1.05;margin:0">sign-clinic-cta</p></div>
+  <figure class="r-door-clinic region plate" data-region="door-clinic"><img src="../../../assets/plates/door-clinic.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top left"></figure>
+  <div class="r-sign-groomer region chrome" data-region="sign-groomer"><!-- flat oxblood enamel sign panel with thin light border --></div>
+  <div class="r-sign-groomer-title region text" data-region="sign-groomer-title"><!-- off-white sign lettering Groomer / جرومنج --><p style="font-size:var(--r-sign-groomer-title-font);line-height:1.05;margin:0">sign-groomer-title</p></div>
+  <div class="r-sign-groomer-sub region text" data-region="sign-groomer-sub"><!-- off-white line Fill your grooming chair --><p style="font-size:var(--r-sign-groomer-sub-font);line-height:1.05;margin:0">sign-groomer-sub</p></div>
+  <div class="r-sign-groomer-cta region text" data-region="sign-groomer-cta"><!-- arrow and Open your shop in off-white --><p style="font-size:var(--r-sign-groomer-cta-font);line-height:1.05;margin:0">sign-groomer-cta</p></div>
+  <figure class="r-door-groomer region plate" data-region="door-groomer"><img src="../../../assets/plates/door-groomer.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top left"></figure>
+  <div class="r-wall region texture" data-region="wall" style="background-image:url('../../../assets/plates/wall.png');background-repeat:repeat"></div>
+  <div class="r-plinth region chrome" data-region="plinth"><!-- darker sage plinth band along the base of the wall --></div>
+  <figure class="r-pavement region plate" data-region="pavement"><img src="../../../assets/plates/pavement.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top left"></figure>
+  <div class="r-how-heading region text" data-region="how-heading"><!-- hand-lettered heading How it works flanked by short black rules --><p style="font-size:var(--r-how-heading-font);line-height:1.05;margin:0">how-heading</p></div>
+  <figure class="r-step1-card region plate" data-region="step1-card"><img src="../../../assets/plates/step1-card.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top left"></figure>
+  <div class="r-step1-label region text" data-region="step1-label"><!-- hand-lettered 1 Apply on the paper note --><p style="font-size:var(--r-step1-label-font);line-height:1.05;margin:0">step1-label</p></div>
+  <div class="r-step1-caption region text" data-region="step1-caption"><!-- small caption Tell us about your business --><p style="font-size:var(--r-step1-caption-font);line-height:1.05;margin:0">step1-caption</p></div>
+  <div class="r-arrow-1 region chrome" data-region="arrow-1"><!-- black right arrow icon --></div>
+  <figure class="r-step2-palette region plate" data-region="step2-palette"><img src="../../../assets/plates/step2-palette.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top left"></figure>
+  <div class="r-step2-title region text" data-region="step2-title"><!-- hand-lettered 2 We review --><p style="font-size:var(--r-step2-title-font);line-height:1.05;margin:0">step2-title</p></div>
+  <div class="r-step2-caption region text" data-region="step2-caption"><!-- small caption We check every business before going live --><p style="font-size:var(--r-step2-caption-font);line-height:1.05;margin:0">step2-caption</p></div>
+  <div class="r-arrow-2 region chrome" data-region="arrow-2"><!-- black right arrow icon --></div>
+  <figure class="r-step3-sign region plate" data-region="step3-sign"><img src="../../../assets/plates/step3-sign.png" alt="" style="width:100%;height:100%;object-fit:contain;object-position:top left"></figure>
+  <div class="r-step3-title region text" data-region="step3-title"><!-- hand-lettered Arabic مفتوح --><p style="line-height:1.05;margin:0">step3-title</p></div>
+  <div class="r-step3-caption region text" data-region="step3-caption"><!-- small caption Open for pet owners and start getting booked --><p style="font-size:var(--r-step3-caption-font);line-height:1.05;margin:0">step3-caption</p></div>
+</main>
+</body>
+</html>
