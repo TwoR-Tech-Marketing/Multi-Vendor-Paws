@@ -2,398 +2,176 @@
 
 import Link from "next/link";
 
-import { PawlioBrand, PawlioLogo } from "@/shared/components/PawlioLogo";
-import type { ComponentType } from "react";
-import type { SVGProps } from "react";
-
+import { Routes } from "@/constants/routes";
+import { PawlioLogo } from "@/shared/components/PawlioLogo";
 import {
-  IconBell,
-  IconChart,
-  IconCheck,
-  IconCoins,
-  IconHandshake,
-  IconInbox,
-  IconLifebuoy,
-  IconPackage,
-  IconPaw,
-  IconReceipt,
-  IconSmartphone,
-  IconSparkle,
-  IconStar,
-  IconStore,
-  IconTruck,
-  IconWallet,
-  IconArrowRight,
-} from "./landing-icons";
+  usePreferences,
+  useStrings,
+} from "@/shared/preferences/PreferencesContext";
+
 import styles from "./landing.module.css";
 
-type SvgIcon = ComponentType<SVGProps<SVGSVGElement>>;
+const PLATES = {
+  wall: "/assets/plates/wall.png",
+  pavement: "/assets/plates/pavement.png",
+  doorStore: "/assets/plates/door-store.png",
+  doorClinic: "/assets/plates/door-clinic.png",
+  doorGroomer: "/assets/plates/door-groomer.png",
+  step1Card: "/assets/plates/step1-card.png",
+  step2Palette: "/assets/plates/step2-palette.png",
+  step3Sign: "/assets/plates/step3-sign.png",
+} as const;
 
-const TICKER_PILLS: { Icon: SvgIcon; label: string }[] = [
-  { Icon: IconSmartphone, label: "Mobile app visibility" },
-  { Icon: IconCheck, label: "Admin-reviewed onboarding" },
-  { Icon: IconBell, label: "Real-time order updates" },
-  { Icon: IconLifebuoy, label: "Vendor support" },
-  { Icon: IconStore, label: "Store management" },
-  { Icon: IconCoins, label: "Commission-based earnings" },
-];
-
-const VENDOR_AVATARS = [
-  { initials: "MK", tone: "lavender" as const, title: "Mia — treats shop" },
-  { initials: "JR", tone: "peach" as const, title: "Jordan — pet accessories" },
-  { initials: "SL", tone: "mint" as const, title: "Sara — organic food" },
-  { initials: "AP", tone: "rose" as const, title: "Alex — grooming supplies" },
-];
-
-const FEATURES: { Icon: SvgIcon; title: string; description: string }[] = [
-  {
-    Icon: IconStore,
-    title: "Your store, your way",
-    description:
-      "Set up your shop with a logo, photos, and story — then manage products, stock, and images from one dashboard.",
-  },
-  {
-    Icon: IconSmartphone,
-    title: "Reach pet parents on the app",
-    description:
-      "Buyers discover your treats, food, and accessories on Pawlio. You run the store; they shop on their phones.",
-  },
-  {
-    Icon: IconSparkle,
-    title: "Stand out in the feed",
-    description:
-      "Highlight your own branded products so loyal customers spot your store at a glance.",
-  },
-  {
-    Icon: IconInbox,
-    title: "Orders that find you",
-    description:
-      "New orders land in your inbox in real time — only your store, only your sales.",
-  },
-  {
-    Icon: IconWallet,
-    title: "See what you earn",
-    description:
-      "Track commissions and weekly earnings without spreadsheets. Clear numbers, clear payouts.",
-  },
-  {
-    Icon: IconHandshake,
-    title: "A team that reviews you",
-    description:
-      "We personally approve every vendor — usually within 24 hours — so pet parents shop with confidence.",
-  },
-];
-
-const STEPS = [
-  {
-    num: 1,
-    title: "Tell us about your shop",
-    description:
-      "Sign up with your business email, add your store details, and share what you sell.",
-  },
-  {
-    num: 2,
-    title: "We review your application",
-    description:
-      "Our admin team checks your store personally. Most vendors hear back within 24 hours.",
-  },
-  {
-    num: 3,
-    title: "Open for pet parents",
-    description:
-      "List products, watch orders roll in from the app, and grow alongside 200+ fellow vendors.",
-  },
-];
-
-const NOTIFICATIONS: {
-  Icon: SvgIcon;
-  tone: "purple" | "green" | "amber";
-  title: string;
-  detail: string;
-}[] = [
-  {
-    Icon: IconPackage,
-    tone: "purple",
-    title: "New order #1042",
-    detail: "Dog food bundle · 2 min ago",
-  },
-  {
-    Icon: IconTruck,
-    tone: "green",
-    title: "Order shipped",
-    detail: "Cat treats · Ready for pickup",
-  },
-  {
-    Icon: IconChart,
-    tone: "amber",
-    title: "Weekly earnings",
-    detail: "Commission updated · just now",
-  },
-];
-
-function PawWatermark() {
+function Arrow() {
   return (
-    <svg
-      className={styles.cardWatermark}
-      viewBox="0 0 120 120"
-      aria-hidden="true"
-    >
-      <ellipse cx="60" cy="78" rx="22" ry="18" fill="currentColor" />
-      <circle cx="38" cy="52" r="10" fill="currentColor" />
-      <circle cx="52" cy="42" r="10" fill="currentColor" />
-      <circle cx="68" cy="42" r="10" fill="currentColor" />
-      <circle cx="82" cy="52" r="10" fill="currentColor" />
+    <svg viewBox="0 0 60 24" aria-hidden="true">
+      <path
+        d="M2 12h50M42 4l14 8-14 8"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-function VendorAvatarStack() {
-  return (
-    <div className={styles.avatarStack} aria-label="Vendor community">
-      {VENDOR_AVATARS.map((avatar, index) => (
-        <div
-          key={avatar.initials}
-          className={`${styles.avatar} ${styles[`avatar${avatar.tone.charAt(0).toUpperCase() + avatar.tone.slice(1)}`]}`}
-          style={{ zIndex: VENDOR_AVATARS.length - index }}
-          title={avatar.title}
-        >
-          {avatar.initials}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function TickerPills() {
-  const pills = [...TICKER_PILLS, ...TICKER_PILLS];
-
-  return (
-    <div className={styles.tickerWrap} aria-hidden="true">
-      <div className={styles.tickerTrack}>
-        <div className={styles.tickerGroup}>
-          {pills.map((pill, index) => (
-            <span key={`a-${pill.label}-${index}`} className={styles.tickerPill}>
-              <span className={styles.tickerIcon}>
-                <pill.Icon width={15} height={15} />
-              </span>
-              {pill.label}
-            </span>
-          ))}
-        </div>
-        <div className={styles.tickerGroup}>
-          {pills.map((pill, index) => (
-            <span key={`b-${pill.label}-${index}`} className={styles.tickerPill}>
-              <span className={styles.tickerIcon}>
-                <pill.Icon width={15} height={15} />
-              </span>
-              {pill.label}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function LandingClient() {
+  const strings = useStrings();
+  const { locale, setLocale } = usePreferences();
+  const copy = strings.landing;
+  const nextLocale = locale === "ar" ? "en" : "ar";
+
   return (
     <main className={styles.page}>
-      <div className={styles.bgWarm} aria-hidden="true" />
-      <div className={styles.purpleBand} aria-hidden="true" />
-      <div className={`${styles.orb} ${styles.orb1}`} aria-hidden="true" />
-      <div className={`${styles.orb} ${styles.orb2}`} aria-hidden="true" />
-      <div className={`${styles.orb} ${styles.orb3}`} aria-hidden="true" />
+      <img
+        className={`${styles.box} ${styles.wallPatch} ${styles.plate}`}
+        src={PLATES.wall}
+        alt=""
+      />
+      <div className={`${styles.box} ${styles.plinth}`} />
+      <img
+        className={`${styles.box} ${styles.pavement} ${styles.plate}`}
+        src={PLATES.pavement}
+        alt=""
+      />
+      <Link
+        href={`${Routes.auth.register}?type=store`}
+        className={`${styles.box} ${styles.doorStore}`}
+        tabIndex={-1}
+        aria-hidden
+      >
+        <img className={styles.plate} src={PLATES.doorStore} alt="" />
+      </Link>
+      <Link
+        href={`${Routes.auth.register}?type=clinic`}
+        className={`${styles.box} ${styles.doorClinic}`}
+        tabIndex={-1}
+        aria-hidden
+      >
+        <img className={styles.plate} src={PLATES.doorClinic} alt="" />
+      </Link>
+      <Link
+        href={`${Routes.auth.register}?type=groomer`}
+        className={`${styles.box} ${styles.doorGroomer}`}
+        tabIndex={-1}
+        aria-hidden
+      >
+        <img className={styles.plate} src={PLATES.doorGroomer} alt="" />
+      </Link>
+      <img
+        className={`${styles.box} ${styles.step1Card} ${styles.plate}`}
+        src={PLATES.step1Card}
+        alt=""
+      />
+      <img
+        className={`${styles.box} ${styles.step2Palette} ${styles.plate}`}
+        src={PLATES.step2Palette}
+        alt=""
+      />
+      <img
+        className={`${styles.box} ${styles.step3Sign} ${styles.plate}`}
+        src={PLATES.step3Sign}
+        alt=""
+      />
 
-      <div className={styles.shell}>
-        <header className={styles.header}>
-          <PawlioBrand
-            href="/"
-            size={48}
-            tagline="Vendor portal"
-            layout="inline"
-            priority
-          />
-          <nav className={styles.nav}>
-            <Link href="/login" className={styles.navLink}>
-              Sign in
-            </Link>
-            <Link href="/register" className={styles.navCta}>
-              Get started
-            </Link>
-          </nav>
-        </header>
+      <Link href={Routes.home} className={`${styles.box} ${styles.logo}`}>
+        <PawlioLogo size={40} priority />
+        <span className={styles.brandName}>{copy.brand}</span>
+      </Link>
 
-        <section className={styles.hero}>
-          <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>
-              <span className={styles.eyebrowDot} />
-              Built to last · Rooted in real value
-            </p>
-            <h1>
-              Your pet store,{" "}
-              <span className={styles.headlineAccent}>loved</span> by thousands
-              of pet parents
-            </h1>
-            <p className={styles.heroLead}>
-              Join <strong>200+ pet vendors</strong> already selling treats, food,
-              and accessories on Pawlio — from home kitchens to neighborhood shops
-              like yours.
-            </p>
-            <p className={styles.heroBody}>
-              Run your catalog, watch orders arrive in real time, and see your
-              earnings grow. Pet parents shop on the app; you manage everything
-              right here.
-            </p>
-            <div className={styles.heroActions}>
-              <Link href="/register" className={styles.btnPrimary}>
-                Create vendor account
-                <IconArrowRight className={styles.btnArrow} width={18} height={18} />
-              </Link>
-              <Link href="/login" className={styles.btnSecondary}>
-                Sign in to dashboard
-              </Link>
-            </div>
-            <div className={styles.socialProof}>
-              <VendorAvatarStack />
-              <p className={styles.socialProofText}>
-                <IconStar className={styles.starIcon} width={14} height={14} />
-                4.9 avg vendor rating · Free to join · Reviewed in 24hrs
-              </p>
-            </div>
-          </div>
+      <nav className={`${styles.box} ${styles.navLinks}`}>
+        <a href="#store">{copy.navStores}</a>
+        <a href="#clinic">{copy.navClinics}</a>
+        <a href="#groomer">{copy.navGroomers}</a>
+      </nav>
 
-          <div className={styles.heroVisual}>
-            <div className={styles.previewCard}>
-              <PawWatermark />
-
-              <div className={styles.inlineAlert}>
-                <span className={styles.inlineAlertIcon}>
-                  <IconBell width={14} height={14} />
-                </span>
-                New order from the app
-              </div>
-
-              <div className={styles.storeIdentity}>
-                <div className={styles.storeAvatar}>
-                  <IconPaw width={20} height={20} />
-                </div>
-                <div className={styles.storeMeta}>
-                  <strong>Paws &amp; Co.</strong>
-                  <span>Organic treats · Cairo</span>
-                </div>
-                <span className={styles.previewBadge}>
-                  <span className={styles.badgeDot} />
-                  Active
-                </span>
-              </div>
-
-              <div className={styles.previewStats}>
-                <div className={`${styles.statBox} ${styles.statPurple}`}>
-                  <span className={styles.statIcon}>
-                    <IconPackage width={16} height={16} />
-                  </span>
-                  <div>
-                    <strong>24</strong>
-                    <span>Products</span>
-                  </div>
-                </div>
-                <div className={`${styles.statBox} ${styles.statBlue}`}>
-                  <span className={styles.statIcon}>
-                    <IconReceipt width={16} height={16} />
-                  </span>
-                  <div>
-                    <strong>8</strong>
-                    <span>Open orders</span>
-                  </div>
-                </div>
-                <div className={`${styles.statBox} ${styles.statAmber}`}>
-                  <span className={styles.statIcon}>
-                    <IconStar width={16} height={16} />
-                  </span>
-                  <div>
-                    <strong>4.9</strong>
-                    <span>Rating</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.previewRows}>
-                {NOTIFICATIONS.map((item) => (
-                  <div
-                    key={item.title}
-                    className={`${styles.previewRow} ${styles[`notify${item.tone.charAt(0).toUpperCase() + item.tone.slice(1)}`]}`}
-                  >
-                    <span className={styles.notifyDot} aria-hidden="true" />
-                    <div className={styles.rowIcon}>
-                      <item.Icon width={16} height={16} />
-                    </div>
-                    <div className={styles.rowText}>
-                      <strong>{item.title}</strong>
-                      <span>{item.detail}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <TickerPills />
-
-        <section className={styles.section}>
-          <div className={styles.sectionHead}>
-            <h2>
-              Made for shop owners,{" "}
-              <span className={styles.headlineAccent}>not spreadsheets</span>
-            </h2>
-            <p>
-              Whether you bake dog treats at home or run a corner pet store,
-              Pawlio gives you the tools to sell — without the corporate fuss.
-            </p>
-          </div>
-          <div className={styles.featureGrid}>
-            {FEATURES.map((feature) => (
-              <article key={feature.title} className={styles.featureCard}>
-                <div className={styles.featureIcon}>
-                  <feature.Icon width={22} height={22} />
-                </div>
-                <h3>{feature.title}</h3>
-                <p>{feature.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className={styles.section}>
-          <div className={styles.sectionHead}>
-            <h2>From signup to first sale</h2>
-            <p>
-              A straightforward onboarding path — we review every store so pet
-              parents know they can trust who they buy from.
-            </p>
-          </div>
-          <div className={styles.steps}>
-            {STEPS.map((step) => (
-              <article key={step.num} className={styles.stepCard}>
-                <div className={styles.stepNum}>{step.num}</div>
-                <h3>{step.title}</h3>
-                <p>{step.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <footer className={styles.footer}>
-          <div className={styles.footerBrand}>
-            <PawlioLogo size={36} />
-            <p>© {new Date().getFullYear()} Pawlio. Built with care for pet vendors.</p>
-          </div>
-          <div className={styles.footerLinks}>
-            <Link href="/register">Become a vendor</Link>
-            <Link href="/login">Sign in</Link>
-          </div>
-        </footer>
+      <div className={`${styles.box} ${styles.navUtility}`}>
+        <button
+          type="button"
+          className={styles.langSwitch}
+          onClick={() => setLocale(nextLocale)}
+        >
+          {locale === "ar" ? copy.languageSwitchToEnglish : copy.languageSwitch}
+        </button>
+        <Link href={Routes.auth.login} className={styles.navSignIn}>
+          {copy.signIn}
+        </Link>
       </div>
+
+      <h1 className={`${styles.box} ${styles.headline}`}>{copy.headline}</h1>
+      <p className={`${styles.box} ${styles.headlinePair}`}>{copy.headlinePair}</p>
+      <p className={`${styles.box} ${styles.lead}`}>{copy.lead}</p>
+
+      <Link href={Routes.auth.register} className={`${styles.box} ${styles.btnJoin}`}>
+        {copy.join}
+      </Link>
+      <Link href={Routes.auth.login} className={`${styles.box} ${styles.btnSignIn}`}>
+        {copy.signIn}
+      </Link>
+
+      <Link
+        id="store"
+        href={`${Routes.auth.register}?type=store`}
+        className={`${styles.box} ${styles.sign} ${styles.signStore} ${styles.shopfront}`}
+      >
+        <p className={styles.signTitle}>{copy.storeTitle}</p>
+        <p className={styles.signSub}>{copy.storeSub}</p>
+        <p className={styles.signCta}>{copy.openShop}</p>
+      </Link>
+      <Link
+        id="clinic"
+        href={`${Routes.auth.register}?type=clinic`}
+        className={`${styles.box} ${styles.sign} ${styles.signClinic} ${styles.shopfront}`}
+      >
+        <p className={styles.signTitle}>{copy.clinicTitle}</p>
+        <p className={styles.signSub}>{copy.clinicSub}</p>
+        <p className={styles.signCta}>{copy.openShop}</p>
+      </Link>
+      <Link
+        id="groomer"
+        href={`${Routes.auth.register}?type=groomer`}
+        className={`${styles.box} ${styles.sign} ${styles.signGroomer} ${styles.shopfront}`}
+      >
+        <p className={styles.signTitle}>{copy.groomerTitle}</p>
+        <p className={styles.signSub}>{copy.groomerSub}</p>
+        <p className={styles.signCta}>{copy.openShop}</p>
+      </Link>
+
+      <h2 className={`${styles.box} ${styles.howHeading}`}>{copy.howHeading}</h2>
+      <p className={`${styles.box} ${styles.step1Label}`}>{copy.step1Label}</p>
+      <p className={`${styles.box} ${styles.step1Caption}`}>{copy.step1Caption}</p>
+      <div className={`${styles.box} ${styles.arrow}`}>
+        <Arrow />
+      </div>
+      <p className={`${styles.box} ${styles.step2Title}`}>{copy.step2Title}</p>
+      <p className={`${styles.box} ${styles.step2Caption}`}>{copy.step2Caption}</p>
+      <div className={`${styles.box} ${styles.arrowTwo}`}>
+        <Arrow />
+      </div>
+      <p className={`${styles.box} ${styles.step3Title}`}>{copy.step3Title}</p>
+      <p className={`${styles.box} ${styles.step3Caption}`}>{copy.step3Caption}</p>
     </main>
   );
 }
