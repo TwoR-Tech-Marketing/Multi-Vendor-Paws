@@ -73,6 +73,19 @@
 
   --duration-base: 200ms;
 
+  /* Landing — Sign-Painter's Street */
+  --color-landing-wall: #d9dcbd;
+  --color-landing-ink: #141414;
+  --color-landing-lead: #32372b;
+  --color-landing-store: #203f29;
+  --color-landing-clinic: #dab044;
+  --color-landing-groomer: #5b1e1a;
+  --color-landing-enamel: #f7f5ef;
+  --color-landing-plinth: #8c9476;
+  --font-landing-display: "Maiden Orange", serif;
+  --font-landing-arabic: "Reem Kufi", sans-serif;
+  --font-landing-body: "Reddit Sans Condensed", sans-serif;
+
   /* Shimmer skeleton — light base, white sweep */
   --color-skeleton-base: #eef1f5;
   --color-skeleton-border: rgba(255, 255, 255, 0.85);
