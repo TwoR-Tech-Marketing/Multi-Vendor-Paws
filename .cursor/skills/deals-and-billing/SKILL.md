@@ -15,9 +15,13 @@ description: Use when building per-provider deals (fixed subscription, percentag
 - Balance changes go through the earnings ledger (`sale | refund | adjustment | payout`), never direct overwrites.
 - Admin sets deals. Providers see them read only.
 
+## DECIDED
+The percentage is taken on the amount after the coupon. Payments run in the mobile app: Apple in-app purchase for digital goods, Fawaterak webview for the rest. Refunds are handled manually through support. Taxes depend on the payment method and are handled with the payment integration. The platform takes its fee on orders from the vendor. Delivery fee is optional, per vendor, set by the admin only, and belongs to the vendor.
+
 ## OPEN (blocks building)
 - Who collects the patient payment: TenderPaws or the clinic?
 - Payout schedule and method
 - How the fixed fee is collected and what happens after the grace period
-- Is the percentage taken before or after coupons?
 - Refund effect on balance
+- Does the percentage base include the delivery fee?
+- Who pays the Fawaterak gateway fees?

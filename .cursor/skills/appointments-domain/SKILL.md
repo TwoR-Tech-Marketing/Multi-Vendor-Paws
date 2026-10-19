@@ -23,3 +23,6 @@ The spec starts at `paid` because the user pays at checkout.
 ## OPEN
 - Cancellation windows and who gets refunded what
 - Reschedule rules (who can, how many times)
+
+## Suspended provider
+When a clinic or groomer is suspended, their appointments go on hold and a ticket with those appointments goes to the admin. OPEN: how holds resolve (cancel, refund through support, reassign) and what the buyer sees.

@@ -21,3 +21,6 @@ description: Use when adding or changing anything that depends on vendor type (s
 ## OPEN
 - Does groomer use the exact same review categories as clinic ("Doctor efficiency" does not fit a groomer)?
 - Does a single account ever have more than one type?
+
+## Capabilities by type
+Delivery coverage exists only for the store type (see delivery-zones-geo). Suspension applies to every type (see vendor-suspension-modes). Hotels, groomers, clinics and trainers have no delivery.

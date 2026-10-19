@@ -8,7 +8,7 @@ description: Use when building or editing clinic or groomer signup, profile, bra
 - Name of the clinic (or business)
 - Branches, optional. Each branch has its own services and prices, with an option to duplicate services from another branch
 - Phone, address, map location
-- Tax registration document and license document (spec wording: "Segel Darebe" and "Tarkhes", read as these two. CONFIRM with client)
+- Documents: none required for vendor validation (confirmed with the owner for store vendors). CONFIRM for clinics, because the services spec lists a tax registration and a license document.
 - Services and prices
 - Photos (optional)
 - Education and experience (optional, clinics)
@@ -27,4 +27,4 @@ description: Use when building or editing clinic or groomer signup, profile, bra
 
 ## OPEN
 - Decline reason: required text? Can the provider reapply?
-- Which documents are mandatory for groomers?
+- Do clinics and groomers need any documents?

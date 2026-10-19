@@ -23,6 +23,10 @@ Before working on a feature, read the relevant skill under `.cursor/skills/<name
 - `cloud-functions-rules` — server timers/triggers (no-show, reviews, balances, points)
 - `admin-panel-contract` — work that must land in Flutter admin (`tinderpaws_panel`)
 - `i18n-rtl` — EN/AR copy, Cairo time, RTL layout, shimmer loading
+- `delivery-zones-geo` — delivery coverage, buyer location, governorates, fees, eligibility by location
+- `halo-and-platform-vendor` — Halo items, platformVendor seller id, isHalo field, admin-created products
+- `vendor-suspension-modes` — suspend/ban/unsuspend modes (hidden, view_only) for vendors and providers
+- `single-release-rollout` — one-release deploy order, migrations, legacy compatibility
 
 Lines marked OPEN or CONFIRM in a skill are undecided questions, not rules. Do not resolve them without asking.
 
