@@ -1,0 +1,7 @@
+{
+  "tool": "cursor GenerateImage",
+  "aspect": "16:9",
+  "seed": "seed:382d2e1a74453add",
+  "prompt": "A desktop landing page for Pawlio, a marketplace where Egyptian pet businesses get listed and booked, rendered edge to edge as a finished web screen. The whole first viewport is one building facade on a quiet Cairo street; one long hand-painted main sign across its width carries the bilingual headline; three shopfront bays (Pet store, Vet clinic, Groomer) with enamel door plaques 'Open your shop'; Join Pawlio and Sign in plaque; How it works on the kerb. Limewashed wall, enamel green, marigold, oxblood, sign-writer lettering, Arabic and English as equals. One dominant move: the long main sign.",
+  "note": "prompt condensed from the exact string sent; see conversation"
+}

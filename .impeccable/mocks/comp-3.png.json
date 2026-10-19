@@ -1,0 +1,7 @@
+{
+  "tool": "cursor GenerateImage",
+  "aspect": "16:9",
+  "seed": "seed:382d2e1a74453add",
+  "prompt": "A desktop landing page for Pawlio in Arabic, right-to-left. Limewashed street wall with three shopfronts; the clinic door stands open with a lit green sign and the signup form already working inside the doorway (clinic name, phone, governorate, Continue). Arabic headline painted high on the right with English pair, one proof line, How it works below the kerb. Enamel green, marigold, oxblood. One dominant move: the open lit door with the live form.",
+  "note": "prompt condensed from the exact string sent; see conversation"
+}

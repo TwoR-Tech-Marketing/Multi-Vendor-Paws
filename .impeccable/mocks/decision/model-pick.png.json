@@ -1,0 +1,6 @@
+{
+  "tool": "cursor GenerateImage",
+  "aspect": "16:9",
+  "card": "model-pick",
+  "prompt": "See conversation: decision comp for card model-pick, Pawlio landing page, direction round seed:382d2e1a74453add"
+}
