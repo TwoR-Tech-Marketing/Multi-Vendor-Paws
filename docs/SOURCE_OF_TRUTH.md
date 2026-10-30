@@ -1,7 +1,7 @@
 # Tender Paws Multi-Vendor: Source of Truth
 
 Location: docs/SOURCE_OF_TRUTH.md in Multi-Vendor-Paws, branch dev.
-Created: 2026-10-28. Last updated: 2026-10-28.
+Created: 2026-10-28. Last updated: 2026-10-29.
 
 Contents: 0 How this file works, 1 Architecture, 2 Glossary, 3 Business requirements, 4 Decisions log, 5 Data contracts, 6 Endpoint registry, 7 Tickets, 8 Risks and known issues, 9 Changelog.
 
@@ -305,15 +305,15 @@ Phase 0: setup
 
 | Id | Title | Repos | Est (h) | Status |
 |---|---|---|---|---|
-| T0.0 | Install this file and its rule in the portal | WEB | 1 to 2 | READY |
-| T0.1 | Create dev branches in the three existing repos | WEB, BUYER, PANEL | 0.5 | READY |
-| T0.1b | Workspace context rule in the portal | WEB | 0.5 | READY |
+| T0.0 | Install this file and its rule in the portal | WEB | 1 to 2 | DONE |
+| T0.1 | Create dev branches in the three existing repos | WEB, BUYER, PANEL | 0.5 | DONE |
+| T0.1b | Workspace context rule in the portal | WEB | 0.5 | DONE |
 | T0.2 | Impeccable design skill in the portal | WEB | 1 | DONE (to verify) |
 | T0.3 | Domain skills in the portal | WEB | 2 | DONE |
 | T0.4 | Close the open business questions with the owner | none | 4 to 6 | WAITING |
 | T0.5 | Lock the data contracts (section 5) and endpoint shapes (section 6) | WEB | 8 to 10 | TODO |
 | T0.6p | Preflight check | read only | 1 | DONE |
-| T0.6v | Setup verification before the base app | read only | 0.5 | READY |
+| T0.6v | Setup verification before the base app | read only | 0.5 | BLOCKED (fvm 3.44.2 shows Need setup) |
 | T0.6c | Alignment and readiness check | read only | 1 | DONE (first run) |
 | T0.6 | Create the vendor app base | VENDOR APP | 5 to 8 | READY |
 | T0.6b | Vendor user repository, authentication, route gates, login screens | VENDOR APP | 5 to 6 | TODO |
@@ -378,18 +378,40 @@ Phase 3: testing and release
 ### Phase 0 details
 
 **T0.0 Install this file and its rule.** Repo WEB on dev. Prompt: see the install prompt in the project chat. Acceptance:
-- [ ] docs/SOURCE_OF_TRUTH.md exists on dev, byte for byte.
-- [ ] .cursor/rules/source-of-truth.mdc exists (alwaysApply) and AGENTS.md points to this file.
-- [ ] A report lists conflicts between this file and the skills, AGENTS.md and docs/phase-3-foundation.md (report only).
-- [ ] Two commits, nothing pushed.
+- [x] docs/SOURCE_OF_TRUTH.md exists on dev, byte for byte.
+  Evidence: copied from /Users/ahmedhany/Downloads/SOURCE_OF_TRUTH.md. cmp matched. 520 lines. Sections 0 to 9 present. Commit 520714f5354d9304acf7730d85c94641feadff4c.
+- [x] .cursor/rules/source-of-truth.mdc exists (alwaysApply) and AGENTS.md points to this file.
+  Evidence: .cursor/rules/source-of-truth.mdc and the Source of truth section in AGENTS.md. Commit 173631521d145964ab435b734e46111980297789.
+- [x] A report lists conflicts between this file and the skills, AGENTS.md and docs/phase-3-foundation.md (report only).
+  Evidence: report written in this run and listed under T0.11. No files were edited for the report.
+- [x] Two commits, nothing pushed.
+  Evidence: 520714f5354d9304acf7730d85c94641feadff4c and 173631521d145964ab435b734e46111980297789. dev has no upstream and origin/dev does not exist.
 
 **T0.1 dev branches.** Acceptance:
-- [ ] dev exists in WEB, BUYER and PANEL, created from the tip of the local default branch, even if the working tree is dirty.
-- [ ] Only WEB is checked out on dev. BUYER and PANEL keep their current branch.
-- [ ] Nothing pushed. Unmerged branches and their push status are listed.
+- [x] dev exists in WEB, BUYER and PANEL, created from the tip of the local default branch, even if the working tree is dirty.
+  Evidence: WEB dev created from local main 95d6f46998b9d12f36bed6ad8b64413428f8b05f. BUYER dev created from local main 505f61f2eb1fcdce201a93fd7d7997f881d9af33 while ios/Flutter/AppFrameworkInfo.plist was modified. PANEL dev created from local master 5250bf335a759543c82f12f976449c66537b964a while .firebase/hosting.YnVpbGQvd2Vi.cache was modified. git branch was used. No checkout in BUYER or PANEL.
+- [x] Only WEB is checked out on dev. BUYER and PANEL keep their current branch.
+  Evidence: WEB checked out dev. BUYER stayed on main. PANEL stayed on master.
+- [x] Nothing pushed. Unmerged branches and their push status are listed.
+  Evidence: no push. WEB had no local branches not merged into main. PANEL had no local branches not merged into master. BUYER branches not merged into main, each with no upstream and no local origin ref: backup/notifications-redesign-v2-old bc268897, feat/events-checked-in-delete-guard 7a7a008a, feature/all-announcement-redirect bc268897, feature/notifications-redesign e3cdca09, fix/ios27-ipad-launch-crash b204b76e.
 
 **T0.1b Workspace rule.** Acceptance:
-- [ ] .cursor/rules/workspace-context.mdc exists on dev with the repo map (1.2) and the safety rules: every task names its working repo and editable repos, print path and branch before git commands, never commit to main, never push, never deploy or write to Firebase, read skills and AGENTS.md before editing, never resolve OPEN items, no em dashes.
+- [x] .cursor/rules/workspace-context.mdc exists on dev with the repo map (1.2) and the safety rules: every task names its working repo and editable repos, print path and branch before git commands, never commit to main, never push, never deploy or write to Firebase, read skills and AGENTS.md before editing, never resolve OPEN items, no em dashes.
+  Evidence: .cursor/rules/workspace-context.mdc on dev, alwaysApply. Commit 8a8bf469d41bfec0b7eea0a4eeddc7c749b0fe15.
+
+**T0.6v Setup verification before the base app.** Read only. Result: NO-GO for T0.6. Acceptance:
+- [x] WEB is on dev, and dev exists in WEB, BUYER and PANEL.
+  Evidence: WEB branch dev at 8a8bf469d41bfec0b7eea0a4eeddc7c749b0fe15, 3 commits ahead of local main 95d6f46998b9d12f36bed6ad8b64413428f8b05f and 0 behind. BUYER dev 505f61f2eb1fcdce201a93fd7d7997f881d9af33 equals local main, branch stayed main, status M ios/Flutter/AppFrameworkInfo.plist. PANEL dev 5250bf335a759543c82f12f976449c66537b964a equals local master, branch stayed master, status M .firebase/hosting.YnVpbGQvd2Vi.cache.
+- [x] Both rules are committed. The named skills exist. AGENTS.md has Project skills and Source of truth.
+  Evidence: rules in commits 173631521d145964ab435b734e46111980297789 and 8a8bf469d41bfec0b7eea0a4eeddc7c749b0fe15. Skills present: vendor-type-architecture, vendor-suspension-modes, delivery-zones-geo, provider-onboarding, appointments-domain, availability-scheduling, no-show-flow, reviews-and-tags, deals-and-billing, money-piastres, single-release-rollout. AGENTS.md headings at lines 9 and 33.
+- [x] Copy source on local BUYER main is recorded.
+  Evidence: local main 505f61f2eb1fcdce201a93fd7d7997f881d9af33, subject "test(home): cover rewind stack and like undo cubit flows", 2026-10-27 10:01:06 +0300. It does not equal origin/main a6087431d9620f7c2a486bfde28caff90d582cbe. Local main is 28 commits ahead and 0 behind. .fvmrc flutter 3.44.2. pubspec.yaml version 1.0.16+24. Recommended copy commit: 505f61f2eb1fcdce201a93fd7d7997f881d9af33. Unmerged branches that touch pubspec.yaml only: feature/notifications-redesign and fix/ios27-ipad-launch-crash, commit b204b76ee3e8a494fce2168423433a0712c785cc. No unmerged branch changes lib/core/widgets, lib/core/theme, lib/core/utils/extensions.dart, lib/foundation, analysis_options.yaml or .fvmrc.
+- [ ] fvm list shows 3.44.2 installed with no Need setup.
+  Evidence: fvm list shows 3.44.2 global, Flutter version column "Need setup", Dart 3.12.2. flutter doctor still reports Flutter 3.44.2. Not fixed in this run.
+- [x] Toolchain state was read and not changed.
+  Evidence: Android licenses not accepted. Android SDK 36.0.0. Xcode 27.0. CocoaPods 1.16.2. Java reported by flutter doctor is OpenJDK 21.0.8, not 17. node v24.3.0. npx 11.4.2. git user.name set. git user.email set. TenderPaws volume has 43Gi free (91% used). pub.dev HTTP 200. github.com HTTP 200. firebase and flutterfire binaries are on PATH and were not executed.
+- [x] tender_paws_partner does not exist, and the TenderPaws folder is not inside a git repository.
+  Evidence: /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws/tender_paws_partner is absent. git -C on the TenderPaws folder reports it is not a git repository. No .git directory there.
 
 **T0.4 Owner questions.** Owner answers needed for O4, O6, O8, O9 and the telehealth scope (O11). Update section 3 and 4 when answered.
 
@@ -425,6 +447,36 @@ Phase 3: testing and release
 **T0.10 Test environment.** Decide O7. Acceptance: the Firebase emulator suite (Firestore, Auth, Functions) runs for the portal and panel functions, with seed data, and the vendor and buyer apps can point to it through config. No ticket tests against production.
 
 **T0.11 Reconcile skills.** Make each skill in .cursor/skills consistent with this file, or reduce it to a pointer. If a skill and this file disagree, this file wins.
+
+Consistency findings from the 2026-10-29 setup run. Report only. Nothing here was edited.
+- [ ] .cursor/skills/appointments-domain/SKILL.md:18 says the BFF enforces appointment transitions. Section 1.1 and S1.10 say Cloud Functions enforce them.
+- [ ] .cursor/skills/appointments-domain/SKILL.md:28 calls the admin hold record a ticket. Section 0 and BR-9.3 call it a hold case.
+- [ ] .cursor/skills/vendor-suspension-modes/SKILL.md:14 uses ticket for the hold record, and marks clinic and groomer appointment holds as CONFIRM. BR-9.3 decided that clinics and groomers follow the same hold rule.
+- [ ] .cursor/skills/vendor-suspension-modes/SKILL.md:18 says "Ticket contents" for the hold case.
+- [ ] .cursor/skills/no-show-flow/SKILL.md:13 says the 120 minute check is enforced by the BFF and a Cloud Function. BR-6.8 and S1.11 say flagNoShow enforces it.
+- [ ] .cursor/skills/cloud-functions-rules/SKILL.md:7 lists existing functions as vendor_signup.js and vendors.js only. Section 1.1 also lists orders_split.js, service_request.js and services.js.
+- [ ] .cursor/skills/cloud-functions-rules/SKILL.md:13 says suspension handling opens an admin ticket. BR-9.3 says a hold case.
+- [ ] .cursor/skills/admin-panel-contract/SKILL.md:17 says "Admin ticket queue". A2.1 says a hold case queue.
+- [ ] .cursor/skills/vendor-type-architecture/SKILL.md:9 lists later types as trainer, walker, host. BR-1.6 lists hotel, trainer, walker, services store.
+- [ ] .cursor/skills/vendor-type-architecture/SKILL.md:13 lists account status as pending, active, suspended. BR-2.5 also includes rejected, banned and not a vendor.
+- [ ] .cursor/skills/single-release-rollout/SKILL.md:8 ends the deploy order with mobile. Section 1.3 says then apps.
+- [ ] .cursor/skills/single-release-rollout/SKILL.md:14 leaves backward compatibility or a forced update open. BR-14.1 decided that shared data changes stay additive until the forced update.
+- [ ] .cursor/skills/money-piastres/SKILL.md:7 says never store or compute float EGP. Section 1.1 says the buyer app uses float EGP today and converts at the boundary (S2.3).
+- [ ] AGENTS.md:56 lists admin order monitoring as a portal feature. BR-1.4 says admins use tinderpaws_panel, and AGENTS.md:550 says this app is vendor-only.
+- [ ] AGENTS.md:57 lists marketplace browse as a feature of this repo. BR-1.2 says buyers use the Flutter app.
+- [ ] AGENTS.md:553, AGENTS.md:658 and AGENTS.md:686 say vendor data comes only from the BFF and presentation never reads Firestore. Section 1.1 says clients read Firestore where the rules allow, the portal BFF keeps existing features, and new business rules call the shared functions.
+- [ ] APP_CONTEXT.txt:18 calls this work Phase 3. D11 says phase 3 is testing and release.
+- [ ] APP_CONTEXT.txt:56 says presentation never talks to Firestore and uses the BFF only. Same conflict as AGENTS.md:553.
+- [ ] APP_CONTEXT.txt:266 says isHalo is an admin trust badge. BR-5.1 and D4 say Halo is seller id platformVendor. BR-5.3 recommends that isHalo is no longer written or read. O1 stays open.
+- [ ] APP_CONTEXT.txt:289 says the order-split function is planned. Section 1.1 lists orders_split.js as existing.
+- [ ] docs/phase-3-foundation.md:17 says production data is a single-seller catalog, and line 18 says the live app is tinder_paws v1.0.10+15 with no vendor identity. BR-3.1 says products live in products/{id} with vendorId. Local buyer main pubspec is 1.0.16+24. T0.9 already calls this document stale.
+- [ ] docs/phase-3-foundation.md:35 shows the mobile app writing orders as the target. Section 5 says orders are created by a function after S2.11.
+- [ ] docs/phase-3-foundation.md:107 says vendorId is the owning auth uid. Section 5 and BR-5.1 say Halo uses vendorId platformVendor.
+- [ ] docs/phase-3-foundation.md:121 says isHalo is a trust badge written by the server. BR-5.1 decided Halo is the platform seller. BR-5.3 recommends the field is no longer written or read.
+- [ ] docs/phase-3-foundation.md:325 writes isHalo false in the backfill. BR-5.3 recommends the field is no longer written.
+- [ ] docs/phase-3-foundation.md:329 says the products UI is not built, and lines 330 to 332 say the products BFF returns empty arrays. T0.9 says that claim is stale.
+- [ ] docs/phase-3-foundation.md:404 to 405 leaves the delivery fee model open. BR-4.7 and D7 decided it is optional, per vendor, and set by the admin only.
+- [ ] docs/phase-3-foundation.md:406 to 408 leaves Halo as an open trust-badge policy. BR-5.1 decided Halo items are platformVendor. O1 stays open for the isHalo field only.
 
 ### Phase 1 details
 
@@ -518,3 +570,4 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 ## 9. Changelog
 
 - 2026-10-28: File created from the project chat. Contains the business requirements and decisions agreed so far, the architecture decision that Cloud Functions are the endpoints (D1), the data contract proposals, the endpoint registry, and all tickets with estimates and acceptance criteria. Added tickets T0.0, T0.10, T0.11, S2.10, S2.11, A2.7 and T0.9 from the alignment report.
+- 2026-10-29: Setup run on dev. T0.0, T0.1 and T0.1b are done. T0.6v is blocked because fvm 3.44.2 shows Need setup. Consistency findings are listed under T0.11. Nothing pushed.
