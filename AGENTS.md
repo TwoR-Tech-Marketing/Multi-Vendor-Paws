@@ -30,6 +30,10 @@ Before working on a feature, read the relevant skill under `.cursor/skills/<name
 
 Lines marked OPEN or CONFIRM in a skill are undecided questions, not rules. Do not resolve them without asking.
 
+## Source of truth
+
+The file is `docs/SOURCE_OF_TRUTH.md`. Read it before any ticket. Update it in the same branch. It wins over skills and older docs.
+
 ## 0) Mandatory Project Understanding
 - Before coding: inspect the existing project structure, app/router usage, feature organization, shared components, hooks, services, state management, API patterns, and styling system.
 - Reuse existing components, utilities, hooks, services, and design system elements before creating new ones.
