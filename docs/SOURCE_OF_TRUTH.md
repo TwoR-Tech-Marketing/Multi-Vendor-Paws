@@ -313,7 +313,7 @@ Phase 0: setup
 | T0.4 | Close the open business questions with the owner | none | 4 to 6 | WAITING |
 | T0.5 | Lock the data contracts (section 5) and endpoint shapes (section 6) | WEB | 8 to 10 | TODO |
 | T0.6p | Preflight check | read only | 1 | DONE |
-| T0.6v | Setup verification before the base app | read only | 0.5 | BLOCKED (fvm 3.44.2 shows Need setup) |
+| T0.6v | Setup verification before the base app | read only | 0.5 | DONE |
 | T0.6c | Alignment and readiness check | read only | 1 | DONE (first run) |
 | T0.6 | Create the vendor app base | VENDOR APP | 5 to 8 | DONE |
 | T0.6f | Vendor app base polish | VENDOR APP | 1 to 2 | DONE |
@@ -323,6 +323,11 @@ Phase 0: setup
 | T0.9 | Update stale docs | WEB | 1 to 2 | TODO |
 | T0.10 | Decide and set up the test environment (emulator suite or staging project) | WEB, PANEL | 3 to 6 | TODO |
 | T0.11 | Reconcile the skills with this file | WEB | 1 to 2 | TODO |
+| T0.12 | Flutter modernization epic (buyer + vendor) | BUYER, VENDOR APP | 1 to 2 | READY |
+| T0.12a | Install and pin the approved Flutter stable via FVM | BUYER, VENDOR APP | 1 to 2 | TODO |
+| T0.12b | Migrate the buyer app to the approved Flutter | BUYER | 8 to 16 | TODO |
+| T0.12c | Migrate the vendor app to the approved Flutter | VENDOR APP | 4 to 8 | TODO |
+| T0.12d | Align Flutter or Dart pins, CI and cross-app regression | BUYER, VENDOR APP, WEB | 3 to 5 | TODO |
 
 Phase 1: portal and vendor app together (every ticket is done in both)
 
@@ -400,19 +405,54 @@ Phase 3: testing and release
 - [x] .cursor/rules/workspace-context.mdc exists on dev with the repo map (1.2) and the safety rules: every task names its working repo and editable repos, print path and branch before git commands, never commit to main, never push, never deploy or write to Firebase, read skills and AGENTS.md before editing, never resolve OPEN items, no em dashes.
   Evidence: .cursor/rules/workspace-context.mdc on dev, alwaysApply. Commit 8a8bf469d41bfec0b7eea0a4eeddc7c749b0fe15.
 
-**T0.6v Setup verification before the base app.** Read only. Result: NO-GO for T0.6. Acceptance:
-- [x] WEB is on dev, and dev exists in WEB, BUYER and PANEL.
-  Evidence: WEB branch dev at 8a8bf469d41bfec0b7eea0a4eeddc7c749b0fe15, 3 commits ahead of local main 95d6f46998b9d12f36bed6ad8b64413428f8b05f and 0 behind. BUYER dev 505f61f2eb1fcdce201a93fd7d7997f881d9af33 equals local main, branch stayed main, status M ios/Flutter/AppFrameworkInfo.plist. PANEL dev 5250bf335a759543c82f12f976449c66537b964a equals local master, branch stayed master, status M .firebase/hosting.YnVpbGQvd2Vi.cache.
+**T0.6v Setup verification before the base app.** Read only. Status: DONE. Result: GO for current Flutter development on 3.44.2. This ticket verifies the existing FVM and Flutter install. It is not the Flutter modernization workstream (see T0.12). Flutter 3.44.2 is the current working pin, not a permanent project target.
+- Acceptance (historical first run, then closed by re-investigation on 2026-11-03):
+- [x] WEB is on `dev`, and `dev` exists in WEB, BUYER and PANEL.
+  Evidence: first-run evidence retained from 2026-10-29 (WEB `dev` at 8a8bf469..., BUYER and PANEL `dev` refs recorded). Later work created the vendor app on its own `dev`.
 - [x] Both rules are committed. The named skills exist. AGENTS.md has Project skills and Source of truth.
-  Evidence: rules in commits 173631521d145964ab435b734e46111980297789 and 8a8bf469d41bfec0b7eea0a4eeddc7c749b0fe15. Skills present: vendor-type-architecture, vendor-suspension-modes, delivery-zones-geo, provider-onboarding, appointments-domain, availability-scheduling, no-show-flow, reviews-and-tags, deals-and-billing, money-piastres, single-release-rollout. AGENTS.md headings at lines 9 and 33.
+  Evidence: unchanged from first run (commits 1736315 and 8a8bf46; skill list as recorded).
 - [x] Copy source on local BUYER main is recorded.
-  Evidence: local main 505f61f2eb1fcdce201a93fd7d7997f881d9af33, subject "test(home): cover rewind stack and like undo cubit flows", 2026-10-27 10:01:06 +0300. It does not equal origin/main a6087431d9620f7c2a486bfde28caff90d582cbe. Local main is 28 commits ahead and 0 behind. .fvmrc flutter 3.44.2. pubspec.yaml version 1.0.16+24. Recommended copy commit: 505f61f2eb1fcdce201a93fd7d7997f881d9af33. Unmerged branches that touch pubspec.yaml only: feature/notifications-redesign and fix/ios27-ipad-launch-crash, commit b204b76ee3e8a494fce2168423433a0712c785cc. No unmerged branch changes lib/core/widgets, lib/core/theme, lib/core/utils/extensions.dart, lib/foundation, analysis_options.yaml or .fvmrc.
-- [ ] fvm list shows 3.44.2 installed with no Need setup.
-  Evidence: fvm list shows 3.44.2 global, Flutter version column "Need setup", Dart 3.12.2. flutter doctor still reports Flutter 3.44.2. Not fixed in this run.
-- [x] Toolchain state was read and not changed.
-  Evidence: Android licenses not accepted. Android SDK 36.0.0. Xcode 27.0. CocoaPods 1.16.2. Java reported by flutter doctor is OpenJDK 21.0.8, not 17. node v24.3.0. npx 11.4.2. git user.name set. git user.email set. TenderPaws volume has 43Gi free (91% used). pub.dev HTTP 200. github.com HTTP 200. firebase and flutterfire binaries are on PATH and were not executed.
-- [x] tender_paws_partner does not exist, and the TenderPaws folder is not inside a git repository.
-  Evidence: /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws/tender_paws_partner is absent. git -C on the TenderPaws folder reports it is not a git repository. No .git directory there.
+  Evidence: 505f61f2eb1fcdce201a93fd7d7997f881d9af33; `.fvmrc` flutter 3.44.2.
+- [x] FVM and Flutter 3.44.2 are usable for development (re-investigation closed the earlier NO-GO).
+  Evidence (2026-11-03, no SDK changes): FVM CLI 3.2.1. Cache `/Users/ahmedhany/fvm/versions/3.44.2`. Partner and buyer `.fvmrc` pin `3.44.2`. Symlinks `.fvm/flutter_sdk` and `.fvm/versions/3.44.2` resolve to that cache. `fvm flutter --version` reports Flutter 3.44.2 stable, Dart 3.12.2, framework `c9a6c48423`. `fvm flutter doctor -v` reports no issues. `fvm doctor` reports pinned 3.44.2 with matching IDE SDK path. T0.6f: `fvm flutter analyze` clean and 21 tests passed on the vendor app.
+- [x] Root cause of `fvm list` "Need setup" is recorded (display only; not an SDK install failure).
+  Evidence: `fvm list` still shows Version 3.44.2 with Flutter Version column "Need setup" and Dart 3.12.2 for both buyer and vendor (shared cache). Legacy file `$FLUTTER_ROOT/version` is absent. Official Flutter breaking change (3.35): `$FLUTTER_ROOT/version` replaced by `$FLUTTER_ROOT/bin/cache/flutter.version.json`. That JSON is present and reports flutterVersion 3.44.2. Flutter `bin/internal/shared.sh` removes the legacy root `version` file. FVM 3.2.1 still labels the list column from that missing file. Same symptom on buyer and vendor.
+- [x] Toolchain state was read and not changed in the verification runs.
+  Evidence: first-run toolchain notes retained. Re-investigation did not install, uninstall, or re-pin Flutter.
+- [x] Distinguishes SDK verification (this ticket) from Flutter modernization (T0.12).
+  Evidence: T0.12 epic and child tickets added in the same SoT update. Current pin remains 3.44.2 until T0.12 selects and lands a newer stable.
+
+**T0.12 Flutter modernization epic (buyer + vendor).** Repos BUYER (`tinder_paws`) and VENDOR APP (`tender_paws_partner`). Status: READY (plan recorded; implementation not started). Scope: migrate both apps to the same approved Flutter stable and Dart versions. Proposed target as of planning (2026-11-03): Flutter **3.47.9** stable with Dart **3.13.7** (latest stable announced 2026-10-29). Re-confirm the latest stable at the start of T0.12a before installing. Do not use beta or main. Sequence: T0.12a pin or install SDK, then T0.12b buyer, then T0.12c vendor, then T0.12d align CI and regression. Prefer sequential feature branches from each repo `dev` (buyer first), not simultaneous uncoordinated upgrades. 3.44.2 remains the working pin until those tickets land.
+- Planning assessment (read only, 2026-11-03):
+  - Buyer: `.fvmrc` 3.44.2; `environment.sdk: ^3.6.2`; AGP 8.9.1; Gradle 8.11.1; Kotlin 2.1.0; Java/Kotlin JVM 17; compile/targetSdk 36; minSdk 24; iOS 15.0; Codemagic uses `flutter: stable` (not a fixed patch). FlutterFire stack present (auth, core, messaging, crashlytics, storage, firestore, functions). Heavier surface area and store CI than the vendor app.
+  - Vendor: `.fvmrc` 3.44.2; same Dart `^3.6.2`; AGP 9.0.1; Gradle 9.1.0; Kotlin 2.3.20; JVM 17; compile/targetSdk 36; minSdk 24; iOS 15.0; Codemagic pins `flutter: 3.44.2`. Smaller FlutterFire set (core, messaging, crashlytics, functions). Analyze and 21 tests green on 3.44.2 after T0.6f.
+  - Shared blockers to verify on the target SDK: FlutterFire compatibility with Dart 3.13; `pub upgrade` fallout; Flutter 3.44 built-in Kotlin Android migration guidance; Flutter 3.47 removals (`describeEnum`) and semantics header changes; buyer Codemagic floating `stable` vs vendor fixed pin; FVM list "Need setup" may persist until FVM understands `flutter.version.json`.
+- Child tickets: T0.12a, T0.12b, T0.12c, T0.12d.
+
+**T0.12a Install and pin the approved Flutter stable via FVM.** Repos BUYER and VENDOR APP. Depends on T0.12. Status: TODO. Acceptance:
+- [ ] Latest Flutter stable at implementation start is recorded in this file (version + Dart + release date + official source).
+- [ ] FVM has that version installed once in the shared cache. Both apps `.fvmrc` pin that version. Symlinks resolve. `fvm flutter --version` and `fvm flutter doctor -v` succeed on both repos.
+- [ ] No application source or lockfile changes in this ticket except `.fvmrc` / `.fvm` metadata if required.
+- [ ] Nothing pushed.
+
+**T0.12b Migrate the buyer app.** Repo BUYER. Depends on T0.12a. Status: TODO. Acceptance:
+- [ ] Buyer builds and runs on the approved Flutter. `fvm flutter analyze` clean (or only waived issues listed here). Tests pass or failures listed with owners.
+- [ ] Android debug (and release if signing available) and iOS no-codesign or simulator build succeed.
+- [ ] Dependencies and FlutterFire updated only as required for the target SDK. Native Gradle/Kotlin/iOS changes documented.
+- [ ] Codemagic Flutter version strategy updated (prefer explicit version, not floating `stable`, unless owner confirms otherwise).
+- [ ] Evidence listed. Nothing pushed unless the ticket says so.
+
+**T0.12c Migrate the vendor app.** Repo VENDOR APP. Depends on T0.12a and preferably T0.12b (buyer first). Status: TODO. Acceptance:
+- [ ] Vendor `.fvmrc` matches the approved version used by buyer. Analyze clean. All tests pass.
+- [ ] Android debug and iOS no-codesign debug builds succeed.
+- [ ] Codemagic `flutter:` pin matches the approved version.
+- [ ] Evidence listed. Nothing pushed unless the ticket says so.
+
+**T0.12d Align pins, CI and cross-app regression.** Repos BUYER, VENDOR APP, WEB (SoT only). Depends on T0.12b and T0.12c. Status: TODO. Acceptance:
+- [ ] Both apps report the same Flutter and Dart from `fvm flutter --version`.
+- [ ] Smoke: buyer and vendor launch paths exercised; no toolchain-only regressions filed without tickets.
+- [ ] This file records final Flutter, Dart, AGP/Gradle/Kotlin (if changed), and CI pins. Changelog updated.
+- [ ] Nothing pushed unless the ticket says so.
 
 **T0.4 Owner questions.** Owner answers needed for O4, O6, O8, O9 and the telehealth scope (O11). Update section 3 and 4 when answered.
 
@@ -596,3 +636,4 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 - 2026-11-01: T0.6 vendor app base created at ../tender_paws_partner on branch dev (16 conventional commits after main seed). Analyze and tests green. Ticket moved to REVIEW. Nothing pushed.
 - 2026-11-03: T0.6 Android debug APK and iOS no-codesign Runner.app built successfully. Partner `dev` got Android signing-guard and iOS CocoaPods sync fixes. Ticket T0.6 marked DONE. Nothing pushed.
 - 2026-11-03: T0.6f vendor app base polish on partner `dev` (font provenance, display font for headings, design skills local copy, language and emulator host tests, SPM lockfile note). Analyze and 21 tests green. Ticket T0.6f marked DONE. Nothing pushed.
+- 2026-11-03: T0.6v re-investigation closed. FVM list Need setup is a metadata display issue (legacy root version file removed since Flutter 3.35; flutter.version.json present). SDK 3.44.2 usable; GO for current development. Ticket T0.6v marked DONE. Flutter modernization epic T0.12 and children T0.12a to T0.12d added (proposed target Flutter 3.47.9 / Dart 3.13.7 as of plan date; re-confirm at T0.12a). Nothing pushed.
