@@ -316,6 +316,7 @@ Phase 0: setup
 | T0.6v | Setup verification before the base app | read only | 0.5 | BLOCKED (fvm 3.44.2 shows Need setup) |
 | T0.6c | Alignment and readiness check | read only | 1 | DONE (first run) |
 | T0.6 | Create the vendor app base | VENDOR APP | 5 to 8 | DONE |
+| T0.6f | Vendor app base polish | VENDOR APP | 1 to 2 | DONE |
 | T0.6b | Vendor user repository, authentication, route gates, login screens | VENDOR APP | 5 to 6 | TODO |
 | T0.7 | Buyer app location and catalog report | read only | 1 | DONE |
 | T0.8 | Events branches decision | none | 0.5 | Likely resolved |
@@ -440,6 +441,20 @@ Phase 3: testing and release
   - [x] Manual steps listed: Firebase app registration, flutterfire configure, config files, keystore, Apple capabilities.
     Evidence: `tender_paws_partner/README.md` and the T0.6 report.
 - Confirmed gates: Android `com.twor2.tenderpawspartner`, iOS `com.paws.tenderpawspartner`, fonts Inter / Plus Jakarta Sans / Cairo (OFL from google/fonts), source commit `505f61f2eb1fcdce201a93fd7d7997f881d9af33`.
+
+**T0.6f Vendor app base polish.** Repo VENDOR APP at /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws/tender_paws_partner on branch `dev`. Status: DONE. Acceptance:
+- [x] Font provenance recorded in `docs/ORIGIN.md` (Fonts section): official google/fonts URLs, versions, sha256; all three TTFs match google/fonts main (no silent replace).
+  Evidence: downloaded to `/tmp/t0.6f-fonts-*` and `cmp` matched Inter, PlusJakartaSans, Cairo. Partner commits `9dadc99` (fonts) and `1e47aa4` (SPM note).
+- [x] Display font: `AppFonts.displayForLocale` on ThemeData display/headline styles and `AppTextStyle` h1 to h3 plus display; body stays Inter (en) / Cairo (ar).
+  Evidence: `lib/core/theme/app_theme.dart`, `app_text_style.dart`, `lib/app.dart`. Tests in `test/core/app_fonts_test.dart`. Commit `2acb662`.
+- [x] Design skills copied from `../tinder_paws/.agents` (and `skills-lock.json`) into the partner repo; listed in `.git/info/exclude` (local only, no tracked change).
+  Evidence: skills present under `.agents/skills/`: animate, animate-expo, animation-performance, animation-vocabulary, apple-design, ask-sonner, break-ui, design-taste-frontend, emil-design-eng, find-animation-opportunities, impeccable, improve-animations, mobile-native, pick-ui-library, prototype, review-animations, write-swift.
+- [x] AppCubit language persistence test and FunctionsClient emulator host parsing test.
+  Evidence: `test/core/app_cubit_test.dart` (`setLanguage writes the cache and emits the new locale`), `test/core/functions_client_test.dart` (`parseEmulatorHost...`). Commit `78459b5`.
+- [x] `docs/ORIGIN.md` notes that iOS `Package.resolved` files are tracked on purpose. Long commit subject left unchanged.
+  Evidence: commit `1e47aa4`. Pre-existing long subject `3b95715` left as-is.
+- [x] `fvm flutter analyze` clean and `fvm flutter test` passing.
+  Evidence: analyze `No issues found!`; test `All tests passed!` (21 tests). Four partner commits on `dev`: `9dadc99`, `2acb662`, `78459b5`, `1e47aa4`. Nothing pushed.
 
 **T0.6b Vendor user repository and authentication.** Repo VENDOR APP. Depends on T0.6, T0.5 and decisions O5. Acceptance:
 - [ ] One repository instance with stored subscriptions, a stream that replays the latest value, disposal, no persisted cache.
@@ -580,3 +595,4 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 - 2026-10-29: Setup run on dev. T0.0, T0.1 and T0.1b are done. T0.6v is blocked because fvm 3.44.2 shows Need setup. Consistency findings are listed under T0.11. Nothing pushed.
 - 2026-11-01: T0.6 vendor app base created at ../tender_paws_partner on branch dev (16 conventional commits after main seed). Analyze and tests green. Ticket moved to REVIEW. Nothing pushed.
 - 2026-11-03: T0.6 Android debug APK and iOS no-codesign Runner.app built successfully. Partner `dev` got Android signing-guard and iOS CocoaPods sync fixes. Ticket T0.6 marked DONE. Nothing pushed.
+- 2026-11-03: T0.6f vendor app base polish on partner `dev` (font provenance, display font for headings, design skills local copy, language and emulator host tests, SPM lockfile note). Analyze and 21 tests green. Ticket T0.6f marked DONE. Nothing pushed.
