@@ -325,7 +325,7 @@ Phase 0: setup
 | T0.11 | Reconcile the skills with this file | WEB | 1 to 2 | TODO |
 | T0.12 | Flutter modernization epic (vendor first, then buyer) | BUYER, VENDOR APP | 1 to 2 | IN PROGRESS |
 | T0.12a | Install and pin the approved Flutter stable via FVM | BUYER, VENDOR APP | 1 to 2 | DONE |
-| T0.12b | Migrate the vendor app to the approved Flutter | VENDOR APP | 4 to 8 | TODO |
+| T0.12b | Migrate the vendor app to the approved Flutter | VENDOR APP | 4 to 8 | DONE |
 | T0.12c | Assess and migrate the buyer app (with safety gate) | BUYER | 8 to 16 | TODO |
 | T0.12d | Align Flutter or Dart pins, CI and cross-app regression | BUYER, VENDOR APP, WEB | 3 to 5 | TODO |
 
@@ -437,14 +437,21 @@ Phase 3: testing and release
     Evidence: partner change is `.fvmrc` only (`.fvm/` gitignored). Buyer untouched. Nothing pushed.
   - [x] `fvm list` may still show "Need setup" (known FVM 3.2.1 vs flutter.version.json display issue). Not treated as install failure.
 
-**T0.12b Migrate the vendor app.** Repo VENDOR APP (`tender_paws_partner`). Depends on T0.12a. Status: TODO. Finish and verify before T0.12c. Acceptance:
-- [ ] Dependencies upgraded only as required for Flutter 3.47.9 / Dart 3.13.7. FlutterFire and plugins compatible.
-- [ ] Dart or Flutter API breaks fixed. Analyze clean (or waived issues listed here with owner approval).
-- [ ] Android (Gradle, Kotlin, Java, SDK, plugins) and iOS (deployment target, Xcode, Swift, CocoaPods, SPM) builds succeed for debug; release noted if blocked only by missing keystore or signing.
-- [ ] Codemagic `flutter:` pin set to the approved explicit version (3.47.9).
-- [ ] `fvm flutter test` passes. Functional smoke of shell, theme, language recorded.
-- [ ] Issues and fixes documented in this file. Nothing pushed unless the ticket says so.
-- [ ] Owner approval before starting T0.12c.
+**T0.12b Migrate the vendor app.** Repo VENDOR APP (`tender_paws_partner`) on `dev`. Depends on T0.12a. Status: DONE. Pre-migration Git tip for rollback: `bb643da` (FVM pin only). FVM rollback SDK: 3.44.2 still in cache. Buyer app not modified.
+- Acceptance:
+  - [x] Dependencies upgraded only as required for Flutter 3.47.9 / Dart 3.13.7. FlutterFire and plugins compatible.
+    Evidence: `fvm flutter pub get` and `fvm flutter pub upgrade` (within existing constraints; no `--major-versions`). Direct pins unchanged in `pubspec.yaml`. Resolved: firebase_core 3.15.2, firebase_messaging 15.2.10, firebase_crashlytics 4.3.10, cloud_functions 5.6.2, flutter_bloc 8.1.6, go_router 14.8.1, get_it 8.3.0, easy_localization 3.0.8. Lockfile transitive refreshes only. Major FlutterFire or bloc upgrades deferred (not required for green analyze/test/build on 3.47.9).
+  - [x] Dart or Flutter API breaks fixed. Analyze clean.
+    Evidence: no `describeEnum` or other listed 3.44/3.47 breakages in `lib/`. `fvm flutter analyze` → No issues found (exit 0).
+  - [x] Android and iOS debug builds succeed; release blocked only by missing keystore (unchanged guard).
+    Evidence: `fvm flutter build apk --debug` → `✓ Built build/app/outputs/flutter-apk/app-debug.apk` (~157MB). Native: AGP 9.0.1, Gradle 9.1.0, Kotlin 2.3.20, JVM 17, compile/targetSdk 36, minSdk 24. Warning retained: `cloud_functions` still applies KGP (built-in Kotlin migration not yet available in that plugin). `fvm flutter build ios --debug --no-codesign` → `✓ Built build/ios/iphoneos/Runner.app` (~128MB). iOS 15.0; CocoaPods + SPM hybrid warning unchanged. Podfile.lock Flutter checksum updated for 3.47.9.
+  - [x] Codemagic `flutter:` pin set to 3.47.9.
+    Evidence: `codemagic.yaml` environment.flutter `3.47.9`.
+  - [x] `fvm flutter test` passes. Functional smoke of shell, theme, language recorded.
+    Evidence: 21 tests passed (shell PersistentTabView, settings Dark + Arabic RTL, theme tokens, fonts, FunctionsClient, cache/cubit, widgets). Same suite is the automated smoke for shell/theme/language.
+  - [x] Issues and fixes documented. Nothing pushed.
+    Evidence: this ticket entry. Remaining risks: cloud_functions KGP warning; CocoaPods vs SPM dual integration; FlutterFire major upgrades still available on pub.dev but not taken.
+  - [ ] Owner approval before starting T0.12c. (waiting)
 
 **T0.12c Assess and migrate the buyer app (with safety gate).** Repo BUYER (`tinder_paws`). Depends on T0.12b DONE (or approved exceptions). Status: TODO. Buyer is production-facing; higher risk than vendor.
 - Before any buyer source or dependency changes: collect and record the available baseline (do not invent data): crash-free sessions or users if available; fatal and non-fatal exception counts or rates; API or network failure rates if available; Crashlytics or other monitoring config; test pass or fail counts; flutter analyze issues; Android and iOS build status. Distinguish runtime error rates, API or network error rates, test failure rates, build failures, and static-analysis errors.
@@ -647,3 +654,4 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 - 2026-11-03: T0.6f vendor app base polish on partner `dev` (font provenance, display font for headings, design skills local copy, language and emulator host tests, SPM lockfile note). Analyze and 21 tests green. Ticket T0.6f marked DONE. Nothing pushed.
 - 2026-11-03: T0.6v re-investigation closed. FVM list Need setup is a metadata display issue (legacy root version file removed since Flutter 3.35; flutter.version.json present). SDK 3.44.2 usable; GO for current development. Ticket T0.6v marked DONE. Flutter modernization epic T0.12 and children T0.12a to T0.12d added (proposed target Flutter 3.47.9 / Dart 3.13.7 as of plan date; re-confirm at T0.12a). Nothing pushed.
 - 2026-11-03: Flutter modernization sequence revised to vendor first then buyer with a buyer safety gate. T0.12a DONE: installed Flutter 3.47.9 (Dart 3.13.7) via FVM; kept 3.44.2 for rollback; pinned tender_paws_partner `.fvmrc` to 3.47.9; buyer remains on 3.44.2 until T0.12c. Global FVM default left at 3.44.2. Nothing pushed.
+- 2026-11-03: T0.12b vendor migration DONE on tender_paws_partner `dev`. Flutter 3.47.9 / Dart 3.13.7. Analyze clean, 21 tests passed, Android debug APK and iOS no-codesign Runner.app built. Codemagic pin 3.47.9. pub upgrade within constraints; no Dart source changes. Rollback: git `bb643da`, FVM 3.44.2. Waiting for approval before T0.12c. Nothing pushed.
