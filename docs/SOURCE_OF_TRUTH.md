@@ -323,10 +323,10 @@ Phase 0: setup
 | T0.9 | Update stale docs | WEB | 1 to 2 | TODO |
 | T0.10 | Decide and set up the test environment (emulator suite or staging project) | WEB, PANEL | 3 to 6 | TODO |
 | T0.11 | Reconcile the skills with this file | WEB | 1 to 2 | TODO |
-| T0.12 | Flutter modernization epic (buyer + vendor) | BUYER, VENDOR APP | 1 to 2 | READY |
-| T0.12a | Install and pin the approved Flutter stable via FVM | BUYER, VENDOR APP | 1 to 2 | TODO |
-| T0.12b | Migrate the buyer app to the approved Flutter | BUYER | 8 to 16 | TODO |
-| T0.12c | Migrate the vendor app to the approved Flutter | VENDOR APP | 4 to 8 | TODO |
+| T0.12 | Flutter modernization epic (vendor first, then buyer) | BUYER, VENDOR APP | 1 to 2 | IN PROGRESS |
+| T0.12a | Install and pin the approved Flutter stable via FVM | BUYER, VENDOR APP | 1 to 2 | DONE |
+| T0.12b | Migrate the vendor app to the approved Flutter | VENDOR APP | 4 to 8 | TODO |
+| T0.12c | Assess and migrate the buyer app (with safety gate) | BUYER | 8 to 16 | TODO |
 | T0.12d | Align Flutter or Dart pins, CI and cross-app regression | BUYER, VENDOR APP, WEB | 3 to 5 | TODO |
 
 Phase 1: portal and vendor app together (every ticket is done in both)
@@ -422,36 +422,45 @@ Phase 3: testing and release
 - [x] Distinguishes SDK verification (this ticket) from Flutter modernization (T0.12).
   Evidence: T0.12 epic and child tickets added in the same SoT update. Current pin remains 3.44.2 until T0.12 selects and lands a newer stable.
 
-**T0.12 Flutter modernization epic (buyer + vendor).** Repos BUYER (`tinder_paws`) and VENDOR APP (`tender_paws_partner`). Status: READY (plan recorded; implementation not started). Scope: migrate both apps to the same approved Flutter stable and Dart versions. Proposed target as of planning (2026-11-03): Flutter **3.47.9** stable with Dart **3.13.7** (latest stable announced 2026-10-29). Re-confirm the latest stable at the start of T0.12a before installing. Do not use beta or main. Sequence: T0.12a pin or install SDK, then T0.12b buyer, then T0.12c vendor, then T0.12d align CI and regression. Prefer sequential feature branches from each repo `dev` (buyer first), not simultaneous uncoordinated upgrades. 3.44.2 remains the working pin until those tickets land.
-- Planning assessment (read only, 2026-11-03):
-  - Buyer: `.fvmrc` 3.44.2; `environment.sdk: ^3.6.2`; AGP 8.9.1; Gradle 8.11.1; Kotlin 2.1.0; Java/Kotlin JVM 17; compile/targetSdk 36; minSdk 24; iOS 15.0; Codemagic uses `flutter: stable` (not a fixed patch). FlutterFire stack present (auth, core, messaging, crashlytics, storage, firestore, functions). Heavier surface area and store CI than the vendor app.
-  - Vendor: `.fvmrc` 3.44.2; same Dart `^3.6.2`; AGP 9.0.1; Gradle 9.1.0; Kotlin 2.3.20; JVM 17; compile/targetSdk 36; minSdk 24; iOS 15.0; Codemagic pins `flutter: 3.44.2`. Smaller FlutterFire set (core, messaging, crashlytics, functions). Analyze and 21 tests green on 3.44.2 after T0.6f.
-  - Shared blockers to verify on the target SDK: FlutterFire compatibility with Dart 3.13; `pub upgrade` fallout; Flutter 3.44 built-in Kotlin Android migration guidance; Flutter 3.47 removals (`describeEnum`) and semantics header changes; buyer Codemagic floating `stable` vs vendor fixed pin; FVM list "Need setup" may persist until FVM understands `flutter.version.json`.
-- Child tickets: T0.12a, T0.12b, T0.12c, T0.12d.
+**T0.12 Flutter modernization epic (vendor first, then buyer).** Repos BUYER (`tinder_paws`) and VENDOR APP (`tender_paws_partner`). Status: IN PROGRESS. Scope: migrate both apps to the same approved Flutter stable and Dart versions. Sequence: T0.12a SDK install or pin, then **T0.12b vendor migration** (complete and verified), then **T0.12c buyer assessment and migration** (with mandatory safety gate), then T0.12d align and cross-app verify. One app at a time. Stop after each ticket for owner approval. Do not use beta or main. Approved target recorded under T0.12a (Flutter 3.47.9 / Dart 3.13.7 as of 2026-11-03). Rollback SDK 3.44.2 remains installed in the FVM cache. Buyer stays on 3.44.2 until T0.12c.
+- Child tickets: T0.12a (DONE), T0.12b, T0.12c, T0.12d.
 
-**T0.12a Install and pin the approved Flutter stable via FVM.** Repos BUYER and VENDOR APP. Depends on T0.12. Status: TODO. Acceptance:
-- [ ] Latest Flutter stable at implementation start is recorded in this file (version + Dart + release date + official source).
-- [ ] FVM has that version installed once in the shared cache. Both apps `.fvmrc` pin that version. Symlinks resolve. `fvm flutter --version` and `fvm flutter doctor -v` succeed on both repos.
-- [ ] No application source or lockfile changes in this ticket except `.fvmrc` / `.fvm` metadata if required.
-- [ ] Nothing pushed.
+**T0.12a Install and pin the approved Flutter stable via FVM.** Repos BUYER and VENDOR APP. Depends on T0.12. Status: DONE.
+- Acceptance:
+  - [x] Latest Flutter stable at implementation start is recorded (version + Dart + release date + official source).
+    Evidence: Flutter **3.47.9** stable, Dart **3.13.7**, released 2026-10-29. Confirmed via `fvm releases` (stable checkmark on 3.47.9) and Flutter announce or changelog for 3.47.9 (framework `c197ca5199`). Not beta 3.50.
+  - [x] FVM has that version installed once in the shared cache. Previous SDK preserved for rollback.
+    Evidence: `fvm install 3.47.9` succeeded. Cache dirs present: `/Users/ahmedhany/fvm/versions/3.47.9` and `/Users/ahmedhany/fvm/versions/3.44.2`. Global default left at 3.44.2 (`/Users/ahmedhany/fvm/default` → 3.44.2).
+  - [x] Vendor app pin updated; buyer pin deferred until T0.12c (vendor-first).
+    Evidence: vendor `.fvmrc` → `{"flutter":"3.47.9"}`; `.fvm/flutter_sdk` → `.../versions/3.47.9`. Buyer `.fvmrc` remains `3.44.2` so unmigrated buyer work is not forced onto 3.47.9. `fvm flutter --version` in vendor reports 3.47.9 / Dart 3.13.7. `fvm flutter doctor -v` Flutter section green for 3.47.9.
+  - [x] No application source or dependency lockfile changes in this ticket.
+    Evidence: partner change is `.fvmrc` only (`.fvm/` gitignored). Buyer untouched. Nothing pushed.
+  - [x] `fvm list` may still show "Need setup" (known FVM 3.2.1 vs flutter.version.json display issue). Not treated as install failure.
 
-**T0.12b Migrate the buyer app.** Repo BUYER. Depends on T0.12a. Status: TODO. Acceptance:
-- [ ] Buyer builds and runs on the approved Flutter. `fvm flutter analyze` clean (or only waived issues listed here). Tests pass or failures listed with owners.
-- [ ] Android debug (and release if signing available) and iOS no-codesign or simulator build succeed.
-- [ ] Dependencies and FlutterFire updated only as required for the target SDK. Native Gradle/Kotlin/iOS changes documented.
-- [ ] Codemagic Flutter version strategy updated (prefer explicit version, not floating `stable`, unless owner confirms otherwise).
-- [ ] Evidence listed. Nothing pushed unless the ticket says so.
+**T0.12b Migrate the vendor app.** Repo VENDOR APP (`tender_paws_partner`). Depends on T0.12a. Status: TODO. Finish and verify before T0.12c. Acceptance:
+- [ ] Dependencies upgraded only as required for Flutter 3.47.9 / Dart 3.13.7. FlutterFire and plugins compatible.
+- [ ] Dart or Flutter API breaks fixed. Analyze clean (or waived issues listed here with owner approval).
+- [ ] Android (Gradle, Kotlin, Java, SDK, plugins) and iOS (deployment target, Xcode, Swift, CocoaPods, SPM) builds succeed for debug; release noted if blocked only by missing keystore or signing.
+- [ ] Codemagic `flutter:` pin set to the approved explicit version (3.47.9).
+- [ ] `fvm flutter test` passes. Functional smoke of shell, theme, language recorded.
+- [ ] Issues and fixes documented in this file. Nothing pushed unless the ticket says so.
+- [ ] Owner approval before starting T0.12c.
 
-**T0.12c Migrate the vendor app.** Repo VENDOR APP. Depends on T0.12a and preferably T0.12b (buyer first). Status: TODO. Acceptance:
-- [ ] Vendor `.fvmrc` matches the approved version used by buyer. Analyze clean. All tests pass.
-- [ ] Android debug and iOS no-codesign debug builds succeed.
-- [ ] Codemagic `flutter:` pin matches the approved version.
-- [ ] Evidence listed. Nothing pushed unless the ticket says so.
+**T0.12c Assess and migrate the buyer app (with safety gate).** Repo BUYER (`tinder_paws`). Depends on T0.12b DONE (or approved exceptions). Status: TODO. Buyer is production-facing; higher risk than vendor.
+- Before any buyer source or dependency changes: collect and record the available baseline (do not invent data): crash-free sessions or users if available; fatal and non-fatal exception counts or rates; API or network failure rates if available; Crashlytics or other monitoring config; test pass or fail counts; flutter analyze issues; Android and iOS build status. Distinguish runtime error rates, API or network error rates, test failure rates, build failures, and static-analysis errors.
+- Define error-rate thresholds and comparison method from that baseline before implementation. At the designated checkpoint, STOP and report current vs baseline, new crashes or regressions, test or build or analyzer results, dependency and native issues, whether thresholds were exceeded, and recommended CONTINUE or STOP and REVERT. Do not continue, revert, merge, or push until the owner answers. If runtime monitoring cannot be measured during migration, disclose that limitation; do not substitute tests for runtime error rates.
+- Acceptance:
+  - [ ] Pre-migration baseline and thresholds recorded here.
+  - [ ] Buyer migrated to the same approved Flutter or Dart as vendor. Analyze and tests addressed with evidence.
+  - [ ] Android and iOS builds succeed (or blocked items listed with approval).
+  - [ ] Codemagic Flutter pin is explicit and matches the approved version.
+  - [ ] Safety-gate checkpoint completed with owner CONTINUE or REVERT decision recorded.
+  - [ ] Nothing pushed unless the ticket says so.
 
 **T0.12d Align pins, CI and cross-app regression.** Repos BUYER, VENDOR APP, WEB (SoT only). Depends on T0.12b and T0.12c. Status: TODO. Acceptance:
 - [ ] Both apps report the same Flutter and Dart from `fvm flutter --version`.
-- [ ] Smoke: buyer and vendor launch paths exercised; no toolchain-only regressions filed without tickets.
-- [ ] This file records final Flutter, Dart, AGP/Gradle/Kotlin (if changed), and CI pins. Changelog updated.
+- [ ] CI pins match. Cross-app smoke and regression checks recorded.
+- [ ] This file records final Flutter, Dart, native toolchain notes if changed, and evidence. Changelog updated.
 - [ ] Nothing pushed unless the ticket says so.
 
 **T0.4 Owner questions.** Owner answers needed for O4, O6, O8, O9 and the telehealth scope (O11). Update section 3 and 4 when answered.
@@ -637,3 +646,4 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 - 2026-11-03: T0.6 Android debug APK and iOS no-codesign Runner.app built successfully. Partner `dev` got Android signing-guard and iOS CocoaPods sync fixes. Ticket T0.6 marked DONE. Nothing pushed.
 - 2026-11-03: T0.6f vendor app base polish on partner `dev` (font provenance, display font for headings, design skills local copy, language and emulator host tests, SPM lockfile note). Analyze and 21 tests green. Ticket T0.6f marked DONE. Nothing pushed.
 - 2026-11-03: T0.6v re-investigation closed. FVM list Need setup is a metadata display issue (legacy root version file removed since Flutter 3.35; flutter.version.json present). SDK 3.44.2 usable; GO for current development. Ticket T0.6v marked DONE. Flutter modernization epic T0.12 and children T0.12a to T0.12d added (proposed target Flutter 3.47.9 / Dart 3.13.7 as of plan date; re-confirm at T0.12a). Nothing pushed.
+- 2026-11-03: Flutter modernization sequence revised to vendor first then buyer with a buyer safety gate. T0.12a DONE: installed Flutter 3.47.9 (Dart 3.13.7) via FVM; kept 3.44.2 for rollback; pinned tender_paws_partner `.fvmrc` to 3.47.9; buyer remains on 3.44.2 until T0.12c. Global FVM default left at 3.44.2. Nothing pushed.
