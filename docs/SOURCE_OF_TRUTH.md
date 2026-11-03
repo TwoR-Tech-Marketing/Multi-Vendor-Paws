@@ -1,7 +1,7 @@
 # Tender Paws Multi-Vendor: Source of Truth
 
 Location: docs/SOURCE_OF_TRUTH.md in Multi-Vendor-Paws, branch dev.
-Created: 2026-10-28. Last updated: 2026-10-29.
+Created: 2026-10-28. Last updated: 2026-11-03.
 
 Contents: 0 How this file works, 1 Architecture, 2 Glossary, 3 Business requirements, 4 Decisions log, 5 Data contracts, 6 Endpoint registry, 7 Tickets, 8 Risks and known issues, 9 Changelog.
 
@@ -73,7 +73,7 @@ All are siblings under /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws
 | WEB (home) | Multi-Vendor-Paws | Next.js vendor web portal. Holds this file, contracts and the parity table | Editable |
 | BUYER | tinder_paws | Flutter buyer mobile app | Read only unless the ticket says so. Never switch branches or stash there |
 | PANEL | tinderpaws_panel | Flutter web admin panel plus Cloud Functions (functions/) | Read only unless the ticket says so |
-| VENDOR APP | tender_paws_partner | New Flutter vendor mobile app (not created yet, ticket T0.6) | Editable once created |
+| VENDOR APP | tender_paws_partner | Flutter vendor mobile app (base from T0.6) | Editable once created |
 
 ### 1.3 Branching and release
 
@@ -315,7 +315,7 @@ Phase 0: setup
 | T0.6p | Preflight check | read only | 1 | DONE |
 | T0.6v | Setup verification before the base app | read only | 0.5 | BLOCKED (fvm 3.44.2 shows Need setup) |
 | T0.6c | Alignment and readiness check | read only | 1 | DONE (first run) |
-| T0.6 | Create the vendor app base | VENDOR APP | 5 to 8 | READY |
+| T0.6 | Create the vendor app base | VENDOR APP | 5 to 8 | DONE |
 | T0.6b | Vendor user repository, authentication, route gates, login screens | VENDOR APP | 5 to 6 | TODO |
 | T0.7 | Buyer app location and catalog report | read only | 1 | DONE |
 | T0.8 | Events branches decision | none | 0.5 | Likely resolved |
@@ -420,19 +420,26 @@ Phase 3: testing and release
 - [ ] Section 6 lists request and response fields, errors and permissions for each endpoint of Phase 1.
 - [ ] Firestore rules needs per collection are listed.
 
-**T0.6 Vendor app base.** Repo VENDOR APP at /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws/tender_paws_partner (new). Skills: vendor-type-architecture, money-piastres, i18n-rtl. Spec summary (the full prompt is in the prompt library):
+**T0.6 Vendor app base.** Repo VENDOR APP at /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws/tender_paws_partner. Skills: vendor-type-architecture, money-piastres, i18n-rtl. Status: DONE. Spec summary (the full prompt is in the prompt library):
 - Name Tender Paws Partner, package tender_paws_partner. Pinned Flutter 3.44.2 through FVM. Android and iOS only.
 - Mirror tinder_paws: feature-first folders, flutter_bloc 8.1.6, get_it 8.3.0, go_router 14.8.1, easy_localization 3.0.8 with English and Arabic JSON, dartz, shared_preferences through one AppCacheHelper, cloud_functions through one FunctionsClient (callable, region and emulator host from config, error codes mapped to localized messages).
 - Colors from the portal tokens through a ThemeExtension in light and dark. Arabic font chosen by locale. Generic widgets copied from a confirmed tinder_paws commit with docs/ORIGIN.md. New primitives: snackbar, empty state, error state, skeleton, card.
 - Boot as in tinder_paws (cache, language, localization, locator, notifications, Firebase Core, Crashlytics, FCM last). Debug builds run without Firebase files. Release builds fail loudly.
 - Placeholder shell with tabs from a config object, settings with theme and language. No auth yet.
 - Acceptance:
-  - [ ] flutter analyze clean, flutter test passing (cache, app cubit, functions client, translation parity, theme tokens, shell and settings widgets).
-  - [ ] Builds for Android debug (and iOS without codesign if possible) and runs to the shell without Firebase files in debug.
-  - [ ] Theme and language switch and persist, right-to-left in Arabic.
-  - [ ] No print, no keys, no static theme flag, no manual rebuild walk.
-  - [ ] 16 planned conventional commits on dev, main has only the first commit.
-  - [ ] Manual steps listed: Firebase app registration, flutterfire configure, config files, keystore, Apple capabilities.
+  - [x] flutter analyze clean, flutter test passing (cache, app cubit, functions client, translation parity, theme tokens, shell and settings widgets).
+    Evidence: `fvm flutter analyze` → No issues found. `fvm flutter test` → 15 tests passed (test/core/*, test/ui/*). Partner tip on `dev`: see `git -C ../tender_paws_partner log --oneline`.
+  - [x] Builds for Android debug (and iOS without codesign if possible) and runs to the shell without Firebase files in debug.
+    Evidence: `fvm flutter build apk --debug` → `✓ Built build/app/outputs/flutter-apk/app-debug.apk`. `fvm flutter build ios --debug --no-codesign` → `✓ Built build/ios/iphoneos/Runner.app` (after `pod install` + CocoaPods xcconfig includes). Debug Firebase files remain gitignored; placeholder `firebase_options.dart` until flutterfire configure.
+  - [x] Theme and language switch and persist, right-to-left in Arabic.
+    Evidence: `AppCubit` + `AppCacheHelper` unit tests; `test/ui/settings_test.dart` taps Dark and Arabic and asserts RTL.
+  - [x] No print, no keys, no static theme flag, no manual rebuild walk.
+    Evidence: `avoid_print` on; `AppColorTokens` ThemeExtension (includes vendorRejected / vendorBanned); language via EasyLocalization `setLocale` + `BlocBuilder` in `lib/app.dart`; `lib/firebase_options.dart` placeholder throws until flutterfire configure.
+  - [x] 16 planned conventional commits on `dev`, `main` has only the first commit.
+    Evidence: partner `main` = `e98d8d2` (README/.gitignore only). `dev` has the 16 planned commits plus follow-up Android/iOS build fixes on the same branch. Nothing pushed.
+  - [x] Manual steps listed: Firebase app registration, flutterfire configure, config files, keystore, Apple capabilities.
+    Evidence: `tender_paws_partner/README.md` and the T0.6 report.
+- Confirmed gates: Android `com.twor2.tenderpawspartner`, iOS `com.paws.tenderpawspartner`, fonts Inter / Plus Jakarta Sans / Cairo (OFL from google/fonts), source commit `505f61f2eb1fcdce201a93fd7d7997f881d9af33`.
 
 **T0.6b Vendor user repository and authentication.** Repo VENDOR APP. Depends on T0.6, T0.5 and decisions O5. Acceptance:
 - [ ] One repository instance with stored subscriptions, a stream that replays the latest value, disposal, no persisted cache.
@@ -571,3 +578,5 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 
 - 2026-10-28: File created from the project chat. Contains the business requirements and decisions agreed so far, the architecture decision that Cloud Functions are the endpoints (D1), the data contract proposals, the endpoint registry, and all tickets with estimates and acceptance criteria. Added tickets T0.0, T0.10, T0.11, S2.10, S2.11, A2.7 and T0.9 from the alignment report.
 - 2026-10-29: Setup run on dev. T0.0, T0.1 and T0.1b are done. T0.6v is blocked because fvm 3.44.2 shows Need setup. Consistency findings are listed under T0.11. Nothing pushed.
+- 2026-11-01: T0.6 vendor app base created at ../tender_paws_partner on branch dev (16 conventional commits after main seed). Analyze and tests green. Ticket moved to REVIEW. Nothing pushed.
+- 2026-11-03: T0.6 Android debug APK and iOS no-codesign Runner.app built successfully. Partner `dev` got Android signing-guard and iOS CocoaPods sync fixes. Ticket T0.6 marked DONE. Nothing pushed.
