@@ -1,7 +1,7 @@
 # Tender Paws Multi-Vendor: Source of Truth
 
-Location: docs/SOURCE_OF_TRUTH.md in Multi-Vendor-Paws, branch dev.
-Created: 2026-10-28. Last updated: 2026-11-03.
+Location: docs/SOURCE_OF_TRUTH.md in Multi-Vendor-Paws (authoritative path). Local branch after T0.12e: `main`.
+Created: 2026-10-28. Last updated: 2026-11-04.
 
 Contents: 0 How this file works, 1 Architecture, 2 Glossary, 3 Business requirements, 4 Decisions log, 5 Data contracts, 6 Endpoint registry, 7 Tickets, 8 Risks and known issues, 9 Changelog.
 
@@ -328,6 +328,8 @@ Phase 0: setup
 | T0.12b | Migrate the vendor app to the approved Flutter | VENDOR APP | 4 to 8 | DONE |
 | T0.12c | Assess and migrate the buyer app (with safety gate) | BUYER | 8 to 16 | DONE |
 | T0.12d | Align Flutter or Dart pins, CI and cross-app regression | BUYER, VENDOR APP, WEB | 3 to 5 | DONE |
+| T0.12e | Consolidate Flutter modernization onto local main | BUYER, VENDOR APP, WEB | 1 to 2 | DONE |
+| T0.12f | Source of Truth accuracy cleanup after consolidation | WEB | 0.5 | DONE |
 
 Phase 1: portal and vendor app together (every ticket is done in both)
 
@@ -422,8 +424,8 @@ Phase 3: testing and release
 - [x] Distinguishes SDK verification (this ticket) from Flutter modernization (T0.12).
   Evidence: T0.12 epic and child tickets added in the same SoT update. Current pin remains 3.44.2 until T0.12 selects and lands a newer stable.
 
-**T0.12 Flutter modernization epic (vendor first, then buyer).** Repos BUYER (`tinder_paws`) and VENDOR APP (`tender_paws_partner`). Status: **DONE** (2026-11-04). Shared mobile SDK target: Flutter **3.47.9** / Dart **3.13.7**. Sequence completed: T0.12a → T0.12b → T0.12c (accepted after post-migration native audit) → T0.12d. Rollback SDK 3.44.2 remains in FVM cache; global FVM default left at 3.44.2. Buyer migration lives on `feature/flutter-3.47.9-buyer` until owner merges. Nothing pushed for this epic unless a later ticket says so.
-- Child tickets: T0.12a (DONE), T0.12b (DONE), T0.12c (DONE), T0.12d (DONE).
+**T0.12 Flutter modernization epic (vendor first, then buyer).** Repos BUYER (`tinder_paws`) and VENDOR APP (`tender_paws_partner`). Status: **DONE** (2026-11-04). Shared mobile SDK target: Flutter **3.47.9** / Dart **3.13.7**. Sequence completed: T0.12a → T0.12b → T0.12c (accepted after post-migration native audit) → T0.12d → **T0.12e local Git consolidation onto `main`**. Rollback SDK 3.44.2 remains in FVM cache; global FVM default left at 3.44.2. Buyer local `main` HEAD **`647cd48`** (migration commit; original base **`472293c`**). Feature branch `feature/flutter-3.47.9-buyer` preserved. Local consolidation only; nothing pushed remotely for this epic unless a later ticket says so.
+- Child tickets: T0.12a–f (DONE).
 
 **T0.12a Install and pin the approved Flutter stable via FVM.** Repos BUYER and VENDOR APP. Depends on T0.12. Status: DONE.
 - Acceptance:
@@ -454,7 +456,7 @@ Phase 3: testing and release
   - [x] Owner approval before starting T0.12c. (waiting)
     Evidence: owner approved T0.12c assessment-first on 2026-11-03. Migration stage of T0.12c still requires a separate approval.
 
-**T0.12c Assess and migrate the buyer app (with safety gate).** Repo BUYER (`tinder_paws`). Depends on T0.12b DONE. Status: **DONE**. **T0.12c-pre COMPLETE**. Migration on `feature/flutter-3.47.9-buyer` (`647cd48` from `472293c`). Post-migration native toolchain audit: Gradle 8.14.3 / AGP 8.11.1 / Kotlin 2.2.20 classified REQUIRED at Flutter error floors (Gradle patch among 8.14.x). Soft warn-tier 9.x not applied. Owner accepted migration after that audit (proceeded to T0.12d). `main` remains at `472293c` until merge. Nothing pushed.
+**T0.12c Assess and migrate the buyer app (with safety gate).** Repo BUYER (`tinder_paws`). Depends on T0.12b DONE. Status: **DONE**. **T0.12c-pre COMPLETE**. Migration was executed on `feature/flutter-3.47.9-buyer` (commit **`647cd48`**, cut from base **`472293c`**). Post-migration native toolchain audit: Gradle 8.14.3 / AGP 8.11.1 / Kotlin 2.2.20 classified REQUIRED at Flutter error floors (Gradle patch among 8.14.x). Soft warn-tier 9.x not applied. Owner accepted migration after that audit (proceeded to T0.12d). **After T0.12e:** local buyer `main` fast-forwarded to **`647cd48`**; feature branch preserved; nothing pushed remotely.
 
 ### T0.12c-pre — Verified Git readiness (2026-11-04 re-check)
 
@@ -581,9 +583,9 @@ Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commi
 
 **Buyer-only plugins:** Stripe / Syncfusion / maps / scanner / Facebook / share_plus / file_picker compiled into debug builds; runtime device smoke not claimed.
 
-**Rollback:** `git switch main` (tip `472293c`); delete or abandon `feature/flutter-3.47.9-buyer`; FVM 3.44.2 remains in cache and is global default.
+**Rollback (as of migration, pre-T0.12e):** return to base tip `472293c`; abandon feature branch; FVM 3.44.2 remains in cache and is global default.
 
-**Checkpoint:** Owner accepted migration after post-migration native audit (**CONTINUE** implied by authorizing T0.12d). Not merged to `main`; not pushed.
+**Checkpoint:** Owner accepted migration after post-migration native audit (**CONTINUE** implied by authorizing T0.12d). **T0.12e** later fast-forwarded local buyer `main` to `647cd48` (feature branch preserved). Nothing pushed remotely.
 
 - Acceptance:
   - [x] Pre-migration baseline and thresholds recorded here.
@@ -594,9 +596,9 @@ Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commi
   - [x] Android and iOS builds succeed (or blocked items listed with approval).
     Evidence: `app-debug.apk` and `Runner.app` built on 3.47.9.
   - [x] Codemagic Flutter pin is explicit and matches the approved version.
-    Evidence: `codemagic.yaml` `flutter: 3.47.9` on feature branch only.
+    Evidence: `codemagic.yaml` `flutter: 3.47.9` set during migration on `feature/flutter-3.47.9-buyer`; same pin is on local `main` after T0.12e FF.
   - [x] Safety-gate checkpoint completed with owner CONTINUE or REVERT decision recorded.
-    Evidence: post-migration audit accepted; owner authorized T0.12d final alignment (CONTINUE). No merge/push.
+    Evidence: post-migration audit accepted; owner authorized T0.12d final alignment (CONTINUE). Local consolidation via T0.12e; nothing pushed remotely.
   - [x] Nothing pushed unless the ticket says so.
   - [x] Owner approval to start migration stage.
     Evidence: owner authorized T0.12c implementation under limited engineering safety policy.
@@ -605,10 +607,15 @@ Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commi
 
 **Shared SDK (verified independently):** Flutter **3.47.9** / Dart **3.13.7** via each app’s `.fvmrc` and `.fvm/flutter_sdk` → `/Users/ahmedhany/fvm/versions/3.47.9`. Global FVM default remains **3.44.2** (unchanged).
 
-**Branches / commits at T0.12d verification:**
+**Branches / commits at T0.12d verification (historical snapshot):**
 - Vendor `tender_paws_partner` `dev` @ **`9c96797`** (clean).
 - Buyer `tinder_paws` `feature/flutter-3.47.9-buyer` @ **`647cd48`** (clean; base `472293c`).
-- Portal `Multi-Vendor-Paws` `dev` (this SoT update).
+- Portal `Multi-Vendor-Paws` `dev` @ SoT tip then current.
+
+**After T0.12e local consolidation (current):**
+- Vendor `main` @ **`9c96797`** (`dev` preserved at same tip).
+- Buyer `main` @ **`647cd48`** (FF from feature; base `472293c` remains ancestor; feature branch preserved; ahead of `origin/main` by 33 locally).
+- Portal `main` @ SoT tip including T0.12d close (`95f5601` at consolidation; later T0.12f doc cleanup may advance HEAD). `dev` preserved.
 
 **CI:** Both active Codemagic workflows pin `flutter: 3.47.9`. No other active workflow uses floating `stable`. Buyer `shorebird.yaml` does not pin a Flutter SDK version (not treated as CI Flutter channel).
 
@@ -636,6 +643,14 @@ Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commi
     Evidence: both Codemagic `flutter: 3.47.9`; analyze/test/Android/iOS table above.
   - [x] This file records final Flutter, Dart, native toolchain notes if changed, and evidence. Changelog updated.
   - [x] Nothing pushed unless the ticket says so.
+
+**T0.12e Consolidate Flutter modernization onto local main.** Repos BUYER, VENDOR APP, WEB. Status: **DONE** (2026-11-04). Fast-forward only; no push; original `dev` / feature branches preserved.
+- Vendor: `main` FF from `dev` → **`9c96797`**.
+- Buyer: `main` FF from `feature/flutter-3.47.9-buyer` → **`647cd48`** (32 prior local product commits on `main` retained; now 33 ahead of `origin/main` locally).
+- Portal: `main` FF from `dev` → **`95f5601`** (then T0.12f doc cleanup may add a follow-up commit on `main`).
+- Distinguishes **local** branch consolidation from **remote** sync: nothing pushed.
+
+**T0.12f Source of Truth accuracy cleanup.** Repo WEB. Status: **DONE** (2026-11-04). Corrects outdated buyer “pending merge” / `main`@`472293c` current-state wording after T0.12e. Preserves historical feature-branch migration path. Nothing pushed.
 
 **T0.4 Owner questions.** Owner answers needed for O4, O6, O8, O9 and the telehealth scope (O11). Update section 3 and 4 when answered.
 
@@ -826,3 +841,5 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 - 2026-11-04: T0.12c-pre consolidated buyer readiness DONE (read-only). Reconfirmed Git: main `472293c`, ahead 32, clean; dev behind by 4. Crashlytics rates still inaccessible (MCP/CLI/gcloud). Limited safety policy locked; engineering gate READY; runtime regression UNAVAILABLE until Console paste. Compatibility matrix and implementation runbook recorded under T0.12c. Buyer code untouched. Waiting for approval to start migration. SoT-only change.
 - 2026-11-04: T0.12c buyer migration executed on `feature/flutter-3.47.9-buyer` (`647cd48` from `472293c`). Flutter 3.47.9 / Dart 3.13.7. Analyze 0 errors / 59 warnings / 229 infos; 69 tests passed; Android debug APK and iOS no-codesign OK. Native bumps required by Flutter mins: Gradle 8.14.3, AGP 8.11.1, Kotlin 2.2.20. Codemagic pinned 3.47.9. No push. Soft toolchain “soon dropped” warnings remain. Production Crashlytics rates still unavailable. STOP for CONTINUE or STOP AND REVERT.
 - 2026-11-04: T0.12c accepted after post-migration native toolchain audit (AGP/Gradle/Kotlin REQUIRED at Flutter error floors). T0.12d final alignment DONE: vendor `9c96797` and buyer `647cd48` both Flutter 3.47.9 / Dart 3.13.7; Codemagic both 3.47.9; vendor analyze clean + 21 tests + Android/iOS debug OK; buyer 0 errors / 59 warnings / 229 infos + 69 tests + Android/iOS debug OK. Intentional native toolchain differences retained. No app code changes. No device smoke. No production Crashlytics rates. Nothing pushed. Epic T0.12 marked DONE.
+- 2026-11-04: T0.12e local consolidation DONE. Fast-forward only onto local `main` for vendor (`9c96797`), buyer (`647cd48`), and portal (`95f5601`). Feature/`dev` branches preserved. Buyer product history retained (33 ahead of `origin/main` locally). Nothing pushed.
+- 2026-11-04: T0.12f SoT accuracy cleanup. Current buyer state: local `main` @ `647cd48` (migration commit; base `472293c`). Removed outdated “pending merge” / `main` still at `472293c` wording. Historical feature-branch path preserved. Nothing pushed.
