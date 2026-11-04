@@ -326,7 +326,7 @@ Phase 0: setup
 | T0.12 | Flutter modernization epic (vendor first, then buyer) | BUYER, VENDOR APP | 1 to 2 | IN PROGRESS |
 | T0.12a | Install and pin the approved Flutter stable via FVM | BUYER, VENDOR APP | 1 to 2 | DONE |
 | T0.12b | Migrate the vendor app to the approved Flutter | VENDOR APP | 4 to 8 | DONE |
-| T0.12c | Assess and migrate the buyer app (with safety gate) | BUYER | 8 to 16 | TODO |
+| T0.12c | Assess and migrate the buyer app (with safety gate) | BUYER | 8 to 16 | IN PROGRESS (READY for implementation; waiting approval) |
 | T0.12d | Align Flutter or Dart pins, CI and cross-app regression | BUYER, VENDOR APP, WEB | 3 to 5 | TODO |
 
 Phase 1: portal and vendor app together (every ticket is done in both)
@@ -451,18 +451,131 @@ Phase 3: testing and release
     Evidence: 21 tests passed (shell PersistentTabView, settings Dark + Arabic RTL, theme tokens, fonts, FunctionsClient, cache/cubit, widgets). Same suite is the automated smoke for shell/theme/language.
   - [x] Issues and fixes documented. Nothing pushed.
     Evidence: this ticket entry. Remaining risks: cloud_functions KGP warning; CocoaPods vs SPM dual integration; FlutterFire major upgrades still available on pub.dev but not taken.
-  - [ ] Owner approval before starting T0.12c. (waiting)
+  - [x] Owner approval before starting T0.12c. (waiting)
+    Evidence: owner approved T0.12c assessment-first on 2026-11-03. Migration stage of T0.12c still requires a separate approval.
 
-**T0.12c Assess and migrate the buyer app (with safety gate).** Repo BUYER (`tinder_paws`). Depends on T0.12b DONE (or approved exceptions). Status: TODO. Buyer is production-facing; higher risk than vendor.
-- Before any buyer source or dependency changes: collect and record the available baseline (do not invent data): crash-free sessions or users if available; fatal and non-fatal exception counts or rates; API or network failure rates if available; Crashlytics or other monitoring config; test pass or fail counts; flutter analyze issues; Android and iOS build status. Distinguish runtime error rates, API or network error rates, test failure rates, build failures, and static-analysis errors.
-- Define error-rate thresholds and comparison method from that baseline before implementation. At the designated checkpoint, STOP and report current vs baseline, new crashes or regressions, test or build or analyzer results, dependency and native issues, whether thresholds were exceeded, and recommended CONTINUE or STOP and REVERT. Do not continue, revert, merge, or push until the owner answers. If runtime monitoring cannot be measured during migration, disclose that limitation; do not substitute tests for runtime error rates.
+**T0.12c Assess and migrate the buyer app (with safety gate).** Repo BUYER (`tinder_paws`). Depends on T0.12b DONE. Status: IN PROGRESS. **T0.12c-pre readiness COMPLETE 2026-11-04** (read-only prep + SoT). **Implementation READY** under the limited safety policy below. Migration code changes still require **explicit owner approval**. Buyer tip unchanged: `main` `472293c` (clean). No buyer source, deps, FVM, native, CI, or Firebase config modified during prep.
+
+### T0.12c-pre — Verified Git readiness (2026-11-04 re-check)
+
+Path: `/Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws/tinder_paws`
+- Branch: **`main`**. HEAD: **`472293c77e91a14612154e6dce65db2541c285d6`** (short `472293c`). Working tree **clean**.
+- Tracking: `origin/main` … **ahead 32 / behind 0** (reconfirmed). `origin/main` tip: `a608743` (Events DiscoPawty + 1.0.15+21 PR).
+- Local **`dev`** tip: `505f61f`. `main` contains all of `dev` (`main..dev` = 0). `dev..main` = **4** commits: ads rule fixes, events Coming soon layout, Switch contrast rules. Safe to cut migration branch from **`main`**, not from lagging `dev`.
+- The 32 unpushed commits (high level): notifications inbox redesign + tests; home rewind / like undo; filter accordion; ads/sponsored rules; events rules and Coming soon UI; iOS 27 iPad UIScene launch fix; version bumps 1.0.15→1.0.16; lockfile tracking churn; skills/docs. Product work, not Flutter SDK migration. **Does not block** starting `feature/flutter-3.47.9-buyer` from current `main`.
+- Rollback commit for migration branch: **`472293c`** (pre-migration tip at prep time; re-record if `main` moves before start). Recovery: abandon or delete feature branch; checkout `main` at recorded tip; keep FVM cache **3.44.2**; do not push migration commits. No reset/rebase/push performed in prep.
+
+### T0.12c-pre — Engineering baseline (measured earlier; unchanged)
+
+- Flutter **3.44.2** / Dart **3.12.2** (`.fvmrc`). Target: **3.47.9** / **3.13.7** (FVM cache present; vendor on it at partner `9c96797`).
+- Analyze: **0 errors**, 58 warnings, 229 infos. Tests: **69 passed**. Builds not re-run in prep (build gate applies in implementation).
+- Machine JDK: Java **17.0.12** (matches project `jvmTarget` 17). Xcode **27.0**, CocoaPods **1.16.2**.
+
+### T0.12c-pre — Crashlytics / runtime monitoring evidence
+
+**Integration (code + native, confirmed):**
+- Dart: only in `lib/core/services/intializer_service/initializer_service.dart`. `FlutterError.onError = recordFlutterFatalError` (Flutter framework errors as **fatal**). `PlatformDispatcher.instance.onError` → `recordError(..., fatal: true)` (uncaught async as **fatal**). **No** `recordError(..., fatal: false)` call sites → intentional **non-fatal** Flutter logging is **not** used in app code.
+- Native Android: `com.google.firebase.crashlytics` Gradle plugin **3.0.3** applied; google-services present. Native Android crashes expected to report when Crashlytics SDK is initialized via FlutterFire.
+- Native iOS: Pod `Firebase/Crashlytics` **11.15.0**; Xcode run script `"${PODS_ROOT}/FirebaseCrashlytics/run"` for dSYM upload. Native iOS crashes expected when SDK initialized.
+- Live package / app ids for console: Android **`com.twor2.tenderpaws`** → `1:137181442631:android:aafc7e698b4b86cf887762`; iOS **`com.paws.tinderpaws`** → `1:137181442631:ios:0dd0699d5942d333887762`. Same `google-services.json` also lists older Android packages (`com.paws.tinderpaws`, `com.twor.tenderpaws`, `com.twor.tinderpaws`); filter Crashlytics by the **store** app ids above.
+- Not crash monitors: Meta `facebook_app_events`, Firestore `order_analytics`, passing tests. No `firebase_analytics`, `firebase_performance`, or Sentry in pubspec.
+
+**Metrics actually retrieved:** **none** (no crash-free %, no fatal/non-fatal counts, no 7-day history numbers).
+
+**Access attempts (all failed or unsupported for rates):**
+- Firebase MCP: no Crashlytics metrics tool (project `pets-acd3f` reachable; apps listable).
+- Firebase CLI: only `crashlytics:symbols:upload` / mappingfile helpers; no dashboard query.
+- gcloud: no crashlytics metrics command; logging read for project failed (**token reauth required** in this environment). Credential tokens were not extracted or logged.
+- Conclusion: **runtime Crashlytics baseline is inaccessible** to the agent. Historical seven-day comparison **cannot** be locked numerically without owner console export.
+
+**Manual Crashlytics retrieval (owner):**
+1. Open Firebase Console → project **TinderPaws** (`pets-acd3f`) → **Crashlytics**.
+2. Select app: Android `com.twor2.tenderpaws`, then repeat for iOS `com.paws.tinderpaws`.
+3. Set date range to last **7 days** (or custom equal windows).
+4. Record for each platform: crash-free users %, crash-free sessions % (if shown), fatal issue count, non-fatal issue count, top 5 issues (title + event count). Note timezone (Console default).
+5. Paste numbers into this ticket under “Owner Crashlytics baseline” before any production/store release comparison. Optional but recommended before TestFlight comparison; **not** required to start the engineering migration branch under the limited policy below.
+
+### T0.12c-pre — Final safety policy (limited; no invented rates)
+
+**Metric classes (never substitute):** (1) runtime fatal crashes (2) runtime non-fatals (3) API/network failures (unavailable as product metric) (4) test failures (5) analyzer **errors** (6) build failures.
+
+**A. Engineering gate (locked from measured baseline; required before checkpoint):**
+- Analyzer errors = **0** (baseline 0). Warning/info deltas reported; not automatic STOP unless owner tightens.
+- `fvm flutter test`: all pass; count **≥ 69**. Any failure = STOP candidate.
+- `fvm flutter build apk --debug` and `fvm flutter build ios --debug --no-codesign` succeed. Failure = STOP.
+- Dep strategy: pin FVM 3.47.9; `pub get` then in-constraint `pub upgrade` only (mirror T0.12b). Major bumps only if required to compile; document each. Do not delete tests or features to go green.
+
+**B. Runtime gate (explicitly LIMITED / UNAVAILABLE until console numbers exist):**
+- Numeric crash-free or fatal/non-fatal **delta thresholds are not set** (no retrieved baseline). Do not fabricate %.
+- When owner pastes 7-day baselines: comparison window = **equal length** (default **7 days**) after first 3.47.9 TestFlight / internal track build vs pre-window; evaluate **per platform**. Suggested interpretation once numbers exist (owner may adjust): any **sustained drop** in crash-free users/sessions, or **new top fatal** attributed to Flutter/engine/plugins post-migrate, is a STOP/REVERT candidate for release. Without pasted numbers, runtime regression monitoring remains **UNAVAILABLE**.
+- Minimum sample: if post-window sessions/users are too low to judge (owner judgment from Console velocity), treat runtime comparison as **inconclusive**, not as pass. Engineering gate alone still does not clear production release.
+- API/network: no crash-equivalent monitor; track only as manual smoke (login, feed, store checkout path) at checkpoint.
+
+**C. Stop conditions (implementation / checkpoint):**
+- Engineering gate fails → recommend **STOP AND REVERT**.
+- Unresolved native blocker (Stripe/Syncfusion/maps/scanner/Facebook pods or AGP) after reasonable pin-first attempt → STOP and report; do not force majors without owner approval.
+- Runtime inconclusive or unavailable → disclose; do **not** auto-approve store release.
+
+**D. Rollback conditions:**
+- Owner answers **STOP AND REVERT**, or engineering gate fails after attempted fixes, or production Crashlytics (once available) shows clear post-migrate fatal regression attributable to the upgrade.
+
+**E. Manual approval checkpoint (mandatory):**
+- After FVM pin, deps, Dart fixes, analyze/tests/builds green, Codemagic pin drafted on the feature branch: **STOP** and ask owner: **CONTINUE or STOP AND REVERT?** Never decide automatically. No merge to `main`, no push, no Codemagic change on `main`, no store submit until owner answers.
+
+### T0.12c-pre — Compatibility assessment (buyer-specific)
+
+| Area | Buyer state | vs 3.47.9 | Evidence class |
+|------|-------------|-----------|----------------|
+| Flutter/Dart pin | 3.44.2 / 3.12.2 | Target 3.47.9 / 3.13.7 | Confirmed target (T0.12a); buyer not yet run on it |
+| FlutterFire | core 3.15.2, crashlytics 4.3.10, messaging 15.2.10, functions 5.6.2, auth 5.7.0, firestore 5.6.12, storage 12.4.10 | Same majors as vendor green build | **Assumed OK** (vendor proof for overlapping packages only) |
+| flutter_bloc / go_router / get_it / easy_localization / flutter_local_notifications | Same resolved as vendor where present | Vendor green | **Assumed OK** for shared set |
+| flutter_stripe 11.5.0 | Buyer-only | Unknown on 3.47.9 | **Assumption / risk** |
+| syncfusion_flutter_pdfviewer 27.2.5 | Buyer-only | Unknown on 3.47.9 | **Assumption / risk** |
+| google_maps_flutter 2.18.1, geolocator 13.0.4, location 8.0.1 | Buyer-only | Unknown | **Assumption / risk** |
+| mobile_scanner 7.4.2 | Buyer-only | Unknown | **Assumption / risk** |
+| facebook_app_events 0.30.5 | Buyer-only | Unknown | **Assumption / risk** |
+| share_plus 7.2.2, file_picker 8.3.7, chewie, youtube_player | Buyer-heavy | Unknown | **Assumption / risk** |
+| WillPopScope | `add_paw_profile_images.dart` | Deprecated long ago; still present; migrate if analyze/build requires | Confirmed debt |
+| Radio / RadioListTile groupValue/onChanged | `app_custom_bottom_sheet_widget.dart`, `stickers_store_screen.dart`, `add_paw_screen.dart` | Deprecated since 3.35; still compile on 3.44.2; prefer `RadioGroup` if fixing | Confirmed debt (not a 3.47 removal) |
+| describeEnum | none in lib | Removed in 3.47 breaking list | **Confirmed clear** |
+| Android AGP 8.9.1 / Gradle 8.11.1 / Kotlin 2.1.0 / JDK 17 / SDK 36 / min 24 | Buyer files + local JDK 17 | Flutter 3.47 supports AGP 8.x; AGP 9 optional (vendor used 9). Pin-first without AGP bump | **Assumed OK**; bump only if build fails |
+| iOS 15 / Swift 5.0 / CocoaPods / Crashlytics run script | Confirmed | Vendor built iOS 15 on 3.47.9 | **Assumed OK**; pod re-resolve expected |
+| Codemagic `flutter: stable` | Floating | Must become `3.47.9` on migration branch | Confirmed gap |
+
+**Known blockers to start prep:** none for engineering migration under limited policy. **Residual risks (not blockers):** buyer-only plugins; unpushed 32-commit `main`; runtime Crashlytics UNAVAILABLE; debug builds not re-verified on 3.44.2 during prep.
+
+### T0.12c-pre — Implementation runbook (ordered; execute only after owner approval)
+
+1. **Branch:** from buyer repo, on clean `main` at recorded tip (expect `472293c` or newer if advanced): `git switch -c feature/flutter-3.47.9-buyer`. Do not start from `dev`. Do not push unless ticket says so.
+2. **Baseline capture on branch tip (3.44.2):** re-run `fvm flutter --version`, `analyze`, `test`; record counts. Optional: owner pastes Crashlytics 7-day numbers into SoT.
+3. **SDK pin:** set `.fvmrc` to `3.47.9`; `fvm use 3.47.9`; confirm Dart 3.13.7. Keep 3.44.2 in cache for rollback.
+4. **Deps:** `fvm flutter pub get`; if needed `fvm flutter pub upgrade` **without** `--major-versions`. Document lockfile delta. Only then consider majors for Stripe/Syncfusion/maps/scanner/Facebook if compile fails.
+5. **Dart:** fix analyzer **errors** and compile breaks only. Prefer `PopScope` for WillPopScope and `RadioGroup` for Radio* if touched. Do not mass-clean warnings. Do not weaken or delete tests.
+6. **Android:** keep AGP 8.9.1 / Gradle 8.11.1 / Kotlin 2.1.0 first. If build fails, escalate carefully (vendor reference: AGP 9.0.1 / Gradle 9.1 / Kotlin 2.3.20) with documented reason. `fvm flutter build apk --debug`.
+7. **iOS:** `cd ios && pod install` as needed; `fvm flutter build ios --debug --no-codesign`. Preserve Crashlytics dSYM run script.
+8. **CI:** on feature branch only, set Codemagic `flutter: 3.47.9` (match vendor). Do not change `main` CI until CONTINUE.
+9. **Verify commands:** `fvm flutter analyze` (0 errors), `fvm flutter test` (≥69 pass), Android debug APK, iOS no-codesign.
+10. **Functional smoke (manual):** cold start; login/session; home feed swipe; notifications inbox; one store/maps/scanner path if device available; Arabic RTL toggle; dark theme. Record pass/fail. These are not crash rates.
+11. **Crashlytics:** confirm SDK still initializes in release/profile config; do not claim rate regression without Console data.
+12. **Checkpoint:** STOP. Report deltas vs prep. Ask **CONTINUE or STOP AND REVERT?**
+13. **Rollback:** if REVERT or failed gate: delete/abandon feature branch; checkout `main` @ rollback tip; `.fvmrc` back to 3.44.2; discard Codemagic draft. If CONTINUE: follow owner instructions for merge/push/store (out of scope until then).
+
+### T0.12c readiness status
+
+- **READY** for buyer implementation under engineering gate + limited runtime policy.
+- **Not DONE** (implementation not started).
+- Waiting: owner **approval to start** runbook step 1; optional Crashlytics paste; later CONTINUE/REVERT at checkpoint.
+
 - Acceptance:
-  - [ ] Pre-migration baseline and thresholds recorded here.
+  - [x] Pre-migration baseline and thresholds recorded here.
+    Evidence: T0.12c assessment 2026-11-03 + T0.12c-pre 2026-11-04. Engineering thresholds locked. Runtime numeric thresholds UNAVAILABLE (limited policy).
+  - [x] T0.12c-pre consolidated readiness (Git, Crashlytics access limit, safety policy, compatibility, runbook) recorded.
   - [ ] Buyer migrated to the same approved Flutter or Dart as vendor. Analyze and tests addressed with evidence.
   - [ ] Android and iOS builds succeed (or blocked items listed with approval).
   - [ ] Codemagic Flutter pin is explicit and matches the approved version.
   - [ ] Safety-gate checkpoint completed with owner CONTINUE or REVERT decision recorded.
   - [ ] Nothing pushed unless the ticket says so.
+  - [ ] Owner approval to start migration stage (waiting).
 
 **T0.12d Align pins, CI and cross-app regression.** Repos BUYER, VENDOR APP, WEB (SoT only). Depends on T0.12b and T0.12c. Status: TODO. Acceptance:
 - [ ] Both apps report the same Flutter and Dart from `fvm flutter --version`.
@@ -655,3 +768,5 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 - 2026-11-03: T0.6v re-investigation closed. FVM list Need setup is a metadata display issue (legacy root version file removed since Flutter 3.35; flutter.version.json present). SDK 3.44.2 usable; GO for current development. Ticket T0.6v marked DONE. Flutter modernization epic T0.12 and children T0.12a to T0.12d added (proposed target Flutter 3.47.9 / Dart 3.13.7 as of plan date; re-confirm at T0.12a). Nothing pushed.
 - 2026-11-03: Flutter modernization sequence revised to vendor first then buyer with a buyer safety gate. T0.12a DONE: installed Flutter 3.47.9 (Dart 3.13.7) via FVM; kept 3.44.2 for rollback; pinned tender_paws_partner `.fvmrc` to 3.47.9; buyer remains on 3.44.2 until T0.12c. Global FVM default left at 3.44.2. Nothing pushed.
 - 2026-11-03: T0.12b vendor migration DONE on tender_paws_partner `dev`. Flutter 3.47.9 / Dart 3.13.7. Analyze clean, 21 tests passed, Android debug APK and iOS no-codesign Runner.app built. Codemagic pin 3.47.9. pub upgrade within constraints; no Dart source changes. Rollback: git `bb643da`, FVM 3.44.2. Waiting for approval before T0.12c. Nothing pushed.
+- 2026-11-03: T0.12c buyer assessment DONE (read-only) on tinder_paws `main` `472293c`. Baseline Flutter 3.44.2 / Dart 3.12.2. Analyze 0 errors / 58 warnings / 229 infos; 69 tests passed. Crashlytics wired; production rates inaccessible via available tooling (PENDING owner console export). Engineering thresholds and stop-and-review checkpoint recorded under T0.12c. Buyer source/deps/FVM/CI unchanged. Migration blocked until owner approval. Nothing pushed.
+- 2026-11-04: T0.12c-pre consolidated buyer readiness DONE (read-only). Reconfirmed Git: main `472293c`, ahead 32, clean; dev behind by 4. Crashlytics rates still inaccessible (MCP/CLI/gcloud). Limited safety policy locked; engineering gate READY; runtime regression UNAVAILABLE until Console paste. Compatibility matrix and implementation runbook recorded under T0.12c. Buyer code untouched. Waiting for approval to start migration. SoT-only change.
