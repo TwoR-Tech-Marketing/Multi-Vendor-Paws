@@ -326,7 +326,7 @@ Phase 0: setup
 | T0.12 | Flutter modernization epic (vendor first, then buyer) | BUYER, VENDOR APP | 1 to 2 | IN PROGRESS |
 | T0.12a | Install and pin the approved Flutter stable via FVM | BUYER, VENDOR APP | 1 to 2 | DONE |
 | T0.12b | Migrate the vendor app to the approved Flutter | VENDOR APP | 4 to 8 | DONE |
-| T0.12c | Assess and migrate the buyer app (with safety gate) | BUYER | 8 to 16 | IN PROGRESS (READY for implementation; waiting approval) |
+| T0.12c | Assess and migrate the buyer app (with safety gate) | BUYER | 8 to 16 | IN PROGRESS (checkpoint: CONTINUE or STOP AND REVERT?) |
 | T0.12d | Align Flutter or Dart pins, CI and cross-app regression | BUYER, VENDOR APP, WEB | 3 to 5 | TODO |
 
 Phase 1: portal and vendor app together (every ticket is done in both)
@@ -454,7 +454,7 @@ Phase 3: testing and release
   - [x] Owner approval before starting T0.12c. (waiting)
     Evidence: owner approved T0.12c assessment-first on 2026-11-03. Migration stage of T0.12c still requires a separate approval.
 
-**T0.12c Assess and migrate the buyer app (with safety gate).** Repo BUYER (`tinder_paws`). Depends on T0.12b DONE. Status: IN PROGRESS. **T0.12c-pre readiness COMPLETE 2026-11-04** (read-only prep + SoT). **Implementation READY** under the limited safety policy below. Migration code changes still require **explicit owner approval**. Buyer tip unchanged: `main` `472293c` (clean). No buyer source, deps, FVM, native, CI, or Firebase config modified during prep.
+**T0.12c Assess and migrate the buyer app (with safety gate).** Repo BUYER (`tinder_paws`). Depends on T0.12b DONE. Status: IN PROGRESS. **T0.12c-pre COMPLETE**. **Migration executed** on `feature/flutter-3.47.9-buyer` (`647cd48`); **safety checkpoint open** (CONTINUE or STOP AND REVERT). `main` remains at `472293c` (unmigrated). Nothing pushed.
 
 ### T0.12c-pre — Verified Git readiness (2026-11-04 re-check)
 
@@ -560,22 +560,45 @@ Path: `/Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws/tinder_paws`
 12. **Checkpoint:** STOP. Report deltas vs prep. Ask **CONTINUE or STOP AND REVERT?**
 13. **Rollback:** if REVERT or failed gate: delete/abandon feature branch; checkout `main` @ rollback tip; `.fvmrc` back to 3.44.2; discard Codemagic draft. If CONTINUE: follow owner instructions for merge/push/store (out of scope until then).
 
-### T0.12c readiness status
+### T0.12c readiness status (superseded by migration execution below)
 
-- **READY** for buyer implementation under engineering gate + limited runtime policy.
-- **Not DONE** (implementation not started).
-- Waiting: owner **approval to start** runbook step 1; optional Crashlytics paste; later CONTINUE/REVERT at checkpoint.
+- Prep marked READY 2026-11-04. Owner approved implementation. Migration executed on feature branch; ticket not DONE until CONTINUE/REVERT.
+
+### T0.12c migration execution (2026-11-04) — safety checkpoint
+
+Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commit **`472293c`**. Migration commit **`647cd48`**. Nothing pushed. Global FVM default still **3.44.2**. Production Crashlytics metrics remain **unavailable**; no quantitative production crash-rate comparison claimed.
+
+**Baseline on 3.44.2 (same tip, before pin):** Flutter 3.44.2 / Dart 3.12.2; analyze 0 errors / 58 warnings / 229 infos; 69 tests passed; Android debug APK OK; iOS debug no-codesign OK.
+
+**After migration (3.47.9):** Flutter 3.47.9 / Dart 3.13.7; analyze 0 errors / **59** warnings / 229 infos; 69 tests passed; Android debug APK OK; iOS debug no-codesign OK (after cleaning stale `ios/Pods` gRPC modulemap failure and re-running `pod install`).
+
+**Changes (rationale):**
+- `.fvmrc` + `.vscode/settings.json` → 3.47.9 (SDK pin).
+- `pubspec.lock` in-constraint refresh only (e.g. mobile_scanner 7.4.2→7.5.0). No pubspec.yaml majors. No Dart source edits (WillPopScope/Radio remain deprecated infos, still compile).
+- Android: Gradle **8.11.1→8.14.3**, AGP **8.9.1→8.11.1**, Kotlin **2.1.0→2.2.20** (Flutter hard minimums; demonstrated build failures until each bump). Soft warnings remain that Flutter will soon require Gradle ≥9.1.0, AGP ≥9.0.1, Kotlin ≥2.3.20.
+- iOS: Podfile.lock Flutter checksum refresh; AppFrameworkInfo.plist `MinimumOSVersion` key removed by tooling (deployment target still 15.0 via Podfile/Xcode). Crashlytics dSYM run script retained.
+- Codemagic: `flutter: stable` → `3.47.9`.
+
+**Buyer-only plugins:** Stripe / Syncfusion / maps / scanner / Facebook / share_plus / file_picker compiled into debug builds; runtime device smoke not claimed.
+
+**Rollback:** `git switch main` (tip `472293c`); delete or abandon `feature/flutter-3.47.9-buyer`; FVM 3.44.2 remains in cache and is global default.
+
+**Checkpoint:** STOP. Awaiting owner **CONTINUE or STOP AND REVERT?**
 
 - Acceptance:
   - [x] Pre-migration baseline and thresholds recorded here.
     Evidence: T0.12c assessment 2026-11-03 + T0.12c-pre 2026-11-04. Engineering thresholds locked. Runtime numeric thresholds UNAVAILABLE (limited policy).
   - [x] T0.12c-pre consolidated readiness (Git, Crashlytics access limit, safety policy, compatibility, runbook) recorded.
-  - [ ] Buyer migrated to the same approved Flutter or Dart as vendor. Analyze and tests addressed with evidence.
-  - [ ] Android and iOS builds succeed (or blocked items listed with approval).
-  - [ ] Codemagic Flutter pin is explicit and matches the approved version.
+  - [x] Buyer migrated to the same approved Flutter or Dart as vendor. Analyze and tests addressed with evidence.
+    Evidence: feature branch `feature/flutter-3.47.9-buyer` commit `647cd48`; Flutter 3.47.9 / Dart 3.13.7; analyze 0 errors; 69 tests passed.
+  - [x] Android and iOS builds succeed (or blocked items listed with approval).
+    Evidence: `app-debug.apk` and `Runner.app` built on 3.47.9.
+  - [x] Codemagic Flutter pin is explicit and matches the approved version.
+    Evidence: `codemagic.yaml` `flutter: 3.47.9` on feature branch only.
   - [ ] Safety-gate checkpoint completed with owner CONTINUE or REVERT decision recorded.
-  - [ ] Nothing pushed unless the ticket says so.
-  - [ ] Owner approval to start migration stage (waiting).
+  - [x] Nothing pushed unless the ticket says so.
+  - [x] Owner approval to start migration stage.
+    Evidence: owner authorized T0.12c implementation under limited engineering safety policy.
 
 **T0.12d Align pins, CI and cross-app regression.** Repos BUYER, VENDOR APP, WEB (SoT only). Depends on T0.12b and T0.12c. Status: TODO. Acceptance:
 - [ ] Both apps report the same Flutter and Dart from `fvm flutter --version`.
@@ -770,3 +793,4 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 - 2026-11-03: T0.12b vendor migration DONE on tender_paws_partner `dev`. Flutter 3.47.9 / Dart 3.13.7. Analyze clean, 21 tests passed, Android debug APK and iOS no-codesign Runner.app built. Codemagic pin 3.47.9. pub upgrade within constraints; no Dart source changes. Rollback: git `bb643da`, FVM 3.44.2. Waiting for approval before T0.12c. Nothing pushed.
 - 2026-11-03: T0.12c buyer assessment DONE (read-only) on tinder_paws `main` `472293c`. Baseline Flutter 3.44.2 / Dart 3.12.2. Analyze 0 errors / 58 warnings / 229 infos; 69 tests passed. Crashlytics wired; production rates inaccessible via available tooling (PENDING owner console export). Engineering thresholds and stop-and-review checkpoint recorded under T0.12c. Buyer source/deps/FVM/CI unchanged. Migration blocked until owner approval. Nothing pushed.
 - 2026-11-04: T0.12c-pre consolidated buyer readiness DONE (read-only). Reconfirmed Git: main `472293c`, ahead 32, clean; dev behind by 4. Crashlytics rates still inaccessible (MCP/CLI/gcloud). Limited safety policy locked; engineering gate READY; runtime regression UNAVAILABLE until Console paste. Compatibility matrix and implementation runbook recorded under T0.12c. Buyer code untouched. Waiting for approval to start migration. SoT-only change.
+- 2026-11-04: T0.12c buyer migration executed on `feature/flutter-3.47.9-buyer` (`647cd48` from `472293c`). Flutter 3.47.9 / Dart 3.13.7. Analyze 0 errors / 59 warnings / 229 infos; 69 tests passed; Android debug APK and iOS no-codesign OK. Native bumps required by Flutter mins: Gradle 8.14.3, AGP 8.11.1, Kotlin 2.2.20. Codemagic pinned 3.47.9. No push. Soft toolchain “soon dropped” warnings remain. Production Crashlytics rates still unavailable. STOP for CONTINUE or STOP AND REVERT.
