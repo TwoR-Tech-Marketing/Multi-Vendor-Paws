@@ -4,10 +4,10 @@ description: Use when a feature needs server-side timers, triggers or side effec
 ---
 # Cloud Functions rules
 
-- The portal repo has no Cloud Functions. They live in tinderpaws_panel/functions (existing: vendor_signup.js, vendors.js).
+- The portal repo has no Cloud Functions. They live in tinderpaws_panel/functions (existing: vendor_signup.js, vendors.js, orders_split.js, service_request.js, services.js).
 - Needed functions: no-show eligibility and notification, post-visit review prompt, balance and ledger updates, points ledger, subscription renewal and grace reminders.
 - Functions must be idempotent. Re-running the same trigger must not double credit money or points.
 - Validate `vendorId` and appointment state inside the function. Never trust client payloads.
 - Money in piastres, same helper as the portal.
-- Deploy order: indexes, rules, functions, then mobile.
-- New functions needed: buyer eligibility by location, governorate resolution from lat and lng, suspension handling (put orders or appointments on hold and open an admin ticket), checkout re-check.
+- Deploy order: indexes, rules, functions, then apps. Section 1.3.
+- New functions needed: buyer eligibility by location, governorate resolution from lat and lng, suspension handling (put orders or appointments on hold and create a hold case, BR-9.3), checkout re-check.

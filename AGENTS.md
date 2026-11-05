@@ -53,8 +53,8 @@ The file is `docs/SOURCE_OF_TRUTH.md`. Read it before any ticket. Update it in t
 **TenderPaws feature domains:**
 - `vendor` — registration, profile, store setup, account status
 - `products` — add/edit/delete products, stock, category, images
-- `orders` — vendor order view, status updates, admin order monitoring
-- `marketplace` — multi-vendor browse/filter display (buyer-side, mobile-only; admin visibility only on web)
+- `orders`: vendor order view and status updates. Admin order monitoring is in tinderpaws_panel (BR-1.4). This portal is vendor-only.
+- `marketplace`: buyer browse and filter live in the Flutter buyer app (BR-1.2). This portal does not ship that marketplace.
 - `admin` — vendor approval/suspension, centralized product/order visibility
 - `financials` — earnings visibility, commission architecture, payout data
 - `auth` — Firebase auth, role detection (admin vs vendor)
@@ -550,7 +550,7 @@ type Result<T> =
 - Two roles: `admin` and `vendor`. This app is **vendor-only**; admin uses the separate panel.
 - **Middleware** ([`src/middleware.ts`](src/middleware.ts)): portal routes require session cookie; auth routes redirect when cookie exists.
 - **Guest auth routes** (`/login`, `/register`, `/forgot-password`): `AuthGuestGuard` + middleware. Use **`router.replace`** after login/logout.
-- **BFF:** vendor data via [`src/app/api/vendor/*`](src/app/api/vendor/) — never direct Firestore reads from presentation.
+- **BFF:** existing portal vendor data via [`src/app/api/vendor/*`](src/app/api/vendor/). Portal presentation does not read Firestore. New business rules call the shared Cloud Functions. Other clients may read Firestore where the security rules allow (source of truth section 1.1).
 - Vendor data isolation: `vendorId` from verified server session only — never from client input.
 
 ---
@@ -655,7 +655,7 @@ export const Routes = {
 ## 23) Forbidden Practices
 - Business logic embedded in pages or presentational components.
 - Firebase imports outside `src/features/<feature>/infrastructure/` or `src/lib/`.
-- Raw Firebase Firestore reads in presentation or hooks — use `/api/vendor/*` BFF routes.
+- Raw Firebase Firestore reads in portal presentation or hooks. Existing portal features use `/api/vendor/*` BFF routes. New business rules call shared Cloud Functions (source of truth section 1.1).
 - Direct `firebase/firestore` imports outside server infrastructure (`*.admin.repository.ts`, [`src/lib/firebase-admin.ts`](src/lib/firebase-admin.ts)) for vendor data.
 - Unnecessary `"use client"` on server-capable components.
 - Hardcoded hex values, pixel values, font names, or spacing values in component/module files.
@@ -683,7 +683,7 @@ export const Routes = {
 - **Firebase**: Client init in `src/lib/firebase.ts`; Admin SDK in `src/lib/firebase-admin.ts` (server-only).
 - **BFF**: Vendor APIs under `src/app/api/vendor/`; profile via [`src/features/vendor/application/vendor-profile.api.ts`](src/features/vendor/application/vendor-profile.api.ts).
 - **Security docs**: [`docs/production-security.md`](docs/production-security.md).
-- **Server state**: React Query calling `/api/vendor/*` — not direct Firestore from client components.
+- **Server state**: React Query calling `/api/vendor/*` for existing portal features. Portal client components do not read Firestore. New business rules call shared Cloud Functions (source of truth section 1.1).
 - **Features**: `src/features/<feature-name>/` with `presentation/`, `application/`, `domain/`, `infrastructure/` layers.
 - **Styling**: CSS Modules with design tokens from `src/shared/theme/colors.css`.
 - **Strings & i18n**: English source in `src/constants/strings.ts`; Arabic in `src/shared/i18n/locales/ar.ts`; `useStrings()` in client UI. See §6.

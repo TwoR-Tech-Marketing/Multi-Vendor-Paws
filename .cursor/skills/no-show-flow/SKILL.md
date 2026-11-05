@@ -10,7 +10,7 @@ description: Use when building the no-show flag, user confirmation notification,
 - User answers: "Yes, I did not attend" | "No, I attended" | "I arrived late" | "Report an issue"
 
 ## Rules
-- The 120 minute check is enforced on the server (BFF and Cloud Function). Never trust the UI button state.
+- The 120 minute check is enforced by flagNoShow on the server (BR-6.8, S1.11). Never trust the UI button state.
 - Use the `notifications` collection for the user prompt.
 - Record the user's answer in `statusHistory`.
 - Needs a Cloud Function or scheduled check (this portal repo has none). See cloud-functions-rules.
