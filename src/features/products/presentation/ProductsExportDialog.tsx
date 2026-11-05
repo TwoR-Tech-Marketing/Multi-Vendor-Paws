@@ -31,10 +31,13 @@ export function ProductsExportDialog({
   const [selected, setSelected] = useState<Record<ProductExportColumnId, boolean>>(() =>
     defaultProductExportSelection(strings),
   );
-
-  useEffect(() => {
-    if (open) setSelected(defaultProductExportSelection(strings));
-  }, [open, strings]);
+  const [selectionSource, setSelectionSource] = useState({ open, strings });
+  if (open && (selectionSource.open !== open || selectionSource.strings !== strings)) {
+    setSelectionSource({ open, strings });
+    setSelected(defaultProductExportSelection(strings));
+  } else if (!open && selectionSource.open) {
+    setSelectionSource({ open, strings });
+  }
 
   useEffect(() => {
     if (!open) return;

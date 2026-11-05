@@ -25,6 +25,16 @@ npm install
 npm run dev
 ```
 
+4. Check the portal:
+
+```bash
+npm test
+npm run lint
+npm run typecheck
+```
+
+`npm test` runs Vitest. The first tests cover session body validation and product create validation.
+
 ## Project Structure
 
 - `src/app` - routes and pages

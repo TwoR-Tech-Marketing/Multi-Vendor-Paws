@@ -41,7 +41,10 @@ export function SettingsSection() {
   }, [t.loadError]);
 
   useEffect(() => {
-    void loadSettings();
+    const timer = window.setTimeout(() => {
+      void loadSettings();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadSettings]);
 
   function onThemeChange(next: ThemeMode) {

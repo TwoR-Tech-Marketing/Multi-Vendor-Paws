@@ -37,7 +37,10 @@ export function CategoriesSection() {
   }, [strings.products.categories.loadError]);
 
   useEffect(() => {
-    void loadCategories();
+    const timer = window.setTimeout(() => {
+      void loadCategories();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadCategories]);
 
   async function toggleCategoryStatus(category: CategoryRow) {

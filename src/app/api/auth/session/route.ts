@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
-
+import { portalSessionBodySchema } from "@/features/auth/domain/session-body";
 import {
   isAllowedPortalSessionKind,
   resolveVendorSessionServer,
@@ -50,10 +49,6 @@ function mapSessionError(error: unknown): ReturnType<typeof apiGenericError> | n
   return null;
 }
 
-const bodySchema = z.object({
-  idToken: z.string().min(1),
-});
-
 export async function POST(request: Request) {
   if (!isFirebaseAdminConfigured()) {
     const setupMessage = getFirebaseAdminSetupMessage();
@@ -64,7 +59,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = bodySchema.parse(await request.json());
+    const body = portalSessionBodySchema.parse(await request.json());
     const decoded = await getAdminAuth().verifyIdToken(body.idToken);
     const email = decoded.email?.trim().toLowerCase() ?? "";
 

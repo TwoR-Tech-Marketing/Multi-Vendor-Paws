@@ -334,7 +334,7 @@ Phase 0: setup
 | T0.12f | Source of Truth accuracy cleanup after consolidation | WEB | 0.5 | DONE |
 | T0.13 | Reconcile the source of truth with the audit and sync dev with main | WEB, BUYER, PANEL | 1 to 2 | DONE |
 | T0.14 | Rules inventory and single source | WEB, BUYER, PANEL | 4 to 8 | TODO |
-| T0.15 | Portal test and lint baseline | WEB | 3 to 6 | TODO |
+| T0.15 | Portal test and lint baseline | WEB | 3 to 6 | DONE |
 | T0.16 | Backups | WEB, BUYER, PANEL, VENDOR APP | 1 to 2 | TODO |
 
 Phase 1: portal and vendor app together (every ticket is done in both)
@@ -767,11 +767,15 @@ Consistency findings from the 2026-10-29 setup run. Reconciled in this ticket. O
 - [ ] No agent deploys.
   Note: the portal rules copy lacks the events block, so deploying it would remove the events rules.
 
-**T0.15 Portal test and lint baseline.** Repo WEB. Est 3 to 6 h. Status: TODO. Acceptance:
-- [ ] Fix the 19 lint errors (react-hooks/set-state-in-effect and others).
-- [ ] Add a test runner (Vitest) with first tests for session and products validation.
-- [ ] A documented test command.
-- [ ] tsc stays clean.
+**T0.15 Portal test and lint baseline.** Repo WEB. Est 3 to 6 h. Status: DONE (2026-11-05). Acceptance:
+- [x] Fix the 19 lint errors (react-hooks/set-state-in-effect and others).
+  Evidence: `npx eslint . --quiet` exits 0. The 19 errors were all `react-hooks/set-state-in-effect`. Loaders now start from `setTimeout` so setState is not synchronous in the effect. Draft resets and the profile form update state during render when their source changes. Popup layout uses `queueMicrotask`. Back-button visibility uses `useSyncExternalStore`.
+- [x] Add a test runner (Vitest) with first tests for session and products validation.
+  Evidence: Vitest 3.2.7. `src/features/auth/domain/session-body.test.ts` (2 tests). `src/features/products/domain/schemas.test.ts` (4 tests). `npm test` reports 6 passed.
+- [x] A documented test command.
+  Evidence: `npm test` in package.json and README.md.
+- [x] tsc stays clean.
+  Evidence: `npm run typecheck` (`tsc --noEmit`) exits 0.
 
 **T0.16 Backups.** Repos WEB, BUYER, PANEL, VENDOR APP. Est 1 to 2 h. Status: TODO. Acceptance:
 - [ ] A remote exists for the vendor app.
@@ -879,7 +883,7 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - main keeps changing with store releases while dev is built.
 - Unpushed local work: WEB 21 commits, BUYER 33, PANEL 19 (default branches), the vendor app has no remote, and several local-only buyer branches.
 - Firestore rules exist in several repos and the portal copy lacks the events block.
-- The portal has no tests and 19 lint errors.
+- Portal lint errors from the audit are fixed and Vitest covers session and product validation (T0.15). Warnings remain outside those 19 errors.
 - Codemagic builds on a push to main in the buyer app.
 - The Events delete guard is not on buyer main while the panel tests expect it.
 - The QR is valid for a minute or two before the first scan.
@@ -908,3 +912,4 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - 2026-11-04: Audit reconciliation (T0.13). Merged main into dev on WEB (`98fd495`, from main `b018b15` and dev `95f5601`) and BUYER (`9d4f357`, from main `647cd48` and dev `505f61f`), and master into dev on PANEL (`6aa4db5`, from master `b510dc8` and dev `5250bf3`). VENDOR APP already matched at `9c96797` and was left unchanged. Nothing pushed. Branch policy updated: main is what is shippable and shipped, dev is the project base, and D14 amends D10 for the T0.12e fast-forward of main. Repo table notes the panel default branch master, the vendor app with no remote, and Flutter 3.47.9 / Dart 3.13.7 on BUYER and VENDOR APP. Index notes for T0.6v (superseded by T0.12), T0.8 (OPEN, see track E), and T0.6p, T0.6c and T0.7 (evidence in chat reports). Added T0.13 to T0.16, Track E (EV-1 to EV-4) and S2.12. Risks updated. New tickets add about 18 to 35 hours. Flutter modernization (T0.12) is done and was outside the original estimate. Total about 550 to 765 hours.
 - 2026-11-05: T0.9 stale docs marked superseded. Banner on docs/phase-3-foundation.md. Banner on the parent planning file MULTI_VENDOR_SERVICES_PLANNING_PRICING.md, which is outside this git repo. Bodies kept. Open questions in that planning file were not resolved. Nothing pushed.
 - 2026-11-05: T0.11 skills reconciled with this file. Hold case wording, Cloud Function enforcement, vendor types, deploy order, piastres boundary, and the portal BFF scope now match. APP_CONTEXT.txt edited locally and left untracked. Nothing pushed.
+- 2026-11-05: T0.15 portal lint and test baseline. The 19 react-hooks/set-state-in-effect errors are gone (`npx eslint . --quiet`). Vitest 3.2.7 added. `npm test` runs 6 tests for session body and product create validation. `npm run typecheck` is clean. Command documented in README.md. Nothing pushed.

@@ -96,11 +96,11 @@ export function PortalSelect({
 
   useLayoutEffect(() => {
     if (!isOpen) {
-      setPopupPosition(null);
+      queueMicrotask(() => setPopupPosition(null));
       return;
     }
 
-    updatePopupPosition();
+    queueMicrotask(updatePopupPosition);
 
     function handleViewportChange() {
       updatePopupPosition();
