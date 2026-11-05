@@ -13,7 +13,7 @@ The portal is vendor-only. These need work in `tinderpaws_panel` (Flutter web):
 - [ ] Manage coupons
 - [ ] View subscription status and payments
 - [ ] Suspend with two modes (hidden or view only)
-- [ ] Admin ticket queue for held orders and appointments
+- [ ] Hold case queue for held orders and appointments (A2.1)
 - [ ] Per vendor optional delivery fee, admin only, not shown in the vendor portal
 - [ ] Halo item management that stamps seller id platformVendor
 - [ ] Manage the canonical governorate list with stable IDs and category assignments by ID

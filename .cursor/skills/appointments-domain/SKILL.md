@@ -15,7 +15,7 @@ The spec starts at `paid` because the user pays at checkout.
 - no_show -> refund outcome OPEN
 
 ## Rules
-- Transition rules live in `domain/` only. The BFF enforces them server side. The UI never decides.
+- Transition rules live in `domain/` as the contract. Cloud Functions enforce them (section 1.1, S1.10). The UI never decides.
 - Every change appends to `statusHistory`: `{ status, at, byUid, byRole, note? }`.
 - Appointments are top level with `vendorId`, `branchId`, `userUid`, `serviceIds`, `totalPiastres`.
 - Extra services added during a visit are an invoice linked to the appointment, paid in app on the spot.
@@ -25,4 +25,4 @@ The spec starts at `paid` because the user pays at checkout.
 - Reschedule rules (who can, how many times)
 
 ## Suspended provider
-When a clinic or groomer is suspended, their appointments go on hold and a ticket with those appointments goes to the admin. OPEN: how holds resolve (cancel, refund through support, reassign) and what the buyer sees.
+When a clinic or groomer is suspended, their appointments go on hold and a hold case with those appointments goes to the admin (BR-9.3). OPEN: how holds resolve (cancel, refund through support, reassign) and what the buyer sees.

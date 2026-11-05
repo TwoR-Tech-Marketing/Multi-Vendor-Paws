@@ -5,12 +5,12 @@ description: Use when adding or changing anything that depends on vendor type (s
 # Vendor type architecture
 
 ## Rules
-- Add `vendorType` on `vendors/{id}`: `store | clinic | groomer` (later: trainer, walker, host).
+- Add `vendorType` on `vendors/{id}`: `store | clinic | groomer` (later: hotel, trainer, walker, services store). BR-1.6.
 - Missing `vendorType` means `store`. Existing store vendors must keep working untouched.
 - ONE service-provider engine. Clinic and groomer differ by config, never by forked code.
 - Read type config through a single `getProviderConfig(type)` in `domain/`. No scattered `if (type === ...)` in UI.
 - Config per type covers: label strings, required onboarding fields, review category labels, home visit support, sidebar items.
-- `ActiveVendorGuard` and account status (pending, active, suspended) apply to every type.
+- `ActiveVendorGuard` and account status (pending, rejected, active, suspended, banned, not a vendor) apply to every type. BR-2.5.
 - Follow the repo layers: presentation, application, domain, infrastructure. Firebase only in infrastructure or src/lib.
 
 ## Sidebar by type

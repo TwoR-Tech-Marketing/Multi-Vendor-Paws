@@ -324,7 +324,7 @@ Phase 0: setup
 | T0.8 | Events branches decision | none | 0.5 | OPEN. The Events delete guard branch and the panel branch feat/events-renotify-visibility are not merged; see track E. |
 | T0.9 | Update stale docs | WEB | 1 to 2 | DONE |
 | T0.10 | Decide and set up the test environment (emulator suite or staging project) | WEB, PANEL | 3 to 6 | TODO |
-| T0.11 | Reconcile the skills with this file | WEB | 1 to 2 | TODO |
+| T0.11 | Reconcile the skills with this file | WEB | 1 to 2 | DONE |
 | T0.12 | Flutter modernization epic (vendor first, then buyer) | BUYER, VENDOR APP | 1 to 2 | DONE |
 | T0.12a | Install and pin the approved Flutter stable via FVM | BUYER, VENDOR APP | 1 to 2 | DONE |
 | T0.12b | Migrate the vendor app to the approved Flutter | VENDOR APP | 4 to 8 | DONE |
@@ -717,37 +717,40 @@ Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commi
 
 **T0.10 Test environment.** Decide O7. Acceptance: the Firebase emulator suite (Firestore, Auth, Functions) runs for the portal and panel functions, with seed data, and the vendor and buyer apps can point to it through config. No ticket tests against production.
 
-**T0.11 Reconcile skills.** Make each skill in .cursor/skills consistent with this file, or reduce it to a pointer. If a skill and this file disagree, this file wins.
+**T0.11 Reconcile skills.** Status: DONE (2026-11-05). Make each skill in .cursor/skills consistent with this file, or reduce it to a pointer. If a skill and this file disagree, this file wins.
 
-Consistency findings from the 2026-10-29 setup run. Report only. Nothing here was edited.
-- [ ] .cursor/skills/appointments-domain/SKILL.md:18 says the BFF enforces appointment transitions. Section 1.1 and S1.10 say Cloud Functions enforce them.
-- [ ] .cursor/skills/appointments-domain/SKILL.md:28 calls the admin hold record a ticket. Section 0 and BR-9.3 call it a hold case.
-- [ ] .cursor/skills/vendor-suspension-modes/SKILL.md:14 uses ticket for the hold record, and marks clinic and groomer appointment holds as CONFIRM. BR-9.3 decided that clinics and groomers follow the same hold rule.
-- [ ] .cursor/skills/vendor-suspension-modes/SKILL.md:18 says "Ticket contents" for the hold case.
-- [ ] .cursor/skills/no-show-flow/SKILL.md:13 says the 120 minute check is enforced by the BFF and a Cloud Function. BR-6.8 and S1.11 say flagNoShow enforces it.
-- [ ] .cursor/skills/cloud-functions-rules/SKILL.md:7 lists existing functions as vendor_signup.js and vendors.js only. Section 1.1 also lists orders_split.js, service_request.js and services.js.
-- [ ] .cursor/skills/cloud-functions-rules/SKILL.md:13 says suspension handling opens an admin ticket. BR-9.3 says a hold case.
-- [ ] .cursor/skills/admin-panel-contract/SKILL.md:17 says "Admin ticket queue". A2.1 says a hold case queue.
-- [ ] .cursor/skills/vendor-type-architecture/SKILL.md:9 lists later types as trainer, walker, host. BR-1.6 lists hotel, trainer, walker, services store.
-- [ ] .cursor/skills/vendor-type-architecture/SKILL.md:13 lists account status as pending, active, suspended. BR-2.5 also includes rejected, banned and not a vendor.
-- [ ] .cursor/skills/single-release-rollout/SKILL.md:8 ends the deploy order with mobile. Section 1.3 says then apps.
-- [ ] .cursor/skills/single-release-rollout/SKILL.md:14 leaves backward compatibility or a forced update open. BR-14.1 decided that shared data changes stay additive until the forced update.
-- [ ] .cursor/skills/money-piastres/SKILL.md:7 says never store or compute float EGP. Section 1.1 says the buyer app uses float EGP today and converts at the boundary (S2.3).
-- [ ] AGENTS.md:56 lists admin order monitoring as a portal feature. BR-1.4 says admins use tinderpaws_panel, and AGENTS.md:550 says this app is vendor-only.
-- [ ] AGENTS.md:57 lists marketplace browse as a feature of this repo. BR-1.2 says buyers use the Flutter app.
-- [ ] AGENTS.md:553, AGENTS.md:658 and AGENTS.md:686 say vendor data comes only from the BFF and presentation never reads Firestore. Section 1.1 says clients read Firestore where the rules allow, the portal BFF keeps existing features, and new business rules call the shared functions.
-- [ ] APP_CONTEXT.txt:18 calls this work Phase 3. D11 says phase 3 is testing and release.
-- [ ] APP_CONTEXT.txt:56 says presentation never talks to Firestore and uses the BFF only. Same conflict as AGENTS.md:553.
-- [ ] APP_CONTEXT.txt:266 says isHalo is an admin trust badge. BR-5.1 and D4 say Halo is seller id platformVendor. BR-5.3 recommends that isHalo is no longer written or read. O1 stays open.
-- [ ] APP_CONTEXT.txt:289 says the order-split function is planned. Section 1.1 lists orders_split.js as existing.
-- [ ] docs/phase-3-foundation.md:17 says production data is a single-seller catalog, and line 18 says the live app is tinder_paws v1.0.10+15 with no vendor identity. BR-3.1 says products live in products/{id} with vendorId. Local buyer main pubspec is 1.0.16+24. T0.9 already calls this document stale.
-- [ ] docs/phase-3-foundation.md:35 shows the mobile app writing orders as the target. Section 5 says orders are created by a function after S2.11.
-- [ ] docs/phase-3-foundation.md:107 says vendorId is the owning auth uid. Section 5 and BR-5.1 say Halo uses vendorId platformVendor.
-- [ ] docs/phase-3-foundation.md:121 says isHalo is a trust badge written by the server. BR-5.1 decided Halo is the platform seller. BR-5.3 recommends the field is no longer written or read.
-- [ ] docs/phase-3-foundation.md:325 writes isHalo false in the backfill. BR-5.3 recommends the field is no longer written.
-- [ ] docs/phase-3-foundation.md:329 says the products UI is not built, and lines 330 to 332 say the products BFF returns empty arrays. T0.9 says that claim is stale.
-- [ ] docs/phase-3-foundation.md:404 to 405 leaves the delivery fee model open. BR-4.7 and D7 decided it is optional, per vendor, and set by the admin only.
-- [ ] docs/phase-3-foundation.md:406 to 408 leaves Halo as an open trust-badge policy. BR-5.1 decided Halo items are platformVendor. O1 stays open for the isHalo field only.
+Consistency findings from the 2026-10-29 setup run. Reconciled in this ticket. OPEN and CONFIRM items in the source of truth were not resolved.
+- [x] .cursor/skills/appointments-domain/SKILL.md:18 says the BFF enforces appointment transitions. Section 1.1 and S1.10 say Cloud Functions enforce them.
+  Evidence: skill now says Cloud Functions enforce transitions.
+- [x] .cursor/skills/appointments-domain/SKILL.md:28 calls the admin hold record a ticket. Section 0 and BR-9.3 call it a hold case.
+- [x] .cursor/skills/vendor-suspension-modes/SKILL.md:14 uses ticket for the hold record, and marks clinic and groomer appointment holds as CONFIRM. BR-9.3 decided that clinics and groomers follow the same hold rule.
+- [x] .cursor/skills/vendor-suspension-modes/SKILL.md:18 says "Ticket contents" for the hold case.
+- [x] .cursor/skills/no-show-flow/SKILL.md:13 says the 120 minute check is enforced by the BFF and a Cloud Function. BR-6.8 and S1.11 say flagNoShow enforces it.
+- [x] .cursor/skills/cloud-functions-rules/SKILL.md:7 lists existing functions as vendor_signup.js and vendors.js only. Section 1.1 also lists orders_split.js, service_request.js and services.js.
+- [x] .cursor/skills/cloud-functions-rules/SKILL.md:13 says suspension handling opens an admin ticket. BR-9.3 says a hold case.
+- [x] .cursor/skills/admin-panel-contract/SKILL.md:17 says "Admin ticket queue". A2.1 says a hold case queue.
+- [x] .cursor/skills/vendor-type-architecture/SKILL.md:9 lists later types as trainer, walker, host. BR-1.6 lists hotel, trainer, walker, services store.
+- [x] .cursor/skills/vendor-type-architecture/SKILL.md:13 lists account status as pending, active, suspended. BR-2.5 also includes rejected, banned and not a vendor.
+- [x] .cursor/skills/single-release-rollout/SKILL.md:8 ends the deploy order with mobile. Section 1.3 says then apps.
+- [x] .cursor/skills/single-release-rollout/SKILL.md:14 leaves backward compatibility or a forced update open. BR-14.1 decided that shared data changes stay additive until the forced update.
+- [x] .cursor/skills/money-piastres/SKILL.md:7 says never store or compute float EGP. Section 1.1 says the buyer app uses float EGP today and converts at the boundary (S2.3).
+- [x] AGENTS.md:56 lists admin order monitoring as a portal feature. BR-1.4 says admins use tinderpaws_panel, and AGENTS.md:550 says this app is vendor-only.
+- [x] AGENTS.md:57 lists marketplace browse as a feature of this repo. BR-1.2 says buyers use the Flutter app.
+- [x] AGENTS.md:553, AGENTS.md:658 and AGENTS.md:686 say vendor data comes only from the BFF and presentation never reads Firestore. Section 1.1 says clients read Firestore where the rules allow, the portal BFF keeps existing features, and new business rules call the shared functions.
+- [x] APP_CONTEXT.txt:18 calls this work Phase 3. D11 says phase 3 is testing and release.
+- [x] APP_CONTEXT.txt:56 says presentation never talks to Firestore and uses the BFF only. Same conflict as AGENTS.md:553.
+- [x] APP_CONTEXT.txt:266 says isHalo is an admin trust badge. BR-5.1 and D4 say Halo is seller id platformVendor. BR-5.3 recommends that isHalo is no longer written or read. O1 stays open.
+- [x] APP_CONTEXT.txt:289 says the order-split function is planned. Section 1.1 lists orders_split.js as existing.
+- [x] docs/phase-3-foundation.md:17 says production data is a single-seller catalog, and line 18 says the live app is tinder_paws v1.0.10+15 with no vendor identity. BR-3.1 says products live in products/{id} with vendorId. Local buyer main pubspec is 1.0.16+24. T0.9 already calls this document stale.
+- [x] docs/phase-3-foundation.md:35 shows the mobile app writing orders as the target. Section 5 says orders are created by a function after S2.11.
+- [x] docs/phase-3-foundation.md:107 says vendorId is the owning auth uid. Section 5 and BR-5.1 say Halo uses vendorId platformVendor.
+- [x] docs/phase-3-foundation.md:121 says isHalo is a trust badge written by the server. BR-5.1 decided Halo is the platform seller. BR-5.3 recommends the field is no longer written or read.
+- [x] docs/phase-3-foundation.md:325 writes isHalo false in the backfill. BR-5.3 recommends the field is no longer written.
+- [x] docs/phase-3-foundation.md:329 says the products UI is not built, and lines 330 to 332 say the products BFF returns empty arrays. T0.9 says that claim is stale.
+- [x] docs/phase-3-foundation.md:404 to 405 leaves the delivery fee model open. BR-4.7 and D7 decided it is optional, per vendor, and set by the admin only.
+- [x] docs/phase-3-foundation.md:406 to 408 leaves Halo as an open trust-badge policy. BR-5.1 decided Halo items are platformVendor. O1 stays open for the isHalo field only.
+  Evidence for the checked findings: skills under .cursor/skills (appointments-domain, vendor-suspension-modes, no-show-flow, cloud-functions-rules, admin-panel-contract, vendor-type-architecture, single-release-rollout, money-piastres, firestore-multitenant-rules deploy order). The same three claims were aligned in AGENTS.md and .cursor/rules/nextjs-senior-engineering-tenderpaws.mdc. APP_CONTEXT.txt is gitignored, so its banner and the four lines were edited on disk and are not in the commit. docs/phase-3-foundation.md was already marked superseded in T0.9, so those findings are closed by that banner. No OPEN or CONFIRM item was resolved.
+
 
 **T0.13 Reconcile the source of truth with the audit and sync dev with main.** Repos WEB, BUYER, PANEL. Est 1 to 2 h. Status: DONE.
 - [x] dev includes main (master on the panel) in WEB, BUYER and PANEL. No push.
@@ -904,3 +907,4 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - 2026-11-04: T0.12f SoT accuracy cleanup. Current buyer state: local `main` @ `647cd48` (migration commit; base `472293c`). Removed outdated “pending merge” / `main` still at `472293c` wording. Historical feature-branch path preserved. Nothing pushed.
 - 2026-11-04: Audit reconciliation (T0.13). Merged main into dev on WEB (`98fd495`, from main `b018b15` and dev `95f5601`) and BUYER (`9d4f357`, from main `647cd48` and dev `505f61f`), and master into dev on PANEL (`6aa4db5`, from master `b510dc8` and dev `5250bf3`). VENDOR APP already matched at `9c96797` and was left unchanged. Nothing pushed. Branch policy updated: main is what is shippable and shipped, dev is the project base, and D14 amends D10 for the T0.12e fast-forward of main. Repo table notes the panel default branch master, the vendor app with no remote, and Flutter 3.47.9 / Dart 3.13.7 on BUYER and VENDOR APP. Index notes for T0.6v (superseded by T0.12), T0.8 (OPEN, see track E), and T0.6p, T0.6c and T0.7 (evidence in chat reports). Added T0.13 to T0.16, Track E (EV-1 to EV-4) and S2.12. Risks updated. New tickets add about 18 to 35 hours. Flutter modernization (T0.12) is done and was outside the original estimate. Total about 550 to 765 hours.
 - 2026-11-05: T0.9 stale docs marked superseded. Banner on docs/phase-3-foundation.md. Banner on the parent planning file MULTI_VENDOR_SERVICES_PLANNING_PRICING.md, which is outside this git repo. Bodies kept. Open questions in that planning file were not resolved. Nothing pushed.
+- 2026-11-05: T0.11 skills reconciled with this file. Hold case wording, Cloud Function enforcement, vendor types, deploy order, piastres boundary, and the portal BFF scope now match. APP_CONTEXT.txt edited locally and left untracked. Nothing pushed.

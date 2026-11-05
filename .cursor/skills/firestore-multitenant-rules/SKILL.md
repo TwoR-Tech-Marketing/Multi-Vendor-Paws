@@ -16,5 +16,5 @@ description: Use when adding collections, writing firestore.rules, storage.rules
 - Users read only their own appointments. Status changes go through the server.
 - Keep mobile compatibility with the legacy collections already protected in `firestore.rules`.
 - Every new query needs its composite index in `firestore.indexes.json`.
-- Deploy order: indexes, rules, functions, then mobile.
+- Deploy order: indexes, rules, functions, then apps. Section 1.3.
 - Test rules before any deploy.
