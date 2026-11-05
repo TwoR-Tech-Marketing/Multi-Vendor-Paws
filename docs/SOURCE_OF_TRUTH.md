@@ -1,7 +1,7 @@
 # Tender Paws Multi-Vendor: Source of Truth
 
 Location: docs/SOURCE_OF_TRUTH.md in Multi-Vendor-Paws (authoritative path). Local branch after T0.12e: `main`.
-Created: 2026-10-28. Last updated: 2026-11-04.
+Created: 2026-10-28. Last updated: 2026-11-05.
 
 Contents: 0 How this file works, 1 Architecture, 2 Glossary, 3 Business requirements, 4 Decisions log, 5 Data contracts, 6 Endpoint registry, 7 Tickets, 8 Risks and known issues, 9 Changelog.
 
@@ -71,13 +71,14 @@ All are siblings under /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws
 | Key | Folder | What it is | Default access |
 |---|---|---|---|
 | WEB (home) | Multi-Vendor-Paws | Next.js vendor web portal. Holds this file, contracts and the parity table | Editable |
-| BUYER | tinder_paws | Flutter buyer mobile app | Read only unless the ticket says so. Never switch branches or stash there |
-| PANEL | tinderpaws_panel | Flutter web admin panel plus Cloud Functions (functions/) | Read only unless the ticket says so |
-| VENDOR APP | tender_paws_partner | Flutter vendor mobile app (base from T0.6) | Editable once created |
+| BUYER | tinder_paws | Flutter buyer mobile app. Flutter 3.47.9 and Dart 3.13.7 | Read only unless the ticket says so. Never switch branches or stash there |
+| PANEL | tinderpaws_panel | Flutter web admin panel plus Cloud Functions (functions/). Default branch is master, not main | Read only unless the ticket says so |
+| VENDOR APP | tender_paws_partner | Flutter vendor mobile app (base from T0.6). Exists at tender_paws_partner with no remote. Branches main and dev at 9c96797. Flutter 3.47.9 and Dart 3.13.7 | Editable |
 
 ### 1.3 Branching and release
 
-- main is production. Never commit to main, never push main. dev is the base for this whole project. Feature branches are feature/<ticket>-<slug>, created from dev and merged into dev. dev merges into main only when every Phase 1 to 3 ticket is DONE and signed off.
+- main is what is shippable and shipped: store releases, Shorebird patches and the Flutter 3.47.9 upgrade (done as its own release track, T0.12). dev is the base for the multi-vendor project in every repo. Feature branches are feature/<ticket>-<slug> from dev and merge into dev. Merge main into dev regularly and log it in the changelog. dev merges into main only when the multi-vendor release is signed off.
+- Note: ticket T0.12e fast-forwarded main in WEB, BUYER and VENDOR APP on purpose; this replaced the earlier rule never to commit to main for that work. Decision D10 is amended accordingly (D14).
 - main keeps receiving unrelated patches (store releases, Shorebird). Merge main into dev regularly and log it in the changelog.
 - Old installed app versions keep working until the release. Every change to shared data is additive until the forced update (BR-14).
 - Deploy order: indexes, rules, functions, then apps. Nothing is deployed unless a ticket says so.
@@ -224,6 +225,7 @@ Decided
 | D11 | 2026-10 | Phases: 0 setup, 1 portal and vendor app together, 2 buyer app and admin panel, 3 testing and release. |
 | D12 | 2026-10 | The vendor app mirrors tinder_paws structure, including the user repository with a stream. It is built first as a base, then authentication. |
 | D13 | 2026-10 | The buyer location comes from the device location service. |
+| D14 | 2026-11-04 | D10 amended. main is what is shippable and shipped (store releases, Shorebird patches, and the Flutter 3.47.9 upgrade on its own track, T0.12). dev is the base for the multi-vendor project in every repo. Feature branches are feature/<ticket>-<slug> from dev and merge into dev. Merge main into dev regularly and log it. dev merges into main only when the multi-vendor release is signed off. T0.12e fast-forwarded main in WEB, BUYER and VENDOR APP on purpose, which replaced the earlier rule never to commit to main for that work. |
 
 Open, with a recommendation where one exists
 
@@ -297,7 +299,7 @@ Existing in tinderpaws_panel/functions: vendor_signup-reviewVendorSignupRequest,
 
 ## 7. Tickets
 
-Estimates are focused hours for one developer using Cursor, roughly plus or minus 35 percent. Total about 530 to 730 hours. The vendor app is about a quarter. Telehealth and the unspecified services are not included.
+Estimates are focused hours for one developer using Cursor, roughly plus or minus 35 percent. The new tickets above add about 18 to 35 hours (T0.13 to T0.16, track E, S2.12). The Flutter modernization (T0.12) is done and was not in the original estimate. Total about 550 to 765 hours. The vendor app is about a quarter. Telehealth and the unspecified services are not included.
 
 ### Index
 
@@ -312,14 +314,14 @@ Phase 0: setup
 | T0.3 | Domain skills in the portal | WEB | 2 | DONE |
 | T0.4 | Close the open business questions with the owner | none | 4 to 6 | WAITING |
 | T0.5 | Lock the data contracts (section 5) and endpoint shapes (section 6) | WEB | 8 to 10 | TODO |
-| T0.6p | Preflight check | read only | 1 | DONE |
-| T0.6v | Setup verification before the base app | read only | 0.5 | DONE |
-| T0.6c | Alignment and readiness check | read only | 1 | DONE (first run) |
+| T0.6p | Preflight check | read only | 1 | DONE. Evidence is in chat reports, not in commits. |
+| T0.6v | Setup verification before the base app | read only | 0.5 | DONE. Superseded by T0.12 (pin 3.47.9). |
+| T0.6c | Alignment and readiness check | read only | 1 | DONE (first run). Evidence is in chat reports, not in commits. |
 | T0.6 | Create the vendor app base | VENDOR APP | 5 to 8 | DONE |
 | T0.6f | Vendor app base polish | VENDOR APP | 1 to 2 | DONE |
 | T0.6b | Vendor user repository, authentication, route gates, login screens | VENDOR APP | 5 to 6 | TODO |
-| T0.7 | Buyer app location and catalog report | read only | 1 | DONE |
-| T0.8 | Events branches decision | none | 0.5 | Likely resolved |
+| T0.7 | Buyer app location and catalog report | read only | 1 | DONE. Evidence is in chat reports, not in commits. |
+| T0.8 | Events branches decision | none | 0.5 | OPEN. The Events delete guard branch and the panel branch feat/events-renotify-visibility are not merged; see track E. |
 | T0.9 | Update stale docs | WEB | 1 to 2 | TODO |
 | T0.10 | Decide and set up the test environment (emulator suite or staging project) | WEB, PANEL | 3 to 6 | TODO |
 | T0.11 | Reconcile the skills with this file | WEB | 1 to 2 | TODO |
@@ -330,6 +332,10 @@ Phase 0: setup
 | T0.12d | Align Flutter or Dart pins, CI and cross-app regression | BUYER, VENDOR APP, WEB | 3 to 5 | DONE |
 | T0.12e | Consolidate Flutter modernization onto local main | BUYER, VENDOR APP, WEB | 1 to 2 | DONE |
 | T0.12f | Source of Truth accuracy cleanup after consolidation | WEB | 0.5 | DONE |
+| T0.13 | Reconcile the source of truth with the audit and sync dev with main | WEB, BUYER, PANEL | 1 to 2 | DONE |
+| T0.14 | Rules inventory and single source | WEB, BUYER, PANEL | 4 to 8 | TODO |
+| T0.15 | Portal test and lint baseline | WEB | 3 to 6 | TODO |
+| T0.16 | Backups | WEB, BUYER, PANEL, VENDOR APP | 1 to 2 | TODO |
 
 Phase 1: portal and vendor app together (every ticket is done in both)
 
@@ -364,6 +370,7 @@ Phase 2: buyer app and admin panel
 | S2.9 | Old version compatibility | BUYER | 6 to 8 | TODO |
 | S2.10 | Subscription plans through Apple in-app purchase | BUYER | 20 to 30 | TODO |
 | S2.11 | Server-side order creation and rules hardening | BUYER, PANEL | 25 to 40 | TODO |
+| S2.12 | Remove secret prints in the buyer app (the payment token prefix printed in main.dart) | BUYER | 1 | TODO |
 | A2.1 | Suspension modes and hold case queue | PANEL | 14 to 20 | TODO |
 | A2.2 | Per vendor delivery fee, admin only | PANEL | 5 to 7 | TODO |
 | A2.3 | Halo stamping and management | PANEL | 5 to 7 | TODO |
@@ -738,6 +745,32 @@ Consistency findings from the 2026-10-29 setup run. Report only. Nothing here wa
 - [ ] docs/phase-3-foundation.md:404 to 405 leaves the delivery fee model open. BR-4.7 and D7 decided it is optional, per vendor, and set by the admin only.
 - [ ] docs/phase-3-foundation.md:406 to 408 leaves Halo as an open trust-badge policy. BR-5.1 decided Halo items are platformVendor. O1 stays open for the isHalo field only.
 
+**T0.13 Reconcile the source of truth with the audit and sync dev with main.** Repos WEB, BUYER, PANEL. Est 1 to 2 h. Status: DONE.
+- [x] dev includes main (master on the panel) in WEB, BUYER and PANEL. No push.
+  Evidence: clean trees before the merge. WEB dev merge `98fd495` (main `b018b15` into dev `95f5601`). BUYER dev merge `9d4f357` (main `647cd48` into dev `505f61f`), then checkout back to main. PANEL dev merge `6aa4db5` (master `b510dc8` into dev `5250bf3`), then checkout back to master. VENDOR APP unchanged: main and dev both `9c96797`.
+- [x] This file matches the audit notes in sections 1.2, 1.3, 4 (D14), 7, 8 and 9.
+  Evidence: the edits in this ticket, committed on WEB dev.
+
+**T0.14 Rules inventory and single source.** Repos WEB, BUYER, PANEL. Est 4 to 8 h. Status: TODO. Acceptance:
+- [ ] List every Firestore and Storage rules file and index file in all repos.
+- [ ] The owner exports the live deployed rules from the Firebase console and the file compares them.
+- [ ] Choose one canonical location.
+- [ ] The canonical file contains every collection in use (events, products, orders, vendors, store, promo codes and the rest).
+- [ ] Document the deploy command.
+- [ ] No agent deploys.
+  Note: the portal rules copy lacks the events block, so deploying it would remove the events rules.
+
+**T0.15 Portal test and lint baseline.** Repo WEB. Est 3 to 6 h. Status: TODO. Acceptance:
+- [ ] Fix the 19 lint errors (react-hooks/set-state-in-effect and others).
+- [ ] Add a test runner (Vitest) with first tests for session and products validation.
+- [ ] A documented test command.
+- [ ] tsc stays clean.
+
+**T0.16 Backups.** Repos WEB, BUYER, PANEL, VENDOR APP. Est 1 to 2 h. Status: TODO. Acceptance:
+- [ ] A remote exists for the vendor app.
+- [ ] dev and feature branches are pushed to their remotes.
+- [ ] Pushing main or master is a deliberate separate decision, because Codemagic builds on a push to main in the buyer app.
+
 ### Phase 1 details
 
 All Phase 1 tickets: change the portal and the vendor app in the same ticket, from one contract file, with the same rules, states and strings. Update docs/parity.md.
@@ -801,11 +834,25 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 
 **S2.11 Server-side orders and rules hardening.** Acceptance: createOrder validates eligibility, fees and coupons; after the forced update the rules deny client order creation; live rules verified in the console (BR-15).
 
+**S2.12 Remove secret prints in the buyer app.** Est 1 h. The payment token prefix printed in main.dart. Status: TODO.
+
 **A2.1 to A2.7.** Acceptance follows the titles: suspension modes with a hold case queue (A2.1); admin-only delivery fee in vendorAdminSettings (A2.2); Halo stamping with platformVendor (A2.3); governorate list management and migration (A2.4); provider approval, deals, review moderation, coupons and refunds (A2.5); timers, balances and points functions (A2.6); the hardcoded push token removed and rotated (A2.7).
 
 ### Phase 3 details
 
 **T3.1 to T3.6.** Integration testing of all clients against the emulator and a production copy, migration rehearsal, old-version tests, bug-fix buffer, store submissions with Apple review time, then the merge of dev into main only after sign-off.
+
+### Track E: Events hardening
+
+Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
+
+**EV-1 Events device and console verification.** Est 2 to 3 h. Acceptance: create an event, import a sheet, claim a ticket, watch the QR rotate, check in by scan and by manual lookup, confirm a double check-in fails, confirm an old screenshot fails, and confirm in the Firebase console that the events functions and rules are the deployed ones.
+
+**EV-2 Merge the delete guard and align the rules.** Est 2 to 4 h. Acceptance: branch feat/events-checked-in-delete-guard is merged in the buyer app, the buyer rules and the panel rules tests agree, and the events rules exist in the canonical rules file (T0.14).
+
+**EV-3 QR replay window.** Est 2 to 4 h. Acceptance: decide the window and skew (today a 30 second window with a skew of 2, so a screenshot can work for a minute or two until the first successful scan); apply the decision; tests updated.
+
+**EV-4 Attendee matching.** Est 2 to 5 h. Acceptance: decide email only or email then phone (the import code matches by email only; the earlier design said phone as backup); implement the decision with tests.
 
 ---
 
@@ -823,7 +870,15 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 - docs/phase-3-foundation.md is stale. The old planning document conflicts with this file.
 - There is one production Firebase project and no staging project.
 - main keeps changing with store releases while dev is built.
-- The preflight found: unpushed commits on the portal main (8) and panel master (16), three unpushed buyer-app branches, a broken firebase CLI, unaccepted Android licenses.
+- Unpushed local work: WEB 21 commits, BUYER 33, PANEL 19 (default branches), the vendor app has no remote, and several local-only buyer branches.
+- Firestore rules exist in several repos and the portal copy lacks the events block.
+- The portal has no tests and 19 lint errors.
+- Codemagic builds on a push to main in the buyer app.
+- The Events delete guard is not on buyer main while the panel tests expect it.
+- The QR is valid for a minute or two before the first scan.
+- The buyer app prints a payment token prefix at startup.
+- The hardcoded push token is still in functions/services.js.
+- The Events attendee import matches by email only.
 
 ---
 
@@ -843,3 +898,4 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 - 2026-11-04: T0.12c accepted after post-migration native toolchain audit (AGP/Gradle/Kotlin REQUIRED at Flutter error floors). T0.12d final alignment DONE: vendor `9c96797` and buyer `647cd48` both Flutter 3.47.9 / Dart 3.13.7; Codemagic both 3.47.9; vendor analyze clean + 21 tests + Android/iOS debug OK; buyer 0 errors / 59 warnings / 229 infos + 69 tests + Android/iOS debug OK. Intentional native toolchain differences retained. No app code changes. No device smoke. No production Crashlytics rates. Nothing pushed. Epic T0.12 marked DONE.
 - 2026-11-04: T0.12e local consolidation DONE. Fast-forward only onto local `main` for vendor (`9c96797`), buyer (`647cd48`), and portal (`95f5601`). Feature/`dev` branches preserved. Buyer product history retained (33 ahead of `origin/main` locally). Nothing pushed.
 - 2026-11-04: T0.12f SoT accuracy cleanup. Current buyer state: local `main` @ `647cd48` (migration commit; base `472293c`). Removed outdated “pending merge” / `main` still at `472293c` wording. Historical feature-branch path preserved. Nothing pushed.
+- 2026-11-04: Audit reconciliation (T0.13). Merged main into dev on WEB (`98fd495`, from main `b018b15` and dev `95f5601`) and BUYER (`9d4f357`, from main `647cd48` and dev `505f61f`), and master into dev on PANEL (`6aa4db5`, from master `b510dc8` and dev `5250bf3`). VENDOR APP already matched at `9c96797` and was left unchanged. Nothing pushed. Branch policy updated: main is what is shippable and shipped, dev is the project base, and D14 amends D10 for the T0.12e fast-forward of main. Repo table notes the panel default branch master, the vendor app with no remote, and Flutter 3.47.9 / Dart 3.13.7 on BUYER and VENDOR APP. Index notes for T0.6v (superseded by T0.12), T0.8 (OPEN, see track E), and T0.6p, T0.6c and T0.7 (evidence in chat reports). Added T0.13 to T0.16, Track E (EV-1 to EV-4) and S2.12. Risks updated. New tickets add about 18 to 35 hours. Flutter modernization (T0.12) is done and was outside the original estimate. Total about 550 to 765 hours.
