@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { submitVendorProfileChangeFromApi } from "@/features/vendor/application/vendor-profile.api";
 import type {
@@ -70,12 +70,14 @@ export function ProfileStoreForm({
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
+  const [formSource, setFormSource] = useState({ profile, pendingId: pendingChange?.id });
+  if (formSource.profile !== profile || formSource.pendingId !== pendingChange?.id) {
+    setFormSource({ profile, pendingId: pendingChange?.id });
     setForm(buildFormState(profile));
     setLogoPreview(profile.logoUrl);
     setLogoFile(null);
     setIsEditing(false);
-  }, [profile, pendingChange?.id]);
+  }
 
   const isPending = pendingChange != null;
   const fieldsDisabled = disabled || isPending || !isEditing || isSubmitting;

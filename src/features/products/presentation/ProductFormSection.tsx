@@ -131,7 +131,10 @@ export function ProductFormSection({ mode, productId }: ProductFormSectionProps)
   }, [mode, productId, strings.products.loadError]);
 
   useEffect(() => {
-    void loadForm();
+    const timer = window.setTimeout(() => {
+      void loadForm();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadForm]);
 
   function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {

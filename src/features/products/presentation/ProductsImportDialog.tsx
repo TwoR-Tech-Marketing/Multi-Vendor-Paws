@@ -58,11 +58,25 @@ export function ProductsImportDialog({
     }
   }, []);
 
-  useEffect(() => {
+  const [seenOpen, setSeenOpen] = useState(open);
+  if (seenOpen !== open) {
+    setSeenOpen(open);
     if (!open) {
-      resetState();
+      setStep("upload");
+      setIsParsing(false);
+      setIsImporting(false);
+      setFileError(null);
+      setImportError(null);
+      setRows([]);
+      setResult(null);
     }
-  }, [open, resetState]);
+  }
+
+  useEffect(() => {
+    if (!open && fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;

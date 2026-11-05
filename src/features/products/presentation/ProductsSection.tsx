@@ -86,7 +86,10 @@ export function ProductsSection() {
   ]);
 
   useEffect(() => {
-    void loadCategories();
+    const timer = window.setTimeout(() => {
+      void loadCategories();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadCategories]);
 
   useEffect(() => {
@@ -95,7 +98,10 @@ export function ProductsSection() {
   }, [searchInput]);
 
   useEffect(() => {
-    void loadProducts();
+    const timer = window.setTimeout(() => {
+      void loadProducts();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadProducts]);
 
   const isFiltered =

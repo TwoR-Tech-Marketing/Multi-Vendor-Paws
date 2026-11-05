@@ -26,10 +26,11 @@ export function PortalShell({ children }: PortalShellProps) {
 
   const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
   const openDrawer = useCallback(() => setIsDrawerOpen(true), []);
-
-  useEffect(() => {
-    closeDrawer();
-  }, [pathname, closeDrawer]);
+  const [drawerPath, setDrawerPath] = useState(pathname);
+  if (drawerPath !== pathname) {
+    setDrawerPath(pathname);
+    setIsDrawerOpen(false);
+  }
 
   useEffect(() => {
     document.body.style.overflow = isDrawerOpen ? "hidden" : "";

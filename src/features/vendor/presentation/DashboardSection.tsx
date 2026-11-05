@@ -35,7 +35,10 @@ export function DashboardSection() {
   }, [strings.dashboard.loadError]);
 
   useEffect(() => {
-    void loadStats();
+    const timer = window.setTimeout(() => {
+      void loadStats();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadStats]);
 
   if (isLoading) return <DashboardSkeleton />;

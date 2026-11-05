@@ -44,7 +44,10 @@ export function EarningsSection() {
   }, [strings.earnings.loadError]);
 
   useEffect(() => {
-    void loadEarnings();
+    const timer = window.setTimeout(() => {
+      void loadEarnings();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadEarnings]);
 
   if (isLoading) return <EarningsSkeleton />;

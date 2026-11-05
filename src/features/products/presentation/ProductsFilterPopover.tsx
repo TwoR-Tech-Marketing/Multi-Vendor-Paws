@@ -35,11 +35,14 @@ export function ProductsFilterPopover({
 }: ProductsFilterPopoverProps) {
   const strings = useStrings();
   const [draft, setDraft] = useState<ProductListFilters>(appliedFilters);
+  const [draftSource, setDraftSource] = useState({ open, appliedFilters });
+  if (open && (draftSource.open !== open || draftSource.appliedFilters !== appliedFilters)) {
+    setDraftSource({ open, appliedFilters });
+    setDraft(appliedFilters);
+  } else if (!open && draftSource.open) {
+    setDraftSource({ open, appliedFilters });
+  }
   const popoverLayout = useAnchoredPopoverLayout(open, anchorRef, { maxWidthPx: 360 });
-
-  useEffect(() => {
-    if (open) setDraft(appliedFilters);
-  }, [open, appliedFilters]);
 
   useEffect(() => {
     if (!open) return;

@@ -57,7 +57,10 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
   }, [vendorOrderId, strings.orders.loadError]);
 
   useEffect(() => {
-    void loadOrder();
+    const timer = window.setTimeout(() => {
+      void loadOrder();
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [loadOrder]);
 
   const statusOptions = useMemo(

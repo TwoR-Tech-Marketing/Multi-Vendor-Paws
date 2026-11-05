@@ -19,7 +19,7 @@ export function useAnchoredPopoverLayout(
 
   useLayoutEffect(() => {
     if (!open) {
-      setLayout({});
+      queueMicrotask(() => setLayout({}));
       return;
     }
 
@@ -68,7 +68,7 @@ export function useAnchoredPopoverLayout(
       }
     };
 
-    compute();
+    queueMicrotask(compute);
     window.addEventListener("resize", compute);
     window.addEventListener("scroll", compute, true);
     return () => {
