@@ -322,7 +322,7 @@ Phase 0: setup
 | T0.6b | Vendor user repository, authentication, route gates, login screens | VENDOR APP | 5 to 6 | TODO |
 | T0.7 | Buyer app location and catalog report | read only | 1 | DONE. Evidence is in chat reports, not in commits. |
 | T0.8 | Events branches decision | none | 0.5 | OPEN. The Events delete guard branch and the panel branch feat/events-renotify-visibility are not merged; see track E. |
-| T0.9 | Update stale docs | WEB | 1 to 2 | TODO |
+| T0.9 | Update stale docs | WEB | 1 to 2 | DONE |
 | T0.10 | Decide and set up the test environment (emulator suite or staging project) | WEB, PANEL | 3 to 6 | TODO |
 | T0.11 | Reconcile the skills with this file | WEB | 1 to 2 | TODO |
 | T0.12 | Flutter modernization epic (vendor first, then buyer) | BUYER, VENDOR APP | 1 to 2 | DONE |
@@ -709,7 +709,11 @@ Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commi
 - [ ] Splash, login, forgot password and account status screens, logout with confirmation.
 - [ ] Tests for the repository, bloc, redirects and screens.
 
-**T0.9 Stale docs.** docs/phase-3-foundation.md says the mobile app is 1.0.10+15 and the portal products API is unbuilt. The old planning document disagrees with this file. Mark them superseded or update them.
+**T0.9 Stale docs.** Status: DONE (2026-11-05). docs/phase-3-foundation.md said the mobile app is 1.0.10+15 and the portal products API is unbuilt. The old planning document disagrees with this file. Both are marked superseded. Their bodies are kept as history.
+- [x] docs/phase-3-foundation.md is marked superseded by this file.
+  Evidence: banner at the top of docs/phase-3-foundation.md. Buyer pubspec on local main is 1.0.16+24 (`tinder_paws/pubspec.yaml`). Products routes are implemented in `src/app/api/vendor/products/route.ts` and `src/app/api/vendor/products/[productId]/route.ts`, not empty-array stubs.
+- [x] The old planning document is marked superseded by this file.
+  Evidence: banner at the top of `../MULTI_VENDOR_SERVICES_PLANNING_PRICING.md` (parent folder, not a git repo). It still mentions an admin mobile app and clinic tax and license documents. Those stay [CONFIRM] and [OPEN] here (BR-1.5, BR-2.4, O6). Nothing in that file was rewritten.
 
 **T0.10 Test environment.** Decide O7. Acceptance: the Firebase emulator suite (Firestore, Auth, Functions) runs for the portal and panel functions, with seed data, and the vendor and buyer apps can point to it through config. No ticket tests against production.
 
@@ -867,7 +871,7 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - A permanent suspend disables the Auth user, so the vendor cannot see why.
 - Subscription plans are charged through Fawaterak, which conflicts with Apple's in-app purchase rule for digital subscriptions.
 - A hardcoded device push token sits in tinderpaws_panel/functions/services.js.
-- docs/phase-3-foundation.md is stale. The old planning document conflicts with this file.
+- docs/phase-3-foundation.md and the old planning document (../MULTI_VENDOR_SERVICES_PLANNING_PRICING.md) are marked superseded by this file (T0.9). Their old claims are not current.
 - There is one production Firebase project and no staging project.
 - main keeps changing with store releases while dev is built.
 - Unpushed local work: WEB 21 commits, BUYER 33, PANEL 19 (default branches), the vendor app has no remote, and several local-only buyer branches.
@@ -899,3 +903,4 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - 2026-11-04: T0.12e local consolidation DONE. Fast-forward only onto local `main` for vendor (`9c96797`), buyer (`647cd48`), and portal (`95f5601`). Feature/`dev` branches preserved. Buyer product history retained (33 ahead of `origin/main` locally). Nothing pushed.
 - 2026-11-04: T0.12f SoT accuracy cleanup. Current buyer state: local `main` @ `647cd48` (migration commit; base `472293c`). Removed outdated “pending merge” / `main` still at `472293c` wording. Historical feature-branch path preserved. Nothing pushed.
 - 2026-11-04: Audit reconciliation (T0.13). Merged main into dev on WEB (`98fd495`, from main `b018b15` and dev `95f5601`) and BUYER (`9d4f357`, from main `647cd48` and dev `505f61f`), and master into dev on PANEL (`6aa4db5`, from master `b510dc8` and dev `5250bf3`). VENDOR APP already matched at `9c96797` and was left unchanged. Nothing pushed. Branch policy updated: main is what is shippable and shipped, dev is the project base, and D14 amends D10 for the T0.12e fast-forward of main. Repo table notes the panel default branch master, the vendor app with no remote, and Flutter 3.47.9 / Dart 3.13.7 on BUYER and VENDOR APP. Index notes for T0.6v (superseded by T0.12), T0.8 (OPEN, see track E), and T0.6p, T0.6c and T0.7 (evidence in chat reports). Added T0.13 to T0.16, Track E (EV-1 to EV-4) and S2.12. Risks updated. New tickets add about 18 to 35 hours. Flutter modernization (T0.12) is done and was outside the original estimate. Total about 550 to 765 hours.
+- 2026-11-05: T0.9 stale docs marked superseded. Banner on docs/phase-3-foundation.md. Banner on the parent planning file MULTI_VENDOR_SERVICES_PLANNING_PRICING.md, which is outside this git repo. Bodies kept. Open questions in that planning file were not resolved. Nothing pushed.
