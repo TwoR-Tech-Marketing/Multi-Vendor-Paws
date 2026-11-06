@@ -401,7 +401,7 @@ Phase 0: setup
 | T0.12e | Consolidate Flutter modernization onto local main | BUYER, VENDOR APP, WEB | 1 to 2 | DONE |
 | T0.12f | Source of Truth accuracy cleanup after consolidation | WEB | 0.5 | DONE |
 | T0.13 | Reconcile the source of truth with the audit and sync dev with main | WEB, BUYER, PANEL | 1 to 2 | DONE |
-| T0.14 | Rules inventory and single source | WEB, BUYER, PANEL | 4 to 8 | TODO |
+| T0.14 | Rules inventory and single source | WEB, BUYER, PANEL | 4 to 8 | BLOCKED (waiting for live exports) |
 | T0.15 | Portal test and lint baseline | WEB | 3 to 6 | DONE |
 | T0.16 | Backups | WEB, BUYER, PANEL, VENDOR APP | 1 to 2 | DONE. Vendor app remote PENDING |
 | T0.17 | Register the vendor app in Firebase, Apple and Google Play | VENDOR APP | 1 to 2 rough | TODO |
@@ -843,14 +843,30 @@ Consistency findings from the 2026-10-29 setup run. Reconciled in this ticket. O
 - [x] This file matches the audit notes in sections 1.2, 1.3, 4 (D14), 7, 8 and 9.
   Evidence: the edits in this ticket, committed on WEB dev.
 
-**T0.14 Rules inventory and single source.** Repos WEB, BUYER, PANEL. Est 4 to 8 h. Status: TODO. Acceptance:
-- [ ] List every Firestore and Storage rules file and index file in all repos.
-- [ ] The owner exports the live deployed rules from the Firebase console and the file compares them.
-- [ ] Choose one canonical location.
-- [ ] The canonical file contains every collection in use (events, products, orders, vendors, store, promo codes and the rest).
-- [ ] Document the deploy command.
-- [ ] No agent deploys.
-  Note: the portal rules copy lacks the events block, so deploying it would remove the events rules.
+**T0.14 Rules inventory and single source.** Repos WEB, BUYER, PANEL. Est 4 to 8 h. Status: BLOCKED (2026-11-06). GATE A: both live exports are missing (`~/Downloads/firestore.rules.live` and `~/Downloads/storage.rules.live`). Inventory recorded. Diff against live and the canonical choice wait for the exports.
+- [x] List every Firestore and Storage rules file and index file in all repos (re-verified 2026-11-06).
+
+  | Path | Lines | sha256 (first 12) | Notes |
+  |---|---|---|---|
+  | WEB `firestore.rules` | 341 | 481c5f534c2f | No `match /events`. State report Part F |
+  | WEB `storage.rules` | 51 | 618f5f4e8b04 | Vendor-scoped plus open legacy paths |
+  | WEB `firestore.indexes.json` | 426 | abde2f894786 | Larger index set |
+  | BUYER `firestore.rules` | 465 | fc9da55f8446 | Has `match /events` at line 397 |
+  | BUYER `storage.rules` | 12 | 225dd131c751 | Signed-in write under 50MB, all paths |
+  | BUYER `firestore.indexes.json` | 119 | 6adfe851fe27 | Smaller index set |
+  | PANEL `emulator-rules/firestore.rules` (on PANEL `dev`) | 465 | fc9da55f8446 | Byte match of BUYER firestore.rules (T0.10 copy) |
+  | PANEL `emulator-rules/storage.rules` (on PANEL `dev`) | 12 | 225dd131c751 | Byte match of BUYER storage.rules |
+  | PANEL `emulator-rules/firestore.indexes.json` (on PANEL `dev`) | 119 | 6adfe851fe27 | Byte match of BUYER indexes |
+  | PANEL `database.rules.json` | 5 | 7df49e5459b9 | Realtime Database only. Not Firestore |
+  | VENDOR APP | none | | No firebase.json or project rules. Sample rules under build/ios SourcePackages are FlutterFire examples, not project rules |
+
+  Known repo-to-repo differences (state report Part F, re-checked): BUYER Firestore has events; WEB does not. Storage models differ. Indexes differ. Deploying WEB Firestore would drop events.
+- [ ] The owner exports the live deployed rules. Waiting for `~/Downloads/firestore.rules.live` and `~/Downloads/storage.rules.live`.
+- [ ] Diff live against every repo copy, per collection and path.
+- [ ] Choose one canonical location (GATE B after the exports exist).
+- [ ] The canonical file contains every collection in use.
+- [ ] Document the deploy command (do not run it).
+- [x] No agent deploys.
 
 **T0.15 Portal test and lint baseline.** Repo WEB. Est 3 to 6 h. Status: DONE (2026-11-05). Acceptance:
 - [x] Fix the 19 lint errors (react-hooks/set-state-in-effect and others).
@@ -1027,3 +1043,4 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - 2026-11-06: BM-1 reconciles the business model with the 2026-11-06 state report and the services spec. D15, D16, D17 and D19 recorded. Section 3A adds AB-1 to AB-17. BR-6.12, BR-7.5 and BR-12.5 added. O19 to O24 added. T0.16 marked DONE with remote tips, and the vendor app remote left PENDING. T0.17, PC-1, PC-2 and PC-3 added. S2.12 widened. docs/parity.md and docs/contracts/README.md added. Workspace rule aligned with D14 and D19.
 - 2026-11-06: S2.12 buyer secret-print removal on `fix/S2.12-remove-secret-prints` at `c1d2898`. Analyze 0 errors / 59 warnings. 69 tests passed. Hardcoded Fawaterak tokens and the Google Maps key left for a rotation ticket. Branch not merged into main or buyer dev.
 - 2026-11-06: T0.10 emulator suite. D18 closes O7. PANEL `demo-tenderpaws` emulators, seed, suspend smoke test (`npm run test:emu` exit 0). Rules from buyer copy under `emulator-rules/` until T0.14. docs/emulator.md added.
+- 2026-11-06: T0.14 GATE A. Live rules exports missing. Repo inventory written under the ticket. Status BLOCKED until the exports exist.
