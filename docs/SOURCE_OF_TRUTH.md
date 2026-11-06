@@ -314,21 +314,26 @@ Open, with a recommendation where one exists
 
 ## 5. Data contracts
 
-Every shape here is a proposal [CONFIRM] until ticket T0.5 locks it. Field names are snake_case in Firestore unless the existing collection already uses another style. Money is integer piastres.
+Locked by T0.5 (2026-11-06). Canonical files: docs/contracts/*.md. Money is integer piastres. Field names follow what the code already stores (state report Part E) unless a ticket below changes them. Existing collections often use camelCase on vendor docs and mixed snake_case on users.
 
-- vendors/{uid} (existing): add vendorType (store, clinic, groomer, default store), suspension { mode (hidden, view_only), reason, at, expiresAt }, deliveryCoverage { mode (zone, governorates), zone { lat, lng, radiusMeters }, governorateIds[] }. Existing fields stay (status, approvalStatus, store profile, restrictions).
-- vendor_signup_requests/{id} (existing): status pending, approved, rejected.
-- vendorAdminSettings/{vendorId} (new, admin and functions only, never readable by the vendor): deliveryFeePiastres.
-- vendorDeals/{vendorId} (new, readable by the vendor, written by admin functions): type, subscription amounts and dates, percentage, grace period, payment status.
-- governorates/{id} (existing collection): add nameEn, nameAr, code. The document id is the stable id. category_governorates keeps pointing at ids.
-- products/{id} (existing): unchanged shape. Halo is vendorId platformVendor.
-- orders and vendorOrders (existing): add deliveryFeePiastres, governorateId, holdState, and piastres amounts. Orders are created by a function after S2.11.
-- vendors/{id}/branches/{branchId} (new): name, address, location, phone, services[], availability, homeVisit.
-- appointments/{id} (new): vendorId, branchId, userUid, serviceIds, totalPiastres, status, statusHistory[{status, at, byUid, byRole, note}], times in UTC.
-- appointmentReviews/{id} (new): appointmentId, ratings (3), tags, createdAt.
-- pointsLedger/{id} (new, append only): userUid, delta, reason, refId.
-- holdCases/{id} (new, admin): vendorId, mode, orderIds[], appointmentIds[], status, createdAt.
-- earnings ledger (existing): sale, refund, adjustment, payout entries.
+Summary (details in the contract files):
+
+- vendors/{uid}: locked live fields in docs/contracts/vendors.md. Proposed additions vendorType, suspension.mode, deliveryCoverage stay proposed until S1.2 / S1.3. suspension.mode Auth behavior blocked by O5.
+- vendor_signup_requests/{id}: status pending, approved, rejected. docs/contracts/signup.md.
+- vendorAdminSettings/{vendorId} (new): deliveryFeePiastres. Admin and functions only. Introduced with A2.2.
+- vendorDeals/{vendorId} (new): deal fields. Relation to commissionConfig blocked by O19.
+- governorates/{id}: id is stable. name live. nameEn, nameAr in S1.2. O16 blocks official list. docs/contracts/governorates.md.
+- products/{id}: docs/contracts/products.md. Halo is vendorId platformVendor.
+- orders and vendorOrders: docs/contracts/orders.md. createOrder after S2.11.
+- vendors/{id}/branches/{branchId} (new): S1.8. Not locked beyond the BR-6.2 field list.
+- appointments/{id} (new): S1.10. Status list decided. Transitions remain [CONFIRM] under BR-6.7 until S1.10.
+- appointmentReviews/{id} (new): S2.7 / S1.12. Groomer tags blocked by O14.
+- pointsLedger/{id} (new): S2.6. Base and expiry blocked by O13.
+- holdCases/{id} (new): docs/contracts/suspension-holds.md. Resolution blocked by O10.
+- earnings ledger: docs/contracts/earnings.md.
+- Session: docs/contracts/vendor-session.md (vendor_session-resolveVendorSession).
+
+Remaining [CONFIRM] outside contracts: BR-1.5 admin mobile app (O6). BR-6.7 appointment transitions (S1.10).
 
 ---
 
@@ -338,6 +343,7 @@ Existing in tinderpaws_panel/functions: vendor_signup-reviewVendorSignupRequest,
 
 | Name | Caller | Purpose | Ticket | Status |
 |---|---|---|---|---|
+| vendor_session-resolveVendorSession | Vendor portal and vendor app | Port of resolve-vendor-session.server.ts. Returns kind and profile | T0.6b | READY (contract locked) |
 | resolveBuyerEligibility | Buyer | From lat and lng return the governorate id, eligible vendor ids with orderable flags, and the Halo rule | S1.2, S2.2 | TODO |
 | createOrder | Buyer | Create an order with eligibility, fees, coupon and piastres checked on the server | S2.11 | TODO |
 | suspendVendor (extended) | Admin | Suspend with mode, hold open orders and appointments, create a hold case | S1.2, A2.1 | TODO |
@@ -381,7 +387,7 @@ Phase 0: setup
 | T0.2 | Impeccable design skill in the portal | WEB | 1 | DONE (to verify) |
 | T0.3 | Domain skills in the portal | WEB | 2 | DONE |
 | T0.4 | Close the open business questions with the owner | none | 4 to 6 | WAITING |
-| T0.5 | Lock the data contracts (section 5) and endpoint shapes (section 6) | WEB | 8 to 10 | TODO |
+| T0.5 | Lock the data contracts (section 5) and endpoint shapes (section 6) | WEB | 8 to 10 | DONE |
 | T0.6p | Preflight check | read only | 1 | DONE. Evidence is in chat reports, not in commits. |
 | T0.6v | Setup verification before the base app | read only | 0.5 | DONE. Superseded by T0.12 (pin 3.47.9). |
 | T0.6c | Alignment and readiness check | read only | 1 | DONE (first run). Evidence is in chat reports, not in commits. |
@@ -735,10 +741,13 @@ Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commi
 
 **T0.4 Owner questions.** Owner answers needed for O4, O6, O8, O9, O10, O11, O12, O13, O14, O19, O20, O21, O22, O23 and O24. Update section 3 and 4 when answered. O8 already has an as-built note (AB-6): the code includes the delivery fee. It stays open.
 
-**T0.5 Lock contracts.** Acceptance:
-- [ ] Section 5 shapes are final, every [CONFIRM] there is resolved or listed as open.
-- [ ] Section 6 lists request and response fields, errors and permissions for each endpoint of Phase 1.
-- [ ] Firestore rules needs per collection are listed.
+**T0.5 Lock contracts.** Status: DONE (2026-11-06). Acceptance:
+- [x] Section 5 shapes are final or listed as open with the ticket they block. Canonical files under docs/contracts/.
+  Evidence: vendor-session, vendors, products, orders, earnings, notifications, coverage-eligibility, suspension-holds, governorates, signup, profile-change-requests, settings.
+- [x] Section 6 lists Phase 1 and PC endpoints with contract pointers. vendor_session-resolveVendorSession added.
+  Evidence: section 6 row and docs/contracts/vendor-session.md.
+- [x] Firestore rules needs listed per domain file.
+- [x] Remaining CONFIRM: BR-1.5 (O6), BR-6.7 transitions (S1.10). OPEN-dependent: O5 suspend Auth, O10 holds, O13 points, O14 groomer tags, O16 governorates, O19 deals.
 
 **T0.6 Vendor app base.** Repo VENDOR APP at /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws/tender_paws_partner. Skills: vendor-type-architecture, money-piastres, i18n-rtl. Status: DONE. Spec summary (the full prompt is in the prompt library):
 - Name Tender Paws Partner, package tender_paws_partner. Pinned Flutter 3.44.2 through FVM. Android and iOS only.
@@ -1044,3 +1053,4 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - 2026-11-06: S2.12 buyer secret-print removal on `fix/S2.12-remove-secret-prints` at `c1d2898`. Analyze 0 errors / 59 warnings. 69 tests passed. Hardcoded Fawaterak tokens and the Google Maps key left for a rotation ticket. Branch not merged into main or buyer dev.
 - 2026-11-06: T0.10 emulator suite. D18 closes O7. PANEL `demo-tenderpaws` emulators, seed, suspend smoke test (`npm run test:emu` exit 0). Rules from buyer copy under `emulator-rules/` until T0.14. docs/emulator.md added.
 - 2026-11-06: T0.14 GATE A. Live rules exports missing. Repo inventory written under the ticket. Status BLOCKED until the exports exist.
+- 2026-11-06: T0.5 locks docs/contracts for Phase 1 and PC domains. vendor_session-resolveVendorSession registered. Section 5 points at the contracts folder.
