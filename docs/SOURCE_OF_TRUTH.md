@@ -73,7 +73,7 @@ Commit rules (every repo)
 - Function code lives in tinderpaws_panel/functions [DECIDED, from code]. Evidence: tinderpaws_panel/functions/index.js wires the groups (state report Part E, Endpoint check, lines 546 to 571). Files in that folder include vendor_signup.js, vendors.js, orders_split.js, service_request.js and services.js. service_request.js and services.js are in the repo and are not required by functions/index.js. Whether those two are deployed is UNKNOWN (state report Part E, lines 555 to 556). Endpoint contracts are kept in section 6.
 - D15 (2026-11-06): vendor features that carry business rules are served by shared Cloud Functions in tinderpaws_panel/functions, used by both the portal and the vendor app. Existing portal BFF features (products, orders, profile, earnings) move to those shared functions inside the ticket that touches them. This replaces the earlier [CONFIRM] on the portal BFF in this section.
 - Money: integer piastres everywhere. The buyer app uses float EGP today. Convert at the boundary and migrate (S2.3).
-- Environments [OPEN, D-ENV]: there is a single production project. Until decided, tickets test functions and rules with the Firebase emulator suite and never write to production.
+- Environments [DECIDED as D18, 2026-11-06]: O7 closed. Use the Firebase emulator suite now (demo-tenderpaws). A staging Firebase project is later, only if the budget allows. Tickets never write to production for tests. Commands: docs/emulator.md and tinderpaws_panel/functions/EMULATOR.md.
 
 ### 1.2 Repositories
 
@@ -278,6 +278,7 @@ Decided
 | D15 | 2026-11-06 | Vendor features that carry business rules are served by shared Cloud Functions in tinderpaws_panel/functions, used by both the portal and the vendor app. Existing portal BFF features (products, orders, profile, earnings) move to shared functions inside the ticket that touches them. This resolves the [CONFIRM] that was on the portal BFF in section 1.1. |
 | D16 | 2026-11-06 | docs/SOURCE_OF_TRUTH.md on WEB dev is the only canonical business model. Any other summary is derived from it and is never edited by hand. |
 | D17 | 2026-11-06 | Business model changes run as BM-n tickets. Choices the code already made without a business rule are recorded in section 3A with AB ids and the mark [AS-BUILT]. [AS-BUILT] means this is what the code does, not that it was decided. |
+| D18 | 2026-11-06 | O7 decided. Test with the Firebase emulator suite and project id demo-tenderpaws. A staging Firebase project is later, only if the budget allows. No ticket tests write to production. |
 | D19 | 2026-11-06 | GitHub account ahmedhany1284. Git and the gh CLI are used as that user. Never log in, never change accounts, and never print or copy tokens or credentials. Allowed pushes are dev and work branches (feature/*, fix/*, feat/*, backup/*) only. Never push main or master, because Codemagic builds the buyer app on a push to main. Never force push, never delete remote branches, never push tags, and never open or merge pull requests. Before pushing a branch that already exists on origin, the remote tip must be an ancestor of the local tip. If it is not, stop and ask. |
 
 Open, with a recommendation where one exists
@@ -290,7 +291,7 @@ Open, with a recommendation where one exists
 | O4 | Clinic and groomer documents | Ask the owner |
 | O5 | Suspension and the Auth account | Keep Auth enabled on suspend, disable only on ban (2.6) |
 | O6 | Scope against the planning document, including the admin mobile app and the phase split | Ask the owner |
-| O7 (D-ENV) | Environment: emulator suite only, or a second staging Firebase project | Emulators first, staging project if the budget allows |
+| O7 (D-ENV) | Environment: emulator suite only, or a second staging Firebase project | Decided as D18 (2026-11-06): emulators now, staging later if budget allows |
 | O8 | Does the commission base include the delivery fee | Ask the owner. The code already does yes (AB-6). |
 | O9 | Who pays the Fawaterak fee | Ask the owner |
 | O10 | Hold case resolution and buyer messaging | Open |
@@ -390,7 +391,7 @@ Phase 0: setup
 | T0.7 | Buyer app location and catalog report | read only | 1 | DONE. Evidence is in chat reports, not in commits. |
 | T0.8 | Events branches decision | none | 0.5 | OPEN. The Events delete guard branch and the panel branch feat/events-renotify-visibility are not merged; see track E. |
 | T0.9 | Update stale docs | WEB | 1 to 2 | DONE |
-| T0.10 | Decide and set up the test environment (emulator suite or staging project) | WEB, PANEL | 3 to 6 | TODO |
+| T0.10 | Decide and set up the test environment (emulator suite or staging project) | WEB, PANEL | 3 to 6 | DONE |
 | T0.11 | Reconcile the skills with this file | WEB | 1 to 2 | DONE |
 | T0.12 | Flutter modernization epic (vendor first, then buyer) | BUYER, VENDOR APP | 1 to 2 | DONE |
 | T0.12a | Install and pin the approved Flutter stable via FVM | BUYER, VENDOR APP | 1 to 2 | DONE |
@@ -789,7 +790,17 @@ Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commi
 - [x] The old planning document is marked superseded by this file.
   Evidence: banner at the top of `../MULTI_VENDOR_SERVICES_PLANNING_PRICING.md` (parent folder, not a git repo). It still mentions an admin mobile app and clinic tax and license documents. Those stay [CONFIRM] and [OPEN] here (BR-1.5, BR-2.4, O6). Nothing in that file was rewritten.
 
-**T0.10 Test environment.** Decide O7. Acceptance: the Firebase emulator suite (Firestore, Auth, Functions) runs for the portal and panel functions, with seed data, and the vendor and buyer apps can point to it through config. No ticket tests against production.
+**T0.10 Test environment.** Status: DONE (2026-11-06). O7 decided as D18. Acceptance:
+- [x] Firebase emulator suite for Auth, Firestore, Functions and Storage in PANEL (`tinderpaws_panel/firebase.json`), project id `demo-tenderpaws`.
+  Evidence: `npm run test:emu` in `functions/` starts the suite, seeds, and exits 0. Script line: `✔  Script exited successfully (code 0)`.
+- [x] Idempotent seed with fake data only (active store, pending signup, rejected signup, temporary suspended, banned, non-vendor user, products, governorates with ids).
+  Evidence: `functions/test/seed.emulator.js`. Log: `Seed complete for demo-tenderpaws`.
+- [x] Firestore rules for the emulator from the buyer copy (events block). CLI cannot load rules outside the panel directory, so the copy is at `tinderpaws_panel/emulator-rules/` until T0.14.
+  Evidence: `emulator-rules/README.md` and `firebase.json` firestore.rules path.
+- [x] npm scripts: `emulators`, `seed`, `test:suspend:emu`, `test:emu`. Smoke test calls `suspendVendorCore` (vendors-suspendVendor) against the emulator.
+  Evidence: `ok  suspendVendorCore temporarily suspends the active seed vendor`. `All suspend emulator smoke tests passed.`
+- [x] Portal and vendor app config documented.
+  Evidence: `docs/emulator.md` (WEB) and `tinderpaws_panel/functions/EMULATOR.md`.
 
 **T0.11 Reconcile skills.** Status: DONE (2026-11-05). Make each skill in .cursor/skills consistent with this file, or reduce it to a pointer. If a skill and this file disagree, this file wins.
 
@@ -1015,3 +1026,4 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - 2026-11-05: T0.15 portal lint and test baseline. The 19 react-hooks/set-state-in-effect errors are gone (`npx eslint . --quiet`). Vitest 3.2.7 added. `npm test` runs 6 tests for session body and product create validation. `npm run typecheck` is clean. Command documented in README.md. Nothing pushed.
 - 2026-11-06: BM-1 reconciles the business model with the 2026-11-06 state report and the services spec. D15, D16, D17 and D19 recorded. Section 3A adds AB-1 to AB-17. BR-6.12, BR-7.5 and BR-12.5 added. O19 to O24 added. T0.16 marked DONE with remote tips, and the vendor app remote left PENDING. T0.17, PC-1, PC-2 and PC-3 added. S2.12 widened. docs/parity.md and docs/contracts/README.md added. Workspace rule aligned with D14 and D19.
 - 2026-11-06: S2.12 buyer secret-print removal on `fix/S2.12-remove-secret-prints` at `c1d2898`. Analyze 0 errors / 59 warnings. 69 tests passed. Hardcoded Fawaterak tokens and the Google Maps key left for a rotation ticket. Branch not merged into main or buyer dev.
+- 2026-11-06: T0.10 emulator suite. D18 closes O7. PANEL `demo-tenderpaws` emulators, seed, suspend smoke test (`npm run test:emu` exit 0). Rules from buyer copy under `emulator-rules/` until T0.14. docs/emulator.md added.
