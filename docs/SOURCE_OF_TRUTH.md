@@ -442,7 +442,7 @@ Phase 2: buyer app and admin panel
 | S2.9 | Old version compatibility | BUYER | 6 to 8 | TODO |
 | S2.10 | Subscription plans through Apple in-app purchase | BUYER | 20 to 30 | TODO |
 | S2.11 | Server-side order creation and rules hardening | BUYER, PANEL | 25 to 40 | TODO |
-| S2.12 | Remove every payment token print in the buyer app, including main.dart and payment_service.dart | BUYER | 1 to 2 | TODO |
+| S2.12 | Remove every payment token print in the buyer app, including main.dart and payment_service.dart | BUYER | 1 to 2 | REVIEW |
 | A2.1 | Suspension modes and hold case queue | PANEL | 14 to 20 | TODO |
 | A2.2 | Per vendor delivery fee, admin only | PANEL | 5 to 7 | TODO |
 | A2.3 | Halo stamping and management | PANEL | 5 to 7 | TODO |
@@ -930,7 +930,18 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 
 **S2.11 Server-side orders and rules hardening.** Acceptance: createOrder validates eligibility, fees and coupons; after the forced update the rules deny client order creation; live rules verified in the console (BR-15).
 
-**S2.12 Remove secret prints in the buyer app.** Est 1 to 2 h. Status: TODO. Widened 2026-11-06 (BM-1). Remove every print, debugPrint or log of a payment token, key or personal data. At least main.dart lines 21 and 26 and payment_service.dart lines 60 and 247 (re-check the line numbers). Search lib/ for others. Do not change payment behavior. If a secret value is hardcoded, do not move or delete it. List it for a separate ticket with rotation. Live-app fix: branch from main as fix/S2.12-remove-secret-prints. Do not merge into main or dev. Leave the branch for a Shorebird patch. Record the branch and hash here when the branch exists.
+**S2.12 Remove secret prints in the buyer app.** Est 1 to 2 h. Status: REVIEW (2026-11-06). Branch left for Shorebird. Not merged into main or dev.
+- BUYER branch: `fix/S2.12-remove-secret-prints` at `c1d2898d0cd4b90d3c1d26555b5fecd0542f5cc0`. Base was local main `647cd48`.
+- Acceptance:
+  - [x] Removed token prefix prints from main.dart (were lines 19 to 27).
+  - [x] Removed full token prints and Authorization header dumps from payment_service.dart (were around lines 60 and 247). Also removed payment request body and response body dumps that carried customer data.
+  - [x] Removed sign-in email print, payment redirect URL prints, payment intent id prints, and promo code value prints under lib/.
+  - [x] Payment behavior unchanged (auth headers still built; tokens still used for requests).
+  - [x] `fvm flutter analyze`: 0 errors, 59 warnings (at the ceiling). `fvm flutter test`: 69 passed.
+- Hardcoded secret findings (left in place for a separate rotation ticket):
+  - `lib/features/store/data/config/payment_config.dart` lines 102 to 106: Fawaterak production and staging API tokens as string literals.
+  - `lib/core/widgets/location_screen.dart` line 78: Google Maps API key string literal.
+  - `lib/firebase_options.dart`: Firebase apiKey values (FlutterFire generated).
 
 **A2.1 to A2.7.** Acceptance follows the titles: suspension modes with a hold case queue (A2.1); admin-only delivery fee in vendorAdminSettings (A2.2); Halo stamping with platformVendor (A2.3); governorate list management and migration (A2.4); provider approval, deals, review moderation, coupons and refunds (A2.5); timers, balances and points functions (A2.6); the hardcoded push token removed and rotated (A2.7).
 
@@ -1003,3 +1014,4 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - 2026-11-05: T0.11 skills reconciled with this file. Hold case wording, Cloud Function enforcement, vendor types, deploy order, piastres boundary, and the portal BFF scope now match. APP_CONTEXT.txt edited locally and left untracked. Nothing pushed.
 - 2026-11-05: T0.15 portal lint and test baseline. The 19 react-hooks/set-state-in-effect errors are gone (`npx eslint . --quiet`). Vitest 3.2.7 added. `npm test` runs 6 tests for session body and product create validation. `npm run typecheck` is clean. Command documented in README.md. Nothing pushed.
 - 2026-11-06: BM-1 reconciles the business model with the 2026-11-06 state report and the services spec. D15, D16, D17 and D19 recorded. Section 3A adds AB-1 to AB-17. BR-6.12, BR-7.5 and BR-12.5 added. O19 to O24 added. T0.16 marked DONE with remote tips, and the vendor app remote left PENDING. T0.17, PC-1, PC-2 and PC-3 added. S2.12 widened. docs/parity.md and docs/contracts/README.md added. Workspace rule aligned with D14 and D19.
+- 2026-11-06: S2.12 buyer secret-print removal on `fix/S2.12-remove-secret-prints` at `c1d2898`. Analyze 0 errors / 59 warnings. 69 tests passed. Hardcoded Fawaterak tokens and the Google Maps key left for a rotation ticket. Branch not merged into main or buyer dev.
