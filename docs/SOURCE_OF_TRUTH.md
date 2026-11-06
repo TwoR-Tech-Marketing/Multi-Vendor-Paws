@@ -1,9 +1,9 @@
 # Tender Paws Multi-Vendor: Source of Truth
 
-Location: docs/SOURCE_OF_TRUTH.md in Multi-Vendor-Paws (authoritative path). Local branch after T0.12e: `main`.
-Created: 2026-10-28. Last updated: 2026-11-05.
+Location: docs/SOURCE_OF_TRUTH.md in Multi-Vendor-Paws (authoritative path). Authoritative branch: dev (D16). Local branch after T0.12e was `main`; 2026-11-06: dev is the canonical copy.
+Created: 2026-10-28. Last updated: 2026-11-06.
 
-Contents: 0 How this file works, 1 Architecture, 2 Glossary, 3 Business requirements, 4 Decisions log, 5 Data contracts, 6 Endpoint registry, 7 Tickets, 8 Risks and known issues, 9 Changelog.
+Contents: 0 How this file works, 1 Architecture, 2 Glossary, 3 Business requirements, 3A As built register, 4 Decisions log, 5 Data contracts, 6 Endpoint registry, 7 Tickets, 8 Risks and known issues, 9 Changelog.
 
 ---
 
@@ -20,6 +20,15 @@ Rules for people and agents
 5. Do not mark a ticket DONE unless every acceptance item is verified and the evidence is listed (commands, test names, file paths).
 6. Status values: TODO, READY (prompt written), IN PROGRESS, REVIEW, DONE, BLOCKED, WAITING (waiting on the owner or a decision).
 7. Words: a ticket is a work item in this file. A hold case is the admin case created when the orders or appointments of a suspended vendor are put on hold (earlier notes called it a ticket).
+8. BM-n tickets change the business model (D17). The loop is: take the input (an owner answer, Ahmed's decision, or a code finding), update sections 3 and 4, update the affected tickets and contracts, add a changelog line, then check skills, rules and AGENTS.md for drift in the same branch.
+9. [AS-BUILT] means this is what the code does today. It is not a decision. Decisions stay [DECIDED]. The register is section 3A.
+
+GitHub policy (D19, 2026-11-06)
+
+- Git and the gh CLI act as GitHub user ahmedhany1284. Never log in, never change accounts, and never print or copy tokens or credentials.
+- Allowed pushes: dev and work branches (feature/*, fix/*, feat/*, backup/*) only.
+- Never push main or master. Codemagic builds the buyer app on a push to main. Never force push, never delete remote branches, never push tags, and never open or merge pull requests.
+- Before pushing a branch that already exists on origin, the remote tip must be an ancestor of the local tip. If it is not, stop and ask.
 
 Standard ticket prompt (copy it, replace the id and the repo list)
 
@@ -32,7 +41,7 @@ Working repo: Multi-Vendor-Paws (open in this workspace). Repos you may edit: <l
 4. Verify every acceptance item and the definition of done.
 5. Update docs/SOURCE_OF_TRUTH.md (status, acceptance checklist, contracts, endpoint registry, decisions, changelog) on the same branch.
 6. Report: files changed per repo, acceptance evidence, deviations, new open questions, and git log --oneline for the new commits.
-No push, no deploy, no writes to Firebase production. No em dashes.
+GitHub follows D19 (push only dev and work branches feature/*, fix/*, feat/*, backup/*; never push main or master; never force push). No deploy and no writes to Firebase production unless the ticket says so. No em dashes.
 ```
 
 Definition of done (every ticket)
@@ -43,12 +52,14 @@ Definition of done (every ticket)
 - No secrets, keys or personal data in code, logs or commits.
 - Contracts and endpoint registry updated. This file updated.
 - Conventional commits, one logical change each.
+- Vendor-facing tickets are done in both the portal and the vendor app, from one contract, with a docs/parity.md row updated. Any difference is an exception recorded in BR-12.
 
 Commit rules (every repo)
 
 - Conventional Commits: type(scope): subject. Types feat, fix, test, build, ci, docs, chore, refactor. Subject imperative, lower case, no period, 72 characters or fewer. Body for non-trivial commits.
 - One logical change per commit. Tests go with the code they cover. Every commit leaves analyze and tests passing.
 - Stage explicit paths. Never commit secrets, keystores, google-services files, build output or local tool folders. No amend or history rewrite unless asked. No --no-verify.
+- GitHub follows D19. Push only dev and work branches (feature/*, fix/*, feat/*, backup/*). Never push main or master. Never force push, never delete remote branches, never push tags, and never open or merge pull requests. If the branch already exists on origin, push only when the remote tip is an ancestor of the local tip. Otherwise stop and ask. Account ahmedhany1284. Never print tokens or credentials.
 
 ---
 
@@ -59,8 +70,8 @@ Commit rules (every repo)
 - One Firebase project, pets-acd3f, which is production. Firestore, Auth, Storage, Cloud Messaging, Crashlytics and Cloud Functions. Every app is built on it.
 - Backend pattern [DECIDED 2026-10-28]: clients read and stream Firestore directly where the security rules allow. Specific functionality is a Cloud Function used as an endpoint (callable preferred), the same way the buyer app already fetches pets. Business rules that must be enforced (eligibility, orders, fees, suspension, appointments, points) live in functions, not in clients.
 - Callable functions carry the signed-in user's token automatically. HTTPS functions are used only when a callable cannot be.
-- Function code lives in tinderpaws_panel/functions [CONFIRM]. Existing: vendor_signup.js, vendors.js, orders_split.js, service_request.js, services.js. Endpoint contracts are kept in section 6.
-- The portal's Next.js BFF (/api/vendor/*, Admin SDK) keeps serving existing features. New features that carry business rules call the shared functions, so the portal and the vendor app share one implementation [CONFIRM].
+- Function code lives in tinderpaws_panel/functions [DECIDED, from code]. Evidence: tinderpaws_panel/functions/index.js wires the groups (state report Part E, Endpoint check, lines 546 to 571). Files in that folder include vendor_signup.js, vendors.js, orders_split.js, service_request.js and services.js. service_request.js and services.js are in the repo and are not required by functions/index.js. Whether those two are deployed is UNKNOWN (state report Part E, lines 555 to 556). Endpoint contracts are kept in section 6.
+- D15 (2026-11-06): vendor features that carry business rules are served by shared Cloud Functions in tinderpaws_panel/functions, used by both the portal and the vendor app. Existing portal BFF features (products, orders, profile, earnings) move to those shared functions inside the ticket that touches them. This replaces the earlier [CONFIRM] on the portal BFF in this section.
 - Money: integer piastres everywhere. The buyer app uses float EGP today. Convert at the boundary and migrate (S2.3).
 - Environments [OPEN, D-ENV]: there is a single production project. Until decided, tickets test functions and rules with the Firebase emulator suite and never write to production.
 
@@ -73,7 +84,7 @@ All are siblings under /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws
 | WEB (home) | Multi-Vendor-Paws | Next.js vendor web portal. Holds this file, contracts and the parity table | Editable |
 | BUYER | tinder_paws | Flutter buyer mobile app. Flutter 3.47.9 and Dart 3.13.7 | Read only unless the ticket says so. Never switch branches or stash there |
 | PANEL | tinderpaws_panel | Flutter web admin panel plus Cloud Functions (functions/). Default branch is master, not main | Read only unless the ticket says so |
-| VENDOR APP | tender_paws_partner | Flutter vendor mobile app (base from T0.6). Exists at tender_paws_partner with no remote. Branches main and dev at 9c96797. Flutter 3.47.9 and Dart 3.13.7 | Editable |
+| VENDOR APP | tender_paws_partner | Flutter vendor mobile app (base from T0.6). Exists at tender_paws_partner. 2026-11-06 (T0.16): https://github.com/TwoR-Tech-Marketing/tender_paws_partner.git was not found, so the remote backup is PENDING until Ahmed creates the repo. Branches main and dev at 9c96797. Flutter 3.47.9 and Dart 3.13.7 | Editable |
 
 ### 1.3 Branching and release
 
@@ -104,7 +115,7 @@ Mirrors tinder_paws: feature-first folders, a local package user_repository with
 
 ## 3. Business requirements
 
-Marks: [DECIDED] agreed, [RECOMMENDED] proposed and waiting for confirmation, [OPEN] not decided.
+Marks: [DECIDED] agreed, [RECOMMENDED] proposed and waiting for confirmation, [OPEN] not decided, [AS-BUILT] what the code does today (not a decision, D17).
 
 ### BR-1 Marketplace and actors
 - 1.1 [DECIDED] Tender Paws is a marketplace of approved vendors plus the platform's own Halo items.
@@ -119,7 +130,16 @@ Marks: [DECIDED] agreed, [RECOMMENDED] proposed and waiting for confirmation, [O
 - 2.2 [DECIDED, from code] The admin approves, rejects, suspends and bans through functions (vendor_signup-reviewVendorSignupRequest, vendors-suspendVendor, vendors-banVendor).
 - 2.3 [DECIDED] Admin validation protects buyers. Store vendors need no documents (confirmed with the owner).
 - 2.4 [OPEN] Do clinics and groomers upload documents? The old planning document requires a tax registration and a license.
-- 2.5 [DECIDED] Account gates in both vendor clients: active, pending, rejected, suspended, banned, not a vendor.
+- 2.5 [DECIDED] Account gates in both vendor clients: active, pending, rejected, suspended, banned, not a vendor. [AS-BUILT] The code does not store those six names as statuses. Mapping from the state report Part E vendor status table (lines 471 to 478). BR-2.5 is unchanged. Code changes wait for O5.
+
+  | Gate in BR-2.5 | What is stored | Session kind |
+  |---|---|---|
+  | active | vendors.status = active | active |
+  | pending | Signup request status pending, or a vendor user who is neither active nor currently restricted | pending |
+  | rejected | Stored only on the signup request. The Auth user is deleted, so there is no session | none |
+  | suspended | vendors.status = suspended and users.accountStatus = suspended | suspended |
+  | banned | Not a status string. isBanned true while status stays suspended | suspended |
+  | not a vendor | No vendor session. A user document with another role is mobile_app_account | not_vendor, or mobile_app_account |
 - 2.6 [RECOMMENDED] A suspension, temporary or permanent, keeps the Auth account enabled so the vendor sees the status and the reason. Only a ban disables it. Today a permanent suspend disables Auth.
 - 2.7 [DECIDED] Pending vendors cannot use products, orders or earnings.
 
@@ -128,7 +148,7 @@ Marks: [DECIDED] agreed, [RECOMMENDED] proposed and waiting for confirmation, [O
 - 3.2 [DECIDED, from code] Product status: active, inactive, out_of_stock, archived.
 - 3.3 [DECIDED] Vendors cannot create Halo items. The admin creates them in the admin panel.
 - 3.4 [DECIDED, from code] Buyer orders are split into one vendor order per vendor.
-- 3.5 [DECIDED] The platform takes its fee on orders from the vendor. [OPEN] Whether the commission base includes the vendor's delivery fee.
+- 3.5 [DECIDED] The platform takes its fee on orders from the vendor. [OPEN] Whether the commission base includes the vendor's delivery fee. [AS-BUILT] orders_split already includes the delivery fee in the commission base (state report Part E, orders_split.js lines 322 to 327, and Part H item 6). O8 stays open.
 
 ### BR-4 Delivery coverage (store vendors only)
 - 4.1 [DECIDED] Delivery applies to store vendors only. Hotels, clinics, groomers and trainers have no delivery zones.
@@ -145,25 +165,27 @@ Marks: [DECIDED] agreed, [RECOMMENDED] proposed and waiting for confirmation, [O
 - 5.1 [DECIDED] Halo items are sold by the platform under seller id platformVendor. They are separate from vendor items.
 - 5.2 [DECIDED] Halo items are created only in the admin panel and are not affected by vendor suspension.
 - 5.3 [RECOMMENDED] Halo is defined only by seller id platformVendor, which is what the buyer app uses. The isHalo field is no longer written or read, and kept in documents for compatibility.
-- 5.4 [DECIDED, bug] The admin panel add product must stamp vendorId platformVendor.
+- 5.4 [DECIDED, bug] The admin panel add product must stamp vendorId platformVendor. [AS-BUILT] Admin create sets neither vendorId nor isHalo. createdBy and updatedBy are the hardcoded username ahmedhany1284 (state report Part E, store_screen.dart lines 1112 to 1143, and Part H items 10 and 15, lines 1122 and 1140).
 
 ### BR-6 Services engine (clinic and groomer)
 - 6.1 [DECIDED] One engine. The groomer is configuration of the clinic engine.
-- 6.2 [DECIDED] A provider enters: name, branches (each with its own services and prices, with a duplicate option), phone, address, map location, services and prices, optional photos, available appointments (editable later), and a home visit option. Clinics may also enter education and experience (optional).
+- 6.2 [DECIDED] A provider enters: name, branches (each with its own services and prices, with a duplicate option), phone, address, map location, services and prices, optional photos, available appointments (editable later), and a home visit option. Clinics may also enter education and experience (optional). The services spec (section 4) lists no education field and no documents for groomers. BR-2.4 stays [OPEN].
 - 6.3 [DECIDED] The admin approves before a provider is listed.
 - 6.4 [DECIDED] Availability belongs to a branch. Times are stored in UTC and shown in Africa/Cairo. Booking must be race safe. Editing availability never silently cancels booked appointments.
 - 6.5 [DECIDED] The buyer picks a provider and services, pays in the app, earns 1 point per EGP (floor(paidPiastres / 100)), and can add a coupon.
 - 6.6 [DECIDED] Extra services during a visit: the provider creates an invoice, the buyer pays in the app on the spot and earns points.
 - 6.7 [DECIDED] Appointment statuses: paid, completed, cancelled_by_user, cancelled_by_clinic, rescheduled, no_show, refund_pending, refunded. [CONFIRM] Transitions: paid to completed, cancelled_by_user, cancelled_by_clinic, rescheduled or no_show; cancelled to refund_pending to refunded. Every change appends to statusHistory.
-- 6.8 [DECIDED] No-show: the provider may flag only after the appointment time plus 120 minutes (server enforced). The buyer then answers: did not attend, I attended, arrived late, report an issue. [OPEN] What each answer does, what happens if the buyer never answers.
+- 6.8 [DECIDED] No-show: the provider may flag only after the appointment time plus 120 minutes (server enforced). The buyer then answers: did not attend, I attended, arrived late, report an issue. [OPEN] What each answer does, what happens if the buyer never answers. The services spec (section 2.4) notification wording is: "The clinic marked this appointment as a no-show. Is this correct?" The four answers in that spec are: Yes, I did not attend; No, I attended; I arrived late; Report an issue.
 - 6.9 [DECIDED] Reviews: 1 to 5 on cleanliness, waiting time and doctor efficiency, plus tags (friendly doctor, clean clinic, long waiting time, clear explanation, good with nervous pets). Only for completed appointments, one per appointment. The admin can delete a review. [OPEN] Groomer categories and tags, provider replies, review editing.
 - 6.10 [OPEN] Slot length (fixed or per service), capacity per slot, minimum notice, booking window, home visit price and area, cancellation windows, who may reschedule and how often, decline reason and reapply, whether one account can hold two vendor types.
 - 6.11 [OPEN] Services need a location for discovery. Whether to sort or filter by distance.
+- 6.12 [DECIDED] Provider dashboard: number of visits, a chart of each service's share, number of new patients, an overall rating from 1 to 5, and a rating per category. The admin can delete a review (services spec section 2.8). Which parts are for the provider and which are for the admin is [OPEN] (O24).
 
 ### BR-7 Deals and billing
 - 7.1 [DECIDED] Per provider the admin sets a deal: fixed subscription, percentage, or both.
 - 7.2 [DECIDED] The percentage is taken after the coupon. The balance is live, through an append-only earnings ledger (sale, refund, adjustment, payout).
-- 7.3 [DECIDED] Subscription shows amount, start date, renewal date, payment status and grace period.
+- 7.3 [DECIDED] Subscription shows amount, start date, renewal date, payment status and grace period. The period is monthly or annual (services spec section 2.10).
+- 7.5 [AS-BUILT] Default commission is 10 percent, with per-vendor overrides in commissionConfig/main written by setVendorCommission (state report Part E, vendors.js lines 707 to 756, and Part H item 14, vendors.js line 14). How this relates to the BR-7.1 deal model is [OPEN] (O19).
 - 7.4 [OPEN] Who collects the patient payment, payout schedule and method, how the fixed fee is collected and what happens after the grace period, whether a deal applies per provider or per branch.
 
 ### BR-8 Payments and refunds
@@ -189,9 +211,10 @@ Marks: [DECIDED] agreed, [RECOMMENDED] proposed and waiting for confirmation, [O
 - 12.2 [DECIDED] Every change to the portal is applied to the vendor app through the same ticket.
 - 12.3 [DECIDED] Data access follows 1.1: Firestore streams for own data where rules allow, Cloud Functions for specific functionality.
 - 12.4 [DECIDED] A subset of the portal: no spreadsheet import or export on mobile. Vendors receive push notifications.
+- 12.5 [DECIDED] Mobile exceptions are listed here. Today the only exception is BR-12.4 (no spreadsheet import or export).
 
 ### BR-13 Notifications
-- 13.1 [OPEN] Vendor push events (new order, new appointment, status changes) and buyer prompts (no-show answers, review request). Exact list and wording.
+- 13.1 [OPEN] Vendor push events (new order, new appointment, status changes) and buyer prompts (no-show answers, review request). Exact list and wording. The services spec (section 2.6) requires a buyer prompt that asks whether the visit was completed, before the review. The wording of that prompt stays [OPEN].
 
 ### BR-14 Compatibility and release
 - 14.1 [DECIDED] Production stays on main until everything is done. Changes to shared data are additive until the forced update.
@@ -203,6 +226,32 @@ Marks: [DECIDED] agreed, [RECOMMENDED] proposed and waiting for confirmation, [O
 - 15.1 [DECIDED] No keys, tokens or personal data in source or logs.
 - 15.2 [OPEN] Verify the live Firestore and Storage rules in the Firebase console. The repo rules look wide open and may not be deployed.
 - 15.3 [DECIDED] Remove the hardcoded device push token in tinderpaws_panel/functions/services.js (A2.7).
+
+---
+
+## 3A. As built register
+
+[AS-BUILT] records what the code does when the model was silent (D17). It is not a decision. Source: state report Part H, "The model is silent and the code already chooses" (lines 673 to 691), checked against Part E.
+
+| Id | What the code does | Evidence | Linked |
+|---|---|---|---|
+| AB-1 | Ban is stored as vendors.status suspended plus isBanned true. users.accountStatus is suspended. | Part H item 1. Part E lines 446 to 451 | BR-2.5, O5 |
+| AB-2 | Reject sets the signup request to rejected and deletes the Auth user. There is no rejected session. | Part H item 2. Part E lines 434 to 435 | BR-2.5, O5 |
+| AB-3 | A permanent suspend disables Auth. A temporary suspend does not. A permanent ban disables Auth. A temporary ban does not. | Part H item 3. Part E lines 441 to 443 and 447 to 448 | BR-2.6, O5 |
+| AB-4 | The portal folds ban and suspend into one session kind, suspended. | Part H item 4. Part E lines 462 and 468 | BR-2.5 |
+| AB-5 | Pending vendors may open settings, profile and notifications. Products, orders, earnings and the dashboard sit behind ActiveVendorGuard. | Part H item 5. Part E line 469 | BR-2.7, O20 |
+| AB-6 | Commission uses subtotal plus a split of the delivery fee, minus a split of the discount. | Part H item 6. orders_split.js lines 322 to 327 | BR-3.5, O8 |
+| AB-7 | Checkout delivery fee is one global document, delivery_fees/const_fees, and falls back to 70. | Part H item 7. Part E lines 529 to 532 | BR-4.7 |
+| AB-8 | A second fee table, settings/delivery_fees, is keyed by governorate name and falls back to 30. No static caller was found. | Part H item 8. Part E lines 533 to 534 | BR-4.7 |
+| AB-9 | Governorates are matched by the name string. The document id is used after that match. | Part H item 9. Part E lines 494 to 495 and 534 | BR-4.6, O16 |
+| AB-10 | Admin-created products do not set vendorId or isHalo. | Part H item 10. store_screen.dart lines 1112 to 1143 | BR-5.4 |
+| AB-11 | The buyer Halo path filters vendorId == platformVendor and also maps isHalo onto the item. | Part H item 11. Part E lines 507 to 514 | BR-5.3, O1 |
+| AB-12 | The buyer client creates orders. | Part H item 12. orders_service.dart line 126 | BR-14.3, S2.11 |
+| AB-13 | Subscription plans use a Fawaterak token path. No Apple in-app purchase package was found under buyer lib. | Part H item 13. main.dart lines 18 to 26 | BR-8.1, S2.10 |
+| AB-14 | Default commission is 10 percent in vendors.js line 14, with per-vendor overrides in commissionConfig/main. | Part H item 14. vendors.js lines 707 to 756 | BR-7.5, O19 |
+| AB-15 | createdBy and updatedBy on admin products are the literal username ahmedhany1284. | Part H item 15. store_screen.dart lines 1122 and 1140 | BR-5.4 |
+| AB-16 | Legacy service_request statuses differ from the appointment status list, and those triggers are not in functions/index.js. | Part H item 16. Part E lines 503 and 555 | BR-6.7 |
+| AB-17 | The workspace rule forbade commits to main, while D14 and the git history show main was fast-forwarded in T0.12e. | Part H item 17 | D14. Wording aligned in this ticket |
 
 ---
 
@@ -226,6 +275,10 @@ Decided
 | D12 | 2026-10 | The vendor app mirrors tinder_paws structure, including the user repository with a stream. It is built first as a base, then authentication. |
 | D13 | 2026-10 | The buyer location comes from the device location service. |
 | D14 | 2026-11-04 | D10 amended. main is what is shippable and shipped (store releases, Shorebird patches, and the Flutter 3.47.9 upgrade on its own track, T0.12). dev is the base for the multi-vendor project in every repo. Feature branches are feature/<ticket>-<slug> from dev and merge into dev. Merge main into dev regularly and log it. dev merges into main only when the multi-vendor release is signed off. T0.12e fast-forwarded main in WEB, BUYER and VENDOR APP on purpose, which replaced the earlier rule never to commit to main for that work. |
+| D15 | 2026-11-06 | Vendor features that carry business rules are served by shared Cloud Functions in tinderpaws_panel/functions, used by both the portal and the vendor app. Existing portal BFF features (products, orders, profile, earnings) move to shared functions inside the ticket that touches them. This resolves the [CONFIRM] that was on the portal BFF in section 1.1. |
+| D16 | 2026-11-06 | docs/SOURCE_OF_TRUTH.md on WEB dev is the only canonical business model. Any other summary is derived from it and is never edited by hand. |
+| D17 | 2026-11-06 | Business model changes run as BM-n tickets. Choices the code already made without a business rule are recorded in section 3A with AB ids and the mark [AS-BUILT]. [AS-BUILT] means this is what the code does, not that it was decided. |
+| D19 | 2026-11-06 | GitHub account ahmedhany1284. Git and the gh CLI are used as that user. Never log in, never change accounts, and never print or copy tokens or credentials. Allowed pushes are dev and work branches (feature/*, fix/*, feat/*, backup/*) only. Never push main or master, because Codemagic builds the buyer app on a push to main. Never force push, never delete remote branches, never push tags, and never open or merge pull requests. Before pushing a branch that already exists on origin, the remote tip must be an ancestor of the local tip. If it is not, stop and ask. |
 
 Open, with a recommendation where one exists
 
@@ -238,7 +291,7 @@ Open, with a recommendation where one exists
 | O5 | Suspension and the Auth account | Keep Auth enabled on suspend, disable only on ban (2.6) |
 | O6 | Scope against the planning document, including the admin mobile app and the phase split | Ask the owner |
 | O7 (D-ENV) | Environment: emulator suite only, or a second staging Firebase project | Emulators first, staging project if the budget allows |
-| O8 | Does the commission base include the delivery fee | Ask the owner |
+| O8 | Does the commission base include the delivery fee | Ask the owner. The code already does yes (AB-6). |
 | O9 | Who pays the Fawaterak fee | Ask the owner |
 | O10 | Hold case resolution and buyer messaging | Open |
 | O11 | Telehealth scope and Apple treatment | Open |
@@ -249,6 +302,12 @@ Open, with a recommendation where one exists
 | O16 | Official governorate list, boundary data and licence | Open |
 | O17 | Percentage rounding mode, calendar week start day, Arabic numerals | Can default: half up, Saturday, Western |
 | O18 | Which data the vendor app streams from Firestore and which goes through functions | Streams for own vendor document, notifications and lists once rules are hardened, functions for everything with rules |
+| O19 | How the existing 10 percent commission and per-vendor overrides relate to the BR-7.1 deal model | Ask the owner. See AB-14 and BR-7.5 |
+| O20 | Which screens a pending vendor may open | The portal allows settings, profile and notifications (state report Part E, lines 469 and Part H item 5). Ask before changing the guards |
+| O21 | What happens on a no-show when the buyer never answers | Open. Services spec section 6 lists this as unconfirmed |
+| O22 | Whether the answer "arrived late" reopens the appointment | Open. Services spec section 6 |
+| O23 | What "report an issue" creates and who handles it | Open. Services spec section 6 |
+| O24 | Which dashboard parts are for the provider and which are for the admin | Open. Services spec section 6. BR-6.12 records the dashboard contents |
 
 ---
 
@@ -294,12 +353,20 @@ Existing in tinderpaws_panel/functions: vendor_signup-reviewVendorSignupRequest,
 | deleteReview | Admin | Moderation | A2.5 | TODO |
 | markRefunded | Admin | Refund entry, points reversal | A2.5 | TODO |
 | awardPoints (trigger) | System | Write the points ledger after a payment | S2.6 | TODO |
+| vendor_signup-submitVendorSignupRequest | Public signup | Create the pending signup request and an enabled Auth user | existing | LIVE in repo. v2 onCall in vendor_signup.js line 127. Wired by functions/index.js (state report Part E, lines 550 to 552) |
+| vendors-deleteVendor | Admin | Delete Auth, the vendor document and the user document | existing | LIVE in repo. v2 onCall in vendors.js line 664. Wired (state report Part E, line 544) |
+| vendors-syncVendorAccess | Signed-in vendor | Sync access for the caller | existing | LIVE in repo. v2 onCall in vendors.js line 674. Wired (state report Part E, line 544) |
+| vendors-setVendorCommission | Admin | Write the percent override on commissionConfig/main | existing | LIVE in repo. v2 onCall in vendors.js line 773. Wired (state report Part E, lines 419 and 544) |
+| vendors-liftExpiredVendorRestrictions | System | Lift expired bans and suspensions | existing | LIVE in repo. v2 onSchedule every 60 minutes in vendors.js line 783. Wired (state report Part E, line 544) |
+| vendors-reviewVendorProfileChange | Admin | Review a vendor profile change request | existing | LIVE in repo. v2 onCall in vendors.js line 832. Wired (state report Part E, line 544) |
+
+service_request.js and services.js are in the repo and are not required by functions/index.js. Deployment is UNKNOWN (state report Part E, lines 555 to 556).
 
 ---
 
 ## 7. Tickets
 
-Estimates are focused hours for one developer using Cursor, roughly plus or minus 35 percent. The new tickets above add about 18 to 35 hours (T0.13 to T0.16, track E, S2.12). The Flutter modernization (T0.12) is done and was not in the original estimate. Total about 550 to 765 hours. The vendor app is about a quarter. Telehealth and the unspecified services are not included.
+Estimates are focused hours for one developer using Cursor, roughly plus or minus 35 percent. The new tickets above add about 18 to 35 hours (T0.13 to T0.16, track E, S2.12). The Flutter modernization (T0.12) is done and was not in the original estimate. Total about 550 to 765 hours. The vendor app is about a quarter. Telehealth and the unspecified services are not included. 2026-11-06 (BM-1): T0.17, PC-1, PC-2 and PC-3 add about 22 to 34 hours (rough). S2.12 moves from 1 hour to 1 to 2 hours. Running total about 572 to 800 hours. BM-1 itself is documentation done in this session and is not added again.
 
 ### Index
 
@@ -335,13 +402,18 @@ Phase 0: setup
 | T0.13 | Reconcile the source of truth with the audit and sync dev with main | WEB, BUYER, PANEL | 1 to 2 | DONE |
 | T0.14 | Rules inventory and single source | WEB, BUYER, PANEL | 4 to 8 | TODO |
 | T0.15 | Portal test and lint baseline | WEB | 3 to 6 | DONE |
-| T0.16 | Backups | WEB, BUYER, PANEL, VENDOR APP | 1 to 2 | TODO |
+| T0.16 | Backups | WEB, BUYER, PANEL, VENDOR APP | 1 to 2 | DONE. Vendor app remote PENDING |
+| T0.17 | Register the vendor app in Firebase, Apple and Google Play | VENDOR APP | 1 to 2 rough | TODO |
+| BM-1 | Reconcile the business model, parity and the workspace rule | WEB | done this session | DONE |
 
 Phase 1: portal and vendor app together (every ticket is done in both)
 
 | Id | Title | Repos | Est (h) | Status |
 |---|---|---|---|---|
 | S1.1 | Vendor session and account gates | WEB, VENDOR APP, PANEL | 20 to 25 | TODO |
+| PC-1 | Vendor signup and signup status in the vendor app | WEB, VENDOR APP | 8 to 12 rough | TODO |
+| PC-2 | Store profile and profile change requests in the vendor app | WEB, VENDOR APP | 8 to 12 rough | TODO |
+| PC-3 | Settings and notifications inbox in the vendor app | WEB, VENDOR APP | 5 to 8 rough | TODO |
 | S1.2 | Governorate list, coverage model, eligibility and suspension functions | PANEL | 20 to 28 | TODO |
 | S1.3 | Coverage picker | WEB, VENDOR APP | 16 to 20 | TODO |
 | S1.4 | Products | WEB, VENDOR APP | 16 to 22 | TODO |
@@ -370,7 +442,7 @@ Phase 2: buyer app and admin panel
 | S2.9 | Old version compatibility | BUYER | 6 to 8 | TODO |
 | S2.10 | Subscription plans through Apple in-app purchase | BUYER | 20 to 30 | TODO |
 | S2.11 | Server-side order creation and rules hardening | BUYER, PANEL | 25 to 40 | TODO |
-| S2.12 | Remove secret prints in the buyer app (the payment token prefix printed in main.dart) | BUYER | 1 | TODO |
+| S2.12 | Remove every payment token print in the buyer app, including main.dart and payment_service.dart | BUYER | 1 to 2 | TODO |
 | A2.1 | Suspension modes and hold case queue | PANEL | 14 to 20 | TODO |
 | A2.2 | Per vendor delivery fee, admin only | PANEL | 5 to 7 | TODO |
 | A2.3 | Halo stamping and management | PANEL | 5 to 7 | TODO |
@@ -413,6 +485,7 @@ Phase 3: testing and release
 **T0.1b Workspace rule.** Acceptance:
 - [x] .cursor/rules/workspace-context.mdc exists on dev with the repo map (1.2) and the safety rules: every task names its working repo and editable repos, print path and branch before git commands, never commit to main, never push, never deploy or write to Firebase, read skills and AGENTS.md before editing, never resolve OPEN items, no em dashes.
   Evidence: .cursor/rules/workspace-context.mdc on dev, alwaysApply. Commit 8a8bf469d41bfec0b7eea0a4eeddc7c749b0fe15.
+  2026-11-06 (BM-1, D14 and D19): the phrases "never commit to main" and "never push" in this acceptance line are the historical wording. The workspace rule now follows D14 for main and D19 for pushes. The original evidence above is unchanged.
 
 **T0.6v Setup verification before the base app.** Read only. Status: DONE. Result: GO for current Flutter development on 3.44.2. This ticket verifies the existing FVM and Flutter install. It is not the Flutter modernization workstream (see T0.12). Flutter 3.44.2 is the current working pin, not a permanent project target.
 - Acceptance (historical first run, then closed by re-investigation on 2026-11-03):
@@ -659,7 +732,7 @@ Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commi
 
 **T0.12f Source of Truth accuracy cleanup.** Repo WEB. Status: **DONE** (2026-11-04). Corrects outdated buyer “pending merge” / `main`@`472293c` current-state wording after T0.12e. Preserves historical feature-branch migration path. Nothing pushed.
 
-**T0.4 Owner questions.** Owner answers needed for O4, O6, O8, O9 and the telehealth scope (O11). Update section 3 and 4 when answered.
+**T0.4 Owner questions.** Owner answers needed for O4, O6, O8, O9, O10, O11, O12, O13, O14, O19, O20, O21, O22, O23 and O24. Update section 3 and 4 when answered. O8 already has an as-built note (AB-6): the code includes the delivery fee. It stays open.
 
 **T0.5 Lock contracts.** Acceptance:
 - [ ] Section 5 shapes are final, every [CONFIRM] there is resolved or listed as open.
@@ -683,6 +756,7 @@ Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commi
     Evidence: `avoid_print` on; `AppColorTokens` ThemeExtension (includes vendorRejected / vendorBanned); language via EasyLocalization `setLocale` + `BlocBuilder` in `lib/app.dart`; `lib/firebase_options.dart` placeholder throws until flutterfire configure.
   - [x] 16 planned conventional commits on `dev`, `main` has only the first commit.
     Evidence: partner `main` = `e98d8d2` (README/.gitignore only). `dev` has the 16 planned commits plus follow-up Android/iOS build fixes on the same branch. Nothing pushed.
+    2026-11-06 (BM-1): this acceptance line is historical. T0.12e fast-forwarded vendor `main` to `9c96797` (D14). The evidence above describes the tree at the time T0.6 was closed.
   - [x] Manual steps listed: Firebase app registration, flutterfire configure, config files, keystore, Apple capabilities.
     Evidence: `tender_paws_partner/README.md` and the T0.6 report.
 - Confirmed gates: Android `com.twor2.tenderpawspartner`, iOS `com.paws.tenderpawspartner`, fonts Inter / Plus Jakarta Sans / Cairo (OFL from google/fonts), source commit `505f61f2eb1fcdce201a93fd7d7997f881d9af33`.
@@ -777,14 +851,25 @@ Consistency findings from the 2026-10-29 setup run. Reconciled in this ticket. O
 - [x] tsc stays clean.
   Evidence: `npm run typecheck` (`tsc --noEmit`) exits 0.
 
-**T0.16 Backups.** Repos WEB, BUYER, PANEL, VENDOR APP. Est 1 to 2 h. Status: TODO. Acceptance:
-- [ ] A remote exists for the vendor app.
-- [ ] dev and feature branches are pushed to their remotes.
-- [ ] Pushing main or master is a deliberate separate decision, because Codemagic builds on a push to main in the buyer app.
+**T0.16 Backups.** Repos WEB, BUYER, PANEL, VENDOR APP. Est 1 to 2 h. Status: DONE (2026-11-06). The vendor app remote item stays PENDING. Acceptance:
+- [ ] A remote exists for the vendor app. PENDING. `git ls-remote --heads https://github.com/TwoR-Tech-Marketing/tender_paws_partner.git` returned "Repository not found." Nothing was created. Tracked-file scan of the vendor app (`git ls-files`) found no google-services.json, GoogleService-Info.plist, key.properties, jks, keystore or .env file. Ahmed creates the repo. FINAL PUSH retries the push.
+- [x] dev and the allowed work branches are pushed for WEB, BUYER and PANEL. They did not exist on origin, so the push created them (fast-forward check: no remote tip to be behind).
+  WEB origin tips: dev `3f4cd6f7640273bb75faaa78500ca1c8562e6152`, feature/T0.11-reconcile-skills `62e5feda05d0a59ee9f32461b096a76aaf1b06bc`, feature/T0.15-portal-test-lint `e10e963b1befcd40bef6919a89654fd55e1f2aeb`, feature/T0.9-stale-docs `5dcbba5655679a4e4082f86fa253cf6cfcd875b1`.
+  BUYER origin tips: dev `9d4f357c4fe3eaaf27cb26f1f7307912ce0d6fa9`, backup/main-before-notifications-v2 `ad81917f120fc161da79d5c0aae37a3a015d6908`, backup/notifications-redesign-v2-old `bc268897d714dadba241dea9aef23f2828598b65`, feat/events-checked-in-delete-guard `7a7a008a389bc73804623d350d199e72cb52e1d4`, feature/all-announcement-redirect `bc268897d714dadba241dea9aef23f2828598b65`, feature/flutter-3.47.9-buyer `647cd489636d11876c0e116a8e757f11849d7760`, feature/notifications-redesign `e3cdca0953df1928494cc009861460e81b19a2cc`, feature/notifications-redesign-v2 `610953d8f307495052716e99ea8c9693684c0114`, feature/undo-like-superlike `505f61f2eb1fcdce201a93fd7d7997f881d9af33`, fix/ios27-ipad-launch-crash `b204b76ee3e8a494fce2168423433a0712c785cc`, fix/td-001-td-002-filter-ui `a63d7843f996f8f3ab7fb4d047167788dbe7daa9`.
+  PANEL origin tips: dev `6aa4db59ae4a1f8165c4f20ad516af3332a1b939`, feat/events-renotify-visibility `5250bf335a759543c82f12f976449c66537b964a`.
+- [x] main and master were not pushed. BUYER new-bundle was not pushed. Codemagic builds the buyer app on a push to main.
+
+**T0.17 Register the vendor app in Firebase, Apple and Google Play.** Est 1 to 2 h, rough. Status: TODO. Manual steps by Ahmed plus flutterfire configure. Blocks T0.6b on a real device. Emulator and fake-auth work in T0.6b do not need this ticket.
+
+**BM-1 Reconcile the business model.** Repo WEB. Status: DONE (2026-11-06). Acceptance:
+- [x] D15, D16, D17 and D19 are in section 4. D15 replaces the portal BFF [CONFIRM] in section 1.1. D19 replaces the "no push" line in the standard ticket prompt and the commit rules.
+- [x] Section 3A lists AB-1 to AB-17 with evidence from the state report.
+- [x] docs/parity.md and docs/contracts/README.md exist.
+- [x] The workspace rule follows D14 and D19. The vendor app line says the app exists and the remote is pending.
 
 ### Phase 1 details
 
-All Phase 1 tickets: change the portal and the vendor app in the same ticket, from one contract file, with the same rules, states and strings. Update docs/parity.md.
+All Phase 1 tickets: change the portal and the vendor app in the same ticket, from one contract file, with the same rules, states and strings. Update docs/parity.md. PC-1, PC-2 and PC-3 follow D15 and sit after S1.1. They add the portal features the vendor app does not have yet: signup (PC-1), store profile and profile change requests (PC-2), settings and the notifications inbox (PC-3).
 
 **S1.1 Vendor session and account gates.** Skills: vendor-type-architecture, vendor-suspension-modes. Acceptance:
 - [ ] The portal and the vendor app resolve the same gate for the same account: active, pending, rejected, suspended, banned, not a vendor.
@@ -845,7 +930,7 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 
 **S2.11 Server-side orders and rules hardening.** Acceptance: createOrder validates eligibility, fees and coupons; after the forced update the rules deny client order creation; live rules verified in the console (BR-15).
 
-**S2.12 Remove secret prints in the buyer app.** Est 1 h. The payment token prefix printed in main.dart. Status: TODO.
+**S2.12 Remove secret prints in the buyer app.** Est 1 to 2 h. Status: TODO. Widened 2026-11-06 (BM-1). Remove every print, debugPrint or log of a payment token, key or personal data. At least main.dart lines 21 and 26 and payment_service.dart lines 60 and 247 (re-check the line numbers). Search lib/ for others. Do not change payment behavior. If a secret value is hardcoded, do not move or delete it. List it for a separate ticket with rotation. Live-app fix: branch from main as fix/S2.12-remove-secret-prints. Do not merge into main or dev. Leave the branch for a Shorebird patch. Record the branch and hash here when the branch exists.
 
 **A2.1 to A2.7.** Acceptance follows the titles: suspension modes with a hold case queue (A2.1); admin-only delivery fee in vendorAdminSettings (A2.2); Halo stamping with platformVendor (A2.3); governorate list management and migration (A2.4); provider approval, deals, review moderation, coupons and refunds (A2.5); timers, balances and points functions (A2.6); the hardcoded push token removed and rotated (A2.7).
 
@@ -881,14 +966,18 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - docs/phase-3-foundation.md and the old planning document (../MULTI_VENDOR_SERVICES_PLANNING_PRICING.md) are marked superseded by this file (T0.9). Their old claims are not current.
 - There is one production Firebase project and no staging project.
 - main keeps changing with store releases while dev is built.
-- Unpushed local work: WEB 21 commits, BUYER 33, PANEL 19 (default branches), the vendor app has no remote, and several local-only buyer branches.
+- Unpushed local work: WEB 21 commits, BUYER 33, PANEL 19 (default branches), the vendor app has no remote, and several local-only buyer branches. 2026-11-06 (T0.16): dev and the allowed work branches were pushed for WEB, BUYER and PANEL. main, master and new-bundle were not pushed. The vendor app remote is still PENDING.
 - Firestore rules exist in several repos and the portal copy lacks the events block.
 - Portal lint errors from the audit are fixed and Vitest covers session and product validation (T0.15). Warnings remain outside those 19 errors.
 - Codemagic builds on a push to main in the buyer app.
 - The Events delete guard is not on buyer main while the panel tests expect it.
 - The QR is valid for a minute or two before the first scan.
 - The buyer app prints a payment token prefix at startup.
+- 2026-11-06: full payment tokens are printed in the buyer app at payment_service.dart lines 60 and 247 (state report Part E, line 427). S2.12 covers those prints.
 - The hardcoded push token is still in functions/services.js.
+- 2026-11-06: createdBy and updatedBy on admin products are the hardcoded username ahmedhany1284 (store_screen.dart lines 1122 and 1140, state report Part H item 15).
+- 2026-11-06: Storage rules allow wide writes in both repo copies (state report Part F, lines 617 to 618).
+- 2026-11-06: governorate handlers in functions/governorates.js are HTTPS onRequest (seven handlers, wired from functions/index.js line 23, state report Part E line 571). The handlers set CORS and do not verify an Auth token before reading or writing.
 - The Events attendee import matches by email only.
 
 ---
@@ -913,3 +1002,4 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - 2026-11-05: T0.9 stale docs marked superseded. Banner on docs/phase-3-foundation.md. Banner on the parent planning file MULTI_VENDOR_SERVICES_PLANNING_PRICING.md, which is outside this git repo. Bodies kept. Open questions in that planning file were not resolved. Nothing pushed.
 - 2026-11-05: T0.11 skills reconciled with this file. Hold case wording, Cloud Function enforcement, vendor types, deploy order, piastres boundary, and the portal BFF scope now match. APP_CONTEXT.txt edited locally and left untracked. Nothing pushed.
 - 2026-11-05: T0.15 portal lint and test baseline. The 19 react-hooks/set-state-in-effect errors are gone (`npx eslint . --quiet`). Vitest 3.2.7 added. `npm test` runs 6 tests for session body and product create validation. `npm run typecheck` is clean. Command documented in README.md. Nothing pushed.
+- 2026-11-06: BM-1 reconciles the business model with the 2026-11-06 state report and the services spec. D15, D16, D17 and D19 recorded. Section 3A adds AB-1 to AB-17. BR-6.12, BR-7.5 and BR-12.5 added. O19 to O24 added. T0.16 marked DONE with remote tips, and the vendor app remote left PENDING. T0.17, PC-1, PC-2 and PC-3 added. S2.12 widened. docs/parity.md and docs/contracts/README.md added. Workspace rule aligned with D14 and D19.

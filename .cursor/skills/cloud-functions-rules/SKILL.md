@@ -4,7 +4,7 @@ description: Use when a feature needs server-side timers, triggers or side effec
 ---
 # Cloud Functions rules
 
-- The portal repo has no Cloud Functions. They live in tinderpaws_panel/functions (existing: vendor_signup.js, vendors.js, orders_split.js, service_request.js, services.js).
+- The portal repo has no Cloud Functions. They live in tinderpaws_panel/functions (existing: vendor_signup.js, vendors.js, orders_split.js, service_request.js, services.js). service_request.js and services.js are not required by functions/index.js. Whether those two are deployed is UNKNOWN. Vendor features that carry business rules are shared functions used by the portal and the vendor app (D15).
 - Needed functions: no-show eligibility and notification, post-visit review prompt, balance and ledger updates, points ledger, subscription renewal and grace reminders.
 - Functions must be idempotent. Re-running the same trigger must not double credit money or points.
 - Validate `vendorId` and appointment state inside the function. Never trust client payloads.
