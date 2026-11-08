@@ -436,7 +436,7 @@ service_request.js and services.js are in the repo and are not required by funct
 
 ## 7. Tickets
 
-Estimates are focused hours for one developer using Cursor, roughly plus or minus 35 percent. 2026-11-06 (BM-1): T0.17, PC-1, PC-2 and PC-3 add about 22 to 34 hours (rough). S2.12 moves from 1 hour to 1 to 2 hours. Running total about 572 to 800 hours. BM-3 decisions (D20 to D29) recorded in this commit; ticket and release plan updates follow in the next commit.
+Estimates are focused hours for one developer using Cursor, roughly plus or minus 35 percent. 2026-11-08 (BM-3): total roughly 600 to 850 hours including DL-1, CART-1, DOC-1, VC-1, PTS-1, PAY-1, TH-1 to TH-3 and GOV-1, against a 5-week plan with a 2 to 3 week extension (D29). Weekly checkpoints decide cuts early. Earlier running notes: about 572 to 800 hours after BM-1; BM-1 and BM-2 and BM-3 themselves are documentation and are not added again as build hours.
 
 ### Index
 
@@ -476,13 +476,15 @@ Phase 0: setup
 | T0.17 | Register the vendor app in Firebase, Apple and Google Play | VENDOR APP | 1 to 2 rough | TODO |
 | BM-1 | Reconcile the business model, parity and the workspace rule | WEB | done this session | DONE |
 | BM-2 | Record security findings from S2.12 (SEC-1, SEC-2, O25) | WEB | docs | DONE |
-| BM-3 | Record decisions D20 to D29 | WEB | docs | IN PROGRESS |
+| BM-3 | Record decisions D20 to D29, release plan, parked work and risk register | WEB | docs | DONE |
+| GOV-1 | Governorates HTTPS endpoints auth check and lock to admins | PANEL | 1 to 3 | TODO (week 1 day 1) |
 
 Phase 1: portal and vendor app together (every ticket is done in both)
 
 | Id | Title | Repos | Est (h) | Week | Status |
 |---|---|---|---|---|---|
 | S1.1 | Account states in both apps, including rejected and banned; reject keeps the account | WEB, VENDOR APP, PANEL | 20 to 25 | 1 | TODO |
+| DOC-1 | Vendor documents: admin list per type, upload, review, 30-day window | WEB, VENDOR APP, PANEL | 14 to 20 | 1 | TODO |
 | PC-1 | Vendor signup and signup status in the vendor app | WEB, VENDOR APP | 8 to 12 rough | 3 | TODO |
 | PC-2 | Store profile and profile change requests in the vendor app | WEB, VENDOR APP | 8 to 12 rough | 3 | TODO |
 | PC-3 | Settings and notifications inbox in the vendor app | WEB, VENDOR APP | 5 to 8 rough | 3 | TODO |
@@ -490,7 +492,10 @@ Phase 1: portal and vendor app together (every ticket is done in both)
 | S1.3 | Coverage picker | WEB, VENDOR APP | 16 to 20 | 2 | TODO |
 | S1.4 | Products | WEB, VENDOR APP | 16 to 22 | 2 | TODO |
 | S1.5 | Orders including the hold state | WEB, VENDOR APP | 11 to 14 | 2 | TODO |
+| DL-1 | Deal model per branch; commission on items only; ledger | WEB, VENDOR APP, PANEL | 12 to 18 | 2 | TODO |
 | S1.6 | Earnings, notifications and push | WEB, VENDOR APP, PANEL | 13 to 16 | 3 | TODO |
+| VC-1 | Vendor coupons and admin coupons | WEB, VENDOR APP, PANEL | 12 to 16 | 3 | TODO |
+| PAY-1 | Payouts: cycle per vendor, admin recording, vendor statement | WEB, VENDOR APP, PANEL | 10 to 14 | 3 | TODO |
 | S1.7 | Vendor type and clinic or groomer onboarding | WEB, VENDOR APP | 12 to 16 | 3 | TODO |
 | S1.8 | Branches and services | WEB, VENDOR APP | 16 to 22 | 3 | TODO |
 | S1.9 | Availability editor | WEB, VENDOR APP | 27 to 37 | 4 | TODO |
@@ -499,6 +504,7 @@ Phase 1: portal and vendor app together (every ticket is done in both)
 | S1.12 | Reviews and dashboard | WEB, VENDOR APP | 16 to 20 | 4 | TODO |
 | S1.13 | Deals view and statement (no subscription) | WEB, VENDOR APP | 8 to 12 | 4 | TODO |
 | S1.14 | Suspension states on the vendor side | WEB, VENDOR APP | included in S1.2 and S1.5 | 1 to 2 | TODO |
+| TH-1 | Telehealth doctor side: chat inbox, queue, end session | WEB, VENDOR APP, PANEL | 16 to 22 | 4 | TODO |
 
 Phase 2: buyer app and admin panel
 
@@ -507,6 +513,7 @@ Phase 2: buyer app and admin panel
 | S2.1 | Location-first browsing | BUYER | 14 to 18 | 5 | TODO |
 | S2.2 | Eligibility with hidden and view-only vendors | BUYER | 14 to 18 | 5 | TODO |
 | S2.3 | Governorate ids, piastres and per vendor delivery fee at checkout | BUYER | 8 to 12 | 5 | TODO |
+| CART-1 | Single-vendor cart | BUYER | 6 to 10 | 5 | TODO |
 | S2.5 | Service discovery and booking | BUYER | 25 to 33 | 6 to 8 | TODO |
 | S2.6 | Fawaterak for appointments, points and coupons | BUYER | 15 to 22 | 6 to 8 | TODO |
 | S2.7 | Reviews and no-show prompts | BUYER | 12 to 16 | 6 to 8 | TODO |
@@ -515,6 +522,9 @@ Phase 2: buyer app and admin panel
 | S2.10 | Apple in-app purchase plus Google Play Billing switch (own track, before next store submission) | BUYER, PANEL | 20 to 30 | own track | TODO |
 | S2.11 | Server-side order creation and rules hardening | BUYER, PANEL | 25 to 40 | 5 | TODO |
 | S2.12 | Remove every payment token print in the buyer app, including main.dart and payment_service.dart | BUYER | 1 to 2 | Done, branch ready to ship | REVIEW |
+| PTS-1 | Points earning, expiry, reversal | BUYER, PANEL | 8 to 12 | 6 to 8 | TODO |
+| TH-2 | Buyer telehealth checkout and chat | BUYER, PANEL | 12 to 16 | 6 to 8 | TODO |
+| TH-3 | Admin doctors and price | PANEL | 6 to 8 | 6 to 8 | TODO |
 | SEC-1 | Move Fawaterak tokens out of the buyer app into a PANEL callable secret | BUYER, PANEL | 6 to 10 | weeks 1 to 2 | TODO |
 | SEC-2 | Restrict the Google Maps API key in Google Cloud console | BUYER (manual) | 0.5 | now | TODO |
 | A2.1 | Suspension modes and hold case queue | PANEL | 14 to 20 | 5 | TODO |
@@ -1037,6 +1047,33 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 
 **S1.14 Suspension states on the vendor side.** Covered by S1.1, S1.2 and S1.5: banners, reasons, blocked operational routes, held items.
 
+**DOC-1 Vendor documents.** Repos WEB, VENDOR APP, PANEL. Week 1. Est 14 to 20 h. Skills: provider-onboarding. Acceptance:
+- [ ] Admin defines the required document list per vendor type in the panel (owner enters the list; build does not invent the list).
+- [ ] Vendors upload documents in the portal and the vendor app; admin reviews them.
+- [ ] Existing approved vendors keep selling and get 30 days to upload (D25).
+- [ ] Contract stub docs/contracts/documents.md locked in this ticket.
+
+**DL-1 Deal model per branch; commission on items only; ledger.** Repos WEB, VENDOR APP, PANEL. Week 2. Est 12 to 18 h. Skills: deals-and-billing, money-piastres. Acceptance:
+- [ ] Deals set per branch with apply-to-all; vendors without branches have one deal (D22).
+- [ ] Types: fixed fee per order and/or percentage of item value. Fees on items only, never delivery. Gateway fee inside TenderPaws' fee. Default 10 percent when no deal.
+- [ ] Ledger entries reflect the model. Fixes AB-6. Contract docs/contracts/deals.md and earnings.md updated.
+- [ ] setVendorDeal callable shape recorded in section 6.
+
+**VC-1 Vendor coupons and admin coupons.** Repos WEB, VENDOR APP, PANEL. Week 3. Est 12 to 16 h. Skills: points-and-coupons. Acceptance:
+- [ ] Admin coupons funded by TenderPaws (vendor paid on full price). Vendor coupons funded by the vendor (fees on discounted price) (D23).
+- [ ] One coupon per checkout; expiry and per-user limit. Vendors create coupons in portal and app.
+- [ ] Contract stub docs/contracts/coupons.md locked in this ticket.
+
+**PAY-1 Payouts.** Repos WEB, VENDOR APP, PANEL. Week 3. Est 10 to 14 h. Skills: deals-and-billing, money-piastres. Acceptance:
+- [ ] Admin sets weekly or monthly payout cycle per vendor (D21).
+- [ ] Admin records manual payout ledger entries. Vendors see a statement in portal and app.
+- [ ] Contract stub docs/contracts/payouts.md locked in this ticket.
+
+**TH-1 Telehealth doctor side.** Repos WEB, VENDOR APP, PANEL. Week 4. Est 16 to 22 h. Skills: appointments-domain (chat reuse). Acceptance:
+- [ ] Doctor vendor type uses portal and vendor app with a chat inbox (D27).
+- [ ] Queue: paid chat waits; any available doctor accepts; 15-minute timeout flags support for manual refund.
+- [ ] Doctor can end the chat; a new chat needs a new payment. Photos allowed, no video.
+- [ ] Contract stub docs/contracts/telehealth.md locked in this ticket. Doctor pay terms remain an owner detail.
 
 ### Phase 2 details
 
@@ -1046,6 +1083,7 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 
 **S2.3 Governorate ids, piastres and delivery fee.** Acceptance: orders store governorate ids, name matching and unused fee helpers removed, per vendor admin-set fee at checkout, Halo governorate fees kept, money in piastres at the boundaries, the silent 70 fallback replaced by an explicit error if missing (AB-7).
 
+**CART-1 Single-vendor cart.** Repo BUYER. Week 5. Est 6 to 10 h. Acceptance: cart holds items from one store only; adding from another store asks to clear the cart; Halo is its own store; createOrder rejects mixed carts (D20). Works with S2.11.
 
 **S2.5 Service discovery and booking.** Acceptance: providers, branches, services, availability, booking, home visit, statuses visible to the buyer.
 
@@ -1061,6 +1099,13 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 
 **S2.11 Server-side orders and rules hardening.** Acceptance: createOrder validates eligibility, fees and coupons; after the forced update the rules deny client order creation; live rules verified in the console (BR-15).
 
+**PTS-1 Points earning, expiry, reversal.** Repos BUYER, PANEL. Weeks 6 to 8. Est 8 to 12 h. Skills: points-and-coupons, money-piastres. Acceptance: TenderPaws program, 1 point per EGP paid (floor of paid piastres / 100), each point expires 12 months after earned, reversed on refund (D24). Redemption out of this release. Contract stub docs/contracts/points.md locked in this ticket.
+
+**TH-2 Buyer telehealth checkout and chat.** Repos BUYER, PANEL. Weeks 6 to 8. Est 12 to 16 h. Acceptance: buyer pays configurable price, enters queue, chats with accepting doctor; reuses buyer app chat; photos yes, video no (D27).
+
+**TH-3 Admin doctors and price.** Repo PANEL. Weeks 6 to 8. Est 6 to 8 h. Acceptance: admin manages doctor vendors and the telehealth price; doctor pay terms remain an owner detail.
+
+**GOV-1 Governorates HTTPS endpoints auth check and lock to admins.** Repo PANEL. Week 1 day 1. Est 1 to 3 h. Acceptance: read-only check of create, update and delete handlers first; then lock to admins if open. Evidence recorded under this ticket.
 
 **S2.12 Remove secret prints in the buyer app.** Est 1 to 2 h. Status: REVIEW (2026-11-06). Branch left for Shorebird. Not merged into main or dev.
 - BUYER branch: `fix/S2.12-remove-secret-prints` at `c1d2898d0cd4b90d3c1d26555b5fecd0542f5cc0`. Base was local main `647cd48`.
@@ -1081,6 +1126,42 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 
 **T3.1 to T3.6.** Integration testing of all clients against the emulator and a production copy, migration rehearsal, old-version tests, bug-fix buffer, store submissions with Apple review time, then the merge of dev into main only after sign-off.
 
+### Release plan (D29)
+
+Week 1 starts 2026-11-09. Weeks 1 to 4: vendor portal and vendor app. Week 5: buyer and admin. Weeks 6 to 8: extension (buyer booking, telehealth, in-app purchase, testing, store release). Weekly checkpoint.
+
+| Week | Tickets |
+|---|---|
+| 1 | GOV-1 (day 1), S1.1, S1.2, DOC-1, S1.14 (with S1.2) |
+| 2 | S1.3, S1.4, S1.5, DL-1, S1.14 (with S1.5) |
+| 3 | S1.6, PC-1, PC-2, PC-3, VC-1, PAY-1, S1.7, S1.8 |
+| 4 | S1.9, S1.10, S1.11, S1.12, S1.13, TH-1 |
+| 5 | S2.1, S2.2, S2.3, CART-1, S2.8, S2.11, A2.1 to A2.7 |
+| 6 to 8 | S2.5, S2.6, S2.7, TH-2, TH-3, PTS-1, S2.9, T3.1 to T3.6 (T3.5 and T3.6 in week 8) |
+| Own track / parallel | S2.10 (before next store submission), SEC-1 (weeks 1 to 2), SEC-2 (now), S2.12 ship (now) |
+
+### Parked work (outside the multi-vendor release)
+
+Parked, not in the multi-vendor release. Not dropped.
+
+| Item | Repo | State | Next step |
+|---|---|---|---|
+| Events feature (Discopawty): admin events, Excel import, moderators, QR tickets, server check-in | BUYER, PANEL | Built; delete guard on branch feat/events-checked-in-delete-guard not merged | Events track EV-1 to EV-4, T0.8 |
+| Notifications screen redesign v2 (both tabs) | BUYER | Planned as a store release from main | After the multi-vendor release or with a store build |
+| Push tap routing (announcement type All opens the Notifications screen) | BUYER | Superseded by work on main | None |
+| Undo on the swipe card also undoes like and super like | BUYER | Cubit tests exist on main | Verify on device |
+| TD-001 back button on cards not working | BUYER | Open | Later |
+| TD-002 home feed lags while scrolling | BUYER | Open | Later |
+| Filter screen redesign (breed list, many options) | BUYER | Branch fix/td-001-td-002-filter-ui | Later |
+| iOS 27 iPad launch crash fix (UIScene) | BUYER | Branch fix/ios27-ipad-launch-crash | Confirm merged state before next store build |
+| Deprecated APIs (WillPopScope, Radio groupValue) | BUYER | 59 analyzer warnings | Clean during S2 tickets that touch them |
+| Toolchain warnings: cloud_functions Kotlin plugin, CocoaPods plus SPM hybrid, Gradle 9 and AGP 9 soon required | BUYER, VENDOR APP | Builds green | Upgrade when Flutter forces it |
+| Portal ESLint warnings | WEB | 112 warnings, 0 errors | Clean during S1 tickets |
+| Crashlytics, Play Console, App Store Connect baselines | BUYER | Not collected | Ahmed exports before the store release |
+| Local stashes: buyer wip-ios-unrelated, panel GitHub Desktop stash | BUYER, PANEL | Local only | Review and drop or commit |
+| Old local branches (new-bundle, backup/*, notifications branches) | BUYER | Pushed as backups | Clean up after release |
+| Design skills (taste-skill, impeccable, Emil Kowalski) | All | Local, git-excluded | Keep |
+
 ### Track E: Events hardening
 
 Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
@@ -1096,6 +1177,52 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 ---
 
 ## 8. Risks and known issues
+
+Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the first four this week.
+
+### 8.1 Security (in the order we handle them)
+
+| # | Risk | Severity | Mitigation | Ticket | When |
+|---|---|---|---|---|---|
+| 1 | Governorates HTTPS endpoints (create, update, delete) may have no auth | High if confirmed | Read-only check, then lock to admins | GOV-1 | Week 1, day 1 |
+| 2 | Google Maps key unrestricted in the buyer app | Low | Restrict to app ids and Maps APIs | SEC-2 | Now |
+| 3 | Payment token prints in the live app | Medium | Fix ready; ship as Shorebird patch | S2.12 | Now |
+| 4 | Live rules unknown; repo copies leave store open and promo codes writable; Storage allows wide writes | High | Export live rules, one canonical file, tighten | T0.14 | This week |
+| 5 | Fawaterak production and staging tokens hardcoded in the live app and git history | High | Server function holds the token, ship, force update, rotate | SEC-1 | Weeks 1 to 2 |
+| 6 | Digital goods sold outside Apple in-app purchase | High (store rejection) | In-app purchase on Apple, Android switch | S2.10 | Before next store submission |
+| 7 | Hardcoded device push token in services.js | Medium | Remove and rotate | A2.7 | Week 5 |
+| 8 | Orders written by the buyer client | Medium | Server createOrder, rules deny client writes | S2.11 | Week 5 |
+
+### 8.2 Delivery zones
+
+| # | Risk | Mitigation | Ticket |
+|---|---|---|---|
+| 9 | Old app versions ignore coverage and allow orders from vendors that do not deliver | Server rechecks eligibility at createOrder; forced update | S2.11, S2.9 |
+| 10 | Shops without coverage become invisible | Coverage required before a shop goes active; admin list of shops without coverage | S1.3, A2 |
+| 11 | Buyer denies location permission | Map picker fallback; nothing shown until a location is set | S2.1 |
+| 12 | Buyer changes location with a cart | Recheck cart, remove undeliverable items with a message (single-vendor cart makes this one store) | S2.2, CART-1 |
+| 13 | Migrating governorate names to ids breaks data | Idempotent script, dry run, rehearsal on a copy | S1.2, T3.2 |
+| 14 | No official governorate boundary data | Open dataset with recorded licence; zone mode works without it | S1.2, O16 |
+| 15 | Halo hidden by incomplete category mapping (fail closed) | Admin report of Halo categories without governorates | A2.3, A2.4 |
+| 16 | The 70 EGP fallback charges the wrong fee | Per-vendor fee, explicit error if missing | S2.3 |
+
+### 8.3 Delivery of the project
+
+| # | Risk | Mitigation | Ticket |
+|---|---|---|---|
+| 17 | Scope is larger than 5 weeks (about 600 to 850 hours) | Bigger prompts, parallel agents, weekly checkpoint, extension of 2 to 3 weeks, cut list ready | D29 |
+| 18 | One production Firebase, no staging | Emulators for all tests; migration rehearsal on a copy | D18, T3.2 |
+| 19 | A push to main triggers a Codemagic build | Never push main or master from prompts | D19 |
+| 20 | Google may reject Fawaterak for digital goods on Android | Remote switch per platform, no rebuild needed | D26 |
+| 21 | Vendor app not registered in Firebase or stores | Register early; emulator and fake mode until then | T0.17 |
+
+### 8.4 Resolved
+
+- Unpushed local work (all four repos now on GitHub, T0.16).
+- Stale and conflicting documents (marked superseded, T0.9, T0.11, BM-1).
+- Portal lint errors (T0.15).
+
+### 8.5 History (pre BM-3 bullet list)
 
 - Production Firestore rules look wide open and may not be deployed (store documents readable and writable, promo codes writable). Verify in the console.
 - Orders are written by the buyer app, so eligibility cannot be enforced yet.
@@ -1128,7 +1255,7 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 
 ## 9. Changelog
 
-- 2026-11-08: BM-3 (decisions). Section 0 decision rule. D20 to D29 recorded; D9 superseded by D25. Open items closed with answered by Dn except O6, O15, O16, O18 and three owner details. BR dated notes. AB Fate and Ticket columns. Planned endpoints from alignment 9.3. S1.1, S1.13 and S2.10 rescoped in details.
+- 2026-11-08: BM-3 brings the source of truth in line with the Master Alignment. Section 0 decision rule. D20 to D29 recorded; D9 superseded by D25. Open items closed with answered by Dn except O6, O15, O16, O18 and three owner details. BR dated notes. AB Fate and Ticket columns. New tickets DL-1, CART-1, DOC-1, VC-1, PTS-1, PAY-1, TH-1 to TH-3, GOV-1. Rescoped S1.1, S1.13, S2.10. Release plan, parked work, 21-row risk register. Contracts and parity updated. Skills wording checked.
 - 2026-10-28: File created from the project chat. Contains the business requirements and decisions agreed so far, the architecture decision that Cloud Functions are the endpoints (D1), the data contract proposals, the endpoint registry, and all tickets with estimates and acceptance criteria. Added tickets T0.0, T0.10, T0.11, S2.10, S2.11, A2.7 and T0.9 from the alignment report.
 - 2026-10-29: Setup run on dev. T0.0, T0.1 and T0.1b are done. T0.6v is blocked because fvm 3.44.2 shows Need setup. Consistency findings are listed under T0.11. Nothing pushed.
 - 2026-11-01: T0.6 vendor app base created at ../tender_paws_partner on branch dev (16 conventional commits after main seed). Analyze and tests green. Ticket moved to REVIEW. Nothing pushed.
