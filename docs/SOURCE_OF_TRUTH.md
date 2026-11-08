@@ -343,7 +343,7 @@ Existing in tinderpaws_panel/functions: vendor_signup-reviewVendorSignupRequest,
 
 | Name | Caller | Purpose | Ticket | Status |
 |---|---|---|---|---|
-| vendor_session-resolveVendorSession | Vendor portal and vendor app | Port of resolve-vendor-session.server.ts. Returns kind and profile | T0.6b | READY (contract locked) |
+| vendor_session-resolveVendorSession | Vendor portal and vendor app | Port of resolve-vendor-session.server.ts. Returns kind and profile | T0.6b | DONE |
 | resolveBuyerEligibility | Buyer | From lat and lng return the governorate id, eligible vendor ids with orderable flags, and the Halo rule | S1.2, S2.2 | TODO |
 | createOrder | Buyer | Create an order with eligibility, fees, coupon and piastres checked on the server | S2.11 | TODO |
 | suspendVendor (extended) | Admin | Suspend with mode, hold open orders and appointments, create a hold case | S1.2, A2.1 | TODO |
@@ -393,7 +393,7 @@ Phase 0: setup
 | T0.6c | Alignment and readiness check | read only | 1 | DONE (first run). Evidence is in chat reports, not in commits. |
 | T0.6 | Create the vendor app base | VENDOR APP | 5 to 8 | DONE |
 | T0.6f | Vendor app base polish | VENDOR APP | 1 to 2 | DONE |
-| T0.6b | Vendor user repository, authentication, route gates, login screens | VENDOR APP | 5 to 6 | TODO |
+| T0.6b | Vendor user repository, authentication, route gates, login screens | VENDOR APP, PANEL | 5 to 6 | DONE |
 | T0.7 | Buyer app location and catalog report | read only | 1 | DONE. Evidence is in chat reports, not in commits. |
 | T0.8 | Events branches decision | none | 0.5 | OPEN. The Events delete guard branch and the panel branch feat/events-renotify-visibility are not merged; see track E. |
 | T0.9 | Update stale docs | WEB | 1 to 2 | DONE |
@@ -785,13 +785,21 @@ Repo BUYER `tinder_paws`. Branch **`feature/flutter-3.47.9-buyer`**. Start commi
 - [x] `fvm flutter analyze` clean and `fvm flutter test` passing.
   Evidence: analyze `No issues found!`; test `All tests passed!` (21 tests). Four partner commits on `dev`: `9dadc99`, `2acb662`, `78459b5`, `1e47aa4`. Nothing pushed.
 
-**T0.6b Vendor user repository and authentication.** Repo VENDOR APP. Depends on T0.6, T0.5 and decisions O5. Acceptance:
-- [ ] One repository instance with stored subscriptions, a stream that replays the latest value, disposal, no persisted cache.
-- [ ] Vendor model with snake_case fields, status pending, rejected, active, suspended, banned and an is-vendor flag. Pending and rejected vendors may have no vendors document, so the gate also reads the signup request.
-- [ ] One authentication bloc, a pure accountGateOf, localized error messages.
-- [ ] Router redirects driven by auth state, a pure resolveRedirect with tests including the redirect parameter safety.
-- [ ] Splash, login, forgot password and account status screens, logout with confirmation.
-- [ ] Tests for the repository, bloc, redirects and screens.
+**T0.6b Vendor user repository and authentication.** Repos VENDOR APP and PANEL. Depends on T0.6, T0.5. O5 stays OPEN (Auth disable policy is not resolved here; the app maps callable kinds only). GATE C additions locked 2026-11-08. Acceptance:
+- [x] One repository instance with stored subscriptions, a stream that replays the latest value, disposal, no persisted cache.
+  Evidence: `packages/vendor_repository` (`FirebaseVendorRepo`, `FakeVendorRepo`). Replay on listen. No SharedPreferences session cache.
+- [x] Vendor model with snake_case fields, status pending, rejected, active, suspended, banned and an is-vendor flag. Pending and rejected vendors may have no vendors document, so the gate also reads the signup request.
+  Evidence: `Vendor` in `packages/vendor_repository`. Session kinds come from PANEL `vendor_session-resolveVendorSession` (port of the portal resolver, including signup request reads).
+- [x] One authentication bloc, a pure accountGateOf, localized error messages.
+  Evidence: `AuthenticationBloc`, `accountGateOf`. Unknown kind maps to not_vendor with contact-support copy. EN/AR under `auth.*`.
+- [x] Router redirects driven by auth state, a pure resolveRedirect with tests including the redirect parameter safety.
+  Evidence: `resolve_redirect.dart` + `test/features/auth/resolve_redirect_test.dart`.
+- [x] Splash, login, forgot password and account status screens, logout with confirmation.
+  Evidence: auth screens under `lib/features/auth/presentation/view/`. Settings sign-out uses `LogoutConfirmDialog`.
+- [x] Tests for the repository, bloc, redirects and screens.
+  Evidence: package + `test/features/auth/*`. GATE C: session failure stays signed in with retry (`sessionError`); unknown kind → notVendor + support body; suspended copy carries reason and expiry.
+- [x] PANEL callable `vendor_session-resolveVendorSession` with emulator smoke against seed accounts.
+  Evidence: `functions/vendor_session.js`, `npm run test:session:emu` (active, pending, suspended reason/expiry, banned, buyer, not_vendor).
 
 **T0.9 Stale docs.** Status: DONE (2026-11-05). docs/phase-3-foundation.md said the mobile app is 1.0.10+15 and the portal products API is unbuilt. The old planning document disagrees with this file. Both are marked superseded. Their bodies are kept as history.
 - [x] docs/phase-3-foundation.md is marked superseded by this file.
@@ -1054,3 +1062,4 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - 2026-11-06: T0.10 emulator suite. D18 closes O7. PANEL `demo-tenderpaws` emulators, seed, suspend smoke test (`npm run test:emu` exit 0). Rules from buyer copy under `emulator-rules/` until T0.14. docs/emulator.md added.
 - 2026-11-06: T0.14 GATE A. Live rules exports missing. Repo inventory written under the ticket. Status BLOCKED until the exports exist.
 - 2026-11-06: T0.5 locks docs/contracts for Phase 1 and PC domains. vendor_session-resolveVendorSession registered. Section 5 points at the contracts folder.
+- 2026-11-08: T0.6b DONE. PANEL `vendor_session-resolveVendorSession` (emulator smoke). VENDOR APP `vendor_repository` + auth gates/screens. GATE C: session error+retry (no fake active, no auto logout); accountGateOf maps kind only (unknown → not_vendor + support); suspended shows reason/expiry. O5 left OPEN.
