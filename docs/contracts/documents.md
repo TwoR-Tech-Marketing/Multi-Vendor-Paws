@@ -55,8 +55,13 @@ Documents are required for every vendor type, shops included (D25). The exact li
 | `vendor_documents-setVendorDocumentRequirements` | Admin | Admin Bearer / callable admin |
 | `vendor_documents-submitVendorDocument` | Vendor | Signed-in owner |
 | `vendor_documents-reviewVendorDocument` | Admin | Admin |
+| `vendor_documents-getVendorDocumentRequirements` | Vendor or admin | Signed-in |
+| `vendor_documents-getMyVendorDocuments` | Vendor | Signed-in owner (resolves vendorType server-side) |
+| `vendor_documents-listVendorsMissingDocuments` | Admin | Admin; optional `vendorType` filter; returns missing requirement ids and `deadlineAt` |
 
 Approve signup (`vendor_signup-reviewVendorSignupRequest`) fails with `failed-precondition` until all required documents for the vendor type are approved.
+
+2026-11-08 (fix/W1-cleanup): vendor app reads requirements and own documents only through `getMyVendorDocuments` (no client Firestore). Panel requirements editor has a vendor type picker; missing-docs list uses `listVendorsMissingDocuments`.
 
 ## Storage
 
