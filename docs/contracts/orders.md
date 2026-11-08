@@ -27,12 +27,19 @@ Created by orders_split. Fields: subtotalPiastres, deliveryFeePiastres, discount
 |---|---|---|
 | orders_split.splitOrderOnCreate | System | Live Firestore onCreate (legacy until forced update) |
 | orders_split.splitOrderById | Admin/system | Live callable |
-| Portal BFF `/api/vendor/orders` | Portal | Live. Moves in S1.5 (D15) |
+| Portal BFF `/api/vendor/orders` | Portal | Live. Default via `NEXT_PUBLIC_VENDOR_ORDERS_DATA_SOURCE=bff` |
+| Shared order callables | Portal + vendor app | S1.5 |
 | createOrder | Buyer | Planned S2.11, CART-1. Single-vendor check on the server |
 
-### Vendor order status updates (S1.5)
+### Shared callables (S1.5)
 
-Request: vendorOrderId, nextStatus. Auth: active vendor owning the vendorOrder. Held orders cannot be changed by the vendor.
+| Callable | Purpose |
+|---|---|
+| `vendor_orders-listVendorOrders` | Paged list; optional status filter |
+| `vendor_orders-getVendorOrder` | One vendorOrder |
+| `vendor_orders-updateVendorOrderStatus` | Allowed transitions; rejects `holdState: held` |
+
+Request: vendorOrderId, nextStatus. Auth: active vendor owning the vendorOrder. Held orders cannot be changed by the vendor. Fee/net prefer DL-1 fields (`platformFeePiastres`, `vendorNetPiastres`) when present.
 
 ## Rules needed
 

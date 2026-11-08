@@ -59,6 +59,10 @@ export const Strings = {
       title: "Settings",
       subtitle: "Account, preferences, and support",
     },
+    coverage: {
+      title: "Delivery coverage",
+      subtitle: "Choose where your store delivers",
+    },
     notifications: {
       title: "Notifications",
       subtitle: "Orders, account updates, and store alerts",
@@ -225,6 +229,33 @@ export const Strings = {
     snapshotInactiveHint:
       "Order and earnings stats appear after your store is activated.",
     legalPlaceholder: "Legal documents will be published here soon.",
+    coverageShortcut: "Set delivery coverage",
+  },
+  coverage: {
+    title: "Delivery coverage",
+    subtitle:
+      "Pick a delivery zone on the map, or select the governorates you serve. Buyers only see your store when they are inside your coverage.",
+    modeLabel: "Coverage mode",
+    modeZone: "Zone on map",
+    modeGovernorates: "Governorates",
+    latLabel: "Latitude",
+    lngLabel: "Longitude",
+    radiusLabel: "Radius (meters)",
+    save: "Save coverage",
+    saving: "Saving…",
+    saveSuccess: "Coverage saved.",
+    saveError: "Could not save coverage. Please try again.",
+    loadError: "Could not load coverage. Please try again.",
+    radiusInvalid: "Radius must be between 500 and 100000 meters.",
+    governoratesRequired: "Select at least one governorate.",
+    mapsKeyMissing:
+      "Maps is not configured for this environment. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to continue.",
+    mapsLoadError: "Could not load the map. Check your connection and try again.",
+    notForVendorType: "Delivery coverage is only available for store accounts.",
+    missingBannerTitle: "Set your delivery coverage",
+    missingBannerMessage:
+      "Buyers cannot order from you until you choose a delivery zone or governorates.",
+    missingBannerCta: "Set coverage",
   },
   errors: {
     generic: "Something went wrong. Please try again.",
@@ -474,6 +505,9 @@ export const Strings = {
     updateError: "We couldn't update this order. Please try again.",
     updateSuccess: "Order status updated.",
     invalidStatusTransition: "Choose a different status to update this order.",
+    holdBannerTitle: "Order on hold",
+    holdBannerMessage:
+      "This order is held while your account is restricted. You cannot change its status until the hold is lifted.",
     detailTitle: "Order details",
     detailSubtitle: "Review items and update fulfillment status",
     customerSection: "Customer",

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "check:maps-key": "node scripts/check-maps-key.mjs",
+    "build": "npm run check:maps-key && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",

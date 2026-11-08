@@ -15,7 +15,7 @@ Locked shapes from code (state report Part E). Suspension modes (hidden / view_o
 | storeName, contactEmail, ownerName, email, logoUrl | string | profile / signup |
 | vendorType | "store" \| "clinic" \| "groomer" | proposed, default store. Not written yet |
 | suspension.mode | "hidden" \| "view_only" | proposed for S1.2. Not written yet |
-| deliveryCoverage | object | proposed for S1.2 / S1.3. Not written yet |
+| deliveryCoverage | object | S1.3 writable via `vendors-setVendorDeliveryCoverage` |
 
 ## Collection: users/{uid}
 

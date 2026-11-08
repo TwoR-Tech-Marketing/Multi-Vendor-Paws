@@ -379,7 +379,7 @@ Locked by T0.5 (2026-11-06). Canonical files: docs/contracts/*.md. Money is inte
 
 Summary (details in the contract files):
 
-- vendors/{uid}: locked live fields in docs/contracts/vendors.md. Proposed additions vendorType, suspension.mode, deliveryCoverage stay proposed until S1.2 / S1.3. suspension.mode Auth behavior answered by D28 (O5).
+- vendors/{uid}: locked live fields in docs/contracts/vendors.md. vendorType, suspension.mode, deliveryCoverage locked by S1.2 / S1.3. suspension.mode Auth behavior answered by D28 (O5).
 - vendor_signup_requests/{id}: status pending, approved, rejected. docs/contracts/signup.md.
 - vendorAdminSettings/{vendorId} (new): deliveryFeePiastres. Admin and functions only. Introduced with A2.2.
 - vendorDeals/{vendorId} (new): deal fields. Relation to commissionConfig answered by D22 (O19). See docs/contracts/deals.md (stub until DL-1).
@@ -414,7 +414,12 @@ Existing in tinderpaws_panel/functions: vendor_signup-reviewVendorSignupRequest,
 | setVendorDeliveryFee | Admin | Set the admin-only delivery fee | A2.2 | TODO |
 | vendors-setVendorDeal | Admin | Set vendorDeals/{vendorId} (type, fixed, percentage, apply to all, history) | DL-1, A2.5 | DONE (2026-11-08) |
 | registerVendorFcmToken | Vendor | Register the push token of a vendor device | S1.6 | TODO |
-| Shared product, order, earnings, profile, settings callables | Portal and vendor app | Move portal BFF business rules to shared functions (D15) | S1.4, S1.5, S1.6, PC-2, PC-3 | TODO |
+| vendors-setVendorDeliveryCoverage | Store vendor | Save deliveryCoverage (zone or governorates) | S1.3 | DONE |
+| vendors-getVendorDeliveryCoverage | Vendor | Read own coverage | S1.3 | DONE |
+| vendors-listGovernoratesForCoverage | Vendor | Active governorate options for picker | S1.3 | DONE |
+| vendor_products-list/get/create/update/archive/setStatus | Portal + vendor app | Shared product CRUD; portal flag default BFF | S1.4 | DONE |
+| vendor_orders-list/get/updateStatus | Portal + vendor app | Shared orders; held locked; portal flag default BFF | S1.5 | DONE |
+| Shared earnings, profile, settings callables | Portal and vendor app | Remaining D15 moves | S1.6, PC-2, PC-3 | TODO |
 | vendor_documents-setVendorDocumentRequirements | Admin | Define required docs per vendor type | DOC-1 | DONE |
 | vendor_documents-submitVendorDocument | Vendor | Record uploaded document metadata | DOC-1 | DONE |
 | vendor_documents-reviewVendorDocument | Admin | Approve or reject a document | DOC-1 | DONE |
@@ -509,9 +514,9 @@ Phase 1: portal and vendor app together (every ticket is done in both)
 | PC-2 | Store profile and profile change requests in the vendor app | WEB, VENDOR APP | 8 to 12 rough | 3 | TODO |
 | PC-3 | Settings and notifications inbox in the vendor app | WEB, VENDOR APP | 5 to 8 rough | 3 | TODO |
 | S1.2 | Governorate list, coverage model, eligibility and suspension functions | PANEL | 20 to 28 | 1 | DONE |
-| S1.3 | Coverage picker | WEB, VENDOR APP | 16 to 20 | 2 | TODO |
-| S1.4 | Products | WEB, VENDOR APP | 16 to 22 | 2 | TODO |
-| S1.5 | Orders including the hold state | WEB, VENDOR APP | 11 to 14 | 2 | TODO |
+| S1.3 | Coverage picker | WEB, VENDOR APP | 16 to 20 | 2 | DONE |
+| S1.4 | Products | WEB, VENDOR APP | 16 to 22 | 2 | DONE |
+| S1.5 | Orders including the hold state | WEB, VENDOR APP | 11 to 14 | 2 | DONE |
 | DL-1 | Deal model per branch; commission on items only; ledger | WEB, VENDOR APP, PANEL | 12 to 18 | 2 | DONE |
 | S1.6 | Earnings, notifications and push | WEB, VENDOR APP, PANEL | 13 to 16 | 3 | TODO |
 | VC-1 | Vendor coupons and admin coupons | WEB, VENDOR APP, PANEL | 12 to 16 | 3 | TODO |
@@ -1060,11 +1065,11 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
   4. Existing suspended vendors: Auth state unchanged (no backfill). New permanent suspends no longer disable Auth.
   5. Rollback: previous function revisions; boundary file rolls with functions.
 
-**S1.3 Coverage picker.** Skills: delivery-zones-geo. Acceptance: the vendor chooses zone (map point and radius) or governorates, saved in the agreed shape, validated, English and Arabic, same in the portal and the app.
+**S1.3 Coverage picker.** Skills: delivery-zones-geo. Status: DONE (2026-11-08). Gate D OK (Google Maps, separate restricted keys; Play signing SHA-1; quotas; gitignore + fail-if-missing; T0.17 steps in DEPLOY_PLAN). Acceptance: zone or governorates via `vendors-setVendorDeliveryCoverage`; radius 500–100000; EN/AR; portal `/settings/coverage` + app `CoverageScreen`; non-store hidden; approve gated for stores; active missing-coverage banner. Branches: `feature/S1.3-coverage-picker`.
 
-**S1.4 Products.** Acceptance: create, edit, archive, status, images, filters in piastres; pending vendors locked; the app has no spreadsheet import or export.
+**S1.4 Products.** Status: DONE (2026-11-08). Shared `vendor_products-*`; portal flag `NEXT_PUBLIC_VENDOR_PRODUCTS_DATA_SOURCE` default `bff`; vendor app list/create/archive (no spreadsheet); pending locked; Halo blocked. Shipped on same feature branch set as S1.3.
 
-**S1.5 Orders including the hold state.** Acceptance: inbox, detail, status updates; held orders show the hold and cannot be changed by the vendor.
+**S1.5 Orders including the hold state.** Status: DONE (2026-11-08). Shared `vendor_orders-*`; portal flag default `bff`; hold banner + locked status updates; DL-1 fee/net when present. Shipped on same feature branch set as S1.3.
 
 **S1.6 Earnings, notifications and push.** Acceptance: earnings summary and entries, notification inbox, registerVendorFcmToken, push for a new order, token cleanup on logout.
 
@@ -1310,6 +1315,8 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 
 ## 9. Changelog
 
+- 2026-11-08: S1.3 / S1.4 / S1.5 DONE. Gate D OK (Maps keys per platform; Play signing SHA-1; quotas; gitignore + build fail-if-missing; T0.17 in DEPLOY_PLAN). Coverage callables + portal/app UI; product and order shared callables with portal BFF flags defaulting to `bff`; hold locks vendor status updates. Emulator coverage/products/orders tests added to `test:emu`.
+- 2026-11-08: Branch verify before Gate D. WEB, PANEL, and VENDOR APP: no local or remote branch named `devtools` (display/typo only in merge subjects such as `bring DL-1 into.devtools` / `bring W1-cleanup into.devtools`). Merges landed on `dev`. `fix/W1-cleanup` and DL-1 are on each `dev` and already pushed to `origin/dev`. No merge of `devtools` into `dev` needed; no remote `devtools` to leave alone.
 - 2026-11-08: DL-1 DONE (admin write + fee cutover). Gate C OK with fee-base cap, half-up 333@10%, admin-coupon zero/less note. `vendors-setVendorDeal`, panel deal editor, `lib/deal_fees.js`, `orders_split` behind `itemsOnlyFrom`. Vendor app read view deferred to S1.13. Emulator deal tests passed.
 - 2026-11-08: fix/W1-cleanup. Closed Week 1 DOC-1 gaps: vendor app documents screen uses `vendor_documents-getMyVendorDocuments` (no client Firestore); portal `VendorDocumentsSection` load deferred with `setTimeout` (T0.15 pattern, eslint 0 errors); panel requirements type picker + missing-docs/deadline list via `listVendorsMissingDocuments`; emulator document tests extended. DOC-1 acceptance now truly met. Merged to each `dev` with `--no-ff`.
 - 2026-11-08: Week 2 Step 0. Verified Week 1 (GOV-1, S1.1, S1.2, DOC-1) on each `dev`. Wrote `~/Downloads/DEPLOY_PLAN.md`. Recorded portal hosting in section 1.2 (Vercel-oriented secrets; not live). DOC-1 acceptance checkboxes filled; admin UI gaps listed (store-only requirements editor; no missing-docs/deadline list). Process note: PANEL DOC-1 admin screen commit `828a8f4` landed on `dev` without a `chore(merge): bring DOC-1 into dev` merge commit (do not rewrite history). Re-run: PANEL `npm run test:emu` exit 0; portal `npm test` 11 passed, typecheck clean, eslint 1 error / 114 warnings; vendor app `fvm flutter test` 38 passed, `fvm flutter analyze` 5 errors (DOC-1 `documents_screen.dart` imports `cloud_firestore` without a direct dependency).

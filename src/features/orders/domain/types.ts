@@ -43,6 +43,8 @@ export type VendorOrder = {
   buyerDisplayName: string | null;
   buyerPhone: string | null;
   status: VendorOrderStatus;
+  holdState: "held" | null;
+  heldReason: string | null;
   statusHistory: VendorOrderStatusEvent[];
   lineItems: VendorOrderLineItem[];
   itemCount: number;
@@ -53,6 +55,10 @@ export type VendorOrder = {
   commissionRatePercent: number;
   commissionPiastres: number;
   netPiastres: number;
+  /** DL-1 fields when present */
+  feeBasePiastres?: number | null;
+  platformFeePiastres?: number | null;
+  vendorNetPiastres?: number | null;
   currency: "EGP";
   placedAt: Date;
   updatedAt: Date;
