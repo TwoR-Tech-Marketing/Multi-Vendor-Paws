@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 
 import {
   fetchMyVendorDocuments,
@@ -27,20 +27,23 @@ export function VendorDocumentsSection({
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  async function reload() {
+  const reload = useCallback(async () => {
     const [reqs, docs] = await Promise.all([
       fetchVendorDocumentRequirements(vendorType),
       fetchMyVendorDocuments(),
     ]);
     setRequirements(reqs);
     setDocuments(docs);
-  }
+  }, [vendorType]);
 
   useEffect(() => {
-    void reload().catch(() => {
-      setError(strings.accountStatus.documentsLoadError);
-    });
-  }, [vendorType, strings.accountStatus.documentsLoadError]);
+    const timer = window.setTimeout(() => {
+      void reload().catch(() => {
+        setError(strings.accountStatus.documentsLoadError);
+      });
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [reload, strings.accountStatus.documentsLoadError]);
 
   async function onFileChange(
     requirement: VendorDocumentRequirement,
