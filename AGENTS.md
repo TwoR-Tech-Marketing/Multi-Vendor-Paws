@@ -10,13 +10,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 Before working on a feature, read the relevant skill under `.cursor/skills/<name>/SKILL.md`.
 
-- `vendor-type-architecture` — vendor type (store, clinic, groomer): sidebar, routes, guards, onboarding, review labels
+- `vendor-type-architecture` — vendor type (store, clinic, groomer, doctor): sidebar, routes, guards, onboarding, review labels
 - `provider-onboarding` — clinic/groomer signup, profile, branches, services, approve/decline
 - `availability-scheduling` — slots, hours, home visits, booking conflicts, availability calendar
 - `appointments-domain` — appointment statuses, transitions, history, cancel/reschedule, inbox
 - `no-show-flow` — no-show flag, user confirmation, dispute handling, timers
 - `reviews-and-tags` — post-visit reviews, ratings, tags, aggregates, admin deletion
-- `deals-and-billing` — provider deals, live balances, subscription status, payouts
+- `deals-and-billing` — provider deals (fixed per order and/or percentage), live balances, statements, payouts
 - `points-and-coupons` — loyalty points, checkout coupons, points on extra invoices
 - `money-piastres` — all money as integer piastres; shared helpers only
 - `firestore-multitenant-rules` — new collections, firestore/storage rules and indexes
