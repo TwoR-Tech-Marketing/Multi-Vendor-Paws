@@ -12,11 +12,30 @@ Document id is the stable id (D5).
 | code | string | optional |
 | isActive | boolean | Live |
 
-## Live endpoints (HTTPS onRequest, auth not verified today)
+Related collection: `category_governorates/{categoryId}_{governorateId}` with `category_id`, `governorate_id`.
 
-governorates-getAllGovernorates, createGovernorate, updateGovernorate, deleteGovernorate, assignCategoryGovernorates, getCategoryGovernorates, validateOrderDelivery.
+## Clients (as-built, AB-18)
 
-Risk recorded in section 8. Hardening is a later ticket. T0.5 does not lock open HTTPS without auth as desired end state.
+| Client | Access path |
+|---|---|
+| Admin panel (`tinderpaws_panel`) | Firestore SDK via `GovernorateRepository` (create, update, delete, assign, list, validate) |
+| Buyer app (`tinder_paws`) | Firestore SDK via `DeliveryValidationService` (read + validate). Does not call governorates HTTPS |
+| Vendor portal (`Multi-Vendor-Paws`) | No governorates HTTPS callers |
+| Vendor app (`tender_paws_partner`) | No governorates HTTPS callers |
+
+## HTTPS endpoints (`governorates-*` onRequest)
+
+Auth model (GOV-1):
+
+| Handler | Auth |
+|---|---|
+| `governorates-getAllGovernorates` | Open (no token). Request and response shapes unchanged |
+| `governorates-getCategoryGovernorates` | Open (no token). Request and response shapes unchanged |
+| `governorates-validateOrderDelivery` | Open (no token). Request and response shapes unchanged |
+| `governorates-createGovernorate` | Bearer ID token required. `verifyIdToken`, then same admin check as `vendors.js` (`admin` or `superAdmin` claim, or existing initial-admin uid). 401 without a valid token, 403 without admin |
+| `governorates-updateGovernorate` | Same as create |
+| `governorates-deleteGovernorate` | Same as create |
+| `governorates-assignCategoryGovernorates` | Same as create |
 
 ## Planned
 
