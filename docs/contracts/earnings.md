@@ -13,6 +13,8 @@ commissionConfig/main (AB-14):
 
 2026-11-08 (BM-3, D22): default 10 percent applies when a vendor has no deal. Deal documents supersede per-vendor overrides for branches that have a deal. Commission and deal fees apply to items only, never delivery. Delivery fee goes 100 percent to the vendor. Gateway fee is absorbed inside TenderPaws' fee (vendor net = items minus deal fees). See docs/contracts/deals.md and docs/contracts/payouts.md.
 
+2026-11-08 (DL-1): cutover field `commissionConfig/main.itemsOnlyFrom`. When set, new sale ledger rows for orders at/after that time store `platformFeePiastres` / `vendorNetPiastres` from the shared `deal_fees` module and mirror legacy `commissionPiastres` / `netPiastres`. Unset keeps old `orders_split` behavior for all orders.
+
 ## Endpoints
 
 | Name | Caller | Status |

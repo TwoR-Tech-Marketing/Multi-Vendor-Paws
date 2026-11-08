@@ -52,7 +52,7 @@ Feature modules under src/features: auth, vendor, products, orders, financials, 
 | S1.13 Deals view and statement (no subscription) | not built | not built | setVendorDeal (read path) | no vendor subscription (D21) | TODO |
 | S1.14 Suspension states on the vendor side | not built | not built | suspendVendor and unsuspendVendor | included in S1.2 and S1.5 | TODO |
 | DOC-1 Vendor documents | profile VendorDocumentsSection | account documents screen | vendor_documents-* | D25; list per type is owner detail | DONE |
-| DL-1 Deals and items-only fees | not built | not built | setVendorDeal | D22; portal and app both show deal/statement | TODO |
+| DL-1 Deals and items-only fees | not built (admin write is panel) | not built (read in S1.13) | vendors-setVendorDeal; orders_split cutover | D22; vendor statement is S1.13 | DONE (fee/cutover); read UI S1.13 |
 | VC-1 Vendor and admin coupons | not built | not built | Vendor coupons create and manage | D23 | TODO |
 | PAY-1 Payouts and statements | not built | not built | Payout recording and statements | D21 | TODO |
 | TH-1 Telehealth doctor side | not built | not built | Telehealth start, accept, end, queue timeout | D27; doctor pay is owner detail | TODO |
