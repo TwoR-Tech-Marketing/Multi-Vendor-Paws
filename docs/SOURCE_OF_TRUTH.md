@@ -499,7 +499,7 @@ Phase 1: portal and vendor app together (every ticket is done in both)
 | PC-1 | Vendor signup and signup status in the vendor app | WEB, VENDOR APP | 8 to 12 rough | 3 | TODO |
 | PC-2 | Store profile and profile change requests in the vendor app | WEB, VENDOR APP | 8 to 12 rough | 3 | TODO |
 | PC-3 | Settings and notifications inbox in the vendor app | WEB, VENDOR APP | 5 to 8 rough | 3 | TODO |
-| S1.2 | Governorate list, coverage model, eligibility and suspension functions | PANEL | 20 to 28 | 1 | TODO |
+| S1.2 | Governorate list, coverage model, eligibility and suspension functions | PANEL | 20 to 28 | 1 | IN PROGRESS |
 | S1.3 | Coverage picker | WEB, VENDOR APP | 16 to 20 | 2 | TODO |
 | S1.4 | Products | WEB, VENDOR APP | 16 to 22 | 2 | TODO |
 | S1.5 | Orders including the hold state | WEB, VENDOR APP | 11 to 14 | 2 | TODO |
@@ -1036,12 +1036,22 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
   4. Verify: reject without notes stores default; reject with notes stores reason; rejected login shows reason; reapply returns pending; banned shows banned not suspended.
   5. Rollback: previous function revisions; panel/app rollbacks independent.
 
-**S1.2 Governorate list, coverage model, eligibility and suspension functions.** Repo PANEL (functions). Skills: delivery-zones-geo, vendor-suspension-modes, cloud-functions-rules. Acceptance:
+**S1.2 Governorate list, coverage model, eligibility and suspension functions.** Repo PANEL (functions). Skills: delivery-zones-geo, vendor-suspension-modes, cloud-functions-rules. Status: IN PROGRESS (2026-11-08). Branches: PANEL/WEB `feature/S1.2-coverage-eligibility`. Waiting on Gate B before boundary code.
+- Acceptance:
 - [ ] Canonical governorates with ids, nameEn, nameAr, and an idempotent migration script with a dry run for name-keyed data.
 - [ ] resolveBuyerEligibility returns the governorate id and the eligible vendor ids, for zone and governorate modes, active vendors only, with orderable flags for view_only, plus the Halo rule.
 - [ ] The suspension function takes a mode, sets the suspension on the vendor, puts open orders on hold and creates a hold case. Lifting restores everything.
 - [ ] Permanent suspension keeps Auth enabled; only a permanent ban disables login (D28, answered O5).
 - [ ] Emulator tests. Nothing deployed.
+- Gate B (boundary data for lat/lng → governorate; O16 developer decision). Proposed, waiting for OK:
+  - Source: geoBoundaries gbOpen Egypt ADM1 (`geoBoundaries-EGY-ADM1`, 27 features). API meta: https://www.geoboundaries.org/api/current/gbOpen/EGY/ADM1/
+  - Download: full GeoJSON ~1.2 MB; simplified GeoJSON ~191 KB (prefer simplified for Cloud Functions cold start).
+  - Licence: this release is Open Data Commons Open Database License 1.0 (ODbL 1.0), OSM-derived (OpenStreetMap / Wambacher). Attribution required. Shipping the polygon file in-repo means keep the file redistributable under ODbL; point-in-polygon → governorate id results are factual outputs.
+  - Accuracy: administrative ADM1 for 2017-era boundaries; fine for delivery eligibility, not cadastral / legal land title.
+  - Mapping: `shapeName` / `shapeISO` → `governorates/{id}` via a maintained alias table (nameEn/nameAr fallbacks). Fail closed when unresolved.
+  - Zone mode: works with no boundary file (haversine on `deliveryCoverage.zone` only). Governorate mode and Halo need ids; lat/lng → governorateId needs this file (or fails closed with `failed-precondition` until present).
+  - Alternative if ODbL is rejected: Natural Earth Admin 1 (public domain), coarser coastal/desert edges; still 27-ish units, weaker name quality.
+  - Not chosen: community GitHub lists without a clear redistributable polygon licence, or name-only tables (cannot resolve lat/lng).
 
 **S1.3 Coverage picker.** Skills: delivery-zones-geo. Acceptance: the vendor chooses zone (map point and radius) or governorates, saved in the agreed shape, validated, English and Arabic, same in the portal and the app.
 
@@ -1290,6 +1300,7 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 
 ## 9. Changelog
 
+- 2026-11-08: S1.2 IN PROGRESS on PANEL/WEB `feature/S1.2-coverage-eligibility`. Gate B proposed (geoBoundaries EGY ADM1 simplified GeoJSON, ODbL 1.0). Waiting for OK before boundary implementation. Zone mode stays independent of boundaries.
 - 2026-11-08: S1.1 DONE. Session kinds `banned`/`rejected`; reject keeps Auth; reapply callable; portal session via shared callable; panel reject reason UI; portal gate unit tests; vendor app gates/reapply. Emulator `test:emu` passed. Merged to each `dev` and pushed.
 - 2026-11-08: GOV-1 DONE. Gate A approved. Mutating `governorates-*` HTTPS handlers require admin Bearer via shared `admin_auth.js`. Reads and validateOrderDelivery stay open. AB-18 recorded (panel/buyer use Firestore SDK). Contract updated. Emulator `test:gov:emu` passed. Repo rules copies already admin-only writes for governorates (no new open-write risk). Deploy blocked until Ahmed reviews console logs for last 30 days of `governorates-*`.
 - 2026-11-08: BM-3 brings the source of truth in line with the Master Alignment. Section 0 decision rule. D20 to D29 recorded; D9 superseded by D25. Open items closed with answered by Dn except O6, O15, O16, O18 and three owner details. BR dated notes. AB Fate and Ticket columns. New tickets DL-1, CART-1, DOC-1, VC-1, PTS-1, PAY-1, TH-1 to TH-3, GOV-1. Rescoped S1.1, S1.13, S2.10. Release plan, parked work, 21-row risk register. Contracts and parity updated. Skills wording checked.
