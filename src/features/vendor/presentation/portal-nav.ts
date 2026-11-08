@@ -92,6 +92,13 @@ const ORDER_DETAIL_PATH = /^\/orders\/[^/]+\/?$/;
 export function resolvePortalPageMeta(pathname: string, strings: AppStrings): PortalPageMeta {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
 
+  if (normalizedPath === Routes.vendor.coverage) {
+    return {
+      title: strings.pages.coverage.title,
+      subtitle: strings.pages.coverage.subtitle,
+    };
+  }
+
   if (normalizedPath === Routes.vendor.productNew) {
     return {
       title: strings.pages.products.newTitle,

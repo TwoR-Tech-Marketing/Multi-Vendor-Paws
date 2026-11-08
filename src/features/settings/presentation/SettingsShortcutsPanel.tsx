@@ -14,6 +14,7 @@ export function SettingsShortcutsPanel({ strings }: SettingsShortcutsPanelProps)
   const t = strings.settings;
 
   const shortcuts = [
+    { href: Routes.vendor.coverage, label: t.coverageShortcut },
     { href: Routes.vendor.products, label: t.shortcutsProducts },
     { href: Routes.vendor.orders, label: t.shortcutsOrders },
     { href: Routes.vendor.earnings, label: t.shortcutsEarnings },

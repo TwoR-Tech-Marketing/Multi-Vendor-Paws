@@ -1,3 +1,5 @@
+import { httpsCallable } from "firebase/functions";
+
 import type { Product, ProductListFilter, ProductStatus } from "@/features/products/domain/types";
 import type { CreateProductPayload, UpdateProductPayload } from "@/features/products/domain/schemas";
 import {
@@ -6,6 +8,8 @@ import {
   vendorApiPatch,
   vendorApiPost,
 } from "@/lib/auth-client";
+import { firebaseFunctions } from "@/lib/firebase";
+import { getProductsDataSource } from "@/lib/vendor-data-source";
 
 export type ProductCategoryOption = {
   categoryId: string;
@@ -96,9 +100,61 @@ export async function fetchProductCategoriesFromApi(options?: {
   return data.items;
 }
 
+function callableProductToSerialized(raw: Record<string, unknown>): SerializedProduct {
+  const now = new Date().toISOString();
+  const imageUrls = Array.isArray(raw.imageUrls) ? (raw.imageUrls as string[]) : [];
+  return {
+    productId: String(raw.productId || ""),
+    vendorId: String(raw.vendorId || ""),
+    vendorStoreName: String(raw.vendorStoreName || ""),
+    name: String(raw.name || ""),
+    nameAr: (raw.nameAr as string | null) ?? null,
+    description: (raw.description as string | null) ?? null,
+    descriptionAr: (raw.descriptionAr as string | null) ?? null,
+    slug: null,
+    imageUrls,
+    primaryImageUrl: (raw.primaryImageUrl as string) || imageUrls[0] || "",
+    categoryIds: Array.isArray(raw.categoryIds) ? (raw.categoryIds as string[]) : [],
+    primaryCategoryId: String(raw.primaryCategoryId || ""),
+    categoryNames: [],
+    pricePiastres: Number(raw.pricePiastres) || 0,
+    priceAfterDiscountPiastres:
+      raw.priceAfterDiscountPiastres == null
+        ? null
+        : Number(raw.priceAfterDiscountPiastres),
+    currency: "EGP",
+    stock: Number(raw.stock) || 0,
+    lowStockThreshold: null,
+    sku: (raw.sku as string | null) ?? null,
+    status: (raw.status as ProductStatus) || "inactive",
+    isHalo: raw.isHalo === true,
+    tags: [],
+    createdBy: "",
+    updatedBy: "",
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
 export async function fetchVendorProductsFromApi(
   filter: ProductListFilter = {},
 ): Promise<{ items: Product[]; nextCursor: string | null; total: number }> {
+  if (getProductsDataSource() === "callable") {
+    const callable = httpsCallable(firebaseFunctions, "vendor_products-listVendorProducts");
+    const result = await callable({
+      status: filter.status,
+      pageSize: filter.pageSize,
+    });
+    const data = result.data as {
+      items: Record<string, unknown>[];
+      nextCursor: string | null;
+    };
+    const items = data.items.map((item) =>
+      deserializeProduct(callableProductToSerialized(item)),
+    );
+    return { items, nextCursor: data.nextCursor, total: items.length };
+  }
+
   const data = await vendorApiGet<ProductListResponse>(
     `/api/vendor/products${buildListQuery(filter)}`,
   );
@@ -111,6 +167,13 @@ export async function fetchVendorProductsFromApi(
 }
 
 export async function fetchVendorProductFromApi(productId: string): Promise<Product> {
+  if (getProductsDataSource() === "callable") {
+    const callable = httpsCallable(firebaseFunctions, "vendor_products-getVendorProduct");
+    const result = await callable({ productId });
+    const data = result.data as { product: Record<string, unknown> };
+    return deserializeProduct(callableProductToSerialized(data.product));
+  }
+
   const data = await vendorApiGet<ProductResponse>(`/api/vendor/products/${productId}`);
   return deserializeProduct(data.product);
 }
@@ -118,6 +181,13 @@ export async function fetchVendorProductFromApi(productId: string): Promise<Prod
 export async function createVendorProductFromApi(
   payload: CreateProductPayload,
 ): Promise<Product> {
+  if (getProductsDataSource() === "callable") {
+    const callable = httpsCallable(firebaseFunctions, "vendor_products-createVendorProduct");
+    const result = await callable(payload);
+    const data = result.data as { product: Record<string, unknown> };
+    return deserializeProduct(callableProductToSerialized(data.product));
+  }
+
   const data = await vendorApiPost<ProductResponse>("/api/vendor/products", payload);
   return deserializeProduct(data.product);
 }
@@ -126,6 +196,13 @@ export async function updateVendorProductFromApi(
   productId: string,
   payload: UpdateProductPayload,
 ): Promise<Product> {
+  if (getProductsDataSource() === "callable") {
+    const callable = httpsCallable(firebaseFunctions, "vendor_products-updateVendorProduct");
+    const result = await callable({ productId, ...payload });
+    const data = result.data as { product: Record<string, unknown> };
+    return deserializeProduct(callableProductToSerialized(data.product));
+  }
+
   const data = await vendorApiPatch<ProductResponse>(
     `/api/vendor/products/${productId}`,
     payload,
@@ -134,6 +211,12 @@ export async function updateVendorProductFromApi(
 }
 
 export async function archiveVendorProductFromApi(productId: string): Promise<void> {
+  if (getProductsDataSource() === "callable") {
+    const callable = httpsCallable(firebaseFunctions, "vendor_products-archiveVendorProduct");
+    await callable({ productId });
+    return;
+  }
+
   await vendorApiDelete<{ success: true }>(`/api/vendor/products/${productId}`);
 }
 

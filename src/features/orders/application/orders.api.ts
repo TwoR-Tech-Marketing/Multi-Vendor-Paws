@@ -1,9 +1,13 @@
+import { httpsCallable } from "firebase/functions";
+
 import type {
   VendorOrder,
   VendorOrderListFilter,
   VendorOrderStatus,
 } from "@/features/orders/domain/types";
 import { vendorApiGet, vendorApiPatch } from "@/lib/auth-client";
+import { firebaseFunctions } from "@/lib/firebase";
+import { getOrdersDataSource } from "@/lib/vendor-data-source";
 
 type VendorOrderResponse = Omit<VendorOrder, "placedAt" | "updatedAt" | "statusHistory"> & {
   placedAt: string;
@@ -49,9 +53,52 @@ function buildListQuery(filter: VendorOrderListFilter): string {
   return query ? `?${query}` : "";
 }
 
+function toIso(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object" && "toDate" in value) {
+    return (value as { toDate: () => Date }).toDate().toISOString();
+  }
+  return new Date(0).toISOString();
+}
+
+function normalizeCallableOrder(raw: Record<string, unknown>): VendorOrderResponse {
+  return {
+    ...(raw as unknown as VendorOrderResponse),
+    holdState: raw.holdState === "held" ? "held" : null,
+    heldReason: (raw.heldReason as string | null) ?? null,
+    placedAt: toIso(raw.placedAt),
+    updatedAt: toIso(raw.updatedAt),
+    statusHistory: Array.isArray(raw.statusHistory)
+      ? (raw.statusHistory as VendorOrderResponse["statusHistory"]).map((event) => ({
+          ...event,
+          at: toIso(event.at),
+        }))
+      : [],
+  };
+}
+
 export async function fetchVendorOrdersFromApi(
   filter: VendorOrderListFilter = {},
 ): Promise<{ items: VendorOrder[]; nextCursor: string | null; total: number }> {
+  if (getOrdersDataSource() === "callable") {
+    const callable = httpsCallable(firebaseFunctions, "vendor_orders-listVendorOrders");
+    const result = await callable({
+      status: filter.status,
+      pageSize: filter.pageSize,
+      cursor: filter.cursor,
+    });
+    const data = result.data as {
+      items: Record<string, unknown>[];
+      nextCursor: string | null;
+      total: number;
+    };
+    return {
+      items: data.items.map((item) => deserializeVendorOrder(normalizeCallableOrder(item))),
+      nextCursor: data.nextCursor,
+      total: data.total,
+    };
+  }
+
   const data = await vendorApiGet<VendorOrderListResponse>(
     `/api/vendor/orders${buildListQuery(filter)}`,
   );
@@ -64,6 +111,13 @@ export async function fetchVendorOrdersFromApi(
 }
 
 export async function fetchVendorOrderFromApi(vendorOrderId: string): Promise<VendorOrder> {
+  if (getOrdersDataSource() === "callable") {
+    const callable = httpsCallable(firebaseFunctions, "vendor_orders-getVendorOrder");
+    const result = await callable({ vendorOrderId });
+    const data = result.data as { order: Record<string, unknown> };
+    return deserializeVendorOrder(normalizeCallableOrder(data.order));
+  }
+
   const data = await vendorApiGet<{ order: VendorOrderResponse }>(
     `/api/vendor/orders/${vendorOrderId}`,
   );
@@ -75,6 +129,16 @@ export async function updateVendorOrderStatusFromApi(
   status: VendorOrderStatus,
   note?: string,
 ): Promise<VendorOrder> {
+  if (getOrdersDataSource() === "callable") {
+    const callable = httpsCallable(
+      firebaseFunctions,
+      "vendor_orders-updateVendorOrderStatus",
+    );
+    const result = await callable({ vendorOrderId, status, note });
+    const data = result.data as { order: Record<string, unknown> };
+    return deserializeVendorOrder(normalizeCallableOrder(data.order));
+  }
+
   const data = await vendorApiPatch<{ order: VendorOrderResponse }>(
     `/api/vendor/orders/${vendorOrderId}`,
     { status, note },

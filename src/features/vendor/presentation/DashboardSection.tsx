@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { Routes } from "@/constants/routes";
+import { MissingCoverageBanner } from "@/features/coverage/presentation/MissingCoverageBanner";
 import { fetchDashboardStatsFromApi } from "@/features/financials/application/earnings.api";
 import { formatEgp } from "@/features/products/domain/currency";
 import { DashboardSkeleton } from "@/features/vendor/presentation/DashboardSkeleton";
@@ -45,6 +46,7 @@ export function DashboardSection() {
 
   return (
     <section className={styles.sectionStack}>
+      <MissingCoverageBanner />
       {error ? <div className={styles.alertError}>{error}</div> : null}
 
       <div className={styles.statsGrid}>

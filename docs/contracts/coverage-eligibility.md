@@ -14,6 +14,16 @@ deliveryCoverage: {
 
 Additive. Coverage is required before a **new** store vendor can become active; existing active vendors are listed for the admin, not blocked (S1.2).
 
+### Writable callables (S1.3)
+
+| Name | Auth | Notes |
+|---|---|---|
+| `vendors-setVendorDeliveryCoverage` | Owning vendor | Validates mode; zone radius 500–100000 m; governorates ≥1 existing id. Writes `vendors/{uid}` or pending signup request. |
+| `vendors-getVendorDeliveryCoverage` | Owning vendor | Returns coverage + vendorType |
+| `vendors-listGovernoratesForCoverage` | Signed-in vendor | Active governorates `{id,nameEn,nameAr}` |
+
+Store approve (`vendor_signup-reviewVendorSignupRequest`) fails if store coverage missing. Clinics/groomers/doctors never see the coverage UI.
+
 ## Endpoint: resolveBuyerEligibility
 
 | Field | Value |
@@ -67,5 +77,5 @@ Additive. Coverage is required before a **new** store vendor can become active; 
 
 ## Rules needed
 
-- coverage fields writable by the owning vendor through a validated callable (S1.3) or matching rules.
+- coverage fields writable by the owning vendor through the validated callables above (not client Firestore writes).
 - Eligibility never trusted from the client at checkout (`createOrder` re-checks).

@@ -101,11 +101,25 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
     return <div className={`${styles.alert} ${styles.alertError}`}>{strings.orders.loadError}</div>;
   }
 
+  const isHeld = order.holdState === "held";
+  const displayNet =
+    order.vendorNetPiastres != null ? order.vendorNetPiastres : order.netPiastres;
+  const displayFee =
+    order.platformFeePiastres != null
+      ? order.platformFeePiastres
+      : order.commissionPiastres;
+
   return (
     <section className={styles.sectionStack}>
       {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
       {success ? (
         <div className={`${styles.alert} ${styles.alertSuccess}`}>{success}</div>
+      ) : null}
+      {isHeld ? (
+        <div className={`${styles.alert} ${styles.alertError}`} role="status">
+          <strong>{strings.orders.holdBannerTitle}</strong>
+          <p>{strings.orders.holdBannerMessage}</p>
+        </div>
       ) : null}
 
       <div className={styles.detailGrid}>
@@ -177,38 +191,40 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
                 <div className={styles.metaRow}>
                   <dt>{strings.orders.commission}</dt>
                   <dd>
-                    {order.commissionRatePercent}% · {formatEgp(order.commissionPiastres)}
+                    {order.commissionRatePercent}% · {formatEgp(displayFee)}
                   </dd>
                 </div>
                 <div className={styles.metaRow}>
                   <dt>{strings.orders.netEarnings}</dt>
-                  <dd>{formatEgp(order.netPiastres)}</dd>
+                  <dd>{formatEgp(displayNet)}</dd>
                 </div>
               </dl>
 
-              <div className={styles.statusForm}>
-                <label>
-                  {strings.orders.updateStatus}
-                  <PortalSelect
-                    value={nextStatus}
-                    options={statusOptions}
-                    onChange={(value) => setNextStatus(value as VendorOrderStatus)}
-                    ariaLabel={strings.orders.updateStatus}
-                  />
-                </label>
-                <label>
-                  {strings.orders.statusNote}
-                  <textarea value={note} onChange={(event) => setNote(event.target.value)} />
-                </label>
-                <button
-                  type="button"
-                  className={styles.btnPrimary}
-                  disabled={isUpdating || nextStatus === order.status}
-                  onClick={() => void handleUpdateStatus()}
-                >
-                  {strings.orders.updateStatus}
-                </button>
-              </div>
+              {!isHeld ? (
+                <div className={styles.statusForm}>
+                  <label>
+                    {strings.orders.updateStatus}
+                    <PortalSelect
+                      value={nextStatus}
+                      options={statusOptions}
+                      onChange={(value) => setNextStatus(value as VendorOrderStatus)}
+                      ariaLabel={strings.orders.updateStatus}
+                    />
+                  </label>
+                  <label>
+                    {strings.orders.statusNote}
+                    <textarea value={note} onChange={(event) => setNote(event.target.value)} />
+                  </label>
+                  <button
+                    type="button"
+                    className={styles.btnPrimary}
+                    disabled={isUpdating || nextStatus === order.status}
+                    onClick={() => void handleUpdateStatus()}
+                  >
+                    {strings.orders.updateStatus}
+                  </button>
+                </div>
+              ) : null}
             </div>
           </article>
         </div>

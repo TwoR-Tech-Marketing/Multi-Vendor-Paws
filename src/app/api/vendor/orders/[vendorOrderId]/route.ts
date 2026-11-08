@@ -62,6 +62,10 @@ export async function PATCH(request: Request, context: RouteContext) {
     const existing = await getVendorOrder(apiContext.vendorId, vendorOrderId);
     if (!existing) return apiError(Strings.errors.notFound, 404);
 
+    if (existing.holdState === "held") {
+      return apiError(Strings.orders.holdBannerMessage, 409);
+    }
+
     if (!isValidStatusTransition(existing.status, payload.status)) {
       return apiError(Strings.orders.invalidStatusTransition, 400);
     }

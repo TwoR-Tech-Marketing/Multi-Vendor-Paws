@@ -35,6 +35,8 @@ type VendorOrderDoc = {
   buyerDisplayName?: string | null;
   buyerPhone?: string | null;
   status: VendorOrderStatus;
+  holdState?: "held" | null;
+  heldReason?: string | null;
   statusHistory?: Array<{
     status: VendorOrderStatus;
     at: Timestamp;
@@ -50,6 +52,9 @@ type VendorOrderDoc = {
   commissionRatePercent: number;
   commissionPiastres?: number;
   netPiastres?: number;
+  feeBasePiastres?: number | null;
+  platformFeePiastres?: number | null;
+  vendorNetPiastres?: number | null;
   currency: string;
   placedAt?: Timestamp;
   updatedAt?: Timestamp;
@@ -95,6 +100,8 @@ function toVendorOrder(snap: DocumentSnapshot<DocumentData>): VendorOrder {
     buyerDisplayName: data.buyerDisplayName ?? null,
     buyerPhone: data.buyerPhone ?? null,
     status: data.status,
+    holdState: data.holdState === "held" ? "held" : null,
+    heldReason: data.heldReason ?? null,
     statusHistory: (data.statusHistory ?? []).map((event) => ({
       status: event.status,
       at: toStatusHistoryTimestamp(event.at).toDate(),
@@ -110,6 +117,9 @@ function toVendorOrder(snap: DocumentSnapshot<DocumentData>): VendorOrder {
     commissionRatePercent: data.commissionRatePercent ?? 0,
     commissionPiastres: data.commissionPiastres ?? 0,
     netPiastres: data.netPiastres ?? 0,
+    feeBasePiastres: data.feeBasePiastres ?? null,
+    platformFeePiastres: data.platformFeePiastres ?? null,
+    vendorNetPiastres: data.vendorNetPiastres ?? null,
     currency: "EGP",
     placedAt: data.placedAt?.toDate() ?? new Date(0),
     updatedAt: data.updatedAt?.toDate() ?? new Date(0),
@@ -203,6 +213,10 @@ export async function updateVendorOrderStatus(
 
     const current = toVendorOrder(snap);
     if (current.vendorId !== vendorId) return null;
+
+    if (current.holdState === "held") {
+      return null;
+    }
 
     if (!isValidStatusTransition(current.status, input.status)) {
       return null;

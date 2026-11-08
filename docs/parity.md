@@ -18,12 +18,12 @@ Vendor app column "not built" means tender_paws_partner has no screen for that f
 | Store setup | src/app/store-setup/page.tsx | not built | portal BFF until the ticket that touches it (D15) | | portal only today |
 | Dashboard | src/app/(portal)/(active)/dashboard/page.tsx, src/features/vendor | not built | none yet | active vendors only (ActiveVendorGuard) | portal only today |
 | Profile | src/app/(portal)/profile/page.tsx, src/features/vendor | not built | vendors-reviewVendorProfileChange for change review | pending vendors can open it (AB-5, O20) | portal has it. PC-2 adds the app |
-| Products list | src/app/(portal)/(active)/products/page.tsx, src/features/products | not built | portal BFF until S1.4 (D15) | | portal only today |
-| Product create | src/app/(portal)/(active)/products/new/page.tsx | not built | portal BFF until S1.4 (D15) | | portal only today |
-| Product edit | src/app/(portal)/(active)/products/[productId]/edit/page.tsx | not built | portal BFF until S1.4 (D15) | | portal only today |
+| Products list | src/app/(portal)/(active)/products/page.tsx, src/features/products | products_screen.dart | shared `vendor_products-*`; portal flag default BFF | no spreadsheet on mobile | DONE S1.4 |
+| Product create | src/app/(portal)/(active)/products/new/page.tsx | products_screen.dart (quick create) | shared create callable | | DONE S1.4 |
+| Product edit | src/app/(portal)/(active)/products/[productId]/edit/page.tsx | archive + status via callables | shared update/archive | | DONE S1.4 partial (mobile edit form lean) |
 | Spreadsheet import and export | src/features/products/presentation/ProductsImportDialog.tsx and ProductsExportDialog.tsx | not built | none | BR-12.4 and BR-12.5: no spreadsheet import or export on mobile | portal only, permanent exception |
-| Orders list | src/app/(portal)/(active)/orders/page.tsx, src/features/orders | not built | portal BFF until S1.5 (D15) | | portal only today |
-| Order detail | src/app/(portal)/(active)/orders/[vendorOrderId]/page.tsx | not built | portal BFF until S1.5 (D15) | | portal only today |
+| Orders list | src/app/(portal)/(active)/orders/page.tsx, src/features/orders | orders_screen.dart | shared `vendor_orders-*`; portal flag default BFF | hold badge | DONE S1.5 |
+| Order detail | src/app/(portal)/(active)/orders/[vendorOrderId]/page.tsx | OrderDetailScreen | shared get/updateStatus; held locked | DL-1 fee/net when present | DONE S1.5 |
 | Earnings | src/app/(portal)/(active)/earnings/page.tsx, src/features/financials | not built | portal BFF until S1.6 (D15) | | portal only today |
 | Notifications | src/app/(portal)/notifications/page.tsx, src/features/notifications | not built | none yet | pending vendors can open it (AB-5, O20) | portal has it. PC-3 adds the app |
 | Settings | src/app/(portal)/settings/page.tsx, src/features/settings | not built | none yet | pending vendors can open it (AB-5, O20) | portal has it. PC-3 adds the app |
@@ -39,9 +39,9 @@ Feature modules under src/features: auth, vendor, products, orders, financials, 
 | PC-2 Store profile and change requests | profile route, already built | not built | vendors-reviewVendorProfileChange | | TODO |
 | PC-3 Settings and notifications inbox | settings and notifications routes, already built | not built | registerVendorFcmToken is S1.6 | | TODO |
 | S1.2 Governorates, eligibility, suspension | suspension mode on status banner | suspension mode on status screen | resolveBuyerEligibility, suspendVendor extended | function work is PANEL; banners in both apps | DONE |
-| S1.3 Coverage picker | not built | not built | shared save for deliveryCoverage | store vendors only (BR-4) | TODO |
-| S1.4 Products | products routes, move off the BFF (D15) | not built | shared product callables | no spreadsheet on mobile (BR-12.4) | TODO |
-| S1.5 Orders including hold | orders routes, move off the BFF (D15) | not built | shared order callables | | TODO |
+| S1.3 Coverage picker | /settings/coverage + banner | coverage_screen.dart | vendors-setVendorDeliveryCoverage | store vendors only (BR-4) | DONE |
+| S1.4 Products | products routes + flag | products_screen.dart | vendor_products-* | no spreadsheet on mobile (BR-12.4) | DONE |
+| S1.5 Orders including hold | orders routes + flag + hold UI | orders_screen.dart | vendor_orders-* | held locked | DONE |
 | S1.6 Earnings, notifications, push | earnings and notifications | not built | registerVendorFcmToken | | TODO |
 | S1.7 Vendor type and onboarding | not built for clinic and groomer | not built | shared approval flow | | TODO |
 | S1.8 Branches and services | not built | not built | shared branch and service writes | | TODO |

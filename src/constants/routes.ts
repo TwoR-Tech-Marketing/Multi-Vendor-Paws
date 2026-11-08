@@ -17,6 +17,7 @@ export const Routes = {
     earnings: "/earnings",
     payouts: "/earnings/payouts",
     settings: "/settings",
+    coverage: "/settings/coverage",
     notifications: "/notifications",
   },
 } as const;

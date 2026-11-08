@@ -61,6 +61,10 @@ export const arStrings: AppStrings = {
       title: "الإعدادات",
       subtitle: "الحساب والتفضيلات والدعم",
     },
+    coverage: {
+      title: "نطاق التوصيل",
+      subtitle: "اختر أين يوصل متجرك",
+    },
     notifications: {
       title: "الإشعارات",
       subtitle: "الطلبات وتحديثات الحساب وتنبيهات المتجر",
@@ -226,6 +230,33 @@ export const arStrings: AppStrings = {
     snapshotInactiveHint:
       "تظهر إحصائيات الطلبات والأرباح بعد تفعيل متجرك.",
     legalPlaceholder: "ستُنشر المستندات القانونية هنا قريباً.",
+    coverageShortcut: "تعيين نطاق التوصيل",
+  },
+  coverage: {
+    title: "نطاق التوصيل",
+    subtitle:
+      "اختر منطقة توصيل على الخريطة، أو حدّد المحافظات التي تخدمها. يرى المشترون متجرك فقط عندما يكونون داخل نطاقك.",
+    modeLabel: "وضع التغطية",
+    modeZone: "منطقة على الخريطة",
+    modeGovernorates: "المحافظات",
+    latLabel: "خط العرض",
+    lngLabel: "خط الطول",
+    radiusLabel: "نصف القطر (متر)",
+    save: "حفظ النطاق",
+    saving: "جاري الحفظ…",
+    saveSuccess: "تم حفظ النطاق.",
+    saveError: "تعذر حفظ النطاق. يرجى المحاولة مرة أخرى.",
+    loadError: "تعذر تحميل النطاق. يرجى المحاولة مرة أخرى.",
+    radiusInvalid: "يجب أن يكون نصف القطر بين 500 و 100000 متر.",
+    governoratesRequired: "اختر محافظة واحدة على الأقل.",
+    mapsKeyMissing:
+      "الخرائط غير مُعدّة في هذه البيئة. أضف NEXT_PUBLIC_GOOGLE_MAPS_API_KEY للمتابعة.",
+    mapsLoadError: "تعذر تحميل الخريطة. تحقق من الاتصال وحاول مرة أخرى.",
+    notForVendorType: "نطاق التوصيل متاح فقط لحسابات المتاجر.",
+    missingBannerTitle: "عيّن نطاق التوصيل",
+    missingBannerMessage:
+      "لا يمكن للمشترين الطلب منك حتى تختار منطقة توصيل أو محافظات.",
+    missingBannerCta: "تعيين النطاق",
   },
   errors: {
     generic: "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
@@ -475,6 +506,9 @@ export const arStrings: AppStrings = {
     updateError: "تعذر تحديث هذا الطلب. يرجى المحاولة مرة أخرى.",
     updateSuccess: "تم تحديث حالة الطلب.",
     invalidStatusTransition: "اختر حالة مختلفة لتحديث هذا الطلب.",
+    holdBannerTitle: "الطلب معلّق",
+    holdBannerMessage:
+      "هذا الطلب معلّق أثناء تقييد حسابك. لا يمكنك تغيير حالته حتى يُرفع التعليق.",
     detailTitle: "تفاصيل الطلب",
     detailSubtitle: "راجع العناصر وحدّث حالة التنفيذ",
     customerSection: "العميل",
