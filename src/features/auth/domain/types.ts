@@ -1,4 +1,4 @@
-export type VendorAccountStatus = "pending" | "active" | "suspended";
+export type VendorAccountStatus = "pending" | "rejected" | "active" | "suspended";
 
 export type VendorSignupPayload = {
   ownerName: string;
@@ -24,10 +24,15 @@ export type VendorProfile = {
   storeName: string;
   status: VendorAccountStatus;
   approvalStatus?: string;
+  logoUrl?: string | null;
+  isBanned?: boolean;
   restrictionType?: VendorRestrictionType;
   restrictionReason?: string;
   restrictionExpiresAt?: Date | null;
   isPermanentRestriction?: boolean;
+  rejectionReason?: string | null;
+  rejectedAt?: Date | null;
+  signupRequestId?: string | null;
 };
 
 export type VendorSignupRequestStatus = "pending" | "approved" | "rejected";

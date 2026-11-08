@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import { Routes } from "@/constants/routes";
 import {
   mapAuthError,
   VENDOR_LOGIN_FAILED_MESSAGE,
 } from "@/features/auth/domain/errors";
+import { portalPostLoginHref } from "@/features/auth/domain/portal-account-gate";
 import { createServerSession } from "@/lib/auth-client";
 import { signInVendorForIdToken, signOutVendor } from "@/lib/auth";
 import { PawlioLogo } from "@/shared/components/PawlioLogo";
@@ -35,13 +35,9 @@ export function LoginClient() {
       const session = await createServerSession(idToken);
       await signOutVendor();
 
-      if (session.sessionKind === "active") {
-        router.replace(Routes.vendor.dashboard);
-        return;
-      }
-
-      if (session.sessionKind === "pending" || session.sessionKind === "suspended") {
-        router.replace(Routes.vendor.profile);
+      const nextHref = portalPostLoginHref(session.sessionKind);
+      if (nextHref) {
+        router.replace(nextHref);
         return;
       }
 

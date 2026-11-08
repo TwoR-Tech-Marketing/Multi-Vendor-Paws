@@ -77,6 +77,18 @@ export const Strings = {
       "You cannot access products, orders, or earnings while your account is suspended.",
     pendingProductsMessage:
       "You will be able to access products and orders once an admin approves your application in the Tender Paws admin panel.",
+    rejectedTitle: "Application not approved",
+    rejectedMessage:
+      "Your application was not approved. Review the reason below, update your details, and apply again.",
+    rejectedNoReason: "Your application was not approved. You can update your details and apply again.",
+    bannedTitle: "Account banned",
+    bannedMessage:
+      "This vendor account is banned and cannot use the portal. Contact support if you need help.",
+    reapplyTitle: "Apply again",
+    reapplySubmit: "Submit application again",
+    reapplySubmitting: "Submitting...",
+    reapplySuccess: "Application submitted again. We will review your updated details.",
+    reapplyError: "Could not submit your application again. Please try again.",
     store: "Store",
     email: "Email",
     status: "Status",
@@ -86,6 +98,8 @@ export const Strings = {
     suspended: "suspended",
     pending: "pending",
     active: "active",
+    rejected: "rejected",
+    banned: "banned",
   },
   profile: {
     currentProfileTitle: "Current profile",

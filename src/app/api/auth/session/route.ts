@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { portalSessionBodySchema } from "@/features/auth/domain/session-body";
-import {
-  isAllowedPortalSessionKind,
-  resolveVendorSessionServer,
-} from "@/features/auth/infrastructure/resolve-vendor-session.server";
+import { resolveVendorSessionViaCallable } from "@/features/auth/infrastructure/resolve-vendor-session.callable";
+import { isAllowedPortalSessionKind } from "@/features/auth/infrastructure/resolve-vendor-session.server";
 import {
   getSessionCookieClearOptions,
   getSessionCookieOptions,
@@ -67,7 +65,8 @@ export async function POST(request: Request) {
       return apiForbidden();
     }
 
-    const resolution = await resolveVendorSessionServer(decoded.uid, email);
+    // S1.1 / D15: resolve kind via shared callable using the login idToken.
+    const resolution = await resolveVendorSessionViaCallable(body.idToken);
 
     if (!isAllowedPortalSessionKind(resolution.kind)) {
       return apiForbidden();

@@ -3,8 +3,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
+import { portalPostLoginHref } from "@/features/auth/domain/portal-account-gate";
 import { AuthPageSkeleton } from "@/features/auth/presentation/AuthPageSkeleton";
-import { Routes } from "@/constants/routes";
 import { fetchCurrentSession } from "@/lib/auth-client";
 
 type AuthGuestGuardProps = {
@@ -30,13 +30,9 @@ export function AuthGuestGuard({ children }: AuthGuestGuardProps) {
           return;
         }
 
-        if (session.sessionKind === "active") {
-          router.replace(Routes.vendor.dashboard);
-          return;
-        }
-
-        if (session.sessionKind === "pending" || session.sessionKind === "suspended") {
-          router.replace(Routes.vendor.profile);
+        const nextHref = portalPostLoginHref(session.sessionKind);
+        if (nextHref) {
+          router.replace(nextHref);
         }
       } catch {
         if (!cancelled) {

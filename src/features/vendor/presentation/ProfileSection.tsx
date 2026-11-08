@@ -10,6 +10,7 @@ import type {
 import { AccountStatusBanner } from "@/features/vendor/presentation/AccountStatusBanner";
 import { ProfileActiveSessionCard } from "@/features/vendor/presentation/ProfileActiveSessionCard";
 import { ProfileStoreForm } from "@/features/vendor/presentation/ProfileStoreForm";
+import { RejectedReapplyForm } from "@/features/vendor/presentation/RejectedReapplyForm";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { ProfileSkeleton } from "@/features/vendor/presentation/ProfileSkeleton";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
@@ -27,7 +28,17 @@ export function ProfileSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
+  const needsStoreProfile =
+    sessionKind === "active" ||
+    sessionKind === "pending" ||
+    sessionKind === "suspended";
+
   const loadProfile = useCallback(async () => {
+    if (!needsStoreProfile) {
+      setIsLoading(false);
+      return;
+    }
+
     setLoadError(null);
 
     try {
@@ -46,7 +57,7 @@ export function ProfileSection() {
     } finally {
       setIsLoading(false);
     }
-  }, [refreshStoreBranding, strings.errors.generic]);
+  }, [needsStoreProfile, refreshStoreBranding, strings.errors.generic]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -57,6 +68,25 @@ export function ProfileSection() {
 
   if (isLoading) {
     return <ProfileSkeleton />;
+  }
+
+  if (sessionKind === "rejected") {
+    return (
+      <>
+        <AccountStatusBanner sessionKind={sessionKind} profile={profile} />
+        <RejectedReapplyForm profile={profile} />
+        <ProfileActiveSessionCard />
+      </>
+    );
+  }
+
+  if (sessionKind === "banned") {
+    return (
+      <>
+        <AccountStatusBanner sessionKind={sessionKind} profile={profile} />
+        <ProfileActiveSessionCard />
+      </>
+    );
   }
 
   if (loadError || !storeProfile) {

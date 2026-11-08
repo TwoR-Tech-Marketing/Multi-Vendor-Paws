@@ -79,6 +79,19 @@ export const arStrings: AppStrings = {
       "لا يمكنك الوصول إلى المنتجات أو الطلبات أو الأرباح أثناء تعليق حسابك.",
     pendingProductsMessage:
       "ستتمكن من الوصول إلى المنتجات والطلبات بعد موافقة الإدارة على طلبك.",
+    rejectedTitle: "لم تتم الموافقة على الطلب",
+    rejectedMessage:
+      "لم تتم الموافقة على طلبك. راجع السبب أدناه، حدّث بياناتك، ثم قدّم الطلب مرة أخرى.",
+    rejectedNoReason:
+      "لم تتم الموافقة على طلبك. يمكنك تحديث بياناتك وتقديم الطلب مرة أخرى.",
+    bannedTitle: "الحساب محظور",
+    bannedMessage:
+      "هذا الحساب محظور ولا يمكنه استخدام البوابة. تواصل مع الدعم إذا احتجت مساعدة.",
+    reapplyTitle: "قدّم الطلب مرة أخرى",
+    reapplySubmit: "إرسال الطلب مرة أخرى",
+    reapplySubmitting: "جارٍ الإرسال...",
+    reapplySuccess: "تم إرسال الطلب مرة أخرى. سنراجع بياناتك المحدّثة.",
+    reapplyError: "تعذّر إرسال الطلب مرة أخرى. حاول مرة أخرى.",
     store: "المتجر",
     email: "البريد الإلكتروني",
     status: "الحالة",
@@ -88,6 +101,8 @@ export const arStrings: AppStrings = {
     suspended: "معلق",
     pending: "قيد الانتظار",
     active: "نشط",
+    rejected: "مرفوض",
+    banned: "محظور",
   },
   profile: {
     currentProfileTitle: "الملف الحالي",

@@ -2,11 +2,9 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
+import { isAllowedPortalSessionKind } from "@/features/auth/domain/portal-account-gate";
 import type { VendorSessionDto } from "@/features/auth/domain/session-dto";
-import {
-  isAllowedPortalSessionKind,
-  resolveVendorSessionServer,
-} from "@/features/auth/infrastructure/resolve-vendor-session.server";
+import { resolveVendorSessionViaCallableForUid } from "@/features/auth/infrastructure/resolve-vendor-session.callable";
 import { getVendorStoreProfileAdmin } from "@/features/vendor/infrastructure/vendor-store-profile.admin.repository";
 import { SESSION_COOKIE_NAME } from "@/lib/auth-cookies";
 import { getAdminAuth } from "@/lib/firebase-admin";
@@ -55,8 +53,9 @@ export async function requireVerifiedSession(): Promise<VerifiedSession> {
 export async function buildVendorSessionDto(
   verified: VerifiedSession,
 ): Promise<VendorSessionDto | null> {
+  // S1.1 / D15: kind+profile come from the shared callable, not the local Admin mirror.
   const [resolution, authUser, storeProfile] = await Promise.all([
-    resolveVendorSessionServer(verified.uid, verified.email),
+    resolveVendorSessionViaCallableForUid(verified.uid),
     getAdminAuth().getUser(verified.uid),
     getVendorStoreProfileAdmin(verified.uid, verified.email),
   ]);
@@ -78,7 +77,7 @@ export async function buildVendorSessionDto(
     profile: resolution.profile,
     storeBranding: {
       storeName: storeProfile?.storeName ?? resolution.profile.storeName,
-      logoUrl: storeProfile?.logoUrl ?? null,
+      logoUrl: storeProfile?.logoUrl ?? resolution.profile.logoUrl ?? null,
     },
   };
 }

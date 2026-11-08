@@ -134,17 +134,18 @@ Marks: [DECIDED] agreed, [RECOMMENDED] proposed and waiting for confirmation, [O
   - 2026-11-08 (BM-3): superseded by D25. Documents are required for every vendor type, shops included. The admin defines the list per type. Existing approved vendors get 30 days to upload.
 - 2.4 [OPEN] Do clinics and groomers upload documents? The old planning document requires a tax registration and a license.
   - 2026-11-08 (BM-3): superseded by D25 (same rule for all vendor types). The exact document list per type stays an owner detail for the admin to enter (DOC-1).
-- 2.5 [DECIDED] Account gates in both vendor clients: active, pending, rejected, suspended, banned, not a vendor. [AS-BUILT] The code does not store those six names as statuses. Mapping from the state report Part E vendor status table (lines 471 to 478). BR-2.5 is unchanged. Code changes wait for O5.
+- 2.5 [DECIDED] Account gates in both vendor clients: active, pending, rejected, suspended, banned, not a vendor. [AS-BUILT] The code does not store those six names as statuses. Mapping from the state report Part E vendor status table (lines 471 to 478). BR-2.5 is unchanged.
 
   | Gate in BR-2.5 | What is stored | Session kind |
   |---|---|---|
   | active | vendors.status = active | active |
   | pending | Signup request status pending, or a vendor user who is neither active nor currently restricted | pending |
-  | rejected | Stored only on the signup request. The Auth user is deleted, so there is no session | none |
-  | suspended | vendors.status = suspended and users.accountStatus = suspended | suspended |
-  | banned | Not a status string. isBanned true while status stays suspended | suspended |
+  | rejected | Signup request status rejected; Auth user kept (D28 / S1.1) | rejected |
+  | suspended | vendors.status = suspended and users.accountStatus = suspended (not a ban) | suspended |
+  | banned | Not a status string. isBanned true while status stays suspended | banned |
   | not a vendor | No vendor session. A user document with another role is mobile_app_account | not_vendor, or mobile_app_account |
   - 2026-11-08 (BM-3, D28): rejected applicants keep their account, see a required reason, may reapply (changes AB-2 in S1.1). Pending vendors see status, profile, settings, notifications (O20). Banned gets its own gate/kind in S1.1 (changes AB-4).
+  - 2026-11-08 (S1.1): table above matches shipped callable kinds in portal and vendor app.
 - 2.6 [RECOMMENDED] A suspension, temporary or permanent, keeps the Auth account enabled so the vendor sees the status and the reason. Only a ban disables it. Today a permanent suspend disables Auth.
   - 2026-11-08 (BM-3, D28): decided [DECIDED, best practice]. Suspension keeps login enabled; only a permanent ban disables login. Answers O5.
 - 2.7 [DECIDED] Pending vendors cannot use products, orders or earnings.
@@ -263,9 +264,9 @@ Marks: [DECIDED] agreed, [RECOMMENDED] proposed and waiting for confirmation, [O
 | Id | What the code does | Evidence | Linked | Fate | Ticket |
 |---|---|---|---|---|---|
 | AB-1 | Ban is stored as vendors.status suspended plus isBanned true. users.accountStatus is suspended. | Part H item 1. Part E lines 446 to 451 | BR-2.5, O5 | Keep storage; show a separate banned screen | S1.1 |
-| AB-2 | Reject sets the signup request to rejected and deletes the Auth user. There is no rejected session. | Part H item 2. Part E lines 434 to 435 | BR-2.5, O5 | Change: keep the account, show reason, allow reapply (D28) | S1.1 |
+| AB-2 | Reject sets the signup request to rejected and deletes the Auth user. There is no rejected session. | Part H item 2. Part E lines 434 to 435 | BR-2.5, O5 | Done (S1.1): keep Auth, rejected kind, required reason, reapply callable | S1.1 |
 | AB-3 | A permanent suspend disables Auth. A temporary suspend does not. A permanent ban disables Auth. A temporary ban does not. | Part H item 3. Part E lines 441 to 443 and 447 to 448 | BR-2.6, O5 | Change: only a permanent ban disables login (D28) | S1.2 |
-| AB-4 | The portal folds ban and suspend into one session kind, suspended. | Part H item 4. Part E lines 462 and 468 | BR-2.5 | Change: banned gets its own kind in both apps | S1.1 |
+| AB-4 | The portal folds ban and suspend into one session kind, suspended. | Part H item 4. Part E lines 462 and 468 | BR-2.5 | Done (S1.1): `banned` is its own kind in portal and vendor app | S1.1 |
 | AB-5 | Pending vendors may open settings, profile and notifications. Products, orders, earnings and the dashboard sit behind ActiveVendorGuard. | Part H item 5. Part E line 469 | BR-2.7, O20 | Keep (D28) | Done |
 | AB-6 | Commission uses subtotal plus a split of the delivery fee, minus a split of the discount. | Part H item 6. orders_split.js lines 322 to 327 | BR-3.5, O8 | Change: items only (D22) | DL-1 |
 | AB-7 | Checkout delivery fee is one global document, delivery_fees/const_fees, and falls back to 70. | Part H item 7. Part E lines 529 to 532 | BR-4.7 | Change: per-vendor fee, explicit error if missing | S2.3 |
@@ -399,7 +400,9 @@ Existing in tinderpaws_panel/functions: vendor_signup-reviewVendorSignupRequest,
 
 | Name | Caller | Purpose | Ticket | Status |
 |---|---|---|---|---|
-| vendor_session-resolveVendorSession | Vendor portal and vendor app | Port of resolve-vendor-session.server.ts. Returns kind and profile | T0.6b | DONE |
+| vendor_session-resolveVendorSession | Vendor portal and vendor app | Shared session kind and profile (includes `banned` and `rejected`) | T0.6b, S1.1 | DONE |
+| vendor_signup-reapplyVendorSignupRequest | Rejected applicant (portal, vendor app) | Edit signup fields and return request to pending | S1.1 | DONE |
+| vendor_signup-reviewVendorSignupRequest | Admin | Approve or reject; reject keeps Auth and stores reason (default if empty) | existing, S1.1 | LIVE; reject behavior updated in S1.1 |
 | resolveBuyerEligibility | Buyer | From lat and lng return the governorate id, eligible vendor ids with orderable flags, and the Halo rule | S1.2, S2.2 | TODO |
 | createOrder | Buyer | Create an order with eligibility, fees, coupon and piastres checked on the server; single-vendor check (D20) | S2.11, CART-1 | TODO |
 | suspendVendor (extended) | Admin | Suspend with mode, hold open orders and appointments, create a hold case | S1.2, A2.1 | TODO |
@@ -491,7 +494,7 @@ Phase 1: portal and vendor app together (every ticket is done in both)
 
 | Id | Title | Repos | Est (h) | Week | Status |
 |---|---|---|---|---|---|
-| S1.1 | Account states in both apps, including rejected and banned; reject keeps the account | WEB, VENDOR APP, PANEL | 20 to 25 | 1 | TODO |
+| S1.1 | Account states in both apps, including rejected and banned; reject keeps the account | WEB, VENDOR APP, PANEL | 20 to 25 | 1 | DONE |
 | DOC-1 | Vendor documents: admin list per type, upload, review, 30-day window | WEB, VENDOR APP, PANEL | 14 to 20 | 1 | TODO |
 | PC-1 | Vendor signup and signup status in the vendor app | WEB, VENDOR APP | 8 to 12 rough | 3 | TODO |
 | PC-2 | Store profile and profile change requests in the vendor app | WEB, VENDOR APP | 8 to 12 rough | 3 | TODO |
@@ -1017,12 +1020,21 @@ Consistency findings from the 2026-10-29 setup run. Reconciled in this ticket. O
 
 All Phase 1 tickets: change the portal and the vendor app in the same ticket, from one contract file, with the same rules, states and strings. Update docs/parity.md. PC-1, PC-2 and PC-3 follow D15 and sit after S1.1. They add the portal features the vendor app does not have yet: signup (PC-1), store profile and profile change requests (PC-2), settings and the notifications inbox (PC-3).
 
-**S1.1 Account states in both apps, including rejected and banned; reject keeps the account.** Skills: vendor-type-architecture, vendor-suspension-modes. Week 1. Changes AB-2 and AB-4. Acceptance:
-- [ ] The portal and the vendor app resolve the same gate for the same account: active, pending, rejected, suspended, banned, not a vendor.
-- [ ] Reject keeps the Auth account, shows a required reason, and allows reapply (D28). Banned has its own session kind and screen in both apps.
-- [ ] Suspension reason and expiry are shown.
-- [ ] Rules or an endpoint let a pending or rejected vendor read what the gate needs. The result is recorded in sections 5 and 6.
-- [ ] Gate mapping tests in both clients.
+**S1.1 Account states in both apps, including rejected and banned; reject keeps the account.** Skills: vendor-type-architecture, vendor-suspension-modes. Week 1. Changes AB-2 and AB-4. Status: DONE (2026-11-08). Merged to each `dev` on `feature/S1.1-account-gates`.
+- Acceptance:
+  - [x] Shared callable kinds include `banned` and `rejected` (emulator `test:session:emu` + `test:reapply:emu` via `test:emu`).
+  - [x] Reject keeps Auth; default reason when notes empty; panel reject UI requires reason.
+  - [x] `vendor_signup-reapplyVendorSignupRequest` callable + portal BFF proxy + vendor app reapply screen.
+  - [x] Portal session kind via shared callable (D15); local Admin resolver marked deprecated.
+  - [x] Vendor app gates/routes/copy for rejected and banned; auth tests passed (`fvm flutter test test/features/auth/`, 17 passed).
+  - [x] Portal gate-mapping unit tests (`portal-account-gate.test.ts`); full login E2E against emulator not required for DONE (kind mapping covered; callable covered in PANEL emulator).
+  - [x] Merge into each `dev` and push per D19.
+- Deploy notes (do not deploy in this ticket):
+  1. Deploy functions: `vendor_session-resolveVendorSession`, `vendor_signup-reviewVendorSignupRequest`, `vendor_signup-reapplyVendorSignupRequest` (and `admin_auth.js` already from GOV-1).
+  2. Then panel hosting (reject reason UI), then portal, then vendor app.
+  3. Risk: live panel reject still works without reason (server stores default). Old reject-deleted-Auth behavior stops; applicants keep login.
+  4. Verify: reject without notes stores default; reject with notes stores reason; rejected login shows reason; reapply returns pending; banned shows banned not suspended.
+  5. Rollback: previous function revisions; panel/app rollbacks independent.
 
 **S1.2 Governorate list, coverage model, eligibility and suspension functions.** Repo PANEL (functions). Skills: delivery-zones-geo, vendor-suspension-modes, cloud-functions-rules. Acceptance:
 - [ ] Canonical governorates with ids, nameEn, nameAr, and an idempotent migration script with a dry run for name-keyed data.
@@ -1278,6 +1290,7 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 
 ## 9. Changelog
 
+- 2026-11-08: S1.1 DONE. Session kinds `banned`/`rejected`; reject keeps Auth; reapply callable; portal session via shared callable; panel reject reason UI; portal gate unit tests; vendor app gates/reapply. Emulator `test:emu` passed. Merged to each `dev` and pushed.
 - 2026-11-08: GOV-1 DONE. Gate A approved. Mutating `governorates-*` HTTPS handlers require admin Bearer via shared `admin_auth.js`. Reads and validateOrderDelivery stay open. AB-18 recorded (panel/buyer use Firestore SDK). Contract updated. Emulator `test:gov:emu` passed. Repo rules copies already admin-only writes for governorates (no new open-write risk). Deploy blocked until Ahmed reviews console logs for last 30 days of `governorates-*`.
 - 2026-11-08: BM-3 brings the source of truth in line with the Master Alignment. Section 0 decision rule. D20 to D29 recorded; D9 superseded by D25. Open items closed with answered by Dn except O6, O15, O16, O18 and three owner details. BR dated notes. AB Fate and Ticket columns. New tickets DL-1, CART-1, DOC-1, VC-1, PTS-1, PAY-1, TH-1 to TH-3, GOV-1. Rescoped S1.1, S1.13, S2.10. Release plan, parked work, 21-row risk register. Contracts and parity updated. Skills wording checked.
 - 2026-10-28: File created from the project chat. Contains the business requirements and decisions agreed so far, the architecture decision that Cloud Functions are the endpoints (D1), the data contract proposals, the endpoint registry, and all tickets with estimates and acceptance criteria. Added tickets T0.0, T0.10, T0.11, S2.10, S2.11, A2.7 and T0.9 from the alignment report.

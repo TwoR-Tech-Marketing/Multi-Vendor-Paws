@@ -52,7 +52,9 @@ type SignupRequestDoc = {
 export type VendorSessionKind =
   | "active"
   | "pending"
+  | "rejected"
   | "suspended"
+  | "banned"
   | "mobile_app_account"
   | "wrong_sign_in_email"
   | "not_vendor";

@@ -335,6 +335,9 @@ export async function resolveVendorSessionServer(
   };
 }
 
-export function isAllowedPortalSessionKind(kind: VendorSessionKind): boolean {
-  return kind === "active" || kind === "pending" || kind === "suspended";
-}
+export { isAllowedPortalSessionKind } from "@/features/auth/domain/portal-account-gate";
+
+/**
+ * @deprecated S1.1: prefer resolveVendorSessionViaCallable / ForUid.
+ * Kept until BFF callers are fully unused; do not delete.
+ */

@@ -11,10 +11,10 @@ Vendor app column "not built" means tender_paws_partner has no screen for that f
 | Feature | Portal | Vendor app | Shared endpoint | Exception | Status |
 |---|---|---|---|---|---|
 | Landing | src/app/page.tsx, src/features/auth | not built | none | | portal only today |
-| Login | src/app/(auth)/login/page.tsx | lib/features/auth login + splash | portal session cookie today. App uses vendor_session-resolveVendorSession (T0.6b) | | both (portal cookie path unchanged) |
+| Login | src/app/(auth)/login/page.tsx | lib/features/auth login + splash | portal cookie transport; kind from vendor_session-resolveVendorSession (S1.1 / D15) | | both |
 | Forgot password | src/app/(auth)/forgot-password/page.tsx | lib/features/auth forgot password | Firebase Auth | | both |
 | Vendor signup | src/app/(auth)/register/page.tsx | not built | vendor_signup-submitVendorSignupRequest | | portal has it. PC-1 adds the app |
-| Account status | src/app/account-status/page.tsx | lib/features/auth account status screens | vendor_session-resolveVendorSession (T0.6b). Portal may keep BFF until its move ticket | banned and rejected screens are S1.1 in both apps | both (shared callable on app; portal BFF still local) |
+| Account status | src/app/(portal)/profile + AccountStatusBanner | lib/features/auth account status screens | vendor_session-resolveVendorSession | | both (S1.1: portal session kind via shared callable; cookie BFF kept for transport) |
 | Store setup | src/app/store-setup/page.tsx | not built | portal BFF until the ticket that touches it (D15) | | portal only today |
 | Dashboard | src/app/(portal)/(active)/dashboard/page.tsx, src/features/vendor | not built | none yet | active vendors only (ActiveVendorGuard) | portal only today |
 | Profile | src/app/(portal)/profile/page.tsx, src/features/vendor | not built | vendors-reviewVendorProfileChange for change review | pending vendors can open it (AB-5, O20) | portal has it. PC-2 adds the app |
@@ -34,7 +34,7 @@ Feature modules under src/features: auth, vendor, products, orders, financials, 
 
 | Feature | Portal | Vendor app | Shared endpoint | Exception | Status |
 |---|---|---|---|---|---|
-| S1.1 Vendor session and account gates | account status and guards | T0.6b gates shipped (kind mapping). Separate banned/rejected screens remain | vendor_session-resolveVendorSession | separate banned and rejected screens are S1.1 in both apps | PARTIAL (T0.6b) |
+| S1.1 Vendor session and account gates | profile status + RejectedReapplyForm | account gates + rejected reapply | vendor_session-resolveVendorSession, vendor_signup-reapplyVendorSignupRequest | | DONE |
 | PC-1 Signup and signup status | register route, already built | not built | vendor_signup-submitVendorSignupRequest | | TODO |
 | PC-2 Store profile and change requests | profile route, already built | not built | vendors-reviewVendorProfileChange | | TODO |
 | PC-3 Settings and notifications inbox | settings and notifications routes, already built | not built | registerVendorFcmToken is S1.6 | | TODO |
