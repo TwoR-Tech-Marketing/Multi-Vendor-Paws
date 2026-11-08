@@ -412,7 +412,7 @@ Existing in tinderpaws_panel/functions: vendor_signup-reviewVendorSignupRequest,
 | createOrder | Buyer | Create an order with eligibility, fees, coupon and piastres checked on the server; single-vendor check (D20) | S2.11, CART-1 | TODO |
 | unsuspendVendor | Admin | Lift a suspension and release holds (also via shouldSuspend false) | A2.1 | DONE via suspendVendor in S1.2 |
 | setVendorDeliveryFee | Admin | Set the admin-only delivery fee | A2.2 | TODO |
-| setVendorDeal | Admin | Set the deal for a provider (per branch, apply to all) | DL-1, A2.5 | TODO |
+| vendors-setVendorDeal | Admin | Set vendorDeals/{vendorId} (type, fixed, percentage, apply to all, history) | DL-1, A2.5 | DONE (2026-11-08) |
 | registerVendorFcmToken | Vendor | Register the push token of a vendor device | S1.6 | TODO |
 | Shared product, order, earnings, profile, settings callables | Portal and vendor app | Move portal BFF business rules to shared functions (D15) | S1.4, S1.5, S1.6, PC-2, PC-3 | TODO |
 | vendor_documents-setVendorDocumentRequirements | Admin | Define required docs per vendor type | DOC-1 | DONE |
@@ -512,7 +512,7 @@ Phase 1: portal and vendor app together (every ticket is done in both)
 | S1.3 | Coverage picker | WEB, VENDOR APP | 16 to 20 | 2 | TODO |
 | S1.4 | Products | WEB, VENDOR APP | 16 to 22 | 2 | TODO |
 | S1.5 | Orders including the hold state | WEB, VENDOR APP | 11 to 14 | 2 | TODO |
-| DL-1 | Deal model per branch; commission on items only; ledger | WEB, VENDOR APP, PANEL | 12 to 18 | 2 | TODO |
+| DL-1 | Deal model per branch; commission on items only; ledger | WEB, VENDOR APP, PANEL | 12 to 18 | 2 | DONE |
 | S1.6 | Earnings, notifications and push | WEB, VENDOR APP, PANEL | 13 to 16 | 3 | TODO |
 | VC-1 | Vendor coupons and admin coupons | WEB, VENDOR APP, PANEL | 12 to 16 | 3 | TODO |
 | PAY-1 | Payouts: cycle per vendor, admin recording, vendor statement | WEB, VENDOR APP, PANEL | 10 to 14 | 3 | TODO |
@@ -1091,11 +1091,13 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 - [x] Contract `docs/contracts/documents.md` locked (including the three read/list callables).
 - Deploy notes: see Wave 4 in `~/Downloads/DEPLOY_PLAN.md`. Rules in repo copies only (T0.14).
 
-**DL-1 Deal model per branch; commission on items only; ledger.** Repos WEB, VENDOR APP, PANEL. Week 2. Est 12 to 18 h. Skills: deals-and-billing, money-piastres. Acceptance:
-- [ ] Deals set per branch with apply-to-all; vendors without branches have one deal (D22).
-- [ ] Types: fixed fee per order and/or percentage of item value. Fees on items only, never delivery. Gateway fee inside TenderPaws' fee. Default 10 percent when no deal.
-- [ ] Ledger entries reflect the model. Fixes AB-6. Contract docs/contracts/deals.md and earnings.md updated.
-- [ ] setVendorDeal callable shape recorded in section 6.
+**DL-1 Deal model per branch; commission on items only; ledger.** Repos WEB, VENDOR APP, PANEL. Week 2. Est 12 to 18 h. Skills: deals-and-billing, money-piastres. Status: DONE (2026-11-08) for fee cutover + admin write path; vendor read view deferred to S1.13. Acceptance:
+- [x] Deals set on `vendorDeals/{vendorId}` with apply-to-all and optional `branchOverrides`; vendors without a deal use default 10 percent (D22). Panel deal editor on vendor detail.
+- [x] Types: fixed, percentage, or both. Shared `lib/deal_fees.js`: items only, delivery 100 percent to vendor, fee capped at fee base, half-up percent, admin/vendor coupon rules (D23). Gateway absorbed in TenderPaws fee.
+- [x] `orders_split` uses the shared module only when `commissionConfig/main.itemsOnlyFrom` is set and `placedAt >= itemsOnlyFrom`. Existing orders never recomputed. vendorOrders store `platformFeePiastres` / `vendorNetPiastres` and mirror legacy `commissionPiastres` / `netPiastres`. Fixes AB-6 for new orders after cutover.
+- [x] Contract `docs/contracts/deals.md` and `earnings.md` locked; `vendors-setVendorDeal` in section 6.
+- [x] Emulator: `test:deal_fees` (9) and `test:deals:emu` (4) including pre-cutover legacy path.
+- Deploy notes: Wave DL-1 in `~/Downloads/DEPLOY_PLAN.md`. Leave `itemsOnlyFrom` unset until cutover. Never recompute historical vendorOrders.
 
 **VC-1 Vendor coupons and admin coupons.** Repos WEB, VENDOR APP, PANEL. Week 3. Est 12 to 16 h. Skills: points-and-coupons. Acceptance:
 - [ ] Admin coupons funded by TenderPaws (vendor paid on full price). Vendor coupons funded by the vendor (fees on discounted price) (D23).
@@ -1308,6 +1310,7 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 
 ## 9. Changelog
 
+- 2026-11-08: DL-1 DONE (admin write + fee cutover). Gate C OK with fee-base cap, half-up 333@10%, admin-coupon zero/less note. `vendors-setVendorDeal`, panel deal editor, `lib/deal_fees.js`, `orders_split` behind `itemsOnlyFrom`. Vendor app read view deferred to S1.13. Emulator deal tests passed.
 - 2026-11-08: fix/W1-cleanup. Closed Week 1 DOC-1 gaps: vendor app documents screen uses `vendor_documents-getMyVendorDocuments` (no client Firestore); portal `VendorDocumentsSection` load deferred with `setTimeout` (T0.15 pattern, eslint 0 errors); panel requirements type picker + missing-docs/deadline list via `listVendorsMissingDocuments`; emulator document tests extended. DOC-1 acceptance now truly met. Merged to each `dev` with `--no-ff`.
 - 2026-11-08: Week 2 Step 0. Verified Week 1 (GOV-1, S1.1, S1.2, DOC-1) on each `dev`. Wrote `~/Downloads/DEPLOY_PLAN.md`. Recorded portal hosting in section 1.2 (Vercel-oriented secrets; not live). DOC-1 acceptance checkboxes filled; admin UI gaps listed (store-only requirements editor; no missing-docs/deadline list). Process note: PANEL DOC-1 admin screen commit `828a8f4` landed on `dev` without a `chore(merge): bring DOC-1 into dev` merge commit (do not rewrite history). Re-run: PANEL `npm run test:emu` exit 0; portal `npm test` 11 passed, typecheck clean, eslint 1 error / 114 warnings; vendor app `fvm flutter test` 38 passed, `fvm flutter analyze` 5 errors (DOC-1 `documents_screen.dart` imports `cloud_firestore` without a direct dependency).
 - 2026-11-08: DOC-1 DONE. Requirements, submit/review callables, portal upload BFF, app documents screen, rules in repo copies (not deployed). Emulator document tests passed.
