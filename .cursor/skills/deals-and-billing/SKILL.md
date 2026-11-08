@@ -1,27 +1,21 @@
 ---
 name: deals-and-billing
-description: Use when building per-provider deals (fixed subscription, percentage, both), live balances, subscription status or payouts for service providers.
+description: Use when building per-provider deals (fixed fee per order, percentage, both), live balances, statements or payouts for vendors and service providers.
 ---
 # Deals and billing
 
 ## Spec
-- Per provider deal type: fixed subscription, percentage, or both. Admin enters the agreed values.
-- Percentage deals: each provider balance is calculated automatically, live.
-- Subscription status shows: monthly or annual amount, start date, renewal date, payment status, grace period.
+- Deals are set per branch, with an apply-to-all-branches option. Vendors without branches have one deal (D22).
+- Types: fixed fee per order (same amount whatever the order size), percentage of item value, or both. Admin enters the agreed values.
+- No vendor subscription product (D21). S1.13 is deals view and statement only.
+- Fees apply to items only, never to delivery. Delivery fee goes 100 percent to the vendor. Gateway fee is absorbed inside TenderPaws' fee. Default 10 percent when no deal (D22).
+- Every buyer payment goes to TenderPaws. Vendors are paid net on a weekly or monthly cycle set per vendor by the admin. Payouts are manual ledger entries. Vendors see a statement (D21).
 
 ## Rules
-- Service providers use `vendorDeals/{vendorId}`. The global `commissionConfig/main` stays for stores unless told otherwise.
-- All money in integer piastres. Percentage rounding rule is defined once in the money helper.
+- Service providers and stores use deal documents (see docs/contracts/deals.md). commissionConfig/main stays as the 10 percent default when no deal is set.
+- All money in integer piastres. Percentage rounding is half up (D28 / O17).
 - Balance changes go through the earnings ledger (`sale | refund | adjustment | payout`), never direct overwrites.
-- Admin sets deals. Providers see them read only.
+- Admin sets deals. Providers see them read only (S1.13).
 
 ## DECIDED
-The percentage is taken on the amount after the coupon. Payments run in the mobile app: Apple in-app purchase for digital goods, Fawaterak webview for the rest. Refunds are handled manually through support. Taxes depend on the payment method and are handled with the payment integration. The platform takes its fee on orders from the vendor. Delivery fee is optional, per vendor, set by the admin only, and belongs to the vendor.
-
-## OPEN (blocks building)
-- Who collects the patient payment: TenderPaws or the clinic?
-- Payout schedule and method
-- How the fixed fee is collected and what happens after the grace period
-- Refund effect on balance
-- Does the percentage base include the delivery fee?
-- Who pays the Fawaterak gateway fees?
+The percentage is taken on the amount after the coupon for vendor-funded coupons; admin coupons fund the discount and the vendor is paid on the full price (D23). Payments: Apple in-app purchase for digital goods, Fawaterak for physical, appointments and telehealth, Android remote switch for digital goods (D26). Refunds are handled manually through support.

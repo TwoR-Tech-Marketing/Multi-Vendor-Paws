@@ -11,15 +11,16 @@ commissionConfig/main (AB-14):
 | defaultCommissionPercent | number, default 10 |
 | vendorOverrides | map vendorId -> percent |
 
-Relation of this percent model to BR-7.1 deals is O19. Not locked as the deal document.
+2026-11-08 (BM-3, D22): default 10 percent applies when a vendor has no deal. Deal documents supersede per-vendor overrides for branches that have a deal. Commission and deal fees apply to items only, never delivery. Delivery fee goes 100 percent to the vendor. Gateway fee is absorbed inside TenderPaws' fee (vendor net = items minus deal fees). See docs/contracts/deals.md and docs/contracts/payouts.md.
 
 ## Endpoints
 
 | Name | Caller | Status |
 |---|---|---|
 | Portal BFF earnings routes | Portal | Live. Move in S1.6 (D15) |
-| vendors-setVendorCommission | Admin | Live |
-| setVendorDeal | Admin | Planned A2.5 / S1.13. Blocked by O19 clarity |
+| vendors-setVendorCommission | Admin | Live (legacy override path) |
+| setVendorDeal | Admin | Planned DL-1 / A2.5 |
+| Payout recording and statements | Admin, vendor | Planned PAY-1 |
 
 ## Rules needed
 

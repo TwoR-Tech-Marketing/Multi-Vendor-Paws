@@ -8,7 +8,7 @@ description: Use when building or editing clinic or groomer signup, profile, bra
 - Name of the clinic (or business)
 - Branches, optional. Each branch has its own services and prices, with an option to duplicate services from another branch
 - Phone, address, map location
-- Documents: none required for vendor validation (confirmed with the owner for store vendors). CONFIRM for clinics, because the services spec lists a tax registration and a license document.
+- Documents: required for every vendor type, shops included (D25). The admin defines the list per type in the panel. Exact list per type is an owner detail (DOC-1).
 - Services and prices
 - Photos (optional)
 - Education and experience (optional, clinics)
@@ -25,6 +25,6 @@ description: Use when building or editing clinic or groomer signup, profile, bra
 - Uploads use `vendors/{vendorId}/...` storage paths from `src/lib/storage-paths.ts`.
 - Money in integer piastres. UI copy via `useStrings()`.
 
-## OPEN
-- Decline reason: required text? Can the provider reapply?
-- Do clinics and groomers need any documents?
+## DECIDED (D28)
+- Decline shows a required reason. Rejected applicants keep their account and may reapply.
+- Documents: see D25 / DOC-1 (owner enters the list per type).

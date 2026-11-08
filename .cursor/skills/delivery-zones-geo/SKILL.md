@@ -28,18 +28,15 @@ description: Use when building or changing delivery coverage, buyer location, go
 - Name keyed data (for example fee keys like cairo and giza) needs a one time migration to IDs.
 
 ## Eligibility
-- Computed on the server. Checkout re-checks on the server, because buyers move and vendors change coverage or status.
+- Computed on the server. A function returns the eligible vendor ids for the buyer location, then the app queries those vendors plus Halo (D28, answered O3). Checkout re-checks on the server.
 - Only active vendors are eligible. Suspension follows vendor-suspension-modes.
 
 ## Delivery fee
 - Optional, per vendor, belongs to the vendor, added to the order total.
 - Set by the admin only. It is not shown or editable in the vendor portal.
-- The platform takes its fee on orders from the vendor, it does not take the delivery fee as its own.
+- Platform fees apply to items only, never delivery. Delivery fee goes 100 percent to the vendor (D22).
 - Halo keeps its existing governorate based fees.
 
-## OPEN
-- Eligible vendor IDs then query products, or copy coverage data onto each product
-- What a buyer sees before a location is chosen
-- What happens to a cart when the buyer location changes
-- Official governorate list, boundary data source and its licence
-- Does the commission base include the delivery fee?
+## OPEN (still open in section 4)
+- What a buyer sees before a location is chosen; cart when location changes (O15)
+- Official governorate list, boundary data source and its licence (O16)
