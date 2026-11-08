@@ -279,6 +279,7 @@ Marks: [DECIDED] agreed, [RECOMMENDED] proposed and waiting for confirmation, [O
 | AB-15 | createdBy and updatedBy on admin products are the literal username ahmedhany1284. | Part H item 15. store_screen.dart lines 1122 and 1140 | BR-5.4 | Change: the signed-in admin's id | A2.3 |
 | AB-16 | Legacy service_request statuses differ from the appointment status list, and those triggers are not in functions/index.js. | Part H item 16. Part E lines 503 and 555 | BR-6.7 | Confirm not deployed, then retire; replaced by the appointments engine | S1.10, A2.7 |
 | AB-17 | The workspace rule forbade commits to main, while D14 and the git history show main was fast-forwarded in T0.12e. | Part H item 17 | D14. Wording aligned in this ticket | Fixed by BM-1 (D14, D19) | Done |
+| AB-18 | Panel and buyer read and write governorates through the Firestore SDK, not the HTTPS `governorates-*` functions. WEB and VENDOR APP have no HTTPS callers. | GOV-1 audit: `GovernorateRepository`, `DeliveryValidationService`; grep of Multi-Vendor-Paws and tender_paws_partner | BR-4.6, risk 1 | Keep; HTTPS mutates locked in GOV-1; Firestore writes protected by rules in T0.14 | GOV-1, T0.14 |
 
 ---
 
@@ -429,6 +430,13 @@ Existing in tinderpaws_panel/functions: vendor_signup-reviewVendorSignupRequest,
 | vendors-setVendorCommission | Admin | Write the percent override on commissionConfig/main | existing | LIVE in repo. v2 onCall in vendors.js line 773. Wired (state report Part E, lines 419 and 544) |
 | vendors-liftExpiredVendorRestrictions | System | Lift expired bans and suspensions | existing | LIVE in repo. v2 onSchedule every 60 minutes in vendors.js line 783. Wired (state report Part E, line 544) |
 | vendors-reviewVendorProfileChange | Admin | Review a vendor profile change request | existing | LIVE in repo. v2 onCall in vendors.js line 832. Wired (state report Part E, line 544) |
+| governorates-getAllGovernorates | Open HTTPS | List governorates | GOV-1 | LIVE; auth open (GOV-1) |
+| governorates-getCategoryGovernorates | Open HTTPS | List governorates for a category | GOV-1 | LIVE; auth open (GOV-1) |
+| governorates-validateOrderDelivery | Open HTTPS | Validate cart items against a governorate name | GOV-1 | LIVE; auth open (GOV-1). Live buyer uses Firestore instead (AB-18) |
+| governorates-createGovernorate | Admin HTTPS Bearer | Create governorate | GOV-1 | LIVE; admin Bearer required (GOV-1) |
+| governorates-updateGovernorate | Admin HTTPS Bearer | Update governorate | GOV-1 | LIVE; admin Bearer required (GOV-1) |
+| governorates-deleteGovernorate | Admin HTTPS Bearer | Delete governorate | GOV-1 | LIVE; admin Bearer required (GOV-1) |
+| governorates-assignCategoryGovernorates | Admin HTTPS Bearer | Replace category governorate assignments | GOV-1 | LIVE; admin Bearer required (GOV-1) |
 
 service_request.js and services.js are in the repo and are not required by functions/index.js. Deployment is UNKNOWN (state report Part E, lines 555 to 556).
 
@@ -477,7 +485,7 @@ Phase 0: setup
 | BM-1 | Reconcile the business model, parity and the workspace rule | WEB | done this session | DONE |
 | BM-2 | Record security findings from S2.12 (SEC-1, SEC-2, O25) | WEB | docs | DONE |
 | BM-3 | Record decisions D20 to D29, release plan, parked work and risk register | WEB | docs | DONE |
-| GOV-1 | Governorates HTTPS endpoints auth check and lock to admins | PANEL | 1 to 3 | TODO (week 1 day 1) |
+| GOV-1 | Governorates HTTPS endpoints auth check and lock to admins | PANEL, WEB (docs) | 1 to 3 | DONE |
 
 Phase 1: portal and vendor app together (every ticket is done in both)
 
@@ -1105,7 +1113,22 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 
 **TH-3 Admin doctors and price.** Repo PANEL. Weeks 6 to 8. Est 6 to 8 h. Acceptance: admin manages doctor vendors and the telehealth price; doctor pay terms remain an owner detail.
 
-**GOV-1 Governorates HTTPS endpoints auth check and lock to admins.** Repo PANEL. Week 1 day 1. Est 1 to 3 h. Acceptance: read-only check of create, update and delete handlers first; then lock to admins if open. Evidence recorded under this ticket.
+**GOV-1 Governorates HTTPS endpoints auth check and lock to admins.** Repos PANEL (functions), WEB (SOT, contract). Week 1 day 1. Est 1 to 3 h. Status: DONE (2026-11-08).
+- Gate A (2026-11-08): approved. Mutating HTTPS require Bearer + verifyIdToken + shared admin check from `admin_auth.js` (same rule as vendors.js). Reads and `validateOrderDelivery` stay open. Panel/buyer use Firestore SDK (AB-18), not HTTPS. WEB and VENDOR APP: no HTTPS callers. Repo rules copies already `allow write: if isAdmin()` for `governorates` and `category_governorates` (WEB `firestore.rules` lines 132 to 133, BUYER `firestore.rules` lines 175 to 176, PANEL `emulator-rules/firestore.rules` lines 175 to 176); no new open-write risk added (live rules still T0.14 / risk 4).
+- Acceptance:
+  - [x] Read-only audit of seven handlers and callers (panel, buyer, WEB, vendor app).
+  - [x] Mutating handlers refuse anonymous (401) and non-admin (403); admin allowed.
+  - [x] Reads and validateOrderDelivery unchanged without a token.
+  - [x] Contract `docs/contracts/governorates.md` locks the auth model; AB-18 recorded; outdated banner on PANEL `GOVERNORATE_DELIVERY_VALIDATION.md`.
+  - [x] Emulator evidence: `firebase emulators:exec --project demo-tenderpaws --only auth,firestore,functions "npm run seed && npm run test:gov:emu"` exit 0. Tests: create/update/delete/assign anonymous 401, non-admin 403, admin allowed; getAll and getCategory open; validateOrderDelivery shapes unchanged.
+- Branches: PANEL and WEB `feature/GOV-1-governorates-auth`.
+- Deploy notes (do not deploy in this ticket):
+  1. Before deploy: Ahmed checks Firebase console logs for the last 30 days of `governorates-*` invocations. Any call to a mutating handler means stop and review first.
+  2. Deploy only the updated `governorates-*` HTTPS functions (and `admin_auth.js` / `vendors.js` shared import). No rules, indexes, panel hosting, or portal deploy required for GOV-1.
+  3. Order: functions only.
+  4. Risk to live users: low. Live panel and buyer use Firestore, not these HTTPS endpoints. Residual: any unknown external caller of mutate URLs starts getting 401/403 (intended).
+  5. Verify: anonymous POST create returns 401; admin with Bearer succeeds; panel Firestore CRUD still works; buyer checkout validation still works.
+  6. Rollback: redeploy previous functions revision for `governorates` (and `vendors` if the shared import must roll back together).
 
 **S2.12 Remove secret prints in the buyer app.** Est 1 to 2 h. Status: REVIEW (2026-11-06). Branch left for Shorebird. Not merged into main or dev.
 - BUYER branch: `fix/S2.12-remove-secret-prints` at `c1d2898d0cd4b90d3c1d26555b5fecd0542f5cc0`. Base was local main `647cd48`.
@@ -1184,7 +1207,7 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 
 | # | Risk | Severity | Mitigation | Ticket | When |
 |---|---|---|---|---|---|
-| 1 | Governorates HTTPS endpoints (create, update, delete) may have no auth | High if confirmed | Read-only check, then lock to admins | GOV-1 | Week 1, day 1 |
+| 1 | Governorates HTTPS endpoints (create, update, delete, assign) had no auth | High (confirmed GOV-1) | Mutating handlers require admin Bearer; reads and validateOrderDelivery stay open | GOV-1 | Week 1, day 1 |
 | 2 | Google Maps key unrestricted in the buyer app | Low | Restrict to app ids and Maps APIs | SEC-2 | Now |
 | 3 | Payment token prints in the live app | Medium | Fix ready; ship as Shorebird patch | S2.12 | Now |
 | 4 | Live rules unknown; repo copies leave store open and promo codes writable; Storage allows wide writes | High | Export live rules, one canonical file, tighten | T0.14 | This week |
@@ -1255,6 +1278,7 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 
 ## 9. Changelog
 
+- 2026-11-08: GOV-1 DONE. Gate A approved. Mutating `governorates-*` HTTPS handlers require admin Bearer via shared `admin_auth.js`. Reads and validateOrderDelivery stay open. AB-18 recorded (panel/buyer use Firestore SDK). Contract updated. Emulator `test:gov:emu` passed. Repo rules copies already admin-only writes for governorates (no new open-write risk). Deploy blocked until Ahmed reviews console logs for last 30 days of `governorates-*`.
 - 2026-11-08: BM-3 brings the source of truth in line with the Master Alignment. Section 0 decision rule. D20 to D29 recorded; D9 superseded by D25. Open items closed with answered by Dn except O6, O15, O16, O18 and three owner details. BR dated notes. AB Fate and Ticket columns. New tickets DL-1, CART-1, DOC-1, VC-1, PTS-1, PAY-1, TH-1 to TH-3, GOV-1. Rescoped S1.1, S1.13, S2.10. Release plan, parked work, 21-row risk register. Contracts and parity updated. Skills wording checked.
 - 2026-10-28: File created from the project chat. Contains the business requirements and decisions agreed so far, the architecture decision that Cloud Functions are the endpoints (D1), the data contract proposals, the endpoint registry, and all tickets with estimates and acceptance criteria. Added tickets T0.0, T0.10, T0.11, S2.10, S2.11, A2.7 and T0.9 from the alignment report.
 - 2026-10-29: Setup run on dev. T0.0, T0.1 and T0.1b are done. T0.6v is blocked because fvm 3.44.2 shows Need setup. Consistency findings are listed under T0.11. Nothing pushed.
