@@ -77,6 +77,10 @@ export const arStrings: AppStrings = {
       "تم إرسال ملف المتجر. لا يمكنك نشر المنتجات حتى الموافقة.",
     suspendedProductsMessage:
       "لا يمكنك الوصول إلى المنتجات أو الطلبات أو الأرباح أثناء تعليق حسابك.",
+    suspensionModeHidden: "متجرك مخفي عن المشترين أثناء التعليق.",
+    suspensionModeViewOnly:
+      "يمكن للمشترين رؤية متجرك كغير متاح ولا يمكنهم تقديم طلبات جديدة.",
+    suspensionModeLabel: "وضع التعليق",
     pendingProductsMessage:
       "ستتمكن من الوصول إلى المنتجات والطلبات بعد موافقة الإدارة على طلبك.",
     rejectedTitle: "لم تتم الموافقة على الطلب",

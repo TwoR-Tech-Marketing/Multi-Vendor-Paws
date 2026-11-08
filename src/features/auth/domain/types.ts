@@ -30,6 +30,8 @@ export type VendorProfile = {
   restrictionReason?: string;
   restrictionExpiresAt?: Date | null;
   isPermanentRestriction?: boolean;
+  /** S1.2 / S1.14: hidden | view_only when suspended */
+  suspensionMode?: "hidden" | "view_only" | null;
   rejectionReason?: string | null;
   rejectedAt?: Date | null;
   signupRequestId?: string | null;

@@ -75,6 +75,11 @@ export const Strings = {
       "Your store profile was submitted. You cannot publish products until approved.",
     suspendedProductsMessage:
       "You cannot access products, orders, or earnings while your account is suspended.",
+    suspensionModeHidden:
+      "Your store is hidden from buyers while suspended.",
+    suspensionModeViewOnly:
+      "Buyers can see your store as unavailable and cannot place new orders.",
+    suspensionModeLabel: "Suspension mode",
     pendingProductsMessage:
       "You will be able to access products and orders once an admin approves your application in the Tender Paws admin panel.",
     rejectedTitle: "Application not approved",

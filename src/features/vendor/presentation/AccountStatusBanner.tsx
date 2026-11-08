@@ -52,14 +52,23 @@ export function AccountStatusBanner({
     statusLabel = strings.accountStatus.banned;
     statusClass = styles.statusSuspended;
   } else if (isSuspended) {
+    const modeLine =
+      profile.suspensionMode === "view_only"
+        ? strings.accountStatus.suspensionModeViewOnly
+        : strings.accountStatus.suspensionModeHidden;
     bannerTitle = strings.accountStatus.suspended;
-    bannerMessage = profile.restrictionReason
-      ? `${strings.accountStatus.suspendedProductsMessage} ${strings.accountStatus.reason}: ${profile.restrictionReason}${
-          !profile.isPermanentRestriction && profile.restrictionExpiresAt
-            ? ` (${formatExpiry(profile.restrictionExpiresAt, locale)})`
-            : ""
-        }`
-      : strings.accountStatus.suspendedProductsMessage;
+    bannerMessage = [
+      strings.accountStatus.suspendedProductsMessage,
+      `${strings.accountStatus.suspensionModeLabel}: ${modeLine}`,
+      profile.restrictionReason
+        ? `${strings.accountStatus.reason}: ${profile.restrictionReason}`
+        : null,
+      !profile.isPermanentRestriction && profile.restrictionExpiresAt
+        ? formatExpiry(profile.restrictionExpiresAt, locale)
+        : null,
+    ]
+      .filter(Boolean)
+      .join(" ");
     bannerClass = styles.statusBannerSuspended;
     statusLabel = strings.accountStatus.suspended;
     statusClass = styles.statusSuspended;

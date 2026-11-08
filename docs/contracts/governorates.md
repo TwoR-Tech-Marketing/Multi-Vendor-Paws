@@ -37,10 +37,12 @@ Auth model (GOV-1):
 | `governorates-deleteGovernorate` | Same as create |
 | `governorates-assignCategoryGovernorates` | Same as create |
 
-## Planned
+## Canonical list and migration (S1.2)
 
-Idempotent migration from name-keyed data to ids (S1.2). Dry run required.
+- Stable ids (`gov_cairo`, …), `nameEn`, `nameAr`, `code` (ISO like `EG-C`). Additive `name` kept.
+- Idempotent script: `functions/scripts/migrate_governorates.js` (mandatory `DRY_RUN=1` first; emulator only in this ticket).
+- Boundary asset: `functions/data/geoBoundaries-EGY-ADM1.geojson` (full resolution) + `SOURCE.md` (ODbL 1.0).
 
-## Open
+## O16 (closed, S1.2 / Gate B)
 
-O16 official list, boundary data, licence.
+geoBoundaries gbOpen Egypt ADM1, full GeoJSON, ODbL 1.0. See SOT section 4 and S1.2 Gate B notes.

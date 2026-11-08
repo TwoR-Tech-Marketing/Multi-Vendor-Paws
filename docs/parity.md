@@ -38,7 +38,7 @@ Feature modules under src/features: auth, vendor, products, orders, financials, 
 | PC-1 Signup and signup status | register route, already built | not built | vendor_signup-submitVendorSignupRequest | | TODO |
 | PC-2 Store profile and change requests | profile route, already built | not built | vendors-reviewVendorProfileChange | | TODO |
 | PC-3 Settings and notifications inbox | settings and notifications routes, already built | not built | registerVendorFcmToken is S1.6 | | TODO |
-| S1.2 Governorates, eligibility, suspension | not a vendor screen | not a vendor screen | resolveBuyerEligibility, suspendVendor extended | function work is PANEL | IN PROGRESS (Gate B waiting) |
+| S1.2 Governorates, eligibility, suspension | suspension mode on status banner | suspension mode on status screen | resolveBuyerEligibility, suspendVendor extended | function work is PANEL; banners in both apps | DONE |
 | S1.3 Coverage picker | not built | not built | shared save for deliveryCoverage | store vendors only (BR-4) | TODO |
 | S1.4 Products | products routes, move off the BFF (D15) | not built | shared product callables | no spreadsheet on mobile (BR-12.4) | TODO |
 | S1.5 Orders including hold | orders routes, move off the BFF (D15) | not built | shared order callables | | TODO |

@@ -1,10 +1,8 @@
 # Contract: coverage-eligibility
 
-Store vendors only (BR-4). Depends on O3 recommendation (function returns eligible vendor ids) and O16 for official governorate boundaries.
+Store vendors only (BR-4). Locked by S1.2 (2026-11-08). Gate B boundary source: geoBoundaries gbOpen Egypt ADM1 (O16 closed).
 
 ## Vendor deliveryCoverage (on vendors/{id})
-
-Proposed shape for S1.2 / S1.3 (still marked open where noted):
 
 ```
 deliveryCoverage: {
@@ -14,25 +12,60 @@ deliveryCoverage: {
 }
 ```
 
+Additive. Coverage is required before a **new** store vendor can become active; existing active vendors are listed for the admin, not blocked (S1.2).
+
 ## Endpoint: resolveBuyerEligibility
 
 | Field | Value |
 |---|---|
-| Caller | Buyer |
+| Type | Callable `eligibility-resolveBuyerEligibility` |
+| Caller | Buyer (not wired in the live buyer app yet) |
 | Ticket | S1.2, S2.2 |
-| Request | { lat: number, lng: number } |
-| Response | { governorateId: string, vendors: [{ vendorId: string, orderable: boolean }], haloRule: object } |
 | Auth | Signed-in buyer |
-| Errors | invalid-argument, failed-precondition (no boundary data), internal |
+| Request | `{ lat: number, lng: number }` |
 
-orderable is false for view_only suspended vendors. hidden vendors are omitted.
+### Response
+
+```
+{
+  governorateId: string,
+  nameEn: string,
+  nameAr: string,
+  resolution: "inside" | "nearest",
+  distanceMeters: number | null,
+  vendors: [{ vendorId: string, orderable: boolean }],
+  haloRule: {
+    governorateId: string,
+    categoryIds: string[],
+    failClosed: true
+  }
+}
+```
+
+- `orderable` is false for `view_only` suspended vendors. `hidden` vendors are omitted.
+- Only `vendorType` store (default) with covering `deliveryCoverage` are returned.
+- Active vendors and view_only suspended vendors that cover the point are included.
+- Halo: categories from `category_governorates` for this governorate id only (fail closed).
+
+### Governorate resolution (Gate B)
+
+1. Point-in-polygon against full `geoBoundaries-EGY-ADM1.geojson` (functions/data, ODbL 1.0).
+2. If no polygon contains the point, nearest governorate only if distance ≤ 2 km; else fail closed (`failed-precondition`).
+3. Alias table maps all 27 `shapeName` and `shapeISO` values to `governorates/{id}`.
+4. Zone mode matching uses haversine only (unaffected by boundary file).
+
+`nameEn` / `nameAr` are returned so S2.1 can show "Delivering to: {governorate}" and let the buyer move the pin.
+
+### Errors
+
+| Code | When |
+|---|---|
+| unauthenticated | No auth |
+| invalid-argument | Missing/non-numeric lat/lng |
+| failed-precondition | Outside boundaries beyond 2 km |
+| internal | Unexpected |
 
 ## Rules needed
 
-- coverage fields writable by the owning vendor through a validated callable or rules that match the schema.
-- Eligibility never trusted from the client at checkout (createOrder re-checks).
-
-## Open
-
-- O16 official list and boundary licence block production boundary resolution.
-- O15 buyer view before location is chosen.
+- coverage fields writable by the owning vendor through a validated callable (S1.3) or matching rules.
+- Eligibility never trusted from the client at checkout (`createOrder` re-checks).

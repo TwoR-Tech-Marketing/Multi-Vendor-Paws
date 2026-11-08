@@ -17,6 +17,7 @@ type CallableSessionResponse = {
       rejectedAt?: string | null;
       rejectionReason?: string | null;
       signupRequestId?: string | null;
+      suspensionMode?: "hidden" | "view_only" | null;
       isBanned?: boolean;
       logoUrl?: string | null;
       approvalStatus?: string | null;
@@ -63,6 +64,7 @@ function mapProfile(
       ? new Date(profile.restrictionExpiresAt)
       : null,
     isPermanentRestriction: Boolean(profile.isPermanentRestriction),
+    suspensionMode: profile.suspensionMode ?? null,
     rejectionReason: profile.rejectionReason ?? null,
     rejectedAt: profile.rejectedAt ? new Date(profile.rejectedAt) : null,
     signupRequestId: profile.signupRequestId ?? null,
