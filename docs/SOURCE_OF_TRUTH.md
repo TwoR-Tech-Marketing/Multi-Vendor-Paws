@@ -84,7 +84,7 @@ All are siblings under /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws
 | WEB (home) | Multi-Vendor-Paws | Next.js vendor web portal. Holds this file, contracts and the parity table | Editable |
 | BUYER | tinder_paws | Flutter buyer mobile app. Flutter 3.47.9 and Dart 3.13.7 | Read only unless the ticket says so. Never switch branches or stash there |
 | PANEL | tinderpaws_panel | Flutter web admin panel plus Cloud Functions (functions/). Default branch is master, not main | Read only unless the ticket says so |
-| VENDOR APP | tender_paws_partner | Flutter vendor mobile app (base from T0.6). Exists at tender_paws_partner. 2026-11-06 (T0.16): https://github.com/TwoR-Tech-Marketing/tender_paws_partner.git was not found, so the remote backup is PENDING until Ahmed creates the repo. Branches main and dev at 9c96797. Flutter 3.47.9 and Dart 3.13.7 | Editable |
+| VENDOR APP | tender_paws_partner | Flutter vendor mobile app (base from T0.6). Exists at tender_paws_partner. 2026-11-08 (P-BATCH2): remote https://github.com/TwoR-Tech-Marketing/tender_paws_partner.git exists; `dev` and work branches pushed. `main` not pushed. Branches main and dev at 9c96797. Flutter 3.47.9 and Dart 3.13.7 | Editable |
 
 ### 1.3 Branching and release
 
@@ -226,6 +226,7 @@ Marks: [DECIDED] agreed, [RECOMMENDED] proposed and waiting for confirmation, [O
 - 15.1 [DECIDED] No keys, tokens or personal data in source or logs.
 - 15.2 [OPEN] Verify the live Firestore and Storage rules in the Firebase console. The repo rules look wide open and may not be deployed.
 - 15.3 [DECIDED] Remove the hardcoded device push token in tinderpaws_panel/functions/services.js (A2.7).
+- 15.4 [DECIDED, BM-2] Firebase client `apiKey` values in the buyer `lib/firebase_options.dart` (FlutterFire generated) are client identifiers, not secrets. Protection comes from Firestore and Storage rules (T0.14) and App Check where enabled. No rotation ticket for those keys.
 
 ---
 
@@ -309,6 +310,7 @@ Open, with a recommendation where one exists
 | O22 | Whether the answer "arrived late" reopens the appointment | Open. Services spec section 6 |
 | O23 | What "report an issue" creates and who handles it | Open. Services spec section 6 |
 | O24 | Which dashboard parts are for the provider and which are for the admin | Open. Services spec section 6. BR-6.12 records the dashboard contents |
+| O25 | When to rotate the Fawaterak tokens relative to old app versions (forced update first, or accept that old installs stop paying after rotate) | Ask the owner. SEC-1 order is function then app update then enough users then rotate |
 
 ---
 
@@ -409,9 +411,10 @@ Phase 0: setup
 | T0.13 | Reconcile the source of truth with the audit and sync dev with main | WEB, BUYER, PANEL | 1 to 2 | DONE |
 | T0.14 | Rules inventory and single source | WEB, BUYER, PANEL | 4 to 8 | BLOCKED (waiting for live exports) |
 | T0.15 | Portal test and lint baseline | WEB | 3 to 6 | DONE |
-| T0.16 | Backups | WEB, BUYER, PANEL, VENDOR APP | 1 to 2 | DONE. Vendor app remote PENDING |
+| T0.16 | Backups | WEB, BUYER, PANEL, VENDOR APP | 1 to 2 | DONE |
 | T0.17 | Register the vendor app in Firebase, Apple and Google Play | VENDOR APP | 1 to 2 rough | TODO |
 | BM-1 | Reconcile the business model, parity and the workspace rule | WEB | done this session | DONE |
+| BM-2 | Record security findings from S2.12 (SEC-1, SEC-2, O25) | WEB | docs | DONE |
 
 Phase 1: portal and vendor app together (every ticket is done in both)
 
@@ -450,6 +453,8 @@ Phase 2: buyer app and admin panel
 | S2.10 | Subscription plans through Apple in-app purchase | BUYER | 20 to 30 | TODO |
 | S2.11 | Server-side order creation and rules hardening | BUYER, PANEL | 25 to 40 | TODO |
 | S2.12 | Remove every payment token print in the buyer app, including main.dart and payment_service.dart | BUYER | 1 to 2 | REVIEW |
+| SEC-1 | Move Fawaterak tokens out of the buyer app into a PANEL callable secret | BUYER, PANEL | 6 to 10 | TODO |
+| SEC-2 | Restrict the Google Maps API key in Google Cloud console | BUYER (manual) | 0.5 | TODO |
 | A2.1 | Suspension modes and hold case queue | PANEL | 14 to 20 | TODO |
 | A2.2 | Per vendor delivery fee, admin only | PANEL | 5 to 7 | TODO |
 | A2.3 | Halo stamping and management | PANEL | 5 to 7 | TODO |
@@ -895,8 +900,8 @@ Consistency findings from the 2026-10-29 setup run. Reconciled in this ticket. O
 - [x] tsc stays clean.
   Evidence: `npm run typecheck` (`tsc --noEmit`) exits 0.
 
-**T0.16 Backups.** Repos WEB, BUYER, PANEL, VENDOR APP. Est 1 to 2 h. Status: DONE (2026-11-06). The vendor app remote item stays PENDING. Acceptance:
-- [ ] A remote exists for the vendor app. PENDING. `git ls-remote --heads https://github.com/TwoR-Tech-Marketing/tender_paws_partner.git` returned "Repository not found." Nothing was created. Tracked-file scan of the vendor app (`git ls-files`) found no google-services.json, GoogleService-Info.plist, key.properties, jks, keystore or .env file. Ahmed creates the repo. FINAL PUSH retries the push.
+**T0.16 Backups.** Repos WEB, BUYER, PANEL, VENDOR APP. Est 1 to 2 h. Status: DONE (2026-11-06; vendor remote closed 2026-11-08 in P-BATCH2). Acceptance:
+- [x] A remote exists for the vendor app. Created private `TwoR-Tech-Marketing/tender_paws_partner`. Tracked-file scan found no google-services.json, GoogleService-Info.plist, key.properties, jks, keystore or .env. Pushed `dev` (`235c3a785ba7aad0c4d34f3aa92fdbc8a0fc0e4a`) and `feature/T0.6b-vendor-auth` (`f10b53a8aafdafee6d8e8db81e263ffc39e06d0e`). `main` was not pushed.
 - [x] dev and the allowed work branches are pushed for WEB, BUYER and PANEL. They did not exist on origin, so the push created them (fast-forward check: no remote tip to be behind).
   WEB origin tips: dev `3f4cd6f7640273bb75faaa78500ca1c8562e6152`, feature/T0.11-reconcile-skills `62e5feda05d0a59ee9f32461b096a76aaf1b06bc`, feature/T0.15-portal-test-lint `e10e963b1befcd40bef6919a89654fd55e1f2aeb`, feature/T0.9-stale-docs `5dcbba5655679a4e4082f86fa253cf6cfcd875b1`.
   BUYER origin tips: dev `9d4f357c4fe3eaaf27cb26f1f7307912ce0d6fa9`, backup/main-before-notifications-v2 `ad81917f120fc161da79d5c0aae37a3a015d6908`, backup/notifications-redesign-v2-old `bc268897d714dadba241dea9aef23f2828598b65`, feat/events-checked-in-delete-guard `7a7a008a389bc73804623d350d199e72cb52e1d4`, feature/all-announcement-redirect `bc268897d714dadba241dea9aef23f2828598b65`, feature/flutter-3.47.9-buyer `647cd489636d11876c0e116a8e757f11849d7760`, feature/notifications-redesign `e3cdca0953df1928494cc009861460e81b19a2cc`, feature/notifications-redesign-v2 `610953d8f307495052716e99ea8c9693684c0114`, feature/undo-like-superlike `505f61f2eb1fcdce201a93fd7d7997f881d9af33`, fix/ios27-ipad-launch-crash `b204b76ee3e8a494fce2168423433a0712c785cc`, fix/td-001-td-002-filter-ui `a63d7843f996f8f3ab7fb4d047167788dbe7daa9`.
@@ -910,6 +915,23 @@ Consistency findings from the 2026-10-29 setup run. Reconciled in this ticket. O
 - [x] Section 3A lists AB-1 to AB-17 with evidence from the state report.
 - [x] docs/parity.md and docs/contracts/README.md exist.
 - [x] The workspace rule follows D14 and D19. The vendor app line says the app exists and the remote is pending.
+
+**BM-2 Security findings from S2.12.** Repo WEB. Status: DONE (2026-11-08). Docs only. Acceptance:
+- [x] SEC-1 and SEC-2 recorded as their own track (like S2.12), not part of the multi-vendor release merge to main.
+- [x] O25 added for Fawaterak rotation timing relative to old app versions.
+- [x] BR-15.4 notes Firebase client apiKeys are identifiers; protection is rules (T0.14).
+- [x] Risks updated for hardcoded Fawaterak tokens in the live buyer app (high).
+- [x] File and line references only; no secret values in this file.
+
+**SEC-1 Move Fawaterak tokens out of the buyer app.** Track: own track like S2.12. Branch from buyer `main`, not part of the multi-vendor release. Repos BUYER, PANEL. Est 6 to 10 h. Status: TODO.
+- Finding: `tinder_paws/lib/features/store/data/config/payment_config.dart` lines 102 to 106 hold Fawaterak production and staging API tokens as string literals. Values are never written into this file.
+- Scope: a callable in PANEL `functions` holds the Fawaterak token as a Firebase secret (`defineSecret`) and makes the gateway calls; the buyer app calls that function instead of embedding the token; then rotate the tokens in the Fawaterak dashboard.
+- Order: ship the function, ship the app update, wait until enough users are on the new build (Shorebird patch where possible), then rotate. Rotating first breaks every installed version that still embeds the old token. The token remains in git history until rotated.
+- Needs Ahmed's Fawaterak dashboard access for rotation. O25 decides forced update vs accepting that old installs stop paying after rotate.
+
+**SEC-2 Restrict the Google Maps key.** Manual by Ahmed. Est 0.5 h. Status: TODO.
+- Finding: `tinder_paws/lib/core/widgets/location_screen.dart` line 78 holds a Google Maps API key string literal. Value is never written into this file.
+- Action: in Google Cloud console, restrict the key to the Android package name, the iOS bundle id, and the Maps APIs only.
 
 ### Phase 1 details
 
@@ -1029,6 +1051,7 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - The QR is valid for a minute or two before the first scan.
 - The buyer app prints a payment token prefix at startup.
 - 2026-11-06: full payment tokens are printed in the buyer app at payment_service.dart lines 60 and 247 (state report Part E, line 427). S2.12 covers those prints.
+- Hardcoded Fawaterak API tokens in the live buyer app (`payment_config.dart` lines 102 to 106). High. Tracked as SEC-1. Do not rotate until the callable path ships and enough users update (O25).
 - The hardcoded push token is still in functions/services.js.
 - 2026-11-06: createdBy and updatedBy on admin products are the hardcoded username ahmedhany1284 (store_screen.dart lines 1122 and 1140, state report Part H item 15).
 - 2026-11-06: Storage rules allow wide writes in both repo copies (state report Part F, lines 617 to 618).
@@ -1063,3 +1086,4 @@ Separate from the multi-vendor project, buyer app and panel. All tickets TODO.
 - 2026-11-06: T0.14 GATE A. Live rules exports missing. Repo inventory written under the ticket. Status BLOCKED until the exports exist.
 - 2026-11-06: T0.5 locks docs/contracts for Phase 1 and PC domains. vendor_session-resolveVendorSession registered. Section 5 points at the contracts folder.
 - 2026-11-08: T0.6b DONE. PANEL `vendor_session-resolveVendorSession` (emulator smoke). VENDOR APP `vendor_repository` + auth gates/screens. GATE C: session error+retry (no fake active, no auto logout); accountGateOf maps kind only (unknown → not_vendor + support); suspended shows reason/expiry. O5 left OPEN.
+- 2026-11-08: BM-2 records SEC-1 (Fawaterak tokens out of buyer app via PANEL callable + rotate later), SEC-2 (restrict Google Maps key), O25 (rotation timing), BR-15.4 (Firebase client apiKeys are identifiers). T0.16 vendor remote closed: repo created and `dev` plus `feature/T0.6b-vendor-auth` pushed. No secret values written into this file.
