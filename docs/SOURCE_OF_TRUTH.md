@@ -87,6 +87,8 @@ All are siblings under /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws
 | PANEL | tinderpaws_panel | Flutter web admin panel plus Cloud Functions (functions/). Default branch is master, not main | Read only unless the ticket says so |
 | VENDOR APP | tender_paws_partner | Flutter vendor mobile app (base from T0.6). Exists at tender_paws_partner. 2026-11-08 (P-BATCH2): remote https://github.com/TwoR-Tech-Marketing/tender_paws_partner.git exists; `dev` and work branches pushed. `main` not pushed. Branches main and dev at 9c96797. Flutter 3.47.9 and Dart 3.13.7 | Editable |
 
+Portal hosting (2026-11-08, Week 2 Step 0, read only): the portal is a Next.js App Router app. Docs (`docs/production-security.md`) describe production secrets for **Vercel** (or equivalent Node host): `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`, plus client `NEXT_PUBLIC_FIREBASE_*`. Local env is `.env.local` / `GOOGLE_APPLICATION_CREDENTIALS`. Repo `firebase.json` has Firestore rules/indexes and Storage rules only (no Hosting target). No `.vercel` project link in the tree. Vendors are **not** confirmed to use a live production portal URL today; first production cutover is a new surface. Admin panel hosting remains Firebase Hosting in PANEL. Deploy waves live in `~/Downloads/DEPLOY_PLAN.md`.
+
 ### 1.3 Branching and release
 
 - main is what is shippable and shipped: store releases, Shorebird patches and the Flutter 3.47.9 upgrade (done as its own release track, T0.12). dev is the base for the multi-vendor project in every repo. Feature branches are feature/<ticket>-<slug> from dev and merge into dev. Merge main into dev regularly and log it in the changelog. dev merges into main only when the multi-vendor release is signed off.
@@ -416,6 +418,9 @@ Existing in tinderpaws_panel/functions: vendor_signup-reviewVendorSignupRequest,
 | vendor_documents-setVendorDocumentRequirements | Admin | Define required docs per vendor type | DOC-1 | DONE |
 | vendor_documents-submitVendorDocument | Vendor | Record uploaded document metadata | DOC-1 | DONE |
 | vendor_documents-reviewVendorDocument | Admin | Approve or reject a document | DOC-1 | DONE |
+| vendor_documents-getVendorDocumentRequirements | Vendor or admin | Read requirements for a vendor type | DOC-1 / fix/W1-cleanup | DONE |
+| vendor_documents-getMyVendorDocuments | Vendor | Own requirements + documents (no client Firestore) | DOC-1 / fix/W1-cleanup | DONE |
+| vendor_documents-listVendorsMissingDocuments | Admin | Active vendors missing required docs + deadline | DOC-1 / fix/W1-cleanup | DONE |
 | Vendor coupons create and manage | Vendor, admin | Vendor and admin coupons | VC-1 | TODO |
 | Payout recording and statements | Admin, vendor | Record payouts and vendor statements | PAY-1 | TODO |
 | Points award, expiry, reversal | System | Points ledger after payment, expiry, refund reversal | PTS-1 | TODO |
@@ -1079,11 +1084,12 @@ All Phase 1 tickets: change the portal and the vendor app in the same ticket, fr
 
 **S1.14 Suspension states on the vendor side.** Covered by S1.1, S1.2 and S1.5: banners, reasons, blocked operational routes, held items.
 
-**DOC-1 Vendor documents.** Repos WEB, VENDOR APP, PANEL. Week 1. Est 14 to 20 h. Skills: provider-onboarding. Acceptance:
-- [ ] Admin defines the required document list per vendor type in the panel (owner enters the list; build does not invent the list).
-- [ ] Vendors upload documents in the portal and the vendor app; admin reviews them.
-- [ ] Existing approved vendors keep selling and get 30 days to upload (D25).
-- [ ] Contract stub docs/contracts/documents.md locked in this ticket.
+**DOC-1 Vendor documents.** Repos WEB, VENDOR APP, PANEL. Week 1. Est 14 to 20 h. Skills: provider-onboarding. Status: DONE (2026-11-08; admin UI gaps closed in fix/W1-cleanup 2026-11-08). Acceptance:
+- [x] Admin defines the required document list per vendor type in the panel (type picker: store, clinic, groomer, doctor; owner enters values; code does not invent the business list). Callable `vendor_documents-setVendorDocumentRequirements`.
+- [x] Vendors upload in the portal and the vendor app; admin reviews via `reviewVendorDocument` (approve / reject with reason). Panel lists pending submissions. Vendor app reads status via `vendor_documents-getMyVendorDocuments` (D15, no client Firestore).
+- [x] Existing approved vendors keep selling and get a 30-day `documentCompliance` window without auto-suspend. Panel lists active vendors missing documents with deadline via `vendor_documents-listVendorsMissingDocuments` (emulator covered).
+- [x] Contract `docs/contracts/documents.md` locked (including the three read/list callables).
+- Deploy notes: see Wave 4 in `~/Downloads/DEPLOY_PLAN.md`. Rules in repo copies only (T0.14).
 
 **DL-1 Deal model per branch; commission on items only; ledger.** Repos WEB, VENDOR APP, PANEL. Week 2. Est 12 to 18 h. Skills: deals-and-billing, money-piastres. Acceptance:
 - [ ] Deals set per branch with apply-to-all; vendors without branches have one deal (D22).
@@ -1302,6 +1308,8 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 
 ## 9. Changelog
 
+- 2026-11-08: fix/W1-cleanup. Closed Week 1 DOC-1 gaps: vendor app documents screen uses `vendor_documents-getMyVendorDocuments` (no client Firestore); portal `VendorDocumentsSection` load deferred with `setTimeout` (T0.15 pattern, eslint 0 errors); panel requirements type picker + missing-docs/deadline list via `listVendorsMissingDocuments`; emulator document tests extended. DOC-1 acceptance now truly met. Merged to each `dev` with `--no-ff`.
+- 2026-11-08: Week 2 Step 0. Verified Week 1 (GOV-1, S1.1, S1.2, DOC-1) on each `dev`. Wrote `~/Downloads/DEPLOY_PLAN.md`. Recorded portal hosting in section 1.2 (Vercel-oriented secrets; not live). DOC-1 acceptance checkboxes filled; admin UI gaps listed (store-only requirements editor; no missing-docs/deadline list). Process note: PANEL DOC-1 admin screen commit `828a8f4` landed on `dev` without a `chore(merge): bring DOC-1 into dev` merge commit (do not rewrite history). Re-run: PANEL `npm run test:emu` exit 0; portal `npm test` 11 passed, typecheck clean, eslint 1 error / 114 warnings; vendor app `fvm flutter test` 38 passed, `fvm flutter analyze` 5 errors (DOC-1 `documents_screen.dart` imports `cloud_firestore` without a direct dependency).
 - 2026-11-08: DOC-1 DONE. Requirements, submit/review callables, portal upload BFF, app documents screen, rules in repo copies (not deployed). Emulator document tests passed.
 - 2026-11-08: S1.2 DONE. Gate B OK (full geoBoundaries EGY ADM1, ODbL). resolveBuyerEligibility, suspend modes/holds, canonical migration script, suspension banners. O16 closed. Emulator tests passed.
 - 2026-11-08: S1.1 DONE. Session kinds `banned`/`rejected`; reject keeps Auth; reapply callable; portal session via shared callable; panel reject reason UI; portal gate unit tests; vendor app gates/reapply. Emulator `test:emu` passed. Merged to each `dev` and pushed.
