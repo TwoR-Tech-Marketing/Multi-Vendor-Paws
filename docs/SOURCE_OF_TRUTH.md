@@ -413,7 +413,9 @@ Existing in tinderpaws_panel/functions: vendor_signup-reviewVendorSignupRequest,
 | setVendorDeal | Admin | Set the deal for a provider (per branch, apply to all) | DL-1, A2.5 | TODO |
 | registerVendorFcmToken | Vendor | Register the push token of a vendor device | S1.6 | TODO |
 | Shared product, order, earnings, profile, settings callables | Portal and vendor app | Move portal BFF business rules to shared functions (D15) | S1.4, S1.5, S1.6, PC-2, PC-3 | TODO |
-| Document upload and review | Vendor, admin | Vendor document upload and admin review | DOC-1 | TODO |
+| vendor_documents-setVendorDocumentRequirements | Admin | Define required docs per vendor type | DOC-1 | DONE |
+| vendor_documents-submitVendorDocument | Vendor | Record uploaded document metadata | DOC-1 | DONE |
+| vendor_documents-reviewVendorDocument | Admin | Approve or reject a document | DOC-1 | DONE |
 | Vendor coupons create and manage | Vendor, admin | Vendor and admin coupons | VC-1 | TODO |
 | Payout recording and statements | Admin, vendor | Record payouts and vendor statements | PAY-1 | TODO |
 | Points award, expiry, reversal | System | Points ledger after payment, expiry, refund reversal | PTS-1 | TODO |
@@ -497,7 +499,7 @@ Phase 1: portal and vendor app together (every ticket is done in both)
 | Id | Title | Repos | Est (h) | Week | Status |
 |---|---|---|---|---|---|
 | S1.1 | Account states in both apps, including rejected and banned; reject keeps the account | WEB, VENDOR APP, PANEL | 20 to 25 | 1 | DONE |
-| DOC-1 | Vendor documents: admin list per type, upload, review, 30-day window | WEB, VENDOR APP, PANEL | 14 to 20 | 1 | TODO |
+| DOC-1 | Vendor documents: admin list per type, upload, review, 30-day window | WEB, VENDOR APP, PANEL | 14 to 20 | 1 | DONE |
 | PC-1 | Vendor signup and signup status in the vendor app | WEB, VENDOR APP | 8 to 12 rough | 3 | TODO |
 | PC-2 | Store profile and profile change requests in the vendor app | WEB, VENDOR APP | 8 to 12 rough | 3 | TODO |
 | PC-3 | Settings and notifications inbox in the vendor app | WEB, VENDOR APP | 5 to 8 rough | 3 | TODO |
@@ -1300,6 +1302,7 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 
 ## 9. Changelog
 
+- 2026-11-08: DOC-1 DONE. Requirements, submit/review callables, portal upload BFF, app documents screen, rules in repo copies (not deployed). Emulator document tests passed.
 - 2026-11-08: S1.2 DONE. Gate B OK (full geoBoundaries EGY ADM1, ODbL). resolveBuyerEligibility, suspend modes/holds, canonical migration script, suspension banners. O16 closed. Emulator tests passed.
 - 2026-11-08: S1.1 DONE. Session kinds `banned`/`rejected`; reject keeps Auth; reapply callable; portal session via shared callable; panel reject reason UI; portal gate unit tests; vendor app gates/reapply. Emulator `test:emu` passed. Merged to each `dev` and pushed.
 - 2026-11-08: GOV-1 DONE. Gate A approved. Mutating `governorates-*` HTTPS handlers require admin Bearer via shared `admin_auth.js`. Reads and validateOrderDelivery stay open. AB-18 recorded (panel/buyer use Firestore SDK). Contract updated. Emulator `test:gov:emu` passed. Repo rules copies already admin-only writes for governorates (no new open-write risk). Deploy blocked until Ahmed reviews console logs for last 30 days of `governorates-*`.

@@ -23,6 +23,16 @@ service firebase.storage {
         && request.resource.contentType.matches('image/.*');
     }
 
+    // DOC-1 — vendor compliance documents (own uid only)
+    match /vendor_documents/{vendorId}/{requirementId}/{file} {
+      allow read: if request.auth != null &&
+        (request.auth.uid == vendorId ||
+          firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)));
+      allow write: if request.auth != null
+        && request.auth.uid == vendorId
+        && request.resource.size < 10 * 1024 * 1024;
+    }
+
     // ---------------------------------------------------------------
     // Legacy paths used by the live mobile app + admin panel.
     // Keeping these permissive so production keeps working.

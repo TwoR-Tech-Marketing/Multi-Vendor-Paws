@@ -3,6 +3,7 @@ import "server-only";
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
 import { getAuth, type Auth } from "firebase-admin/auth";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
+import { getStorage, type Storage } from "firebase-admin/storage";
 
 import { getFirebaseAdminEnv } from "@/lib/firebase-admin.env";
 
@@ -18,6 +19,10 @@ function getAdminApp(): App {
   }
 
   const { projectId, clientEmail, privateKey } = getFirebaseAdminEnv();
+  const storageBucket =
+    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
+    process.env.FIREBASE_STORAGE_BUCKET ||
+    `${projectId}.appspot.com`;
 
   adminApp = initializeApp({
     credential: cert({
@@ -26,6 +31,7 @@ function getAdminApp(): App {
       privateKey,
     }),
     projectId,
+    storageBucket,
   });
 
   return adminApp;
@@ -37,4 +43,8 @@ export function getAdminAuth(): Auth {
 
 export function getAdminFirestore(): Firestore {
   return getFirestore(getAdminApp());
+}
+
+export function getAdminStorage(): Storage {
+  return getStorage(getAdminApp());
 }

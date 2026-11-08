@@ -80,6 +80,13 @@ export const Strings = {
     suspensionModeViewOnly:
       "Buyers can see your store as unavailable and cannot place new orders.",
     suspensionModeLabel: "Suspension mode",
+    documentsTitle: "Required documents",
+    documentsSubtitle:
+      "Upload the documents our team needs to review your account.",
+    documentsUpload: "Upload file",
+    documentsMissing: "Not uploaded yet",
+    documentsLoadError: "Could not load documents. Please try again.",
+    documentsSubmitError: "Could not upload that document. Please try again.",
     pendingProductsMessage:
       "You will be able to access products and orders once an admin approves your application in the Tender Paws admin panel.",
     rejectedTitle: "Application not approved",

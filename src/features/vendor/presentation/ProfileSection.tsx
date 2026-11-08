@@ -11,6 +11,7 @@ import { AccountStatusBanner } from "@/features/vendor/presentation/AccountStatu
 import { ProfileActiveSessionCard } from "@/features/vendor/presentation/ProfileActiveSessionCard";
 import { ProfileStoreForm } from "@/features/vendor/presentation/ProfileStoreForm";
 import { RejectedReapplyForm } from "@/features/vendor/presentation/RejectedReapplyForm";
+import { VendorDocumentsSection } from "@/features/vendor/presentation/VendorDocumentsSection";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { ProfileSkeleton } from "@/features/vendor/presentation/ProfileSkeleton";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
@@ -75,6 +76,7 @@ export function ProfileSection() {
       <>
         <AccountStatusBanner sessionKind={sessionKind} profile={profile} />
         <RejectedReapplyForm profile={profile} />
+        <VendorDocumentsSection />
         <ProfileActiveSessionCard />
       </>
     );
@@ -111,6 +113,8 @@ export function ProfileSection() {
         disabled={isSuspended}
         onSubmitted={loadProfile}
       />
+
+      {!isSuspended ? <VendorDocumentsSection /> : null}
 
       <ProfileActiveSessionCard />
     </>

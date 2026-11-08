@@ -81,6 +81,12 @@ export const arStrings: AppStrings = {
     suspensionModeViewOnly:
       "يمكن للمشترين رؤية متجرك كغير متاح ولا يمكنهم تقديم طلبات جديدة.",
     suspensionModeLabel: "وضع التعليق",
+    documentsTitle: "المستندات المطلوبة",
+    documentsSubtitle: "ارفع المستندات التي يحتاجها فريقنا لمراجعة حسابك.",
+    documentsUpload: "رفع ملف",
+    documentsMissing: "لم يُرفع بعد",
+    documentsLoadError: "تعذر تحميل المستندات. حاول مرة أخرى.",
+    documentsSubmitError: "تعذر رفع هذا المستند. حاول مرة أخرى.",
     pendingProductsMessage:
       "ستتمكن من الوصول إلى المنتجات والطلبات بعد موافقة الإدارة على طلبك.",
     rejectedTitle: "لم تتم الموافقة على الطلب",

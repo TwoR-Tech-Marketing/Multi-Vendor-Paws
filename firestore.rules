@@ -132,6 +132,21 @@ service cloud.firestore {
     match /governorates/{id}             { allow read: if true;          allow write: if isAdmin(); }
     match /category_governorates/{id}    { allow read: if true;          allow write: if isAdmin(); }
     match /delivery_fees/{id}            { allow read: if true;          allow write: if isAdmin(); }
+
+    // DOC-1 — vendor document requirements and submissions (deploy with T0.14)
+    match /vendorDocumentRequirements/{vendorType} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /vendorDocuments/{documentId} {
+      allow read: if isAdmin() ||
+        (isSignedIn() && resource.data.vendorId == request.auth.uid);
+      allow write: if false;
+    }
+    match /holdCases/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
     match /promo_codes/{id}              { allow read: if isSignedIn();  allow write: if true; } // mobile increments usedCount on checkout
 
     // -----------------------------------------------------------------
