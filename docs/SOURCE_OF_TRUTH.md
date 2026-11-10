@@ -87,6 +87,8 @@ All are siblings under /Users/ahmedhany/Documents/studioProjects/TWOR/TenderPaws
 | PANEL | tinderpaws_panel | Flutter web admin panel plus Cloud Functions (functions/). Default branch is master, not main | Read only unless the ticket says so |
 | VENDOR APP | tender_paws_partner | Flutter vendor mobile app (base from T0.6). Exists at tender_paws_partner. 2026-11-08 (P-BATCH2): remote https://github.com/TwoR-Tech-Marketing/tender_paws_partner.git exists; `dev` and work branches pushed. `main` not pushed. Branches main and dev at 9c96797. Flutter 3.47.9 and Dart 3.13.7 | Editable |
 
+Fifth folder (T0.18, 2026-11-10): `tenderpaws-landing-client-web` also sits in the parent folder (own git repo, Firebase config). It is out of scope for this project's agents and was left untouched.
+
 Portal hosting (2026-11-08, Week 2 Step 0, read only): the portal is a Next.js App Router app. Docs (`docs/production-security.md`) describe production secrets for **Vercel** (or equivalent Node host): `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`, plus client `NEXT_PUBLIC_FIREBASE_*`. Local env is `.env.local` / `GOOGLE_APPLICATION_CREDENTIALS`. Repo `firebase.json` has Firestore rules/indexes and Storage rules only (no Hosting target). No `.vercel` project link in the tree. Vendors are **not** confirmed to use a live production portal URL today; first production cutover is a new surface. Admin panel hosting remains Firebase Hosting in PANEL. Deploy waves live in `~/Downloads/DEPLOY_PLAN.md`.
 
 ### 1.3 Branching and release
@@ -499,6 +501,7 @@ Phase 0: setup
 | T0.15 | Portal test and lint baseline | WEB | 3 to 6 | DONE |
 | T0.16 | Backups | WEB, BUYER, PANEL, VENDOR APP | 1 to 2 | DONE |
 | T0.17 | Register the vendor app in Firebase, Apple and Google Play | VENDOR APP | 1 to 2 rough | TODO |
+| T0.18 | Make Cursor rules, skills and settings available to Claude Code | WEB, BUYER, PANEL, VENDOR APP | 2 to 3 | DONE |
 | BM-1 | Reconcile the business model, parity and the workspace rule | WEB | done this session | DONE |
 | BM-2 | Record security findings from S2.12 (SEC-1, SEC-2, O25) | WEB | docs | DONE |
 | BM-3 | Record decisions D20 to D29, release plan, parked work and risk register | WEB | docs | DONE |
@@ -1007,6 +1010,22 @@ Consistency findings from the 2026-10-29 setup run. Reconciled in this ticket. O
 
 **T0.17 Register the vendor app in Firebase, Apple and Google Play.** Est 1 to 2 h, rough. Status: TODO. Manual steps by Ahmed plus flutterfire configure. Blocks T0.6b on a real device. Emulator and fake-auth work in T0.6b do not need this ticket.
 
+**T0.18 Make every Cursor rule, skill, command and setting available to Claude Code.** Repos WEB, BUYER, PANEL, VENDOR APP and the parent folder. Est 2 to 3 h. Status: DONE (2026-11-10). Configuration and documents only. Acceptance:
+| # | Item | Evidence |
+|---|---|---|
+| 1 | Parent `CLAUDE.md` is a pointer file (repo map, D16, production safety, D19, no em dashes, `git -C`) and imports the WEB `AGENTS.md` and the four WEB alwaysApply rules | `CLAUDE.md` in the parent folder (local, the parent is not a git repo) |
+| 2 | Each repo has a `CLAUDE.md` that imports its `AGENTS.md` and its alwaysApply rules, plus a glob line for `visible-toggles` | `CLAUDE.md` in WEB, BUYER, VENDOR APP (committed) and PANEL (local only, its `AGENTS.md` is git-excluded) |
+| 3 | VENDOR APP `source-of-truth.mdc` and `workspace-context.mdc` got `alwaysApply: true` and a description, in the original Cursor files | `tender_paws_partner/.cursor/rules` |
+| 4 | WEB `.cursor/skills` (21 skills) is visible to Claude Code through one symbolic link per skill, in `Multi-Vendor-Paws/.claude/skills` and in the parent `.claude/skills` | links resolve, no broken link; the skill list shown in a Claude Code session included them |
+| 5 | The 17 design skills from `.agents/skills` (identical in BUYER, PANEL, VENDOR APP) are copied to `~/.claude/skills`. `impeccable` exists as a WEB project skill and as a personal skill and both are kept | `~/.claude/skills` |
+| 6 | Domain skills that differ from WEB were overwritten with the WEB copy in BUYER, VENDOR APP and PANEL (PANEL is local only, git-excluded) | `scripts/sync-domain-skills.sh` |
+| 7 | No Cursor commands exist, so nothing to convert | none found |
+| 8 | Project `.mcp.json` in the parent folder holds only dart, next-devtools and drawio, with no secrets. Skipped: postman, firebase, gcloud, StitchMCP, Meta Developer Tools | `.mcp.json` |
+| 9 | `.claude/settings.local.json` in the parent and each repo denies firebase deploy and login, gcloud, force push, push to main or master, reset --hard and rebase, plus `git -C` variants. Each is git-excluded through `.git/info/exclude` | `git check-ignore` |
+- Decision: domain skills are edited in WEB only (`Multi-Vendor-Paws/.cursor/skills` is canonical, T0.11). Run `scripts/sync-domain-skills.sh` to copy them to the other repos. Do not edit them in BUYER, PANEL or VENDOR APP.
+- Available to port later: the Cursor hook in `.cursor/hooks.json` (preToolUse, runs the impeccable `hook-before-edit` script). It was not ported to Claude Code.
+- Not migrated, for Ahmed to decide later: MCP servers `firebase-mcp-server` and `gcloud` (can write to Firebase and Google Cloud, never give Claude Code a production write tool), `StitchMCP`, `postman`, `Meta Developer Tools`.
+
 **BM-1 Reconcile the business model.** Repo WEB. Status: DONE (2026-11-06). Acceptance:
 - [x] D15, D16, D17 and D19 are in section 4. D15 replaces the portal BFF [CONFIRM] in section 1.1. D19 replaces the "no push" line in the standard ticket prompt and the commit rules.
 - [x] Section 3A lists AB-1 to AB-17 with evidence from the state report.
@@ -1350,3 +1369,4 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 - 2026-11-06: T0.5 locks docs/contracts for Phase 1 and PC domains. vendor_session-resolveVendorSession registered. Section 5 points at the contracts folder.
 - 2026-11-08: T0.6b DONE. PANEL `vendor_session-resolveVendorSession` (emulator smoke). VENDOR APP `vendor_repository` + auth gates/screens. GATE C: session error+retry (no fake active, no auto logout); accountGateOf maps kind only (unknown → not_vendor + support); suspended shows reason/expiry. O5 left OPEN.
 - 2026-11-08: BM-2 records SEC-1 (Fawaterak tokens out of buyer app via PANEL callable + rotate later), SEC-2 (restrict Google Maps key), O25 (rotation timing), BR-15.4 (Firebase client apiKeys are identifiers). T0.16 vendor remote closed: repo created and `dev` plus `feature/T0.6b-vendor-auth` pushed. No secret values written into this file.
+- 2026-11-10: T0.18 DONE. Agent switched from Cursor to Claude Code (Claude Desktop, run from the parent folder); prompts unchanged; Claude files import or link to the Cursor files, which stay canonical.
