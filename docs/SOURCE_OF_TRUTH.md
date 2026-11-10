@@ -313,7 +313,7 @@ Decided
 | D16 | 2026-11-06 | docs/SOURCE_OF_TRUTH.md on WEB dev is the only canonical business model. Any other summary is derived from it and is never edited by hand. |
 | D17 | 2026-11-06 | Business model changes run as BM-n tickets. Choices the code already made without a business rule are recorded in section 3A with AB ids and the mark [AS-BUILT]. [AS-BUILT] means this is what the code does, not that it was decided. |
 | D18 | 2026-11-06 | O7 decided. Test with the Firebase emulator suite and project id demo-tenderpaws. A staging Firebase project is later, only if the budget allows. No ticket tests write to production. |
-| D19 | 2026-11-06 | GitHub account ahmedhany1284. Git and the gh CLI are used as that user. Never log in, never change accounts, and never print or copy tokens or credentials. Allowed pushes are dev and work branches (feature/*, fix/*, feat/*, backup/*) only. Never push main or master, because Codemagic builds the buyer app on a push to main. Never force push, never delete remote branches, never push tags, and never open or merge pull requests. Before pushing a branch that already exists on origin, the remote tip must be an ancestor of the local tip. If it is not, stop and ask. |
+| D19 | 2026-11-06 | GitHub account ahmedhany1284. Git and the gh CLI are used as that user. Never log in, never change accounts, and never print or copy tokens or credentials. Allowed pushes are dev and work branches (feature/*, fix/*, feat/*, backup/*) only. Never push main or master, because Codemagic builds the buyer app on a push to main. Never force push, never delete remote branches, never push tags, and never open or merge pull requests. Before pushing a branch that already exists on origin, the remote tip must be an ancestor of the local tip. If it is not, stop and ask. 2026-11-10 (T0.19): account stays ahmedhany1284. Claude Code cannot reach the saved GitHub login in this environment, so Claude Code commits and merges as usual and lists the repos and branches that need pushing, and Ahmed pushes them from GitHub Desktop. |
 | D20 | 2026-11-08 | Single-vendor cart, like Talabat and Breadfast. A cart holds items from one store only; adding from another store asks to clear the cart. Halo is TenderPaws' own store. createOrder rejects mixed carts. orders_split stays for old app versions until the forced update. |
 | D21 | 2026-11-08 | Money flow. Every buyer payment goes to TenderPaws through the app. Vendors of every type, doctors included, are paid their net on a payout cycle set per vendor by the admin (weekly or monthly). Payouts are manual transfers recorded as payout entries in the ledger. Vendors see a statement. Vendors pay nothing upfront: no vendor subscriptions. |
 | D22 | 2026-11-08 | Deals. Set per branch, with an apply-to-all-branches option; vendors without branches have one deal. Types: fixed fee per order (same amount whatever the order size), percentage of item value, or both. Fees apply to items only, never to delivery; the delivery fee is per vendor and goes 100 percent to the vendor. The payment gateway fee is absorbed inside TenderPaws' fee (vendor net = items minus deal fees). A vendor with no deal pays the 10 percent default. |
@@ -502,6 +502,7 @@ Phase 0: setup
 | T0.16 | Backups | WEB, BUYER, PANEL, VENDOR APP | 1 to 2 | DONE |
 | T0.17 | Register the vendor app in Firebase, Apple and Google Play | VENDOR APP | 1 to 2 rough | TODO |
 | T0.18 | Make Cursor rules, skills and settings available to Claude Code | WEB, BUYER, PANEL, VENDOR APP | 2 to 3 | DONE |
+| T0.19 | GitHub push route for Claude Code | WEB | 0.5 | DONE |
 | BM-1 | Reconcile the business model, parity and the workspace rule | WEB | done this session | DONE |
 | BM-2 | Record security findings from S2.12 (SEC-1, SEC-2, O25) | WEB | docs | DONE |
 | BM-3 | Record decisions D20 to D29, release plan, parked work and risk register | WEB | docs | DONE |
@@ -1026,6 +1027,15 @@ Consistency findings from the 2026-10-29 setup run. Reconciled in this ticket. O
 - Available to port later: the Cursor hook in `.cursor/hooks.json` (preToolUse, runs the impeccable `hook-before-edit` script). It was not ported to Claude Code.
 - Not migrated, for Ahmed to decide later: MCP servers `firebase-mcp-server` and `gcloud` (can write to Firebase and Google Cloud, never give Claude Code a production write tool), `StitchMCP`, `postman`, `Meta Developer Tools`.
 
+**T0.19 GitHub push route for Claude Code.** Repo WEB. Est 0.5 h. Status: DONE (2026-11-10). The SSH routing plan was cancelled. Acceptance:
+| # | Item | Evidence |
+|---|---|---|
+| 1 | D19 has a dated note: account ahmedhany1284; Claude Code cannot reach the saved GitHub login, so Ahmed pushes from GitHub Desktop | section 4, D19 |
+| 2 | `~/.gitconfig` and every repo remote are unchanged | no edits made |
+| 3 | SSH keys and host aliases created during the attempt stay in `~/.ssh`, unused | `~/.ssh/config` |
+| 4 | From now on Claude Code commits and merges as usual and ends each ticket with a list of repos and branches to push | D19 note |
+- Pending pushes at close: T0.18 (`dev` and `feature/T0.18-claude-code-setup` in WEB, VENDOR APP and BUYER) and T0.19 (`dev` and `feature/T0.19-github-routing` in WEB).
+
 **BM-1 Reconcile the business model.** Repo WEB. Status: DONE (2026-11-06). Acceptance:
 - [x] D15, D16, D17 and D19 are in section 4. D15 replaces the portal BFF [CONFIRM] in section 1.1. D19 replaces the "no push" line in the standard ticket prompt and the commit rules.
 - [x] Section 3A lists AB-1 to AB-17 with evidence from the state report.
@@ -1370,3 +1380,4 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 - 2026-11-08: T0.6b DONE. PANEL `vendor_session-resolveVendorSession` (emulator smoke). VENDOR APP `vendor_repository` + auth gates/screens. GATE C: session error+retry (no fake active, no auto logout); accountGateOf maps kind only (unknown → not_vendor + support); suspended shows reason/expiry. O5 left OPEN.
 - 2026-11-08: BM-2 records SEC-1 (Fawaterak tokens out of buyer app via PANEL callable + rotate later), SEC-2 (restrict Google Maps key), O25 (rotation timing), BR-15.4 (Firebase client apiKeys are identifiers). T0.16 vendor remote closed: repo created and `dev` plus `feature/T0.6b-vendor-auth` pushed. No secret values written into this file.
 - 2026-11-10: T0.18 DONE. Agent switched from Cursor to Claude Code (Claude Desktop, run from the parent folder); prompts unchanged; Claude files import or link to the Cursor files, which stay canonical.
+- 2026-11-10: T0.19 DONE. D19 note: account ahmedhany1284; Claude Code cannot reach the saved GitHub login, so Ahmed pushes from GitHub Desktop. SSH routing cancelled; ~/.gitconfig and remotes unchanged.
