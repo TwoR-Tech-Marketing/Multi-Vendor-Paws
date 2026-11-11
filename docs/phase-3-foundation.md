@@ -1,6 +1,6 @@
 # Phase 3 Multi-Vendor — Foundation
 
-> Superseded on 2026-11-05 by [docs/SOURCE_OF_TRUTH.md](SOURCE_OF_TRUTH.md) (ticket T0.9).
+> Superseded on 2026-11-05 by docs/SOURCE_OF_TRUTH.md in the private workspace repo (ticket T0.9).
 > This file is historical scaffolding. Do not use it for scope, data contracts, or current status.
 > Where it disagrees with the source of truth, the source of truth wins.
 > Stale claims kept below on purpose: live app version 1.0.10+15 (buyer pubspec is 1.0.16+24), a single-seller catalog with no vendor identity, and a products BFF that returns empty arrays. The portal products API is implemented under `src/app/api/vendor/products/`.
@@ -9,7 +9,7 @@ This document captures the design, files, and trade-offs of the Phase 3
 multi-vendor data foundation. **Nothing in this commit has been deployed**;
 this is local scaffolding plus deployment-ready Firebase config.
 
-When you pick this back up, start at docs/SOURCE_OF_TRUTH.md, not here.
+When you pick this back up, start at docs/SOURCE_OF_TRUTH.md in the private workspace repo, not here.
 
 ---
 

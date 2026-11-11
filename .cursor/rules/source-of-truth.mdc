@@ -3,7 +3,7 @@ description: Single source of truth for the Tender Paws multi-vendor project. Re
 alwaysApply: true
 ---
 # Source of truth
-- The project file is docs/SOURCE_OF_TRUTH.md. Read sections 0 to 7 before working on any ticket.
+- The project file is ../docs/SOURCE_OF_TRUTH.md in the private workspace repo (D16). Read sections 0 to 7 before working on any ticket.
 - Work only on the ticket the prompt names. If no ticket is named, ask which one.
 - If code, skills or docs disagree with the file, the file wins. If the file looks wrong, stop and ask.
 - Never resolve [OPEN] or [CONFIRM] items. Ask.
