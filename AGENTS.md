@@ -8,25 +8,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Project skills
 
-Before working on a feature, read the relevant skill under `.cursor/skills/<name>/SKILL.md`.
-
-- `vendor-type-architecture` — vendor type (store, clinic, groomer, doctor): sidebar, routes, guards, onboarding, review labels
-- `provider-onboarding` — clinic/groomer signup, profile, branches, services, approve/decline
-- `availability-scheduling` — slots, hours, home visits, booking conflicts, availability calendar
-- `appointments-domain` — appointment statuses, transitions, history, cancel/reschedule, inbox
-- `no-show-flow` — no-show flag, user confirmation, dispute handling, timers
-- `reviews-and-tags` — post-visit reviews, ratings, tags, aggregates, admin deletion
-- `deals-and-billing` — provider deals (fixed per order and/or percentage), live balances, statements, payouts
-- `points-and-coupons` — loyalty points, checkout coupons, points on extra invoices
-- `money-piastres` — all money as integer piastres; shared helpers only
-- `firestore-multitenant-rules` — new collections, firestore/storage rules and indexes
-- `cloud-functions-rules` — server timers/triggers (no-show, reviews, balances, points)
-- `admin-panel-contract` — work that must land in Flutter admin (`tinderpaws_panel`)
-- `i18n-rtl` — EN/AR copy, Cairo time, RTL layout, shimmer loading
-- `delivery-zones-geo` — delivery coverage, buyer location, governorates, fees, eligibility by location
-- `halo-and-platform-vendor` — Halo items, platformVendor seller id, isHalo field, admin-created products
-- `vendor-suspension-modes` — suspend/ban/unsuspend modes (hidden, view_only) for vendors and providers
-- `single-release-rollout` — one-release deploy order, migrations, legacy compatibility
+The business domain skills (vendor type, onboarding, scheduling, appointments, no-show, reviews, deals, points, money, rules, functions, admin contract, i18n, delivery zones, Halo, suspension modes, rollout) live once, in the private workspace repo: `../.cursor/skills/<name>/SKILL.md`. Before working on a feature, read the relevant one. Repo-specific skills stay in `.cursor/skills/`.
 
 Lines marked OPEN or CONFIRM in a skill are undecided questions, not rules. Do not resolve them without asking.
 

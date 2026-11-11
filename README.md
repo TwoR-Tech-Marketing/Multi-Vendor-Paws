@@ -45,8 +45,7 @@ npm run typecheck
 
 ## Planning Documents
 
-- `PROJECT_ARCHITECTURE.md` - target architecture for multi-vendor implementation
-- `PHASE3_TODO.md` - actionable checklist based on approved Phase 3 scope
+Project documentation is maintained privately. See `docs/README.md`.
 
 ## Agent Rules
 

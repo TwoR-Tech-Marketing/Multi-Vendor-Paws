@@ -73,7 +73,7 @@ Open, not decided (from the spec's "Points to confirm with the owner"; do not de
 ## Evidence on Hand
 
 - Spec: `TenderPaws Services Marketplace Spec.docx` (services overview, clinic flow in full, grooming, open questions).
-- Repo docs: `APP_CONTEXT.txt`, `docs/phase-3-foundation.md`, `docs/production-security.md`, static client-approval prototype in `docs/prototype/`.
+- Repo docs: `docs/production-security.md`, static client-approval prototype in `docs/prototype/`.
 - Assets: Pawlio logo, sidebar nav icons in `public/portal-nav/`, product image placeholder.
 - No testimonials, provider counts, ratings data, press or pricing figures exist. Do not fabricate them.
 
