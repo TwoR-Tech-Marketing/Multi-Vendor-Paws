@@ -503,6 +503,7 @@ Phase 0: setup
 | T0.17 | Register the vendor app in Firebase, Apple and Google Play | VENDOR APP | 1 to 2 rough | TODO |
 | T0.18 | Make Cursor rules, skills and settings available to Claude Code | WEB, BUYER, PANEL, VENDOR APP | 2 to 3 | DONE |
 | T0.19 | GitHub push route for Claude Code | WEB | 0.5 | DONE |
+| T0.20 | Safety hook for Claude Code (blocks push, deploy, gcloud) | Parent folder and all 4 repos (local settings only) | 0.5 | DONE |
 | BM-1 | Reconcile the business model, parity and the workspace rule | WEB | done this session | DONE |
 | BM-2 | Record security findings from S2.12 (SEC-1, SEC-2, O25) | WEB | docs | DONE |
 | BM-3 | Record decisions D20 to D29, release plan, parked work and risk register | WEB | docs | DONE |
@@ -1036,6 +1037,29 @@ Consistency findings from the 2026-10-29 setup run. Reconciled in this ticket. O
 | 4 | From now on Claude Code commits and merges as usual and ends each ticket with a list of repos and branches to push | D19 note |
 - Pending pushes at close: T0.18 (`dev` and `feature/T0.18-claude-code-setup` in WEB, VENDOR APP and BUYER) and T0.19 (`dev` and `feature/T0.19-github-routing` in WEB).
 
+**T0.20 Safety hook for Claude Code.** Local settings only, no repo code. Est 0.5 h. Status: DONE (2026-11-11). Reason: the deny rule `Bash(git -C * push ...)` did not catch `git -C <path> push`, and a dry run reached the remote and failed only on missing credentials. A PreToolUse hook is now the main guard; the existing deny rules stay as a second layer. Acceptance:
+| # | Item | Evidence |
+|---|---|---|
+| 1 | Hook script reads the hook JSON from stdin, parses `tool_input.command` with python3 (no jq), exits 2 with a message on stderr on a match, else 0. Fails closed if the input cannot be parsed | `.claude/hooks/block-dangerous.sh` in the parent folder (executable, not in git) |
+| 2 | Blocked anywhere in the command, case-insensitive, also after `&&` or `;`: git push in any form (including `-C <path>` and `-c key=value`), firebase deploy, firebase login, firebase use, flutterfire configure, gcloud, git reset --hard, git rebase | script regex table |
+| 3 | Registered as PreToolUse, matcher Bash, in the parent folder and in WEB, PANEL, VENDOR APP and BUYER, all pointing to the same script | `.claude/settings.local.json` in each (git-ignored via `.git/info/exclude`) |
+| 4 | Existing deny rules kept | `permissions.deny` unchanged |
+| 5 | Parent `CLAUDE.md` safety lines mention the hook | CLAUDE.md core rules |
+
+Test results (2026-11-11). The live hook also blocked the first test command, because its text contained the blocked pattern, which confirms it is active in the session.
+| Command | Expected | Result |
+|---|---|---|
+| `git -C Multi-Vendor-Paws push origin main --dry-run` | BLOCKED | BLOCKED (exit 2) |
+| `cd Multi-Vendor-Paws && git push --dry-run` | BLOCKED | BLOCKED (exit 2) |
+| `firebase deploy --help` | BLOCKED | BLOCKED (exit 2) |
+| `git -C Multi-Vendor-Paws status` | allowed | allowed (exit 0) |
+| `git -C Multi-Vendor-Paws log --oneline -1 --grep=push` | allowed | allowed (exit 0) |
+| `echo "feat(push): add push notifications"` | allowed | allowed (exit 0) |
+| Extras: `git -c k=v -C repo PUSH -f`, `ls; gcloud auth list`, reset --hard, rebase, `firebase use`, `flutterfire configure`, unparseable input | BLOCKED | all BLOCKED (exit 2) |
+| Extra: `git -C repo commit -m "chore: tidy"` | allowed | allowed (exit 0) |
+- Known limit: the hook matches text, so a commit message or echo that spells out the blocked phrase (for example `git push` inside a string) is also blocked. Reword it. The hook covers the Bash tool only.
+- Pending pushes at close: `dev` and `feature/T0.20-safety-hook` in WEB. T0.18 and T0.19 pushes may still be pending.
+
 **BM-1 Reconcile the business model.** Repo WEB. Status: DONE (2026-11-06). Acceptance:
 - [x] D15, D16, D17 and D19 are in section 4. D15 replaces the portal BFF [CONFIRM] in section 1.1. D19 replaces the "no push" line in the standard ticket prompt and the commit rules.
 - [x] Section 3A lists AB-1 to AB-17 with evidence from the state report.
@@ -1381,3 +1405,4 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 - 2026-11-08: BM-2 records SEC-1 (Fawaterak tokens out of buyer app via PANEL callable + rotate later), SEC-2 (restrict Google Maps key), O25 (rotation timing), BR-15.4 (Firebase client apiKeys are identifiers). T0.16 vendor remote closed: repo created and `dev` plus `feature/T0.6b-vendor-auth` pushed. No secret values written into this file.
 - 2026-11-10: T0.18 DONE. Agent switched from Cursor to Claude Code (Claude Desktop, run from the parent folder); prompts unchanged; Claude files import or link to the Cursor files, which stay canonical.
 - 2026-11-10: T0.19 DONE. D19 note: account ahmedhany1284; Claude Code cannot reach the saved GitHub login, so Ahmed pushes from GitHub Desktop. SSH routing cancelled; ~/.gitconfig and remotes unchanged.
+- 2026-11-11: T0.20 DONE. PreToolUse hook `.claude/hooks/block-dangerous.sh` (parent folder, registered in the parent and all four repos' local settings) blocks git push in any form, firebase deploy/login/use, flutterfire configure, gcloud, git reset --hard and git rebase. Existing deny rules kept. Six required tests pass.
