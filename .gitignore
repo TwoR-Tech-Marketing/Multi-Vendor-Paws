@@ -56,3 +56,6 @@ APP_CONTEXT.txt
 **/.impeccable/live/deferred-svelte-component-accepts.json
 **/.impeccable/live/*.png
 # impeccable-ignore-end
+
+# Tool logs
+*-debug.log
