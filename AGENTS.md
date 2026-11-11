@@ -32,7 +32,7 @@ Lines marked OPEN or CONFIRM in a skill are undecided questions, not rules. Do n
 
 ## Source of truth
 
-The file is `docs/SOURCE_OF_TRUTH.md`. Read it before any ticket. Update it in the same branch. It wins over skills and older docs.
+The file is `../docs/SOURCE_OF_TRUTH.md` in the private workspace repo (private workspace repo TwoR-Tech-Marketing/tenderpaws-workspace, folder TenderPaws, branch main). Read it before any ticket. Update it in the same branch. It wins over skills and older docs.
 
 ## 0) Mandatory Project Understanding
 - Before coding: inspect the existing project structure, app/router usage, feature organization, shared components, hooks, services, state management, API patterns, and styling system.

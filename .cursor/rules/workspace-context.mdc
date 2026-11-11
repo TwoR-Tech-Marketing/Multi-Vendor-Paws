@@ -3,9 +3,9 @@ description: Workspace map and cross-repo safety rules for the Tender Paws multi
 alwaysApply: true
 ---
 # Workspace context
-This repo, Multi-Vendor-Paws, is the Next.js vendor web portal. It is the home repo for the source of truth (docs/SOURCE_OF_TRUTH.md), shared contracts (docs/contracts) and the web and app parity table (docs/parity.md). The other repos are siblings in the same parent folder.
+This repo, Multi-Vendor-Paws, is the Next.js vendor web portal. The source of truth (../docs/SOURCE_OF_TRUTH.md), shared contracts (../docs/contracts) and the web and app parity table (../docs/parity.md) live in the private workspace repo, which is the parent folder of this repo (D16). The other app repos are siblings in the same parent folder.
 ## Repos
-- WEB (home): ./ Multi-Vendor-Paws. Next.js vendor portal. Editable.
+- WEB: ./ Multi-Vendor-Paws. Next.js vendor portal. Public repo: never commit planning documents, the source of truth, contracts, deploy plans or reports here. Editable.
 - BUYER: ../tinder_paws. Flutter buyer mobile app. Read only unless the task says to edit it.
 - PANEL: ../tinderpaws_panel. Flutter web admin panel plus Cloud Functions in functions/. Read only unless the task says to edit it.
 - VENDOR APP: ../tender_paws_partner. Flutter vendor mobile app that mirrors the buyer app structure. It exists (T0.6). The GitHub remote was not found on 2026-11-06 (T0.16), so the backup stays pending until Ahmed creates it. Editable.
@@ -18,5 +18,5 @@ All repos use the same Firebase project, pets-acd3f, which is production.
 5. Follow D19 for GitHub. Push only dev and work branches (feature/*, fix/*, feat/*, backup/*). Never push main or master. Never force push, never delete remote branches, never push tags, and never open or merge pull requests. If the branch already exists on origin, push only when the remote tip is an ancestor of the local tip. Otherwise stop and ask. Account ahmedhany1284. Never print tokens or credentials.
 6. Never run firebase deploy, never deploy rules, indexes or functions, and never run a script that writes to Firebase, unless the task says so.
 7. Before editing a repo, read its .cursor/skills and AGENTS.md. Never resolve OPEN or CONFIRM lines. Ask me.
-8. A change that touches both WEB and VENDOR APP follows the contract first rule: write docs/contracts/<name>.md in WEB, implement WEB, then APP to the same contract, then update docs/parity.md.
+8. A change that touches both WEB and VENDOR APP follows the contract first rule: write ../docs/contracts/<name>.md in the workspace repo, implement WEB, then APP to the same contract, then update ../docs/parity.md.
 9. No em dashes.

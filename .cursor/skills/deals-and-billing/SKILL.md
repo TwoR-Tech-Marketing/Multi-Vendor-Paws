@@ -12,7 +12,7 @@ description: Use when building per-provider deals (fixed fee per order, percenta
 - Every buyer payment goes to TenderPaws. Vendors are paid net on a weekly or monthly cycle set per vendor by the admin. Payouts are manual ledger entries. Vendors see a statement (D21).
 
 ## Rules
-- Service providers and stores use deal documents (see docs/contracts/deals.md). commissionConfig/main stays as the 10 percent default when no deal is set.
+- Service providers and stores use deal documents (see docs/contracts/deals.md in the workspace repo). commissionConfig/main stays as the 10 percent default when no deal is set.
 - All money in integer piastres. Percentage rounding is half up (D28 / O17).
 - Balance changes go through the earnings ledger (`sale | refund | adjustment | payout`), never direct overwrites.
 - Admin sets deals. Providers see them read only (S1.13).
