@@ -313,7 +313,7 @@ Decided
 | D16 | 2026-11-06 | docs/SOURCE_OF_TRUTH.md on WEB dev is the only canonical business model. Any other summary is derived from it and is never edited by hand. |
 | D17 | 2026-11-06 | Business model changes run as BM-n tickets. Choices the code already made without a business rule are recorded in section 3A with AB ids and the mark [AS-BUILT]. [AS-BUILT] means this is what the code does, not that it was decided. |
 | D18 | 2026-11-06 | O7 decided. Test with the Firebase emulator suite and project id demo-tenderpaws. A staging Firebase project is later, only if the budget allows. No ticket tests write to production. |
-| D19 | 2026-11-06 | GitHub account ahmedhany1284. Git and the gh CLI are used as that user. Never log in, never change accounts, and never print or copy tokens or credentials. Allowed pushes are dev and work branches (feature/*, fix/*, feat/*, backup/*) only. Never push main or master, because Codemagic builds the buyer app on a push to main. Never force push, never delete remote branches, never push tags, and never open or merge pull requests. Before pushing a branch that already exists on origin, the remote tip must be an ancestor of the local tip. If it is not, stop and ask. 2026-11-10 (T0.19): account stays ahmedhany1284. Claude Code cannot reach the saved GitHub login in this environment, so Claude Code commits and merges as usual and lists the repos and branches that need pushing, and Ahmed pushes them from GitHub Desktop. |
+| D19 | 2026-11-06 | GitHub account ahmedhany1284. Git and the gh CLI are used as that user. Never log in, never change accounts, and never print or copy tokens or credentials. Allowed pushes are dev and work branches (feature/*, fix/*, feat/*, backup/*) only. Never push main or master, because Codemagic builds the buyer app on a push to main. Never force push, never delete remote branches, never push tags, and never open or merge pull requests. Before pushing a branch that already exists on origin, the remote tip must be an ancestor of the local tip. If it is not, stop and ask. 2026-11-10 (T0.19): account stays ahmedhany1284. Claude Code cannot reach the saved GitHub login in this environment, so Claude Code commits and merges as usual and lists the repos and branches that need pushing, and Ahmed pushes them from GitHub Desktop. 2026-11-12 (T0.21): per organization credentials are set up and the hook now allows Claude Code to push dev and work branches to the three private repos (PANEL, VENDOR APP, BUYER); WEB push waits until Ahmed confirms it is private. |
 | D20 | 2026-11-08 | Single-vendor cart, like Talabat and Breadfast. A cart holds items from one store only; adding from another store asks to clear the cart. Halo is TenderPaws' own store. createOrder rejects mixed carts. orders_split stays for old app versions until the forced update. |
 | D21 | 2026-11-08 | Money flow. Every buyer payment goes to TenderPaws through the app. Vendors of every type, doctors included, are paid their net on a payout cycle set per vendor by the admin (weekly or monthly). Payouts are manual transfers recorded as payout entries in the ledger. Vendors see a statement. Vendors pay nothing upfront: no vendor subscriptions. |
 | D22 | 2026-11-08 | Deals. Set per branch, with an apply-to-all-branches option; vendors without branches have one deal. Types: fixed fee per order (same amount whatever the order size), percentage of item value, or both. Fees apply to items only, never to delivery; the delivery fee is per vendor and goes 100 percent to the vendor. The payment gateway fee is absorbed inside TenderPaws' fee (vendor net = items minus deal fees). A vendor with no deal pays the 10 percent default. |
@@ -504,6 +504,7 @@ Phase 0: setup
 | T0.18 | Make Cursor rules, skills and settings available to Claude Code | WEB, BUYER, PANEL, VENDOR APP | 2 to 3 | DONE |
 | T0.19 | GitHub push route for Claude Code | WEB | 0.5 | DONE |
 | T0.20 | Safety hook for Claude Code (blocks push, deploy, gcloud) | Parent folder and all 4 repos (local settings only) | 0.5 | DONE |
+| T0.21 | Per organization GitHub credentials, narrowed push hook, gh-tp wrapper | Parent folder, `~/.gitconfig`, WEB (docs, .gitignore) | 0.5 | DONE |
 | BM-1 | Reconcile the business model, parity and the workspace rule | WEB | done this session | DONE |
 | BM-2 | Record security findings from S2.12 (SEC-1, SEC-2, O25) | WEB | docs | DONE |
 | BM-3 | Record decisions D20 to D29, release plan, parked work and risk register | WEB | docs | DONE |
@@ -557,6 +558,8 @@ Phase 2: buyer app and admin panel
 | TH-3 | Admin doctors and price | PANEL | 6 to 8 | 6 to 8 | TODO |
 | SEC-1 | Move Fawaterak tokens out of the buyer app into a PANEL callable secret | BUYER, PANEL | 6 to 10 | weeks 1 to 2 | TODO |
 | SEC-2 | Restrict the Google Maps API key in Google Cloud console | BUYER (manual) | 0.5 | now | TODO |
+| SEC-3 | Scan the WEB repo history for live secrets before it goes private | WEB | docs | done | DONE |
+| SEC-4 | Optionally restrict the Firebase web API key by HTTP referrer and API | Google Cloud console (manual) | 0.5 | after SEC-3 | TODO |
 | A2.1 | Suspension modes and hold case queue | PANEL | 14 to 20 | 5 | TODO |
 | A2.2 | Per vendor delivery fee, admin only | PANEL | 5 to 7 | 5 | TODO |
 | A2.3 | Halo stamping and management | PANEL | 5 to 7 | 5 | TODO |
@@ -1073,6 +1076,17 @@ Test results (2026-11-11). The live hook also blocked the first test command, be
 - [x] Risks updated for hardcoded Fawaterak tokens in the live buyer app (high).
 - [x] File and line references only; no secret values in this file.
 
+**T0.21 Per organization GitHub credentials and a narrowed push hook.** Local settings plus WEB docs. Est 0.5 h. Status: DONE (2026-11-12). Reason: two GitHub logins live in the keyring (ahmedhany1284 for TwoR-Tech-Marketing, ahmedhany-afk for Memphis-Systems) and the global helper used whichever was active. Acceptance:
+| # | Item | Evidence |
+|---|---|---|
+| 1 | `~/.gitconfig` gets `includeIf hasconfig:remote.*.url` rules for `TwoR-Tech-Marketing` (https, git@, ssh) pointing to `~/.gitconfig-tenderpaws`, placed after the global `github.com` credential lines so they win. `~/.gitconfig-memphis` gets its own credential block for ahmedhany-afk | `git config --show-origin --get-all credential.https://github.com.helper` in each repo |
+| 2 | Helper `~/.local/bin/git-credential-gh-user <account>` serves the stored gh token for that account; it never prints it | script |
+| 3 | The hook `.claude/hooks/block-dangerous.sh` now allows only `git [-C path] push [-n] [-u] origin <ref>...` where each ref is `dev` or `feature/*`, `fix/*`, `feat/*`, `backup/*`. Blocked: main, master, force and force-with-lease, `+ref`, `:ref`, `--delete`, `--tags`, `--all`, `--mirror`, `--prune`, non literal arguments, a push with no explicit branch. WEB push stays blocked (dry run allowed) until Ahmed says the repo is private. Also blocked: `gh auth login/logout/switch/refresh/token/setup-git`, `gh pr create/merge`, `gh repo delete/edit/create` | hook test table in the ticket report |
+| 4 | `~/.local/bin/gh-tp` wraps gh as ahmedhany1284 and is read only (repo view/list, pr list/view, run list/view, auth status, api GET) | script |
+| 5 | Dry run passed for WEB, PANEL, VENDOR APP and BUYER. Pushed: PANEL `feature/GOV-1-governorates-auth`, `feature/T0.10-emulator-suite`; VENDOR APP `dev`, `feature/T0.18-claude-code-setup`; BUYER `dev`, `feature/T0.18-claude-code-setup`. `main` and `master` were not pushed | git output |
+- This amends D19 for the three private repos: Claude Code may push dev and work branches with the narrowed hook. The ancestor check before pushing an existing branch still applies. WEB waits for the private flip.
+- Pending pushes at close: `dev` and `feature/T0.21-github-credentials` in WEB (and the T0.18 to T0.20 branches still local in WEB).
+
 **SEC-1 Move Fawaterak tokens out of the buyer app.** Track: own track like S2.12. Branch from buyer `main`, not part of the multi-vendor release. Repos BUYER, PANEL. Est 6 to 10 h. Status: TODO.
 - Finding: `tinder_paws/lib/features/store/data/config/payment_config.dart` lines 102 to 106 hold Fawaterak production and staging API tokens as string literals. Values are never written into this file.
 - Scope: a callable in PANEL `functions` holds the Fawaterak token as a Firebase secret (`defineSecret`) and makes the gateway calls; the buyer app calls that function instead of embedding the token; then rotate the tokens in the Fawaterak dashboard.
@@ -1082,6 +1096,21 @@ Test results (2026-11-11). The live hook also blocked the first test command, be
 **SEC-2 Restrict the Google Maps key.** Manual by Ahmed. Est 0.5 h. Status: TODO.
 - Finding: `tinder_paws/lib/core/widgets/location_screen.dart` line 78 holds a Google Maps API key string literal. Value is never written into this file.
 - Action: in Google Cloud console, restrict the key to the Android package name, the iOS bundle id, and the Maps APIs only.
+
+**SEC-3 Secret scan of the WEB repo history.** Est docs only. Status: DONE (2026-11-11). Scope: 14 branches on origin, no tags, 126 commits since 2026-06-02. Result: no live secret (no private keys, service account files, GitHub, Vercel or Fawaterak tokens, committed `.env`, or real user data). History is not rewritten, because there is nothing to remove and a rewrite would break the T0.x branches. No values are written here. Findings:
+| # | Finding | In current tree | Severity |
+|---|---|---|---|
+| F1 | The Firebase web config of `pets-acd3f` (including the web API key, an identifier per BR-15.4) sat in `.env.example` history from 2026-06-02 to 2026-06-13 | No | Low |
+| F2 | `firebase-debug.log` was committed for about 9 minutes on 2026-06-21. It records a Firestore index deploy to `pets-acd3f` and the signed-in Google account. No tokens | No | Low to medium |
+| F3 | A personal email address is in the metadata of 57 commits | History | Low |
+| F4 | `docs/SOURCE_OF_TRUTH.md` has been on `dev` since 2026-10-30, with SEC-1 and SEC-2 prose (weaknesses of the live apps, no values) since 2026-11-08 | `dev` | Medium |
+| F5 | Placeholders and demo data in docs (example key header, example service account name, demo vendor login, role emails). None are real secrets | Yes | Informational |
+- Actions: make WEB private before any push (Ahmed); `*-debug.log` is now in `.gitignore`; commits use the GitHub noreply address (T0.21).
+- Not covered: GitHub side data (issues, PRs, wiki, Actions logs) and earlier clones.
+
+**SEC-4 Restrict the Firebase web API key.** Manual by Ahmed. Optional. Est 0.5 h. Status: TODO.
+- Action: first confirm which web apps use the key (portal, panel, buyer web if any). Then in Google Cloud console restrict it by HTTP referrer for those domains and by API to the Firebase APIs they call. Do not restrict before the list is confirmed, or a live web app stops working.
+- Low priority: the key is an identifier (BR-15.4), so this is hardening only.
 
 ### Phase 1 details
 
@@ -1406,3 +1435,4 @@ Risk register (BM-3, 2026-11-08). 21 risks. Every security item is handled; the 
 - 2026-11-10: T0.18 DONE. Agent switched from Cursor to Claude Code (Claude Desktop, run from the parent folder); prompts unchanged; Claude files import or link to the Cursor files, which stay canonical.
 - 2026-11-10: T0.19 DONE. D19 note: account ahmedhany1284; Claude Code cannot reach the saved GitHub login, so Ahmed pushes from GitHub Desktop. SSH routing cancelled; ~/.gitconfig and remotes unchanged.
 - 2026-11-11: T0.20 DONE. PreToolUse hook `.claude/hooks/block-dangerous.sh` (parent folder, registered in the parent and all four repos' local settings) blocks git push in any form, firebase deploy/login/use, flutterfire configure, gcloud, git reset --hard and git rebase. Existing deny rules kept. Six required tests pass.
+- 2026-11-12: T0.21 DONE. Per organization git credentials (`~/.gitconfig-tenderpaws`, Memphis block), narrowed push hook, read-only `gh-tp`. SEC-3 DONE (no live secret in WEB history, F1 to F5 summarised, no values). SEC-4 added (TODO, optional Firebase web key restriction). `*-debug.log` added to WEB `.gitignore`.
