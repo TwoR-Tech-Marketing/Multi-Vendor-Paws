@@ -29,6 +29,66 @@ export const Strings = {
     settings: "Settings",
     logOut: "Log out",
     lockedHint: "Available after admin approval",
+    branches: "Branches",
+    appointments: "Appointments",
+    telehealth: "Telehealth",
+    comingSoon: "Coming soon",
+  },
+  vendorTypes: {
+    title: "Account type",
+    hint: "Choose what you offer. The account type cannot be changed after approval.",
+    profileRow: "Account type",
+    store: {
+      label: "Pet store",
+      description: "Sell pet products with delivery",
+      placeholders: { storeName: "Happy Tails Hub", storeDescription: "What products do you sell?" },
+      fields: { storeName: "Store name", storeDescription: "Store description", logoUrl: "Store logo" },
+    },
+    clinic: {
+      label: "Veterinary clinic",
+      description: "Offer vet visits and services",
+      placeholders: { storeName: "Happy Paws Veterinary Clinic", storeDescription: "What care and services does your clinic offer?" },
+      fields: { storeName: "Clinic name", storeDescription: "About the clinic", logoUrl: "Clinic logo" },
+    },
+    groomer: {
+      label: "Groomer",
+      description: "Offer grooming services",
+      placeholders: { storeName: "Fluffy Grooming Studio", storeDescription: "What grooming services do you offer?" },
+      fields: {
+        storeName: "Business name",
+        storeDescription: "About the business",
+        logoUrl: "Business logo",
+      },
+    },
+    doctor: {
+      label: "Doctor",
+      description: "Offer online consultations",
+      placeholders: { storeName: "Dr. Sara Ali", storeDescription: "Your background and the pets you treat" },
+      fields: { storeName: "Doctor name", storeDescription: "Short bio", logoUrl: "Photo" },
+    },
+    unknown: {
+      label: "Partner",
+      description: "Partner account",
+      placeholders: { storeName: "Your business name", storeDescription: "Tell customers about your business" },
+      fields: { storeName: "Business name", storeDescription: "Description", logoUrl: "Logo" },
+    },
+    providerFields: {
+      specialty: "Specialty",
+      specialtyPlaceholder: "For example: surgery, dermatology",
+      education: "Education",
+      experience: "Experience",
+      optional: "Optional",
+    },
+    errors: {
+      nameRequired: "Please enter a name.",
+      descriptionRequired: "Please enter a description.",
+      descriptionTooLong: "The short bio can be up to 500 characters.",
+      specialtyRequired: "Please enter your specialty.",
+      specialtyLength: "Specialty must be 2 to 80 characters.",
+      textTooLong: "This text can be up to 1000 characters.",
+      photoUrlsInvalid: "Please check the photos and try again.",
+      fieldNotAllowed: "Some details do not apply to this account type.",
+    },
   },
   pages: {
     dashboard: {
@@ -588,6 +648,8 @@ export const Strings = {
     emptyTitle: "No earnings yet",
     emptyDescription:
       "Earnings appear here when you mark orders as delivered. Commission is calculated automatically.",
+    emptyDescriptionProvider:
+      "Your earnings will appear here once you start serving customers on Pawlio. Commission is calculated automatically.",
     goToOrders: "View orders",
     viewOrder: "View order",
     loadError: "We couldn't load your earnings. Please try again.",

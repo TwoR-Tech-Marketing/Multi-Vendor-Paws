@@ -43,6 +43,7 @@ function mapChangeRequest(
     contactEmail: data.contactEmail,
     contactAddress: data.contactAddress,
     logoUrl: data.logoUrl ?? null,
+    ...(data.providerProfile ? { providerProfile: data.providerProfile } : {}),
     status: data.status as VendorProfileChangeRequest["status"],
     createdAt: toDate(data.createdAt),
     reviewedAt: toDate(data.reviewedAt),
@@ -114,6 +115,10 @@ export async function submitProfileChangeRequestAdmin(
     contactEmail: payload.contactEmail.trim().toLowerCase(),
     contactAddress: payload.contactAddress.trim(),
     logoUrl: payload.logoUrl ?? null,
+    // S1.7: only when non-empty, so store requests stay exactly as before.
+    ...(payload.providerProfile && Object.keys(payload.providerProfile).length
+      ? { providerProfile: payload.providerProfile }
+      : {}),
     status: "pending",
     createdAt: FieldValue.serverTimestamp(),
     reviewedAt: null,

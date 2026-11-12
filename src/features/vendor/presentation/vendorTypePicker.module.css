@@ -1,0 +1,62 @@
+.picker {
+  border: 0;
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  min-width: 0;
+}
+
+.legend {
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+
+.hint {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--vendor-type-option-min), 1fr));
+  gap: var(--space-3);
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  cursor: pointer;
+  text-align: start;
+}
+
+.option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.option:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-primary-soft);
+}
+
+.optionSelected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.label {
+  font-weight: var(--font-semibold);
+  color: var(--color-text);
+}
+
+.description {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}

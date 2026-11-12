@@ -69,6 +69,18 @@ describe("resolveNotificationHref", () => {
     expect(resolveNotificationHref({ target: "accountStatus", id: null })).toBe(Routes.vendor.profile);
     expect(resolveNotificationHref(null)).toBeNull();
   });
+
+  it("keeps store links and drops order and product links for providers", () => {
+    const order = { target: "order", id: "vo1" } as const;
+    const products = { target: "products", id: null } as const;
+    expect(resolveNotificationHref(order, "store")).toBe(Routes.vendor.orderDetail("vo1"));
+    expect(resolveNotificationHref(products, "store")).toBe(Routes.vendor.products);
+    expect(resolveNotificationHref(order, "clinic")).toBeNull();
+    expect(resolveNotificationHref(products, "doctor")).toBeNull();
+    expect(resolveNotificationHref({ target: "earnings", id: null }, "clinic")).toBe(
+      Routes.vendor.earnings,
+    );
+  });
 });
 
 describe("notification list state", () => {

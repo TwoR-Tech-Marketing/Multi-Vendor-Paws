@@ -67,7 +67,13 @@ service cloud.firestore {
       // Public read so buyer apps can render storefronts.
       allow read: if true;
       // Vendor can update their own doc; admin moderation goes via Cloud Functions (Admin SDK bypasses rules).
-      allow write: if isOwner(vendorId) && isVendor();
+      // S1.7: vendor docs are created by approve only; vendorType and providerProfile
+      // are immutable for the owner (one type per account, changes go through review).
+      allow create: if false;
+      allow update: if isOwner(vendorId) && isVendor()
+        && !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['vendorType', 'providerProfile']);
+      allow delete: if isOwner(vendorId) && isVendor();
     }
 
     match /vendor_signup_requests/{requestId} {

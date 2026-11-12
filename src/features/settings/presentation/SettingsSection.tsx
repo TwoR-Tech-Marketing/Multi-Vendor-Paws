@@ -91,10 +91,15 @@ export function SettingsSection() {
           openOrders={snapshot.openOrders}
           netEarningsPiastres={snapshot.netEarningsPiastres}
           isActiveVendor={isActiveVendor}
+          vendorType={profile.vendorType}
         />
       ) : null}
 
-      <SettingsShortcutsPanel strings={strings} isActiveVendor={isActiveVendor} />
+      <SettingsShortcutsPanel
+        strings={strings}
+        isActiveVendor={isActiveVendor}
+        vendorType={profile.vendorType}
+      />
 
       <div className={styles.settingsGrid}>
         <article className={portalStyles.panel} aria-labelledby="settings-appearance-title">

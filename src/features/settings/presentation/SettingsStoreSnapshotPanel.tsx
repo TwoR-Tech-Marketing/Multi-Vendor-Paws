@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Routes } from "@/constants/routes";
 import { formatEgp } from "@/features/products/domain/currency";
+import { isScreenVisible } from "@/features/vendor/domain/vendor-type-config";
 import type { AppStrings } from "@/shared/i18n/types";
 
 import portalStyles from "@/features/vendor/presentation/portal.module.css";
@@ -13,6 +14,8 @@ type SettingsStoreSnapshotPanelProps = {
   openOrders: number;
   netEarningsPiastres: number;
   isActiveVendor: boolean;
+  /** Store when omitted. Providers have no products or orders cards. */
+  vendorType?: string;
 };
 
 export function SettingsStoreSnapshotPanel({
@@ -21,8 +24,11 @@ export function SettingsStoreSnapshotPanel({
   openOrders,
   netEarningsPiastres,
   isActiveVendor,
+  vendorType,
 }: SettingsStoreSnapshotPanelProps) {
   const t = strings.settings;
+  const showProducts = isScreenVisible(vendorType, "products");
+  const showOrders = isScreenVisible(vendorType, "orders");
 
   return (
     <article className={portalStyles.panel} aria-labelledby="settings-snapshot-title">
@@ -31,11 +37,13 @@ export function SettingsStoreSnapshotPanel({
       </h2>
 
       <div className={styles.snapshotGrid}>
-        <Link href={Routes.vendor.products} className={styles.snapshotCard}>
-          <span className={styles.snapshotLabel}>{t.snapshotProducts}</span>
-          <p className={styles.snapshotValue}>{productCount}</p>
-        </Link>
-        {isActiveVendor ? (
+        {showProducts ? (
+          <Link href={Routes.vendor.products} className={styles.snapshotCard}>
+            <span className={styles.snapshotLabel}>{t.snapshotProducts}</span>
+            <p className={styles.snapshotValue}>{productCount}</p>
+          </Link>
+        ) : null}
+        {!showOrders ? null : isActiveVendor ? (
           <Link href={Routes.vendor.orders} className={styles.snapshotCard}>
             <span className={styles.snapshotLabel}>{t.snapshotOpenOrders}</span>
             <p className={styles.snapshotValue}>{openOrders}</p>

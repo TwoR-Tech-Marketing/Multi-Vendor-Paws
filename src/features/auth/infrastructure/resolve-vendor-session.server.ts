@@ -3,6 +3,7 @@ import "server-only";
 import type { Timestamp } from "firebase-admin/firestore";
 
 import type { VendorAccountStatus, VendorProfile } from "@/features/auth/domain/types";
+import { normalizeVendorType } from "@/features/vendor/domain/vendor-type-config";
 import type {
   VendorSessionKind,
   VendorSessionResolution,
@@ -23,6 +24,7 @@ type UserDoc = {
 };
 
 type VendorDoc = {
+  vendorType?: string;
   storeName?: string;
   status?: VendorAccountStatus;
   approvalStatus?: string;
@@ -37,6 +39,7 @@ type VendorDoc = {
 };
 
 type SignupRequestDoc = {
+  vendorType?: string;
   email?: string;
   contactEmail?: string;
   storeName?: string;
@@ -127,6 +130,7 @@ function buildProfile(
       "Your store",
     status,
     approvalStatus: vendorData?.approvalStatus,
+    vendorType: normalizeVendorType(vendorData?.vendorType || signupData?.vendorType),
     ...resolveRestriction(userData, vendorData),
   };
 }

@@ -1,6 +1,9 @@
 import "server-only";
 
-import type { VendorProfile } from "@/features/auth/domain/types";
+import {
+  mapProfile,
+  type CallableSessionProfile,
+} from "@/features/auth/infrastructure/session-profile.mapper";
 import type {
   VendorSessionKind,
   VendorSessionResolution,
@@ -9,19 +12,7 @@ import type {
 type CallableSessionResponse = {
   result?: {
     kind: VendorSessionKind;
-    profile: (Omit<
-      VendorProfile,
-      "restrictionExpiresAt" | "rejectedAt"
-    > & {
-      restrictionExpiresAt?: string | null;
-      rejectedAt?: string | null;
-      rejectionReason?: string | null;
-      signupRequestId?: string | null;
-      suspensionMode?: "hidden" | "view_only" | null;
-      isBanned?: boolean;
-      logoUrl?: string | null;
-      approvalStatus?: string | null;
-    }) | null;
+    profile: CallableSessionProfile | null;
     allowedPortalAccess?: boolean;
   };
   error?: { message?: string; status?: string };
@@ -42,33 +33,6 @@ function callableUrl(): string {
     return `http://${host}/${id}/us-central1/vendor_session-resolveVendorSession`;
   }
   return `https://us-central1-${id}.cloudfunctions.net/vendor_session-resolveVendorSession`;
-}
-
-function mapProfile(
-  profile: NonNullable<CallableSessionResponse["result"]>["profile"],
-): VendorProfile | null {
-  if (!profile) return null;
-
-  return {
-    vendorId: profile.vendorId,
-    ownerName: profile.ownerName,
-    email: profile.email,
-    storeName: profile.storeName,
-    status: profile.status,
-    approvalStatus: profile.approvalStatus ?? undefined,
-    logoUrl: profile.logoUrl ?? null,
-    isBanned: Boolean(profile.isBanned),
-    restrictionType: profile.restrictionType ?? undefined,
-    restrictionReason: profile.restrictionReason ?? undefined,
-    restrictionExpiresAt: profile.restrictionExpiresAt
-      ? new Date(profile.restrictionExpiresAt)
-      : null,
-    isPermanentRestriction: Boolean(profile.isPermanentRestriction),
-    suspensionMode: profile.suspensionMode ?? null,
-    rejectionReason: profile.rejectionReason ?? null,
-    rejectedAt: profile.rejectedAt ? new Date(profile.rejectedAt) : null,
-    signupRequestId: profile.signupRequestId ?? null,
-  };
 }
 
 /**

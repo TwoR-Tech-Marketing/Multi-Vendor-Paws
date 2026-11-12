@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 import type {
-  VendorProfileChangePayload,
   VendorProfileChangeRequest,
   VendorStoreProfile,
 } from "@/features/vendor/domain/types";
+import { profileChangeSchema } from "@/features/vendor/domain/profile-change-schema";
 import {
   getLatestRejectedProfileChangeRequestAdmin,
   getPendingProfileChangeRequestAdmin,
@@ -60,17 +59,6 @@ export async function GET() {
   }
 }
 
-const patchSchema = z.object({
-  ownerName: z.string().min(1),
-  phone: z.string().min(1),
-  storeName: z.string().min(1),
-  storeDescription: z.string().min(1),
-  contactPhone: z.string().min(1),
-  contactEmail: z.string().email(),
-  contactAddress: z.string().min(1),
-  logoUrl: z.string().nullable().optional(),
-});
-
 export async function PATCH(request: Request) {
   const context = await getVendorApiContext();
   if (!context) return apiUnauthorized();
@@ -80,7 +68,13 @@ export async function PATCH(request: Request) {
   }
 
   try {
-    const payload = patchSchema.parse(await request.json()) as VendorProfileChangePayload;
+    const parsed = profileChangeSchema(context.session.profile.vendorType).safeParse(
+      await request.json(),
+    );
+    if (!parsed.success) {
+      return NextResponse.json({ error: Strings.errors.generic }, { status: 400 });
+    }
+    const payload = parsed.data;
 
     if (context.vendorId !== context.session.profile.vendorId) {
       return apiForbidden();

@@ -1,3 +1,4 @@
+import type { ProviderProfile } from "@/features/vendor/domain/provider-profile-schema";
 import type {
   VendorAccountStatus,
   VendorRestrictionType,
@@ -14,6 +15,10 @@ export type VendorStoreProfile = {
   contactEmail: string;
   contactAddress: string;
   logoUrl: string | null;
+  /** S1.7: normalized, store when missing. */
+  vendorType: string;
+  /** S1.7: empty for store vendors and every pre S1.7 document. */
+  providerProfile: ProviderProfile;
   status: VendorAccountStatus;
   approvalStatus?: string;
   restrictionType?: VendorRestrictionType;
@@ -35,6 +40,8 @@ export type VendorProfileChangePayload = {
   contactEmail: string;
   contactAddress: string;
   logoUrl?: string | null;
+  /** S1.7: partial map, keys allowed for the session vendor type only. */
+  providerProfile?: ProviderProfile;
 };
 
 export type VendorProfileChangeRequest = VendorProfileChangePayload & {

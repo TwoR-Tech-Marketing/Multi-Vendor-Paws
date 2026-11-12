@@ -6,17 +6,48 @@ import { useRouter } from "next/navigation";
 import { Routes } from "@/constants/routes";
 import type { VendorProfile } from "@/features/auth/domain/types";
 import { reapplyVendorSignupRequest } from "@/features/auth/infrastructure/vendor-reapply.service";
+import {
+  EMPTY_PROVIDER_TEXT_FIELDS,
+  buildReapplyProviderProfile,
+  providerProfileSchema,
+  type ProviderProfile,
+  type ProviderTextFields,
+} from "@/features/vendor/domain/provider-profile-schema";
+import {
+  PROVIDER_FIELD_LIMITS,
+  getProviderConfig,
+  isKnownVendorType,
+  type VendorType,
+} from "@/features/vendor/domain/vendor-type-config";
+import { ProviderFieldsInputs } from "@/features/vendor/presentation/ProviderFieldsInputs";
+import { VendorTypePicker } from "@/features/vendor/presentation/VendorTypePicker";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./profile.module.css";
 
 type RejectedReapplyFormProps = {
   profile: VendorProfile;
+  /** Stored provider fields of the rejected request, used to prefill. */
+  storedProviderProfile?: ProviderProfile;
 };
 
-export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
+export function RejectedReapplyForm({ profile, storedProviderProfile }: RejectedReapplyFormProps) {
   const strings = useStrings();
   const router = useRouter();
+  const storedType = profile.vendorType;
+  // null while the stored type is unknown and the applicant has not chosen one:
+  // vendorType is then not sent, so the stored value is kept.
+  const [chosenType, setChosenType] = useState<VendorType | null>(
+    isKnownVendorType(storedType) ? storedType : null,
+  );
+  const effectiveType = chosenType ?? storedType;
+  const [providerFields, setProviderFields] = useState<ProviderTextFields>(() => ({
+    ...EMPTY_PROVIDER_TEXT_FIELDS,
+    specialty: storedProviderProfile?.specialty ?? "",
+    education: storedProviderProfile?.education ?? "",
+    experience: storedProviderProfile?.experience ?? "",
+  }));
+  const typeStrings = strings.vendorTypes[getProviderConfig(effectiveType).type];
   const [ownerName, setOwnerName] = useState(profile.ownerName);
   const [storeName, setStoreName] = useState(profile.storeName);
   const [storeDescription, setStoreDescription] = useState("");
@@ -32,10 +63,31 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
     event.preventDefault();
     setError(null);
     setSuccess(null);
+
+    if (
+      effectiveType === "doctor" &&
+      storeDescription.trim().length > PROVIDER_FIELD_LIMITS.doctorDescriptionMax
+    ) {
+      setError(strings.vendorTypes.errors.descriptionTooLong);
+      return;
+    }
+
+    const providerProfile = buildReapplyProviderProfile(effectiveType, providerFields);
+    if (providerProfile) {
+      const checked = providerProfileSchema(effectiveType, "signup").safeParse(providerProfile);
+      if (!checked.success) {
+        const key = checked.error.issues[0]?.message as keyof typeof strings.vendorTypes.errors;
+        setError(strings.vendorTypes.errors[key] ?? strings.accountStatus.reapplyError);
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
       await reapplyVendorSignupRequest({
+        ...(chosenType ? { vendorType: chosenType } : {}),
+        ...(providerProfile ? { providerProfile } : {}),
         ownerName: ownerName.trim(),
         storeName: storeName.trim(),
         storeDescription: storeDescription.trim(),
@@ -69,6 +121,7 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
         </div>
       ) : null}
       <form className={styles.formStack} onSubmit={onSubmit}>
+        <VendorTypePicker strings={strings} value={chosenType} onChange={setChosenType} />
         <label>
           {strings.profile.fields.ownerName}
           <input
@@ -78,7 +131,7 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
           />
         </label>
         <label>
-          {strings.profile.fields.storeName}
+          {typeStrings.fields.storeName}
           <input
             required
             value={storeName}
@@ -86,13 +139,19 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
           />
         </label>
         <label>
-          {strings.profile.fields.storeDescription}
+          {typeStrings.fields.storeDescription}
           <textarea
             required
             value={storeDescription}
             onChange={(event) => setStoreDescription(event.target.value)}
           />
         </label>
+        <ProviderFieldsInputs
+          strings={strings}
+          vendorType={effectiveType}
+          value={providerFields}
+          onChange={setProviderFields}
+        />
         <label>
           {strings.profile.fields.phone}
           <input

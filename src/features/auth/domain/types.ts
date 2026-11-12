@@ -1,3 +1,5 @@
+import type { ProviderProfile } from "@/features/vendor/domain/provider-profile-schema";
+
 export type VendorAccountStatus = "pending" | "rejected" | "active" | "suspended";
 
 export type VendorSignupPayload = {
@@ -13,6 +15,9 @@ export type VendorSignupPayload = {
   contactEmail: string;
   contactAddress: string;
   logoUrl?: string | null;
+  /** S1.7: store when omitted. */
+  vendorType?: string;
+  providerProfile?: ProviderProfile;
 };
 
 export type VendorRestrictionType = "ban" | "suspend";
@@ -35,6 +40,8 @@ export type VendorProfile = {
   rejectionReason?: string | null;
   rejectedAt?: Date | null;
   signupRequestId?: string | null;
+  /** S1.7: normalized; "store" when the vendor and signup docs have none. */
+  vendorType: string;
 };
 
 export type VendorSignupRequestStatus = "pending" | "approved" | "rejected";

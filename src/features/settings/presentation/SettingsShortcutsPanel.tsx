@@ -1,6 +1,10 @@
 import Link from "next/link";
 
 import { Routes } from "@/constants/routes";
+import {
+  isScreenVisible,
+  type VendorScreenKey,
+} from "@/features/vendor/domain/vendor-type-config";
 import type { AppStrings } from "@/shared/i18n/types";
 
 import portalStyles from "@/features/vendor/presentation/portal.module.css";
@@ -9,20 +13,28 @@ import styles from "./settings.module.css";
 type SettingsShortcutsPanelProps = {
   strings: AppStrings;
   isActiveVendor: boolean;
+  vendorType?: string;
 };
 
-/** Quick links are for active vendors only (PC-3 settings item 4). */
-export function SettingsShortcutsPanel({ strings, isActiveVendor }: SettingsShortcutsPanelProps) {
+/**
+ * Quick links are for active vendors only (PC-3 settings item 4), and only to
+ * screens the vendor type has (S1.7).
+ */
+export function SettingsShortcutsPanel({
+  strings,
+  isActiveVendor,
+  vendorType,
+}: SettingsShortcutsPanelProps) {
   if (!isActiveVendor) return null;
   const t = strings.settings;
 
   const shortcuts = [
-    { href: Routes.vendor.coverage, label: t.coverageShortcut },
-    { href: Routes.vendor.products, label: t.shortcutsProducts },
-    { href: Routes.vendor.orders, label: t.shortcutsOrders },
-    { href: Routes.vendor.earnings, label: t.shortcutsEarnings },
-    { href: Routes.vendor.profile, label: t.shortcutsProfile },
-  ] as const;
+    { href: Routes.vendor.coverage, label: t.coverageShortcut, screen: "coverage" },
+    { href: Routes.vendor.products, label: t.shortcutsProducts, screen: "products" },
+    { href: Routes.vendor.orders, label: t.shortcutsOrders, screen: "orders" },
+    { href: Routes.vendor.earnings, label: t.shortcutsEarnings, screen: "earnings" },
+    { href: Routes.vendor.profile, label: t.shortcutsProfile, screen: "profile" },
+  ].filter((item) => isScreenVisible(vendorType, item.screen as VendorScreenKey));
 
   return (
     <article className={portalStyles.panel} aria-labelledby="settings-shortcuts-title">

@@ -11,6 +11,7 @@ type SubmitSignupResponse = {
   data?: {
     requestId: string;
     status: string;
+    vendorType?: string;
   };
 };
 
