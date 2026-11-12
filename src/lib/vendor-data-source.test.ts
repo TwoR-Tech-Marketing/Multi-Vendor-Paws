@@ -2,30 +2,50 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   getNotificationsDataSource,
+  getOrdersDataSource,
+  getProductsDataSource,
   getSettingsDataSource,
   parseVendorDataSource,
+  type VendorDataSource,
 } from "@/lib/vendor-data-source";
 
-describe("PC-3 data-source flags", () => {
+const FLAGS: Array<[string, () => VendorDataSource]> = [
+  ["NEXT_PUBLIC_VENDOR_PRODUCTS_DATA_SOURCE", getProductsDataSource],
+  ["NEXT_PUBLIC_VENDOR_ORDERS_DATA_SOURCE", getOrdersDataSource],
+  ["NEXT_PUBLIC_VENDOR_NOTIFICATIONS_DATA_SOURCE", getNotificationsDataSource],
+  ["NEXT_PUBLIC_VENDOR_SETTINGS_DATA_SOURCE", getSettingsDataSource],
+];
+
+describe("portal data-source flags", () => {
   afterEach(() => {
     vi.unstubAllEnvs();
   });
 
-  it("default to bff when unset", () => {
-    vi.stubEnv("NEXT_PUBLIC_VENDOR_NOTIFICATIONS_DATA_SOURCE", "");
-    vi.stubEnv("NEXT_PUBLIC_VENDOR_SETTINGS_DATA_SOURCE", "");
-    expect(getNotificationsDataSource()).toBe("bff");
-    expect(getSettingsDataSource()).toBe("bff");
+  describe.each(FLAGS)("%s", (name, read) => {
+    it("defaults to bff when unset or empty", () => {
+      vi.stubEnv(name, undefined);
+      expect(read()).toBe("bff");
+      vi.stubEnv(name, "");
+      expect(read()).toBe("bff");
+    });
+
+    it("switches to callable on the callable value, ignoring case and spaces", () => {
+      vi.stubEnv(name, " Callable ");
+      expect(read()).toBe("callable");
+    });
+
+    it("stays bff for any other value", () => {
+      vi.stubEnv(name, "firestore");
+      expect(read()).toBe("bff");
+    });
+
+    it("reads only its own variable", () => {
+      for (const [other] of FLAGS) vi.stubEnv(other, other === name ? "bff" : "callable");
+      expect(read()).toBe("bff");
+    });
   });
 
-  it("switch to callable only on the exact value", () => {
-    vi.stubEnv("NEXT_PUBLIC_VENDOR_NOTIFICATIONS_DATA_SOURCE", " Callable ");
-    vi.stubEnv("NEXT_PUBLIC_VENDOR_SETTINGS_DATA_SOURCE", "callable");
-    expect(getNotificationsDataSource()).toBe("callable");
-    expect(getSettingsDataSource()).toBe("callable");
-  });
-
-  it("fall back to bff for unknown values", () => {
+  it("parses unknown values to bff", () => {
     expect(parseVendorDataSource("firestore")).toBe("bff");
     expect(parseVendorDataSource(undefined)).toBe("bff");
   });
