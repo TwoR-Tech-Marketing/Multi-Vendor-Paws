@@ -31,8 +31,8 @@ const CANONICAL = {
     products: { store: "visible", clinic: "hidden", groomer: "hidden", doctor: "hidden" },
     orders: { store: "visible", clinic: "hidden", groomer: "hidden", doctor: "hidden" },
     coverage: { store: "visible", clinic: "hidden", groomer: "hidden", doctor: "hidden" },
-    branches: { store: "hidden", clinic: "comingSoon", groomer: "comingSoon", doctor: "hidden" },
-    services: { store: "hidden", clinic: "comingSoon", groomer: "comingSoon", doctor: "hidden" },
+    branches: { store: "hidden", clinic: "visible", groomer: "visible", doctor: "hidden" },
+    services: { store: "hidden", clinic: "visible", groomer: "visible", doctor: "hidden" },
     appointments: {
       store: "hidden",
       clinic: "comingSoon",
@@ -45,8 +45,8 @@ const CANONICAL = {
   } as Record<string, Record<string, ScreenState>>,
   requiresActive: {
     store: ["products", "orders", "earnings"],
-    clinic: ["branches", "services", "appointments", "earnings"],
-    groomer: ["branches", "services", "appointments", "earnings"],
+    clinic: ["appointments", "earnings"],
+    groomer: ["appointments", "earnings"],
     doctor: ["telehealth", "earnings"],
   },
   requiresDeliveryCoverage: { store: true, clinic: false, groomer: false, doctor: false },

@@ -13,7 +13,8 @@ export type PortalNavId =
   | "orders"
   | "earnings"
   | "settings"
-  | "notifications";
+  | "notifications"
+  | "branches";
 
 export type PortalNavItem = {
   id: VendorScreenKey;
@@ -49,7 +50,11 @@ const NAV_TARGETS: Partial<Record<VendorScreenKey, NavTarget>> = {
     icon: portalNavAssets.navSettings,
     label: (s) => s.nav.settings,
   },
-  branches: { href: null, icon: portalNavAssets.navBranches, label: (s) => s.nav.branches },
+  branches: {
+    href: Routes.vendor.branches,
+    icon: portalNavAssets.navBranches,
+    label: (s) => s.nav.branches,
+  },
   appointments: {
     href: null,
     icon: portalNavAssets.navAppointments,
@@ -96,6 +101,7 @@ export function getPortalPageMeta(strings: AppStrings): Record<PortalNavId, Port
     earnings: strings.pages.earnings,
     settings: strings.pages.settings,
     notifications: strings.pages.notifications,
+    branches: strings.pages.branches,
   };
 }
 
@@ -106,11 +112,13 @@ export function resolvePortalNavId(pathname: string): PortalNavId {
   if (pathname.startsWith(Routes.vendor.products)) return "products";
   if (pathname.startsWith(Routes.vendor.orders)) return "orders";
   if (pathname.startsWith(Routes.vendor.earnings)) return "earnings";
+  if (pathname.startsWith(Routes.vendor.branches)) return "branches";
   return "dashboard";
 }
 
 const PRODUCT_EDIT_PATH = /^\/products\/[^/]+\/edit\/?$/;
 const ORDER_DETAIL_PATH = /^\/orders\/[^/]+\/?$/;
+const BRANCH_DETAIL_PATH = /^\/branches\/[^/]+\/?$/;
 
 export function resolvePortalPageMeta(pathname: string, strings: AppStrings): PortalPageMeta {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
@@ -140,6 +148,13 @@ export function resolvePortalPageMeta(pathname: string, strings: AppStrings): Po
     return {
       title: strings.orders.detailTitle,
       subtitle: strings.orders.detailSubtitle,
+    };
+  }
+
+  if (BRANCH_DETAIL_PATH.test(normalizedPath)) {
+    return {
+      title: strings.pages.branches.detailTitle,
+      subtitle: strings.pages.branches.detailSubtitle,
     };
   }
 
