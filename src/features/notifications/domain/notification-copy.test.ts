@@ -34,3 +34,36 @@ describe("resolveNotificationCopy payout_recorded", () => {
     expect(resolveNotificationCopy(payout(199.9), en, "en").body).toContain(formatEgp(199));
   });
 });
+
+function appointment(type: string): VendorNotification {
+  return {
+    notificationId: `appt_${type}_a1_1`,
+    type,
+    params: { appointmentNumber: "#ABCD1234", date: "2026-11-14", time: "09:30" },
+    titleFallback: null,
+    bodyFallback: null,
+    link: { target: "appointment", id: "a1" },
+    isRead: false,
+    readAt: null,
+    createdAt: new Date(0),
+  };
+}
+
+describe("resolveNotificationCopy appointments", () => {
+  it.each([
+    ["appointment_new", "appointmentNew"],
+    ["appointment_cancelled", "appointmentCancelled"],
+    ["appointment_rescheduled", "appointmentRescheduled"],
+  ] as const)("renders %s in English and Arabic with a formatted date and time", (type, key) => {
+    const copyEn = resolveNotificationCopy(appointment(type), en, "en");
+    expect(copyEn.title).toBe(en.notifications.types[key].title);
+    expect(copyEn.body).toContain("#ABCD1234");
+    expect(copyEn.body).toContain("9:30 AM");
+    expect(copyEn.body).not.toContain("2026-11-14");
+    expect(copyEn.body).not.toContain("{");
+    const copyAr = resolveNotificationCopy(appointment(type), ar, "ar");
+    expect(copyAr.title).toBe(ar.notifications.types[key].title);
+    expect(copyAr.body).toContain("9:30 ص");
+    expect(copyAr.body).not.toContain("{");
+  });
+});

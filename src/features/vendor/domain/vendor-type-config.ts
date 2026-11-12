@@ -113,7 +113,7 @@ const PROVIDER_CONFIGS: Record<VendorType, ProviderConfig> = {
     screens: buildScreens({
       branches: "visible",
       services: "visible",
-      appointments: "comingSoon",
+      appointments: "visible",
       availability: "visible",
       coupons: "visible",
     }),
@@ -131,7 +131,7 @@ const PROVIDER_CONFIGS: Record<VendorType, ProviderConfig> = {
     screens: buildScreens({
       branches: "visible",
       services: "visible",
-      appointments: "comingSoon",
+      appointments: "visible",
       availability: "visible",
       coupons: "visible",
     }),

@@ -1,3 +1,4 @@
+import { formatDayLabel, formatTime12, isIsoDate } from "@/features/availability/domain/time";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { VendorNotification } from "@/features/notifications/domain/types";
 import type { AppStrings } from "@/shared/i18n/types";
@@ -15,6 +16,9 @@ const TYPE_TO_KEY: Record<string, TypeKey> = {
   document_reviewed: "documentReviewed",
   account_suspended: "accountSuspended",
   payout_recorded: "payoutRecorded",
+  appointment_new: "appointmentNew",
+  appointment_cancelled: "appointmentCancelled",
+  appointment_rescheduled: "appointmentRescheduled",
 };
 
 function fillTemplate(template: string, params: Record<string, string>): string {
@@ -36,6 +40,10 @@ function paramsForDisplay(
   const { amount, status, documentNameAr } = notification.params;
   if (notification.type === "payout_recorded" && typeof amount === "number") {
     out.amount = formatEgp(Math.trunc(amount));
+  }
+  if (notification.type.startsWith("appointment_")) {
+    if (out.date && isIsoDate(out.date)) out.date = formatDayLabel(out.date, locale);
+    if (out.time) out.time = formatTime12(out.time, strings.availability);
   }
   if (notification.type === "document_reviewed") {
     if (status === "approved" || status === "rejected") {
