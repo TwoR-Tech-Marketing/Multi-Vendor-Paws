@@ -39,7 +39,7 @@ const CANONICAL = {
       groomer: "comingSoon",
       doctor: "hidden",
     },
-    availability: { store: "hidden", clinic: "hidden", groomer: "hidden", doctor: "hidden" },
+    availability: { store: "hidden", clinic: "visible", groomer: "visible", doctor: "hidden" },
     reviews: { store: "hidden", clinic: "hidden", groomer: "hidden", doctor: "hidden" },
     telehealth: { store: "hidden", clinic: "hidden", groomer: "hidden", doctor: "visible" },
     coupons: { store: "visible", clinic: "visible", groomer: "visible", doctor: "hidden" },

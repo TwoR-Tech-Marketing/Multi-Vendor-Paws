@@ -1,5 +1,6 @@
 import { mapBranchesError } from "@/features/branches/domain/errors";
-import type { BranchService, DealTerms } from "@/features/branches/domain/types";
+import type { Branch, BranchService, DealTerms } from "@/features/branches/domain/types";
+import { isScreenVisible } from "@/features/vendor/domain/vendor-type-config";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
 
@@ -19,6 +20,11 @@ export function formatDealTerms(deal: DealTerms, strings: AppStrings): string {
 export function branchesErrorMessage(error: unknown, strings: AppStrings): string {
   const key = mapBranchesError(error);
   return key === "generic" ? strings.errors.generic : strings.errors.branches[key];
+}
+
+/** Availability is linked from active branches of types that have it. */
+export function canOpenAvailability(branch: Branch, vendorType: string | null | undefined): boolean {
+  return branch.status === "active" && isScreenVisible(vendorType, "availability");
 }
 
 export function serviceDisplayName(service: BranchService, locale: string): string {

@@ -459,7 +459,17 @@
       { "fieldPath": "status", "order": "ASCENDING" },
       { "fieldPath": "refundState", "order": "ASCENDING" },
       { "fieldPath": "refundFlaggedAt", "order": "DESCENDING" }
-    ]}
+    ]},
+    {
+      "collectionGroup": "appointments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "vendorId", "order": "ASCENDING" },
+        { "fieldPath": "branchId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "endAt", "order": "ASCENDING" }
+      ]
+    }
   ],
   "fieldOverrides": []
 }
