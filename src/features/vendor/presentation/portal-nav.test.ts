@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { getPortalSidebarNavItems } from "@/features/vendor/presentation/portal-nav";
+import {
+  getPortalSidebarNavItems,
+  resolvePortalPageMeta,
+} from "@/features/vendor/presentation/portal-nav";
 import { getStrings } from "@/shared/i18n/get-strings";
 
 const strings = getStrings("en");
@@ -22,20 +25,37 @@ describe("getPortalSidebarNavItems", () => {
     expect(getPortalSidebarNavItems(strings, "")).toEqual(STORE_SIDEBAR_BEFORE_S17);
   });
 
-  it.each(["clinic", "groomer"])("shows comingSoon branches and appointments for %s", (type) => {
-    const items = getPortalSidebarNavItems(strings, type);
-    expect(items.map((item) => item.id)).toEqual([
-      "dashboard",
-      "branches",
-      "appointments",
-      "earnings",
-      "settings",
-    ]);
-    for (const item of items.filter((i) => i.id === "branches" || i.id === "appointments")) {
-      expect(item.comingSoon).toBe(true);
-      expect(item.href).toBe(null);
-    }
-    expect(items.find((item) => item.id === "earnings")?.href).toBe("/earnings");
+  it.each(["clinic", "groomer"])(
+    "shows visible branches and comingSoon appointments for %s",
+    (type) => {
+      const items = getPortalSidebarNavItems(strings, type);
+      expect(items.map((item) => item.id)).toEqual([
+        "dashboard",
+        "branches",
+        "appointments",
+        "earnings",
+        "settings",
+      ]);
+      const branches = items.find((item) => item.id === "branches");
+      expect(branches).toMatchObject({
+        href: "/branches",
+        comingSoon: false,
+        requiresActiveAccount: false,
+      });
+      expect(items.find((item) => item.id === "appointments")).toMatchObject({
+        href: null,
+        comingSoon: true,
+        requiresActiveAccount: true,
+      });
+      expect(items.find((item) => item.id === "earnings")?.href).toBe("/earnings");
+    },
+  );
+
+  it("gives branch pages their own title", () => {
+    expect(resolvePortalPageMeta("/branches", strings).title).toBe(strings.pages.branches.title);
+    expect(resolvePortalPageMeta("/branches/b1", strings).title).toBe(
+      strings.pages.branches.detailTitle,
+    );
   });
 
   it("shows a comingSoon telehealth item for doctors", () => {

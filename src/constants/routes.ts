@@ -19,5 +19,7 @@ export const Routes = {
     settings: "/settings",
     coverage: "/settings/coverage",
     notifications: "/notifications",
+    branches: "/branches",
+    branchDetail: (branchId: string) => `/branches/${encodeURIComponent(branchId)}`,
   },
 } as const;
