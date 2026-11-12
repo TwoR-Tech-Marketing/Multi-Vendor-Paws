@@ -70,7 +70,10 @@ export function SettingsSection() {
       },
       save: saveVendorPreferences,
       scope: preferencesScope,
-    }).then((result) => setSaveError(result === "failed"));
+    }).then((result) => {
+      // Only a failure shows the toast; a later success never hides it.
+      if (result === "failed") setSaveError(true);
+    });
   }
 
   if (isLoading) return <SettingsSkeleton />;
