@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import type { VendorSignupPayload } from "@/features/auth/domain/types";
-import { mapAuthError } from "@/features/auth/domain/errors";
+import {
+  accountStepError,
+  contactStepError,
+  logoFileError,
+  signupSubmitError,
+  type RegisterError,
+} from "@/features/auth/domain/register-errors";
 import { signupBusinessSchema } from "@/features/auth/domain/signup-schema";
 import {
   EMPTY_PROVIDER_TEXT_FIELDS,
@@ -19,9 +25,10 @@ import { useStrings } from "@/shared/preferences/PreferencesContext";
 import { Routes } from "@/constants/routes";
 import {
   submitVendorSignupRequest,
-  uploadVendorLogo,
+  uploadSignupLogo,
 } from "@/features/auth/infrastructure/vendor-signup.service";
 import { PawlioLogo } from "@/shared/components/PawlioLogo";
+import { RegisterErrorAlert } from "./RegisterErrorAlert";
 import styles from "./auth.module.css";
 
 type FormState = Omit<VendorSignupPayload, "logoUrl" | "vendorType" | "providerProfile"> & {
@@ -54,7 +61,8 @@ export function RegisterClient() {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<RegisterError | null>(null);
+  const signupStrings = strings.signup;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const businessInput = useMemo(
@@ -74,15 +82,15 @@ export function RegisterClient() {
       .map(([key, value]) => [providerLabels[key as keyof ProviderTextFields], value]);
     return [
       [strings.vendorTypes.title, typeStrings.label],
-      ["Owner", form.ownerName],
-      ["Sign-in email", form.email],
-      ["Phone", form.phone],
+      [strings.signup.fields.ownerName, form.ownerName],
+      [strings.signup.fields.email, form.email],
+      [strings.signup.fields.phone, form.phone],
       [typeStrings.fields.storeName, form.storeName],
       [typeStrings.fields.storeDescription, form.storeDescription],
       ...providerRows,
-      ["Contact phone", form.contactPhone],
-      ["Store contact email", form.contactEmail],
-      ["Address", form.contactAddress],
+      [strings.signup.fields.contactPhone, form.contactPhone],
+      [strings.signup.fields.contactEmail, form.contactEmail],
+      [strings.signup.fields.contactAddress, form.contactAddress],
     ];
   }, [form, businessInput, strings, typeStrings]);
 
@@ -90,20 +98,20 @@ export function RegisterClient() {
     setForm((current) => ({ ...current, [key]: value }));
   }
 
-  function validateStep1(): string | null {
-    if (form.password.length < 8) return "Password must be at least 8 characters.";
-    if (form.password !== form.confirmPassword) return "Passwords do not match.";
-    return null;
-  }
-
-  function validateStep2(): string | null {
+  function validateStep2(): RegisterError | null {
     const result = signupBusinessSchema.safeParse(businessInput);
-    if (result.success) return null;
-    const key = result.error.issues[0]?.message as keyof typeof strings.vendorTypes.errors;
-    return strings.vendorTypes.errors[key] ?? strings.errors.generic;
+    if (!result.success) {
+      return { source: "vendorType", key: result.error.issues[0]?.message ?? "" };
+    }
+    return contactStepError(form);
   }
 
   function onLogoChange(file: File | null) {
+    const fileError = file ? logoFileError(file) : null;
+    if (fileError) {
+      setError(fileError);
+      return;
+    }
     setLogoFile(file);
     if (!file) {
       setLogoPreview(null);
@@ -115,7 +123,7 @@ export function RegisterClient() {
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!acceptedTerms) {
-      setError("Please accept the vendor terms to continue.");
+      setError({ source: "terms" });
       return;
     }
 
@@ -125,7 +133,7 @@ export function RegisterClient() {
     try {
       let logoUrl: string | null = null;
       if (logoFile) {
-        logoUrl = await uploadVendorLogo(logoFile);
+        logoUrl = await uploadSignupLogo(logoFile);
       }
 
       const business = signupBusinessSchema.parse(businessInput);
@@ -146,7 +154,7 @@ export function RegisterClient() {
 
       router.replace(`${Routes.auth.login}?submitted=1`);
     } catch (submitError) {
-      setError(mapAuthError(submitError));
+      setError(signupSubmitError(submitError));
     } finally {
       setIsSubmitting(false);
     }
@@ -157,10 +165,8 @@ export function RegisterClient() {
       <section className={`${styles.card} ${styles.cardWide}`}>
         <div className={styles.brand}>
           <PawlioLogo className={styles.logoMark} />
-          <h2>Become a Pawlio vendor</h2>
-          <p>
-            Complete all steps. Your store will be reviewed before activation.
-          </p>
+          <h2>{signupStrings.title}</h2>
+          <p>{signupStrings.subtitle}</p>
         </div>
 
         <div className={styles.steps}>
@@ -176,58 +182,58 @@ export function RegisterClient() {
               }`}
             >
               <span>{value}</span>
-              {value === 1 ? "Account" : value === 2 ? "Store" : "Review"}
+              {value === 1
+                ? signupStrings.steps.account
+                : value === 2
+                  ? signupStrings.steps.business
+                  : signupStrings.steps.review}
             </div>
           ))}
         </div>
 
-        {error ? (
-          <div className={`${styles.alert} ${styles.alertError}`} role="alert">
-            {error}
-          </div>
-        ) : null}
+        <RegisterErrorAlert error={error} />
 
         <form onSubmit={onSubmit}>
           {step === 1 ? (
             <>
-              <h3 className={styles.panelTitle}>Account details</h3>
+              <h3 className={styles.panelTitle}>{signupStrings.sections.account}</h3>
               <div className={styles.formGrid}>
                 <label className={`${styles.field} ${styles.span2}`}>
-                  Owner full name *
+                  {signupStrings.fields.ownerName} *
                   <input
                     required
                     minLength={2}
                     value={form.ownerName}
                     onChange={(e) => updateField("ownerName", e.target.value)}
-                    placeholder="Ahmed Hassan"
+                    placeholder={signupStrings.placeholders.ownerName}
                   />
                 </label>
                 <label className={styles.field}>
-                  Business email (sign-in) *
+                  {signupStrings.fields.email} *
                   <input
                     type="email"
                     required
                     autoComplete="username email"
                     value={form.email}
                     onChange={(e) => updateField("email", e.target.value)}
-                    placeholder="vendor@store.com"
+                    placeholder={signupStrings.placeholders.email}
                   />
                   <span className={styles.fieldHint}>
-                    Use this email and password to sign in after admin approval.
+                    {signupStrings.hints.email}
                   </span>
                 </label>
                 <label className={styles.field}>
-                  Mobile phone *
+                  {signupStrings.fields.phone} *
                   <input
                     type="tel"
                     required
                     value={form.phone}
                     onChange={(e) => updateField("phone", e.target.value)}
-                    placeholder="+20 10x xxx xxxx"
+                    placeholder={signupStrings.placeholders.phone}
                   />
                 </label>
                 <label className={styles.field}>
-                  Password *
+                  {signupStrings.fields.password} *
                   <input
                     type="password"
                     required
@@ -235,11 +241,11 @@ export function RegisterClient() {
                     autoComplete="new-password"
                     value={form.password}
                     onChange={(e) => updateField("password", e.target.value)}
-                    placeholder="Min. 8 characters"
+                    placeholder={signupStrings.placeholders.password}
                   />
                 </label>
                 <label className={styles.field}>
-                  Confirm password *
+                  {signupStrings.fields.confirmPassword} *
                   <input
                     type="password"
                     required
@@ -247,19 +253,19 @@ export function RegisterClient() {
                     autoComplete="new-password"
                     value={form.confirmPassword}
                     onChange={(e) => updateField("confirmPassword", e.target.value)}
-                    placeholder="Repeat password"
+                    placeholder={signupStrings.placeholders.confirmPassword}
                   />
                 </label>
               </div>
               <div className={styles.actions}>
                 <Link href="/" className={styles.btnSecondary}>
-                  Cancel
+                  {strings.common.cancel}
                 </Link>
                 <button
                   type="button"
                   className={styles.btnPrimary}
                   onClick={() => {
-                    const validationError = validateStep1();
+                    const validationError = accountStepError(form);
                     if (validationError) {
                       setError(validationError);
                       return;
@@ -268,7 +274,7 @@ export function RegisterClient() {
                     setStep(2);
                   }}
                 >
-                  Continue to store setup
+                  {signupStrings.continue}
                 </button>
               </div>
             </>
@@ -276,7 +282,7 @@ export function RegisterClient() {
 
           {step === 2 ? (
             <>
-              <h3 className={styles.panelTitle}>Store profile</h3>
+              <h3 className={styles.panelTitle}>{signupStrings.sections.business}</h3>
               <VendorTypePicker strings={strings} value={vendorType} onChange={setVendorType} />
               <div className={styles.formGrid}>
                 <label className={`${styles.field} ${styles.span2}`}>
@@ -314,50 +320,50 @@ export function RegisterClient() {
                       hidden
                       onChange={(e) => onLogoChange(e.target.files?.[0] ?? null)}
                     />
-                    Click to upload logo
+                    {signupStrings.logoUpload}
                   </label>
                   {logoPreview ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={logoPreview} alt="Logo preview" className={styles.logoPreview} />
+                    <img src={logoPreview} alt={signupStrings.logoPreviewAlt} className={styles.logoPreview} />
                   ) : null}
                 </div>
                 <label className={styles.field}>
-                  Business address *
+                  {signupStrings.fields.contactAddress} *
                   <input
                     required
                     value={form.contactAddress}
                     onChange={(e) => updateField("contactAddress", e.target.value)}
-                    placeholder="City, area, street"
+                    placeholder={signupStrings.placeholders.contactAddress}
                   />
                 </label>
                 <label className={styles.field}>
-                  Contact phone *
+                  {signupStrings.fields.contactPhone} *
                   <input
                     type="tel"
                     required
                     value={form.contactPhone}
                     onChange={(e) => updateField("contactPhone", e.target.value)}
-                    placeholder="+20 10x xxx xxxx"
+                    placeholder={signupStrings.placeholders.phone}
                   />
                 </label>
                 <label className={styles.field}>
-                  Store contact email *
+                  {signupStrings.fields.contactEmail} *
                   <input
                     type="email"
                     required
                     autoComplete="off"
                     value={form.contactEmail}
                     onChange={(e) => updateField("contactEmail", e.target.value)}
-                    placeholder="contact@store.com"
+                    placeholder={signupStrings.placeholders.contactEmail}
                   />
                   <span className={styles.fieldHint}>
-                    Shown to customers on your store profile — not used to sign in.
+                    {signupStrings.hints.contactEmail}
                   </span>
                 </label>
               </div>
               <div className={styles.actions}>
                 <button type="button" className={styles.btnSecondary} onClick={() => setStep(1)}>
-                  Back
+                  {signupStrings.back}
                 </button>
                 <button
                   type="button"
@@ -372,7 +378,7 @@ export function RegisterClient() {
                     setStep(3);
                   }}
                 >
-                  Review application
+                  {signupStrings.reviewApplication}
                 </button>
               </div>
             </>
@@ -380,7 +386,7 @@ export function RegisterClient() {
 
           {step === 3 ? (
             <>
-              <h3 className={styles.panelTitle}>Review &amp; submit</h3>
+              <h3 className={styles.panelTitle}>{signupStrings.sections.review}</h3>
               <div className={styles.reviewGrid}>
                 {reviewRows.map(([label, value]) => (
                   <div key={label} className={styles.reviewRow}>
@@ -396,14 +402,14 @@ export function RegisterClient() {
                   onChange={(e) => setAcceptedTerms(e.target.checked)}
                   required
                 />
-                I confirm the information is accurate and agree to Pawlio vendor terms.
+                {signupStrings.terms}
               </label>
               <div className={styles.actions}>
                 <button type="button" className={styles.btnSecondary} onClick={() => setStep(2)}>
-                  Back
+                  {signupStrings.back}
                 </button>
                 <button type="submit" className={styles.btnPrimary} disabled={isSubmitting}>
-                  {isSubmitting ? "Submitting..." : "Submit for admin approval"}
+                  {isSubmitting ? signupStrings.submitting : signupStrings.submit}
                 </button>
               </div>
             </>
