@@ -44,14 +44,16 @@ function readServiceAccountFromFile(): ServiceAccountJson | null {
 }
 
 /**
- * True only when the Firestore and Auth emulator hosts are both set and the
- * project id is a demo project. Then the Admin SDK runs without credentials
- * against the local emulators. Nothing is relaxed when the hosts are absent.
+ * True only when the Firestore, Auth and Storage emulator hosts are all set
+ * and the project id is a demo project. Then the Admin SDK runs without
+ * credentials against the local emulators. Nothing is relaxed when a host is
+ * absent.
  */
 export function isFirebaseAdminEmulatorMode(): boolean {
   const firestoreHost = process.env.FIRESTORE_EMULATOR_HOST?.trim();
   const authHost = process.env.FIREBASE_AUTH_EMULATOR_HOST?.trim();
-  if (!firestoreHost || !authHost) return false;
+  const storageHost = process.env.FIREBASE_STORAGE_EMULATOR_HOST?.trim();
+  if (!firestoreHost || !authHost || !storageHost) return false;
   return (getProjectId() ?? "").startsWith("demo-");
 }
 

@@ -34,6 +34,7 @@ describe("Admin SDK initialization", () => {
     vi.stubEnv("FIREBASE_PRIVATE_KEY", "");
     vi.stubEnv("FIRESTORE_EMULATOR_HOST", "127.0.0.1:8080");
     vi.stubEnv("FIREBASE_AUTH_EMULATOR_HOST", "127.0.0.1:9099");
+    vi.stubEnv("FIREBASE_STORAGE_EMULATOR_HOST", "127.0.0.1:9199");
     const mod = await import("@/lib/firebase-admin");
     mod.getAdminFirestore();
     expect(adminApp.cert).not.toHaveBeenCalled();
@@ -50,6 +51,7 @@ describe("Admin SDK initialization", () => {
     vi.stubEnv("FIREBASE_PRIVATE_KEY", "");
     vi.stubEnv("FIRESTORE_EMULATOR_HOST", "");
     vi.stubEnv("FIREBASE_AUTH_EMULATOR_HOST", "");
+    vi.stubEnv("FIREBASE_STORAGE_EMULATOR_HOST", "");
     const mod = await import("@/lib/firebase-admin");
     expect(() => mod.getAdminFirestore()).toThrow(/FIREBASE_CLIENT_EMAIL/);
     expect(adminApp.initializeApp).not.toHaveBeenCalled();
@@ -61,6 +63,7 @@ describe("Admin SDK initialization", () => {
     vi.stubEnv("FIREBASE_PRIVATE_KEY", "key");
     vi.stubEnv("FIRESTORE_EMULATOR_HOST", "");
     vi.stubEnv("FIREBASE_AUTH_EMULATOR_HOST", "");
+    vi.stubEnv("FIREBASE_STORAGE_EMULATOR_HOST", "");
     const mod = await import("@/lib/firebase-admin");
     mod.getAdminFirestore();
     expect(adminApp.cert).toHaveBeenCalledTimes(1);

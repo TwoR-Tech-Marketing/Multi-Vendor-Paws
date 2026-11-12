@@ -43,6 +43,9 @@ const child = spawn(process.execPath, [nextBin, "dev", "-p", port], {
   env: childEnv,
   stdio: "inherit",
 });
+for (const sig of ["SIGINT", "SIGTERM"]) {
+  process.on(sig, () => child.kill(sig));
+}
 child.on("exit", (code, signal) => {
   if (signal) process.kill(process.pid, signal);
   process.exit(code ?? 0);

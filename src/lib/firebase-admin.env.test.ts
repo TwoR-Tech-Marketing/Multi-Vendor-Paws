@@ -16,6 +16,7 @@ function clearCredentials() {
   vi.stubEnv("NEXT_PUBLIC_FIREBASE_PROJECT_ID", "");
   vi.stubEnv("FIRESTORE_EMULATOR_HOST", "");
   vi.stubEnv("FIREBASE_AUTH_EMULATOR_HOST", "");
+  vi.stubEnv("FIREBASE_STORAGE_EMULATOR_HOST", "");
 }
 
 describe("Firebase Admin emulator mode", () => {
@@ -31,6 +32,7 @@ describe("Firebase Admin emulator mode", () => {
     vi.stubEnv("FIREBASE_PROJECT_ID", "demo-tenderpaws");
     vi.stubEnv("FIRESTORE_EMULATOR_HOST", "127.0.0.1:8080");
     vi.stubEnv("FIREBASE_AUTH_EMULATOR_HOST", "127.0.0.1:9099");
+    vi.stubEnv("FIREBASE_STORAGE_EMULATOR_HOST", "127.0.0.1:9199");
     expect(isFirebaseAdminEmulatorMode()).toBe(true);
     expect(getMissingFirebaseAdminEnvKeys()).toEqual([]);
     expect(getFirebaseAdminEmulatorProjectId()).toBe("demo-tenderpaws");
@@ -40,6 +42,7 @@ describe("Firebase Admin emulator mode", () => {
     vi.stubEnv("NEXT_PUBLIC_FIREBASE_PROJECT_ID", "demo-tenderpaws");
     vi.stubEnv("FIRESTORE_EMULATOR_HOST", "127.0.0.1:8080");
     vi.stubEnv("FIREBASE_AUTH_EMULATOR_HOST", "127.0.0.1:9099");
+    vi.stubEnv("FIREBASE_STORAGE_EMULATOR_HOST", "127.0.0.1:9199");
     expect(isFirebaseAdminEmulatorMode()).toBe(true);
   });
 
@@ -47,12 +50,20 @@ describe("Firebase Admin emulator mode", () => {
     vi.stubEnv("FIREBASE_PROJECT_ID", "some-real-project");
     vi.stubEnv("FIRESTORE_EMULATOR_HOST", "127.0.0.1:8080");
     vi.stubEnv("FIREBASE_AUTH_EMULATOR_HOST", "127.0.0.1:9099");
+    vi.stubEnv("FIREBASE_STORAGE_EMULATOR_HOST", "127.0.0.1:9199");
     expect(isFirebaseAdminEmulatorMode()).toBe(false);
     expect(getMissingFirebaseAdminEnvKeys()).toEqual([
       "FIREBASE_CLIENT_EMAIL",
       "FIREBASE_PRIVATE_KEY",
     ]);
     expect(() => getFirebaseAdminEmulatorProjectId()).toThrow();
+  });
+
+  it("stays off without the storage emulator host", () => {
+    vi.stubEnv("FIREBASE_PROJECT_ID", "demo-tenderpaws");
+    vi.stubEnv("FIRESTORE_EMULATOR_HOST", "127.0.0.1:8080");
+    vi.stubEnv("FIREBASE_AUTH_EMULATOR_HOST", "127.0.0.1:9099");
+    expect(isFirebaseAdminEmulatorMode()).toBe(false);
   });
 
   it("stays off unless both emulator hosts are set", () => {
