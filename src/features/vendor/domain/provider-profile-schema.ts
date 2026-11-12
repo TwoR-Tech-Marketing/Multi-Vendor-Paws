@@ -1,6 +1,10 @@
 import { z } from "zod";
 
 import {
+  isOwnProviderPhotoUrl,
+  type ProviderPhotoOwner,
+} from "@/features/vendor/domain/provider-photos";
+import {
   PROVIDER_FIELD_LIMITS as L,
   getProviderConfig,
   type ProviderField,
@@ -48,25 +52,37 @@ const fieldSchemas = {
         .startsWith("https://", "photoUrlsInvalid")
         .max(L.photoUrlMaxLength, "photoUrlsInvalid"),
     )
-    .max(L.photoUrlsMax, "photoUrlsInvalid"),
+    .max(L.photoUrlsMax, "photoUrlsInvalid")
+    .refine((urls) => new Set(urls).size === urls.length, "photoUrlsInvalid"),
 } as const;
+
+function ownPhotosSchema(owner: ProviderPhotoOwner) {
+  return fieldSchemas.photoUrls.refine(
+    (urls) => urls.every((url) => isOwnProviderPhotoUrl(url, owner)),
+    "photoUrlsInvalid",
+  );
+}
 
 /**
  * Strict map of the provider fields allowed for `vendorType`.
  * - signup: photoUrls refused (no upload path before approval), doctor specialty required.
- * - change: partial map, every allowed key optional.
+ * - change: partial map, every allowed key optional. With `photoOwner`, each
+ *   photo URL must be a stored photo or sit under `vendors/{vendorId}/photos/`
+ *   in the default bucket (the same rule as the shared callable).
  * Unknown and store types accept only an empty map.
  */
 export function providerProfileSchema(
   vendorType: string | null | undefined,
   phase: "signup" | "change",
+  photoOwner?: ProviderPhotoOwner,
 ): z.ZodType<ProviderProfile> {
   const fields = getProviderConfig(vendorType).providerFields.filter(
     (field) => phase === "change" || field !== "photoUrls",
   );
   const shape: Partial<Record<ProviderField, z.ZodType>> = {};
   for (const field of fields) {
-    const base = fieldSchemas[field];
+    const base =
+      field === "photoUrls" && photoOwner ? ownPhotosSchema(photoOwner) : fieldSchemas[field];
     shape[field] = field === "specialty" && phase === "signup" ? base : base.optional();
   }
   // ponytail: the shape is built per type at runtime, so its output is typed by hand.

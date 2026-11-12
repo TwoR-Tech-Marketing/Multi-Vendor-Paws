@@ -313,8 +313,22 @@ export const arStrings: AppStrings = {
       approved: "مقبول",
       rejected: "مرفوض",
     },
+    photos: {
+      title: "الصور",
+      hint: "أضف حتى {max} صور بصيغة JPEG أو PNG أو WebP، وأقل من 5 ميجابايت لكل صورة.",
+      add: "إضافة صورة",
+      remove: "إزالة الصورة {index}",
+      removeShort: "إزالة",
+      alt: "الصورة {index}",
+      empty: "لا توجد صور بعد",
+      proposedTitle: "الصور المطلوبة",
+      cleared: "تمت إزالة كل الصور",
+      limitReached: "يمكنك إضافة حتى {max} صور.",
+    },
     errors: {
       logoTooLarge: "يجب أن يكون حجم الشعار أقل من 5 ميجابايت.",
+      photoTooLarge: "يجب أن يكون حجم كل صورة أقل من 5 ميجابايت.",
+      photoTypeNotAllowed: "يجب أن تكون الصور بصيغة JPEG أو PNG أو WebP.",
     },
   },
   signOut: {

@@ -11,6 +11,10 @@ export const StoragePaths = {
   vendorLogo(vendorId: string, fileName: string): string {
     return `vendors/${vendorId}/logo/${Date.now()}_${sanitize(fileName)}`;
   },
+  /** Clinic or groomer photo shown on the provider profile. */
+  vendorProviderPhoto(vendorId: string, fileName: string): string {
+    return `vendors/${vendorId}/photos/${Date.now()}_${sanitize(fileName)}`;
+  },
   vendorCover(vendorId: string, fileName: string): string {
     return `vendors/${vendorId}/cover/${Date.now()}_${sanitize(fileName)}`;
   },
