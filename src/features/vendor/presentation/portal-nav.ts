@@ -14,7 +14,8 @@ export type PortalNavId =
   | "earnings"
   | "settings"
   | "notifications"
-  | "branches";
+  | "branches"
+  | "coupons";
 
 export type PortalNavItem = {
   id: VendorScreenKey;
@@ -61,7 +62,29 @@ const NAV_TARGETS: Partial<Record<VendorScreenKey, NavTarget>> = {
     label: (s) => s.nav.appointments,
   },
   telehealth: { href: null, icon: portalNavAssets.navTelehealth, label: (s) => s.nav.telehealth },
+  coupons: {
+    href: Routes.vendor.coupons,
+    icon: portalNavAssets.navCoupons,
+    label: (s) => s.nav.coupons,
+  },
 };
+
+/**
+ * Portal only sidebar items. The shared `nav` list is also the vendor app tab
+ * bar (five tabs at most), so these screens are added from `screens` instead,
+ * placed before settings, and only when visible for the vendor type.
+ */
+const PORTAL_SIDEBAR_EXTRAS: VendorScreenKey[] = ["coupons"];
+
+function sidebarIds(config: ReturnType<typeof getProviderConfig>): VendorScreenKey[] {
+  const extras = PORTAL_SIDEBAR_EXTRAS.filter(
+    (id) => !config.nav.includes(id) && config.screens[id] === "visible",
+  );
+  if (extras.length === 0) return config.nav;
+  const settingsAt = config.nav.indexOf("settings");
+  const at = settingsAt === -1 ? config.nav.length : settingsAt;
+  return [...config.nav.slice(0, at), ...extras, ...config.nav.slice(at)];
+}
 
 /** Sidebar items from the vendor type config (missing type reads as store). */
 export function getPortalSidebarNavItems(
@@ -69,7 +92,7 @@ export function getPortalSidebarNavItems(
   vendorType?: string | null,
 ): PortalNavItem[] {
   const config = getProviderConfig(vendorType);
-  return config.nav.flatMap((id) => {
+  return sidebarIds(config).flatMap((id) => {
     const target = NAV_TARGETS[id];
     const state = config.screens[id];
     if (!target || state === "hidden") return [];
@@ -102,6 +125,7 @@ export function getPortalPageMeta(strings: AppStrings): Record<PortalNavId, Port
     settings: strings.pages.settings,
     notifications: strings.pages.notifications,
     branches: strings.pages.branches,
+    coupons: strings.pages.coupons,
   };
 }
 
@@ -113,12 +137,14 @@ export function resolvePortalNavId(pathname: string): PortalNavId {
   if (pathname.startsWith(Routes.vendor.orders)) return "orders";
   if (pathname.startsWith(Routes.vendor.earnings)) return "earnings";
   if (pathname.startsWith(Routes.vendor.branches)) return "branches";
+  if (pathname.startsWith(Routes.vendor.coupons)) return "coupons";
   return "dashboard";
 }
 
 const PRODUCT_EDIT_PATH = /^\/products\/[^/]+\/edit\/?$/;
 const ORDER_DETAIL_PATH = /^\/orders\/[^/]+\/?$/;
 const BRANCH_DETAIL_PATH = /^\/branches\/[^/]+\/?$/;
+const COUPON_DETAIL_PATH = /^\/coupons\/[^/]+\/?$/;
 
 export function resolvePortalPageMeta(pathname: string, strings: AppStrings): PortalPageMeta {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
@@ -155,6 +181,13 @@ export function resolvePortalPageMeta(pathname: string, strings: AppStrings): Po
     return {
       title: strings.pages.branches.detailTitle,
       subtitle: strings.pages.branches.detailSubtitle,
+    };
+  }
+
+  if (COUPON_DETAIL_PATH.test(normalizedPath)) {
+    return {
+      title: strings.pages.coupons.detailTitle,
+      subtitle: strings.pages.coupons.detailSubtitle,
     };
   }
 
