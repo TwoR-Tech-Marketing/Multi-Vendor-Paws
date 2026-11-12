@@ -1,5 +1,3 @@
-import { httpsCallable } from "firebase/functions";
-
 import {
   EARNINGS_ENTRY_TYPES,
   type EarningsEntryFilter,
@@ -9,7 +7,7 @@ import {
   type VendorEarningsSummary,
 } from "@/features/financials/domain/types";
 import { vendorApiGet } from "@/lib/auth-client";
-import { firebaseFunctions } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
 import { getEarningsDataSource } from "@/lib/vendor-data-source";
 
 const CALLABLE_SUMMARY = "vendor_earnings-getMyVendorEarningsSummary";
@@ -144,9 +142,12 @@ export async function fetchVendorEarningsEntries(
   type: EarningsEntryFilter,
   cursor: string | null = null,
 ): Promise<VendorEarningsEntriesPage> {
-  const callable = httpsCallable(firebaseFunctions, CALLABLE_ENTRIES);
-  const result = await callable({ type, pageSize: EARNINGS_PAGE_SIZE, cursor });
-  return mapCallableEarningsEntries(result.data);
+  const result = await invokeCallable(CALLABLE_ENTRIES, {
+    type,
+    pageSize: EARNINGS_PAGE_SIZE,
+    cursor,
+  });
+  return mapCallableEarningsEntries(result);
 }
 
 /** Summary plus the first page of entries. The bff source is unchanged and never pages. */
@@ -157,12 +158,11 @@ export async function fetchVendorEarningsOverview(
     const page = await fetchVendorEarningsFromApi();
     return { ...page, nextCursor: null };
   }
-  const summaryCallable = httpsCallable(firebaseFunctions, CALLABLE_SUMMARY);
   const [summaryResult, page] = await Promise.all([
-    summaryCallable({}),
+    invokeCallable(CALLABLE_SUMMARY, {}),
     fetchVendorEarningsEntries(type),
   ]);
-  return { summary: mapCallableEarningsSummary(summaryResult.data), ...page };
+  return { summary: mapCallableEarningsSummary(summaryResult), ...page };
 }
 
 export async function fetchDashboardStatsFromApi(): Promise<DashboardStatsResponse> {

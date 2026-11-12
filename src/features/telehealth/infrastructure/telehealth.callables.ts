@@ -1,7 +1,8 @@
-import { httpsCallable } from "firebase/functions";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
-import { firebaseFunctions, firebaseStorage } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
+import { ensureClientAuth } from "@/lib/client-auth";
+import { firebaseStorage } from "@/lib/firebase";
 
 /** Callable names of the `vendor_telehealth` export group (doctor side only). */
 export const TELEHEALTH_CALLABLES = {
@@ -24,9 +25,7 @@ export async function invokeTelehealthCallable(
   name: TelehealthCallableName,
   payload: Record<string, unknown>,
 ): Promise<unknown> {
-  const callable = httpsCallable(firebaseFunctions, name);
-  const result = await callable(payload);
-  return result.data;
+  return invokeCallable(name, payload);
 }
 
 function sanitize(fileName: string): string {
@@ -49,6 +48,7 @@ export async function uploadTelehealthPhotoFile(
   uid: string,
   file: Blob & { name: string },
 ): Promise<string> {
+  await ensureClientAuth();
   const objectRef = ref(
     firebaseStorage,
     telehealthPhotoPath(sessionId, uid, file.name, Date.now()),

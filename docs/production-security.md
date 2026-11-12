@@ -3,7 +3,7 @@
 ## Session model
 
 - **Primary session:** httpOnly cookie `__session` (Firebase session cookie, max 14 days).
-- **Not used for auth after login:** long-lived Firebase client tokens in IndexedDB (client signs out after session exchange).
+- **Client Firebase user:** derived from the session only. The client signs out after the session exchange; before a shared callable or Storage upload, `ensureClientAuth()` fetches a custom token for the session uid and signs in with tab-scoped (session storage) persistence. Nothing long-lived is kept in IndexedDB.
 - **Theme/locale:** `localStorage` only (`tp-vendor-theme`, `tp-vendor-locale`).
 
 ## Local development setup
@@ -48,7 +48,8 @@ Set in hosting secrets (Vercel, etc.). Never prefix with `NEXT_PUBLIC_`.
 2. `POST /api/auth/session` with `{ idToken }` → server verifies token, resolves vendor session, sets `__session` cookie.
 3. Client calls `signOutVendor()` to clear Firebase client auth.
 4. `GET /api/auth/me` returns minimal session DTO for portal bootstrap.
-5. `POST /api/auth/logout` revokes refresh tokens and clears cookie.
+5. Shared callables go through `invokeCallable()` ([`src/lib/callable.ts`](../src/lib/callable.ts)), which first awaits `ensureClientAuth()` ([`src/lib/client-auth.ts`](../src/lib/client-auth.ts)). When the client user is missing or not yet confirmed for this page, it calls `POST /api/auth/firebase-token`, which verifies the `__session` cookie (with revocation check) and returns `{ token, uid }`: an Admin `createCustomToken` for the session uid, no extra claims, nothing read from the request body, `Cache-Control: no-store`, cross-site requests refused. A different client uid is replaced by signing in with that token. A confirmed uid is rechecked with the route after 5 minutes. Concurrent callers share one request, and a sign out during a pending request stops it from signing back in. A 401 clears the client user and surfaces as `functions/unauthenticated`.
+6. `POST /api/auth/logout` revokes refresh tokens and clears cookie; the portal also signs the client Firebase user out. A missing session at portal bootstrap does the same.
 
 ## Route protection
 
@@ -65,6 +66,7 @@ Set in hosting secrets (Vercel, etc.). Never prefix with `NEXT_PUBLIC_`.
 | `GET /api/vendor/orders` | Active vendor only |
 | `GET /api/vendor/earnings` | Active vendor only |
 | `GET /api/vendor/notifications` | Authenticated vendor |
+| `POST /api/auth/firebase-token` | Valid session cookie; custom token for the session uid only |
 
 ## Firestore rules
 

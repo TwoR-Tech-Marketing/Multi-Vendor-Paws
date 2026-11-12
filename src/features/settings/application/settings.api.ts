@@ -1,9 +1,7 @@
-import { httpsCallable } from "firebase/functions";
-
 import { APP_CURRENCY } from "@/features/products/domain/currency";
 import type { VendorSettingsSnapshot } from "@/features/settings/domain/types";
 import { vendorApiGet } from "@/lib/auth-client";
-import { firebaseFunctions } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
 import { getSettingsDataSource } from "@/lib/vendor-data-source";
 
 const CALLABLE_SUMMARY = "vendor_settings-getMyVendorSettingsSummary";
@@ -28,9 +26,8 @@ export function mapSettingsSummary(raw: unknown): VendorSettingsSnapshot {
 
 export async function fetchVendorSettingsFromApi(): Promise<VendorSettingsSnapshot> {
   if (getSettingsDataSource() === "callable") {
-    const callable = httpsCallable(firebaseFunctions, CALLABLE_SUMMARY);
-    const result = await callable({});
-    return mapSettingsSummary(result.data);
+    const result = await invokeCallable(CALLABLE_SUMMARY, {});
+    return mapSettingsSummary(result);
   }
   return vendorApiGet<VendorSettingsSnapshot>("/api/vendor/settings");
 }

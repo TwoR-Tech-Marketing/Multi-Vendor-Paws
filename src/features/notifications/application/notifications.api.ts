@@ -1,5 +1,3 @@
-import { httpsCallable } from "firebase/functions";
-
 import {
   VENDOR_NOTIFICATION_LINK_TARGETS,
   type VendorNotification,
@@ -11,7 +9,7 @@ import {
   type VendorNotificationsPage,
 } from "@/features/notifications/domain/types";
 import { ApiClientError, vendorApiGet } from "@/lib/auth-client";
-import { firebaseFunctions } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
 import { getNotificationsDataSource } from "@/lib/vendor-data-source";
 
 const CALLABLE_LIST = "vendor_notifications-listMyVendorNotifications";
@@ -132,13 +130,12 @@ export async function fetchVendorNotifications(
 ): Promise<VendorNotificationsPage> {
   return withMappedErrors(async () => {
     if (getNotificationsDataSource() === "callable") {
-      const callable = httpsCallable(firebaseFunctions, CALLABLE_LIST);
-      const result = await callable({
+      const result = await invokeCallable(CALLABLE_LIST, {
         filter: request.filter ?? "all",
         pageSize: request.pageSize,
         cursor: request.cursor ?? null,
       });
-      return mapVendorNotificationsPage(result.data);
+      return mapVendorNotificationsPage(result);
     }
     const data = await vendorApiGet<unknown>("/api/vendor/notifications");
     return { ...mapVendorNotificationsPage(data), nextCursor: null };
@@ -152,9 +149,8 @@ export async function fetchVendorNotifications(
 export async function fetchVendorUnreadCount(): Promise<number | null> {
   if (getNotificationsDataSource() !== "callable") return null;
   return withMappedErrors(async () => {
-    const callable = httpsCallable(firebaseFunctions, CALLABLE_UNREAD);
-    const result = await callable({});
-    const data = (result.data ?? {}) as Record<string, unknown>;
+    const result = await invokeCallable(CALLABLE_UNREAD, {});
+    const data = (result ?? {}) as Record<string, unknown>;
     return toCount(data.unreadCount);
   });
 }
@@ -166,9 +162,8 @@ export async function markVendorNotificationsRead(
     return { updatedCount: 0, unreadCount: 0 };
   }
   return withMappedErrors(async () => {
-    const callable = httpsCallable(firebaseFunctions, CALLABLE_MARK);
-    const result = await callable(request);
-    const data = (result.data ?? {}) as Record<string, unknown>;
+    const result = await invokeCallable(CALLABLE_MARK, request);
+    const data = (result ?? {}) as Record<string, unknown>;
     return { updatedCount: toCount(data.updatedCount), unreadCount: toCount(data.unreadCount) };
   });
 }

@@ -1,6 +1,4 @@
-import { httpsCallable } from "firebase/functions";
-
-import { firebaseFunctions } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
 import type {
   DeliveryCoverage,
   GovernorateOption,
@@ -24,30 +22,21 @@ type ListGovResponse = {
 };
 
 export async function fetchMyDeliveryCoverage(): Promise<GetCoverageResponse> {
-  const callable = httpsCallable<Record<string, never>, GetCoverageResponse>(
-    firebaseFunctions,
-    "vendors-getVendorDeliveryCoverage",
-  );
-  const result = await callable({});
-  return result.data;
+  return invokeCallable<GetCoverageResponse>("vendors-getVendorDeliveryCoverage", {});
 }
 
 export async function saveMyDeliveryCoverage(
   deliveryCoverage: DeliveryCoverage,
 ): Promise<SetCoverageResponse> {
-  const callable = httpsCallable<
-    { deliveryCoverage: DeliveryCoverage },
-    SetCoverageResponse
-  >(firebaseFunctions, "vendors-setVendorDeliveryCoverage");
-  const result = await callable({ deliveryCoverage });
-  return result.data;
+  return invokeCallable<SetCoverageResponse>("vendors-setVendorDeliveryCoverage", {
+    deliveryCoverage,
+  });
 }
 
 export async function fetchGovernoratesForCoverage(): Promise<GovernorateOption[]> {
-  const callable = httpsCallable<Record<string, never>, ListGovResponse>(
-    firebaseFunctions,
+  const result = await invokeCallable<ListGovResponse>(
     "vendors-listGovernoratesForCoverage",
+    {},
   );
-  const result = await callable({});
-  return result.data.items ?? [];
+  return result.items ?? [];
 }

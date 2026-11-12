@@ -1,5 +1,6 @@
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
+import { ensureClientAuth } from "@/lib/client-auth";
 import { firebaseStorage } from "@/lib/firebase";
 import { StoragePaths } from "@/lib/storage-paths";
 
@@ -9,6 +10,7 @@ import { StoragePaths } from "@/lib/storage-paths";
  * its download URL.
  */
 export async function uploadVendorProviderPhoto(vendorId: string, file: File): Promise<string> {
+  await ensureClientAuth();
   const objectRef = ref(firebaseStorage, StoragePaths.vendorProviderPhoto(vendorId, file.name));
   await uploadBytes(objectRef, file, { contentType: file.type || undefined });
   return getDownloadURL(objectRef);

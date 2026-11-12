@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  ensureClientAuth: vi.fn(async () => undefined),
   callableFn: vi.fn(),
   httpsCallable: vi.fn(),
   ref: vi.fn(),
@@ -14,6 +15,7 @@ vi.mock("firebase/storage", () => ({
   uploadBytes: mocks.uploadBytes,
   getDownloadURL: mocks.getDownloadURL,
 }));
+vi.mock("@/lib/client-auth", () => ({ ensureClientAuth: mocks.ensureClientAuth }));
 vi.mock("@/lib/firebase", () => ({ firebaseFunctions: {}, firebaseStorage: {} }));
 
 import {
@@ -70,6 +72,7 @@ function lastCall(): { name: string; payload: unknown } {
 }
 
 beforeEach(() => {
+  mocks.ensureClientAuth.mockClear();
   mocks.callableFn.mockReset();
   mocks.httpsCallable.mockReset();
   mocks.httpsCallable.mockReturnValue(mocks.callableFn);
@@ -82,6 +85,10 @@ describe("branches.api callables", () => {
   it("lists branches and maps the serialized shape", async () => {
     respond({ ok: true, items: [RAW_BRANCH] });
     const items = await listBranches({ includeArchived: true });
+    expect(mocks.ensureClientAuth).toHaveBeenCalledTimes(1);
+    expect(mocks.ensureClientAuth.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.callableFn.mock.invocationCallOrder[0],
+    );
     expect(lastCall()).toEqual({
       name: "vendor_branches-listVendorBranches",
       payload: { includeArchived: true },
@@ -298,6 +305,9 @@ describe("branches.api callables", () => {
       file,
     });
 
+    expect(mocks.ensureClientAuth.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.uploadBytes.mock.invocationCallOrder[0],
+    );
     const path = mocks.ref.mock.calls[0][1] as string;
     expect(path).toMatch(/^vendors\/uid1\/branches\/b1\/services\/s1\/\d+_my_photo\.png$/);
     expect(lastCall()).toEqual({

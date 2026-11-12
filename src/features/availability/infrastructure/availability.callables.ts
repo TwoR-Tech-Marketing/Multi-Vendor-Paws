@@ -1,6 +1,4 @@
-import { httpsCallable } from "firebase/functions";
-
-import { firebaseFunctions } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
 
 /** Callable names of the `vendor_availability` export group. */
 export const AVAILABILITY_CALLABLES = {
@@ -18,7 +16,5 @@ export async function invokeAvailabilityCallable(
   name: AvailabilityCallableName,
   payload: Record<string, unknown>,
 ): Promise<unknown> {
-  const callable = httpsCallable(firebaseFunctions, name);
-  const result = await callable(payload);
-  return result.data;
+  return invokeCallable(name, payload);
 }

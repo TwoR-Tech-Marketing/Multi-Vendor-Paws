@@ -1,5 +1,3 @@
-import { httpsCallable } from "firebase/functions";
-
 import {
   PAYOUT_CYCLES,
   type PayoutCycle,
@@ -7,7 +5,7 @@ import {
   type StatementPeriod,
   type VendorStatement,
 } from "@/features/financials/domain/statement-types";
-import { firebaseFunctions } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
 
 const CALLABLE_STATEMENT = "vendor_payouts-getMyVendorStatement";
 export const STATEMENT_PERIOD_COUNT = 6;
@@ -93,7 +91,6 @@ export function mapVendorStatement(raw: unknown): VendorStatement {
 export async function fetchVendorStatement(
   periodCount: number = STATEMENT_PERIOD_COUNT,
 ): Promise<VendorStatement> {
-  const callable = httpsCallable(firebaseFunctions, CALLABLE_STATEMENT);
-  const result = await callable({ periodCount });
-  return mapVendorStatement(result.data);
+  const result = await invokeCallable(CALLABLE_STATEMENT, { periodCount });
+  return mapVendorStatement(result);
 }
