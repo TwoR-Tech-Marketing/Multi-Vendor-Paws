@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { PendingBranchesHint } from "@/features/branches/presentation/PendingBranchesHint";
 import { fetchVendorProfileFromApi } from "@/features/vendor/application/vendor-profile.api";
 import type {
   VendorProfileChangeRequest,
@@ -76,6 +77,7 @@ export function ProfileSection() {
     return (
       <>
         <AccountStatusBanner sessionKind={sessionKind} profile={profile} />
+        <PendingBranchesHint showLink />
         <RejectedReapplyForm
           profile={profile}
           storedProviderProfile={storeProfile?.providerProfile}
@@ -108,6 +110,7 @@ export function ProfileSection() {
   return (
     <>
       <AccountStatusBanner sessionKind={sessionKind} profile={profile} />
+      <PendingBranchesHint showLink />
 
       <ProfileStoreForm
         strings={strings}
