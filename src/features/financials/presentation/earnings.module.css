@@ -58,6 +58,13 @@
   gap: var(--space-3);
 }
 
+.headerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
 .panelHeader h2 {
   margin: 0;
   font-size: 16px;

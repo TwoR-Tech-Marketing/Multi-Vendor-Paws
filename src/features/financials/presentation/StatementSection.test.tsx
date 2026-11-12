@@ -129,6 +129,12 @@ describe("StatementView", () => {
     expect(html).not.toContain(en.statement.payout.title);
   });
 
+  it("links to the deal page", () => {
+    const html = render();
+    expect(html).toContain('href="/earnings/deal"');
+    expect(html).toContain(en.earnings.viewDeal);
+  });
+
   it("shows the empty state for a statement without periods", () => {
     const html = render({ statement: statement({ currentBalancePiastres: 0, periods: [] }) });
     expect(html).toContain(en.statement.empty);
