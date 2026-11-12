@@ -443,6 +443,14 @@ export const arStrings: AppStrings = {
         title: "تحديث عدم الحضور",
         body: "تم {outcome} عدم الحضور للموعد {appointmentNumber}.",
       },
+      orderCancelledByAdmin: {
+        title: "تم إلغاء الطلب",
+        body: "تم إلغاء الطلب {orderNumber} من قبل دعم TenderPaws.",
+      },
+      appointmentCancelledByAdmin: {
+        title: "تم إلغاء الموعد",
+        body: "تم إلغاء الموعد {appointmentNumber} من قبل دعم TenderPaws.",
+      },
     },
     noShowOutcome: {
       confirmed: "تأكيد",

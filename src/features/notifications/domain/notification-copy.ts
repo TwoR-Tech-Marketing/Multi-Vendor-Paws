@@ -23,6 +23,8 @@ const TYPE_TO_KEY: Record<string, TypeKey> = {
   appointment_no_show_late: "appointmentNoShowLate",
   appointment_no_show_review: "appointmentNoShowReview",
   appointment_no_show_resolved: "appointmentNoShowResolved",
+  order_cancelled_by_admin: "orderCancelledByAdmin",
+  appointment_cancelled_by_admin: "appointmentCancelledByAdmin",
 };
 
 function fillTemplate(template: string, params: Record<string, string>): string {

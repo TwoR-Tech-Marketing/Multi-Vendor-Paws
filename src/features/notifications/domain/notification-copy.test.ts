@@ -148,3 +148,56 @@ describe("resolveNotificationCopy no-show types", () => {
     expect(copy.body).not.toContain("raw_code");
   });
 });
+
+describe("resolveNotificationCopy support cancellations", () => {
+  const orderCancelled: VendorNotification = {
+    notificationId: "hold_cancel_order_v1",
+    type: "order_cancelled_by_admin",
+    params: { orderNumber: "#ORD12345" },
+    titleFallback: "Fallback title",
+    bodyFallback: "Fallback body",
+    link: { target: "order", id: "v1" },
+    isRead: false,
+    readAt: null,
+    createdAt: new Date(0),
+  };
+
+  it("renders a cancelled order in English and Arabic", () => {
+    expect(resolveNotificationCopy(orderCancelled, en, "en")).toEqual({
+      title: "Order cancelled",
+      body: "Order #ORD12345 was cancelled by TenderPaws support.",
+    });
+    expect(resolveNotificationCopy(orderCancelled, ar, "ar")).toEqual({
+      title: "تم إلغاء الطلب",
+      body: "تم إلغاء الطلب #ORD12345 من قبل دعم TenderPaws.",
+    });
+  });
+
+  it("renders a cancelled appointment in English and Arabic", () => {
+    const appt = {
+      ...appointment("appointment_cancelled_by_admin"),
+      titleFallback: "Fallback title",
+      bodyFallback: "Fallback body",
+    };
+    expect(resolveNotificationCopy(appt, en, "en")).toEqual({
+      title: "Appointment cancelled",
+      body: "Appointment #ABCD1234 was cancelled by TenderPaws support.",
+    });
+    expect(resolveNotificationCopy(appt, ar, "ar")).toEqual({
+      title: "تم إلغاء الموعد",
+      body: "تم إلغاء الموعد #ABCD1234 من قبل دعم TenderPaws.",
+    });
+  });
+
+  it("keeps the stored fallback text for an unknown type", () => {
+    const unknown = { ...orderCancelled, type: "something_new" };
+    expect(resolveNotificationCopy(unknown, en, "en")).toEqual({
+      title: "Fallback title",
+      body: "Fallback body",
+    });
+    expect(resolveNotificationCopy(unknown, ar, "ar")).toEqual({
+      title: "Fallback title",
+      body: "Fallback body",
+    });
+  });
+});

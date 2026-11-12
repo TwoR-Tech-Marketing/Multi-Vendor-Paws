@@ -442,6 +442,14 @@ export const Strings = {
         title: "No-show update",
         body: "The no-show for {appointmentNumber} was {outcome}.",
       },
+      orderCancelledByAdmin: {
+        title: "Order cancelled",
+        body: "Order {orderNumber} was cancelled by TenderPaws support.",
+      },
+      appointmentCancelledByAdmin: {
+        title: "Appointment cancelled",
+        body: "Appointment {appointmentNumber} was cancelled by TenderPaws support.",
+      },
     },
     noShowOutcome: {
       confirmed: "confirmed",
