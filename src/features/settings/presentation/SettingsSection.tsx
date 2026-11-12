@@ -133,13 +133,12 @@ export function SettingsSection() {
 
       <SettingsHelpLegalPanel strings={strings} />
 
-      {saveError ? (
-        <Toast
-          message={t.preferencesSaveError}
-          dismissLabel={t.dismiss}
-          onDismiss={() => setSaveError(false)}
-        />
-      ) : null}
+      <Toast
+        open={saveError}
+        message={t.preferencesSaveError}
+        dismissLabel={t.dismiss}
+        onDismiss={() => setSaveError(false)}
+      />
     </div>
   );
 }
