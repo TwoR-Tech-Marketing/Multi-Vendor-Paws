@@ -1,3 +1,8 @@
+/*
+ * PortalSelect: 44 px trigger with the input border, focus ring when open or
+ * focused, and a menu that scales in from its trigger (0.97 to 1 with a fade).
+ * Reads theme tokens only.
+ */
 .container {
   position: relative;
   width: 100%;
@@ -6,41 +11,39 @@
 
 .trigger {
   width: 100%;
-  height: var(--control-height);
-  padding-inline: var(--space-4) calc(var(--space-4) + 28px);
-  background: var(--color-surface);
-  border: 1px solid var(--color-select-border);
-  border-radius: var(--radius-control);
-  font-family: var(--font);
-  font-weight: 400;
-  font-size: 14px;
-  color: var(--color-text);
+  min-height: var(--tp-size-input);
+  padding-inline: var(--tp-space-3) calc(var(--tp-space-3) + var(--tp-space-6));
+  background: var(--tp-color-surface-input);
+  border: 1px solid var(--tp-color-border-input);
+  border-radius: var(--tp-radius-control);
+  font-family: inherit;
+  font-weight: var(--tp-font-weight-regular);
+  font-size: var(--tp-font-size-16);
+  color: var(--tp-color-text-primary);
   box-sizing: border-box;
   outline: none;
   cursor: pointer;
   text-align: start;
-  transition: border-color var(--duration-base);
   display: flex;
   align-items: center;
-}
-
-.trigger:hover:not(:disabled) {
-  border-color: var(--color-primary);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .trigger:focus-visible,
 .triggerOpen {
-  border-color: var(--color-primary);
+  border-color: var(--tp-color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tp-color-focus) 30%, transparent);
 }
 
 .chevron {
   position: absolute;
-  inset-inline-end: 14px;
+  inset-inline-end: var(--tp-space-3);
   top: 50%;
-  width: 20px;
-  height: 20px;
+  width: var(--tp-space-5);
+  height: var(--tp-space-5);
   pointer-events: none;
-  background-color: var(--color-icon-muted);
+  background-color: var(--tp-color-text-muted);
   mask-image: url("/ui/chevron-down.svg");
   mask-repeat: no-repeat;
   mask-position: center;
@@ -50,7 +53,7 @@
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
   transform: translateY(-50%);
-  transition: transform var(--duration-base);
+  transition: transform var(--tp-motion-duration-base) var(--tp-motion-ease-out);
 }
 
 .chevronOpen {
@@ -61,84 +64,123 @@
   position: absolute;
   top: calc(100% + 6px);
   inset-inline: 0;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  padding: var(--space-3) 0;
+  background: var(--tp-color-surface-overlay);
+  border: 1px solid var(--tp-color-border-default);
+  border-radius: var(--tp-radius-control);
+  box-shadow: var(--tp-effect-shadow-float);
+  padding: var(--tp-space-1);
   z-index: 120;
+  transform-origin: top center;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-4px);
+  transform: scale(0.97) translateY(-4px);
   transition:
-    opacity var(--duration-base),
-    visibility var(--duration-base),
-    transform var(--duration-base);
+    transform var(--tp-motion-duration-exit) var(--tp-motion-ease-out),
+    opacity var(--tp-motion-duration-exit) var(--tp-motion-ease-out),
+    visibility 0s linear var(--tp-motion-duration-exit);
 }
 
 .popupFixed {
   position: fixed;
   inset-inline: auto;
   z-index: var(--z-index-popover, 300);
-  max-height: min(320px, calc(100vh - var(--space-4)));
+  max-height: min(320px, calc(100vh - var(--tp-space-4)));
   overflow-y: auto;
+}
+
+.popupUp {
+  transform-origin: bottom center;
 }
 
 .popupOpen {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: none;
+  transition:
+    transform var(--tp-motion-duration-base) var(--tp-motion-ease-out),
+    opacity var(--tp-motion-duration-base) var(--tp-motion-ease-out),
+    visibility 0s linear 0s;
+}
+
+@starting-style {
+  .popupOpen {
+    opacity: 0;
+    transform: scale(0.97) translateY(-4px);
+  }
 }
 
 .option {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: 10px var(--space-4);
-  cursor: pointer;
-  transition: background-color var(--duration-base);
+  gap: var(--tp-space-3);
+  min-height: var(--tp-size-control);
+  padding: var(--tp-space-2) var(--tp-space-3);
   border: none;
+  border-radius: calc(var(--tp-radius-control) - 2px);
   background: none;
   width: 100%;
   text-align: start;
-  font-family: var(--font);
+  font-family: inherit;
+  color: var(--tp-color-text-primary);
+  cursor: pointer;
 }
 
-.option:hover {
-  background: var(--color-surface-2);
+.option[aria-selected="true"] {
+  background: var(--tp-color-selected-bg);
+  color: var(--tp-color-selected-fg);
+}
+
+.option:focus-visible {
+  outline: 2px solid var(--tp-color-focus);
+  outline-offset: -2px;
 }
 
 .radio {
-  width: 20px;
-  height: 20px;
-  border-radius: var(--radius-full);
-  border: 2px solid var(--color-border);
+  width: var(--tp-space-4);
+  height: var(--tp-space-4);
+  border-radius: var(--tp-radius-full);
+  border: 1.5px solid var(--tp-color-border-input);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: border-color var(--duration-base);
+  box-sizing: border-box;
 }
 
 .radioSelected {
-  border-color: var(--color-primary);
-}
-
-.radioDot {
-  width: 10px;
-  height: 10px;
-  border-radius: var(--radius-full);
-  background: transparent;
-  transition: background-color var(--duration-base);
-}
-
-.radioDotSelected {
-  background: var(--color-primary);
+  border: 5px solid var(--tp-color-action-primary);
 }
 
 .optionLabel {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--color-text);
+  font-size: var(--tp-font-size-14);
+  font-weight: var(--tp-font-weight-medium);
+  color: inherit;
   line-height: normal;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .trigger:hover:not(:disabled):not(.triggerOpen) {
+    border-color: var(--tp-color-text-muted);
+  }
+
+  .option:hover:not([aria-selected="true"]) {
+    background: var(--tp-color-surface-sunken);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup,
+  .popupOpen {
+    transform: none;
+  }
+
+  .chevron {
+    transition: none;
+  }
+
+  @starting-style {
+    .popupOpen {
+      transform: none;
+    }
+  }
 }
