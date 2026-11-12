@@ -20,7 +20,7 @@
   --color-focus: var(--tp-color-focus);
   --color-link: var(--tp-color-link);
   --radius: var(--tp-radius-card);
-  --radius-lg: 16px;
+  --radius-lg: var(--tp-radius-card);
   --shadow: 0 4px 24px color-mix(in srgb, var(--tp-color-scrim) 15%, transparent);
   --shadow-sm: 0 1px 2px color-mix(in srgb, var(--tp-color-scrim) 15%, transparent);
   --shadow-lg: var(--tp-effect-shadow-float);
@@ -106,38 +106,42 @@
   --topbar-height: 64px;
   --nav-mobile-max: 767px;
 
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-12: 48px;
-  --space-16: 64px;
+  --space-1: var(--tp-space-1);
+  --space-2: var(--tp-space-2);
+  --space-3: var(--tp-space-3);
+  --space-4: var(--tp-space-4);
+  --space-6: var(--tp-space-6);
+  --space-8: var(--tp-space-8);
+  --space-12: var(--tp-space-12);
+  --space-16: var(--tp-space-16);
 
-  --radius-sm: 8px;
+  --radius-sm: var(--tp-radius-control);
   --radius-control: var(--tp-radius-control);
-  --radius-full: 9999px;
+  --radius-full: var(--tp-radius-full);
 
-  --control-height: 48px;
+  --control-height: var(--tp-size-input);
 
-  --text-xs: 12px;
-  --text-sm: 14px;
-  --text-base: 16px;
-  --text-lg: 18px;
-  --text-2xl: 24px;
+  --text-xs: var(--tp-font-size-12);
+  --text-sm: var(--tp-font-size-14);
+  --text-base: var(--tp-font-size-16);
+  --text-lg: var(--tp-font-size-18);
+  --text-2xl: var(--tp-font-size-24);
 
-  --font-light: 300;
-  --font-normal: 400;
-  --font-medium: 500;
-  --font-semibold: 600;
-  --font-bold: 700;
+  /* The theme ships 400, 500 and 600 only; bold and light map onto them. */
+  --font-light: var(--tp-font-weight-regular);
+  --font-normal: var(--tp-font-weight-regular);
+  --font-medium: var(--tp-font-weight-medium);
+  --font-semibold: var(--tp-font-weight-semibold);
+  --font-bold: var(--tp-font-weight-semibold);
 
   --leading-tight: 1.2;
-  --focus-ring-width: 3px;
+  --focus-ring-width: 2px;
   --vendor-type-option-min: 160px;
 
   --duration-base: var(--tp-motion-duration-base);
+  --duration-press: var(--tp-motion-duration-press);
+  --duration-exit: var(--tp-motion-duration-exit);
+  --ease-out: var(--tp-motion-ease-out);
 
   /* Shimmer skeleton: base fill with a light sweep */
   --color-skeleton-base: var(--tp-color-skeleton-base);

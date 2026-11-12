@@ -1,0 +1,67 @@
+/*
+ * Shared table look. Rows are 44 px (36 px compact). Figures use tabular
+ * numbers; money and other numeric cells take .numeric so they align to the
+ * end edge in both directions.
+ */
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--tp-font-size-14);
+  color: var(--tp-color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.table th,
+.table td {
+  padding: var(--tp-space-2) var(--tp-space-3);
+  text-align: start;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--tp-color-border-default);
+}
+
+.table th {
+  height: var(--tp-size-control);
+  font-size: var(--tp-font-size-12);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-muted);
+  white-space: nowrap;
+}
+
+.table td {
+  height: var(--tp-size-row);
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr[aria-selected="true"] {
+  background: var(--tp-color-selected-bg);
+  color: var(--tp-color-selected-fg);
+}
+
+.compact td {
+  height: var(--tp-size-row-compact);
+}
+
+.numeric {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.table th.numeric,
+.table td.numeric {
+  text-align: end;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .table tbody tr:hover {
+    background: var(--tp-color-surface-sunken);
+  }
+}

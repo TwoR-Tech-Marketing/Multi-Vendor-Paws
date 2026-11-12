@@ -1,0 +1,72 @@
+/*
+ * Shared field look: label, 44 px input, textarea, hint and error. Reads theme
+ * tokens only. Inputs use 16 px text so mobile browsers do not zoom.
+ */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tp-space-2);
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--tp-font-size-13);
+  font-weight: var(--tp-font-weight-medium);
+  color: var(--tp-color-text-primary);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--tp-size-input);
+  padding: 0 var(--tp-space-3);
+  border: 1px solid var(--tp-color-border-input);
+  border-radius: var(--tp-radius-control);
+  background: var(--tp-color-surface-input);
+  color: var(--tp-color-text-primary);
+  font-family: inherit;
+  font-size: var(--tp-font-size-16);
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: var(--tp-color-text-muted);
+}
+
+.input:focus,
+.input:focus-visible {
+  outline: none;
+  border-color: var(--tp-color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tp-color-focus) 30%, transparent);
+}
+
+.input[aria-invalid="true"],
+.invalid {
+  border-color: var(--tp-color-status-danger-fg);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tp-color-status-danger-fg) 18%, transparent);
+}
+
+.input:disabled {
+  background: var(--tp-color-surface-sunken);
+  color: var(--tp-color-text-disabled);
+  cursor: not-allowed;
+}
+
+.textarea {
+  composes: input;
+  min-height: calc(var(--tp-size-input) * 2);
+  padding: var(--tp-space-3);
+  resize: vertical;
+  line-height: inherit;
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--tp-font-size-12);
+  color: var(--tp-color-text-muted);
+}
+
+.error {
+  margin: 0;
+  font-size: var(--tp-font-size-12);
+  color: var(--tp-color-status-danger-fg);
+}
