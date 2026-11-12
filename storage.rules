@@ -33,6 +33,22 @@ service firebase.storage {
         && request.resource.size < 10 * 1024 * 1024;
     }
 
+    // Telehealth chat photos. Session participants and admins read;
+    // the sender uploads to its own folder while the session is active.
+    // No delete rule (records stay).
+    match /telehealth/{sessionId}/{uid}/{file} {
+      allow read: if request.auth != null && (
+        firestore.get(/databases/(default)/documents/telehealthSessions/$(sessionId)).data.buyerUid == request.auth.uid ||
+        firestore.get(/databases/(default)/documents/telehealthSessions/$(sessionId)).data.doctorId == request.auth.uid ||
+        firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)));
+      allow write: if request.auth != null && request.auth.uid == uid
+        && firestore.get(/databases/(default)/documents/telehealthSessions/$(sessionId)).data.status == "active"
+        && (firestore.get(/databases/(default)/documents/telehealthSessions/$(sessionId)).data.buyerUid == uid
+            || firestore.get(/databases/(default)/documents/telehealthSessions/$(sessionId)).data.doctorId == uid)
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp|heic)');
+    }
+
     // ---------------------------------------------------------------
     // Legacy paths used by the live mobile app + admin panel.
     // Keeping these permissive so production keeps working.
@@ -54,6 +70,7 @@ service firebase.storage {
     match /feature_locks/{file}       { allow read, write: if true; }
 
     // Default deny for any new top-level paths not listed above.
+    // It grants nothing, so telehealth/ is only governed by its rule above.
     match /{allPaths=**} {
       allow read, write: if false;
     }
