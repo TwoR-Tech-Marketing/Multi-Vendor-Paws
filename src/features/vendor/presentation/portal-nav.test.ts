@@ -166,6 +166,18 @@ describe("getPortalSidebarNavItems", () => {
     );
   });
 
+  it("resolves the reviews header under the dashboard and never adds reviews to the sidebar", () => {
+    expect(resolvePortalNavId(Routes.vendor.reviews)).toBe("dashboard");
+    expect(resolvePortalPageMeta(Routes.vendor.reviews, strings)).toEqual({
+      title: strings.reviews.title,
+      subtitle: strings.reviews.subtitle,
+    });
+    for (const type of ["store", "clinic", "groomer", "doctor"]) {
+      const ids = getPortalSidebarNavItems(strings, type).map((item) => item.id as string);
+      expect(ids).not.toContain("reviews");
+    }
+  });
+
   it("never shows appointments to store, doctor or unknown types", () => {
     for (const type of ["store", "doctor", "hotel"]) {
       const ids = getPortalSidebarNavItems(strings, type).map((item) => item.id as string);

@@ -173,3 +173,13 @@ describe("notification list state", () => {
     expect(formatUnreadBadge(250)).toBe("99+");
   });
 });
+
+describe("resolveNotificationHref review target", () => {
+  it("opens the reviews screen for clinics and groomers only", () => {
+    const link = { target: "review", id: "a1" } as const;
+    expect(resolveNotificationHref(link, "clinic")).toBe(Routes.vendor.reviews);
+    expect(resolveNotificationHref(link, "groomer")).toBe(Routes.vendor.reviews);
+    expect(resolveNotificationHref(link, "store")).toBeNull();
+    expect(resolveNotificationHref(link, "doctor")).toBeNull();
+  });
+});

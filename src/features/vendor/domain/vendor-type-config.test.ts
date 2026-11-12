@@ -40,14 +40,14 @@ const CANONICAL = {
       doctor: "hidden",
     },
     availability: { store: "hidden", clinic: "visible", groomer: "visible", doctor: "hidden" },
-    reviews: { store: "hidden", clinic: "hidden", groomer: "hidden", doctor: "hidden" },
+    reviews: { store: "hidden", clinic: "visible", groomer: "visible", doctor: "hidden" },
     telehealth: { store: "hidden", clinic: "hidden", groomer: "hidden", doctor: "visible" },
     coupons: { store: "visible", clinic: "visible", groomer: "visible", doctor: "hidden" },
   } as Record<string, Record<string, ScreenState>>,
   requiresActive: {
     store: ["products", "orders", "earnings", "coupons"],
-    clinic: ["appointments", "earnings", "coupons"],
-    groomer: ["appointments", "earnings", "coupons"],
+    clinic: ["appointments", "reviews", "earnings", "coupons"],
+    groomer: ["appointments", "reviews", "earnings", "coupons"],
     doctor: ["earnings"],
   },
   requiresDeliveryCoverage: { store: true, clinic: false, groomer: false, doctor: false },
@@ -68,6 +68,7 @@ describe("vendor type config", () => {
     expect(config.labelKey).toBe(`vendorTypes.${type}.label`);
     expect(config.nav).toEqual(CANONICAL.nav[type]);
     expect(config.nav.length).toBeLessThanOrEqual(5);
+    expect(config.nav).not.toContain("reviews");
     for (const key of ALWAYS) {
       expect(config.screens[key]).toBe("visible");
     }
