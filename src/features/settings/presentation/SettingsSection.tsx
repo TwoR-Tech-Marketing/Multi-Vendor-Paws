@@ -91,6 +91,7 @@ export function SettingsSection() {
           openOrders={snapshot.openOrders}
           netEarningsPiastres={snapshot.netEarningsPiastres}
           isActiveVendor={isActiveVendor}
+          vendorType={profile.vendorType}
         />
       ) : null}
 
