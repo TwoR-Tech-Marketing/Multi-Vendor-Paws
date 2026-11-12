@@ -3,13 +3,16 @@
 import Image from "next/image";
 import { useState } from "react";
 
-import { submitVendorProfileChangeFromApi } from "@/features/vendor/application/vendor-profile.api";
+import {
+  submitVendorProfileChangeFromApi,
+  uploadVendorProfileLogoFromApi,
+  VendorProfileSubmitError,
+} from "@/features/vendor/application/vendor-profile.api";
 import type {
   VendorProfileChangePayload,
   VendorProfileChangeRequest,
   VendorStoreProfile,
 } from "@/features/vendor/domain/types";
-import { uploadVendorLogo } from "@/features/auth/infrastructure/vendor-signup.service";
 import {
   buildProviderProfilePayload,
   providerProfileSchema,
@@ -18,7 +21,6 @@ import {
 import { getProviderConfig } from "@/features/vendor/domain/vendor-type-config";
 import { ProviderFieldsInputs } from "@/features/vendor/presentation/ProviderFieldsInputs";
 import type { AppStrings } from "@/shared/i18n/types";
-import { ApiClientError } from "@/lib/auth-client";
 
 import portalStyles from "@/features/vendor/presentation/portal.module.css";
 import styles from "./profile.module.css";
@@ -29,8 +31,36 @@ type ProfileStoreFormProps = {
   pendingChange: VendorProfileChangeRequest | null;
   lastRejectedChange: VendorProfileChangeRequest | null;
   disabled: boolean;
+  /** Why changes cannot be submitted, shown as a note when set. */
+  lockedReason?: ProfileChangeLockReason | null;
   onSubmitted: () => Promise<void>;
 };
+
+export type ProfileChangeLockReason = "notApproved" | "suspended";
+
+function lockMessage(reason: ProfileChangeLockReason, strings: AppStrings): string {
+  return reason === "suspended"
+    ? strings.profile.changeSuspended
+    : strings.profile.changeAfterApproval;
+}
+
+function submitErrorMessage(
+  error: unknown,
+  strings: AppStrings,
+  profile: VendorStoreProfile,
+): string {
+  if (!(error instanceof VendorProfileSubmitError)) return strings.profile.changeRequestError;
+  switch (error.reason) {
+    case "pending_exists":
+      return strings.profile.pendingChangeExists;
+    case "not_allowed":
+      return lockMessage(profile.status === "suspended" ? "suspended" : "notApproved", strings);
+    case "logo_too_large":
+      return strings.profile.errors.logoTooLarge;
+    default:
+      return strings.profile.changeRequestError;
+  }
+}
 
 type FormState = VendorProfileChangePayload;
 
@@ -74,6 +104,7 @@ export function ProfileStoreForm({
   pendingChange,
   lastRejectedChange,
   disabled,
+  lockedReason = null,
   onSubmitted,
 }: ProfileStoreFormProps) {
   const t = strings.profile;
@@ -162,7 +193,7 @@ export function ProfileStoreForm({
     try {
       let logoUrl = form.logoUrl ?? null;
       if (logoFile) {
-        logoUrl = await uploadVendorLogo(logoFile);
+        logoUrl = await uploadVendorProfileLogoFromApi(profile.vendorId, logoFile);
       }
 
       await submitVendorProfileChangeFromApi({
@@ -175,11 +206,7 @@ export function ProfileStoreForm({
       setIsEditing(false);
       await onSubmitted();
     } catch (submitError) {
-      if (submitError instanceof ApiClientError && submitError.status === 409) {
-        setError(t.pendingChangeExists);
-        return;
-      }
-      setError(t.changeRequestError);
+      setError(submitErrorMessage(submitError, strings, profile));
     } finally {
       setIsSubmitting(false);
     }
@@ -195,6 +222,12 @@ export function ProfileStoreForm({
     <div className={portalStyles.panel}>
       <h3 className={styles.panelTitle}>{t.currentProfileTitle}</h3>
       <p className={styles.readOnlyNote}>{t.requestChangesHint}</p>
+
+      {lockedReason && !isPending ? (
+        <div className={`${styles.alert} ${styles.alertInfo}`} role="status">
+          {lockMessage(lockedReason, strings)}
+        </div>
+      ) : null}
 
       {isPending ? (
         <div className={`${styles.alert} ${styles.alertInfo}`} role="status">

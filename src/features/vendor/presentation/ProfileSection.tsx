@@ -2,13 +2,17 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { fetchVendorProfileFromApi } from "@/features/vendor/application/vendor-profile.api";
+import {
+  fetchVendorProfileFromApi,
+  isProfileHistoryAvailable,
+} from "@/features/vendor/application/vendor-profile.api";
 import type {
   VendorProfileChangeRequest,
   VendorStoreProfile,
 } from "@/features/vendor/domain/types";
 import { AccountStatusBanner } from "@/features/vendor/presentation/AccountStatusBanner";
 import { ProfileActiveSessionCard } from "@/features/vendor/presentation/ProfileActiveSessionCard";
+import { ProfileHistorySection } from "@/features/vendor/presentation/ProfileHistorySection";
 import { ProfileStoreForm } from "@/features/vendor/presentation/ProfileStoreForm";
 import { RejectedReapplyForm } from "@/features/vendor/presentation/RejectedReapplyForm";
 import { VendorDocumentsSection } from "@/features/vendor/presentation/VendorDocumentsSection";
@@ -104,6 +108,7 @@ export function ProfileSection() {
   }
 
   const isSuspended = sessionKind === "suspended";
+  const canSubmit = sessionKind === "active";
 
   return (
     <>
@@ -114,9 +119,16 @@ export function ProfileSection() {
         profile={storeProfile}
         pendingChange={pendingChange}
         lastRejectedChange={lastRejectedChange}
-        disabled={isSuspended}
+        disabled={!canSubmit}
+        lockedReason={canSubmit ? null : isSuspended ? "suspended" : "notApproved"}
         onSubmitted={loadProfile}
       />
+
+      {isProfileHistoryAvailable() ? (
+        <ProfileHistorySection
+          reloadKey={`${pendingChange?.id ?? ""}:${lastRejectedChange?.id ?? ""}`}
+        />
+      ) : null}
 
       {!isSuspended ? <VendorDocumentsSection /> : null}
 
