@@ -153,8 +153,11 @@ export function EarningsView(props: EarningsViewProps) {
       </div>
 
       <article className={styles.panel}>
-        <div className={styles.panelHeader}>
+        <div className={`${styles.panelHeader} ${styles.panelHeaderRow}`}>
           <h2>{strings.earnings.ledgerTitle}</h2>
+          <Link href={Routes.vendor.payouts} className={styles.orderLink}>
+            {strings.statement.viewStatement}
+          </Link>
         </div>
         {props.paged ? (
           <EarningsTypeTabs strings={strings} tab={props.tab} onTabChange={props.onTabChange} />

@@ -129,6 +129,12 @@ describe("EarningsView", () => {
     expect(html).toMatch(/-EGP\s?0\.5/);
   });
 
+  it("links to the statement page", () => {
+    const html = render({ entries: [entry()] });
+    expect(html).toContain('href="/earnings/payouts"');
+    expect(html).toContain(en.statement.viewStatement);
+  });
+
   it("renders Arabic copy for tabs and summary", () => {
     const html = render({ strings: ar, paged: true, entries: [entry()], hasMore: true });
     expect(html).toContain(ar.earnings.types.all);
