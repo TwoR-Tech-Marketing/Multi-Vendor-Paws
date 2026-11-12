@@ -3,6 +3,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/firebase-admin.env", () => ({
   getFirebaseAdminEnv: () => ({ projectId: "demo-project", clientEmail: "x", privateKey: "y" }),
+  isFirebaseAdminEmulatorMode: () => false,
+  getFirebaseAdminEmulatorProjectId: () => {
+    throw new Error("not in emulator mode");
+  },
 }));
 
 import { getDefaultStorageBucket } from "@/lib/firebase-admin";

@@ -5,7 +5,11 @@ import { getAuth, type Auth } from "firebase-admin/auth";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import { getStorage, type Storage } from "firebase-admin/storage";
 
-import { getFirebaseAdminEnv } from "@/lib/firebase-admin.env";
+import {
+  getFirebaseAdminEmulatorProjectId,
+  getFirebaseAdminEnv,
+  isFirebaseAdminEmulatorMode,
+} from "@/lib/firebase-admin.env";
 
 let adminApp: App | null = null;
 
@@ -16,6 +20,13 @@ function getAdminApp(): App {
   if (existing) {
     adminApp = existing;
     return existing;
+  }
+
+  if (isFirebaseAdminEmulatorMode()) {
+    // Local emulators with a demo project: no credential, never real data.
+    const projectId = getFirebaseAdminEmulatorProjectId();
+    adminApp = initializeApp({ projectId, storageBucket: defaultBucketFor(projectId) });
+    return adminApp;
   }
 
   const { projectId, clientEmail, privateKey } = getFirebaseAdminEnv();
@@ -44,7 +55,10 @@ function defaultBucketFor(projectId: string): string {
 
 /** Default Storage bucket, the same one the Admin SDK is initialized with. */
 export function getDefaultStorageBucket(): string {
-  return defaultBucketFor(getFirebaseAdminEnv().projectId);
+  const projectId = isFirebaseAdminEmulatorMode()
+    ? getFirebaseAdminEmulatorProjectId()
+    : getFirebaseAdminEnv().projectId;
+  return defaultBucketFor(projectId);
 }
 
 export function getAdminAuth(): Auth {
