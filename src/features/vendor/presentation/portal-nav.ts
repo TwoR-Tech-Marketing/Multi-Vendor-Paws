@@ -156,6 +156,13 @@ export function resolvePortalPageMeta(pathname: string, strings: AppStrings): Po
     };
   }
 
+  if (normalizedPath === Routes.vendor.payouts) {
+    return {
+      title: strings.pages.statement.title,
+      subtitle: strings.pages.statement.subtitle,
+    };
+  }
+
   if (normalizedPath === Routes.vendor.productNew) {
     return {
       title: strings.pages.products.newTitle,

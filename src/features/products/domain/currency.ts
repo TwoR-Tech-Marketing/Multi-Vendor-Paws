@@ -22,10 +22,18 @@ export function piastresToEgp(piastres: number): number {
   return piastres / 100;
 }
 
+/**
+ * Formats integer piastres for display. Never throws: negative amounts
+ * (refunds, payouts, negative adjustments) get a leading minus sign before
+ * the absolute amount, and a non-finite value shows as zero. Fractions of a
+ * piastre are truncated.
+ */
 export function formatEgp(piastres: number): string {
-  return piastresToEgp(piastres).toLocaleString("en-EG", {
+  const value = Number.isFinite(piastres) ? Math.trunc(piastres) : 0;
+  const formatted = (Math.abs(value) / 100).toLocaleString("en-EG", {
     style: "currency",
     currency: APP_CURRENCY,
     maximumFractionDigits: 2,
   });
+  return value < 0 ? `-${formatted}` : formatted;
 }

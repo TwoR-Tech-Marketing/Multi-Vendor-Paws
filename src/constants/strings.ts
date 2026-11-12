@@ -176,6 +176,10 @@ export const Strings = {
       title: "Earnings",
       subtitle: "Sales, commission, and payouts",
     },
+    statement: {
+      title: "Statement",
+      subtitle: "Balance, periods, and payouts",
+    },
     settings: {
       title: "Settings",
       subtitle: "Account, preferences, and support",
@@ -1011,6 +1015,39 @@ export const Strings = {
     filterLabel: "Filter activity by type",
     loadMore: "Load more",
     loadingMore: "Loading more…",
+  },
+  statement: {
+    title: "Statement",
+    currentBalance: "Current balance",
+    cycleLabel: "Payout cycle",
+    cycle: {
+      weekly: "Weekly",
+      monthly: "Monthly",
+    },
+    period: {
+      open: "Open",
+      closed: "Closed",
+      range: "{start} to {end}",
+    },
+    columns: {
+      opening: "Opening balance",
+      sales: "Sales",
+      fees: "Platform fees",
+      refunds: "Refunds",
+      adjustments: "Adjustments",
+      payouts: "Payouts",
+      closing: "Closing balance",
+    },
+    payout: {
+      title: "Payouts in this period",
+      reference: "Transfer reference",
+      paidOn: "Paid on",
+      amount: "Amount",
+    },
+    periodsTitle: "Statement periods",
+    empty: "No statement yet. Your periods appear here once your store has activity.",
+    loadError: "We couldn't load your statement. Please try again.",
+    viewStatement: "View statement",
   },
   dashboard: {
     openOrders: "Open orders",

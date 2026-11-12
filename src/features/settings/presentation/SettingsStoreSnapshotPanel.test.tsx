@@ -38,4 +38,18 @@ describe("SettingsStoreSnapshotPanel", () => {
     expect(html).not.toContain(en.settings.snapshotProducts);
     expect(html).not.toContain(en.settings.snapshotOpenOrders);
   });
+
+  it("shows negative net earnings with a sign instead of failing", () => {
+    const html = renderToStaticMarkup(
+      <SettingsStoreSnapshotPanel
+        strings={en}
+        productCount={0}
+        openOrders={0}
+        netEarningsPiastres={-199}
+        isActiveVendor
+        vendorType="store"
+      />,
+    );
+    expect(html).toMatch(/-EGP\s?1\.99/);
+  });
 });

@@ -51,6 +51,13 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+.panelHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
 .panelHeader h2 {
   margin: 0;
   font-size: 16px;

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   getPortalSidebarNavItems,
+  resolvePortalNavId,
   resolvePortalPageMeta,
 } from "@/features/vendor/presentation/portal-nav";
 import { getStrings } from "@/shared/i18n/get-strings";
@@ -77,6 +78,13 @@ describe("getPortalSidebarNavItems", () => {
     expect(resolvePortalPageMeta("/coupons/uid1_SAVE10", strings).title).toBe(
       strings.pages.coupons.detailTitle,
     );
+  });
+
+  it("gives the statement page its own title under earnings", () => {
+    expect(resolvePortalPageMeta("/earnings/payouts", strings).title).toBe(
+      strings.pages.statement.title,
+    );
+    expect(resolvePortalNavId("/earnings/payouts")).toBe("earnings");
   });
 
   it("shows a comingSoon telehealth item for doctors", () => {

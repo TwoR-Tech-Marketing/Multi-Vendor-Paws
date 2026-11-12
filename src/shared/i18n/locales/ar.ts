@@ -178,6 +178,10 @@ export const arStrings: AppStrings = {
       title: "الأرباح",
       subtitle: "المبيعات والعمولة والمدفوعات",
     },
+    statement: {
+      title: "كشف الحساب",
+      subtitle: "الرصيد والفترات والمدفوعات",
+    },
     settings: {
       title: "الإعدادات",
       subtitle: "الحساب والتفضيلات والدعم",
@@ -1012,6 +1016,39 @@ export const arStrings: AppStrings = {
     filterLabel: "تصفية النشاط حسب النوع",
     loadMore: "عرض المزيد",
     loadingMore: "جارٍ تحميل المزيد…",
+  },
+  statement: {
+    title: "كشف الحساب",
+    currentBalance: "الرصيد الحالي",
+    cycleLabel: "دورة الدفع",
+    cycle: {
+      weekly: "أسبوعية",
+      monthly: "شهرية",
+    },
+    period: {
+      open: "مفتوحة",
+      closed: "مغلقة",
+      range: "من {start} إلى {end}",
+    },
+    columns: {
+      opening: "الرصيد الافتتاحي",
+      sales: "المبيعات",
+      fees: "رسوم المنصة",
+      refunds: "المبالغ المستردة",
+      adjustments: "التسويات",
+      payouts: "المدفوعات",
+      closing: "الرصيد الختامي",
+    },
+    payout: {
+      title: "المدفوعات في هذه الفترة",
+      reference: "مرجع التحويل",
+      paidOn: "تاريخ الدفع",
+      amount: "المبلغ",
+    },
+    periodsTitle: "فترات كشف الحساب",
+    empty: "لا يوجد كشف حساب بعد. ستظهر الفترات هنا بمجرد وجود نشاط في متجرك.",
+    loadError: "تعذر تحميل كشف الحساب. يرجى المحاولة مرة أخرى.",
+    viewStatement: "عرض كشف الحساب",
   },
   dashboard: {
     openOrders: "طلبات مفتوحة",

@@ -29,4 +29,11 @@ describe("DashboardStatsGrid", () => {
     expect(hrefs("clinic")).toEqual(["/earnings", "/earnings"]);
     expect(hrefs("doctor")).toEqual(["/earnings", "/earnings"]);
   });
+
+  it("shows a negative net balance with a sign instead of failing", () => {
+    const html = renderToStaticMarkup(
+      <DashboardStatsGrid strings={en} vendorType="store" openOrders={0} netEarnings={-2500} totalSales={0} />,
+    );
+    expect(html).toMatch(/-EGP\s?25/);
+  });
 });
