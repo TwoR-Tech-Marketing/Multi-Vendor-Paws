@@ -145,7 +145,7 @@ const PROVIDER_CONFIGS: Record<VendorType, ProviderConfig> = {
     fieldLabelKeys: fieldLabelKeys("doctor"),
     nav: ["dashboard", "telehealth", "earnings", "settings"],
     screens: buildScreens({
-      telehealth: "comingSoon",
+      telehealth: "visible",
     }),
     requiresActive: ["telehealth", "earnings"],
     requiresDeliveryCoverage: false,

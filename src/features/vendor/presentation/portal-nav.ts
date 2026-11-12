@@ -15,7 +15,8 @@ export type PortalNavId =
   | "settings"
   | "notifications"
   | "branches"
-  | "coupons";
+  | "coupons"
+  | "telehealth";
 
 export type PortalNavItem = {
   id: VendorScreenKey;
@@ -61,7 +62,11 @@ const NAV_TARGETS: Partial<Record<VendorScreenKey, NavTarget>> = {
     icon: portalNavAssets.navAppointments,
     label: (s) => s.nav.appointments,
   },
-  telehealth: { href: null, icon: portalNavAssets.navTelehealth, label: (s) => s.nav.telehealth },
+  telehealth: {
+    href: Routes.vendor.telehealth,
+    icon: portalNavAssets.navTelehealth,
+    label: (s) => s.nav.telehealth,
+  },
   coupons: {
     href: Routes.vendor.coupons,
     icon: portalNavAssets.navCoupons,
@@ -126,6 +131,7 @@ export function getPortalPageMeta(strings: AppStrings): Record<PortalNavId, Port
     notifications: strings.pages.notifications,
     branches: strings.pages.branches,
     coupons: strings.pages.coupons,
+    telehealth: strings.pages.telehealth,
   };
 }
 
@@ -138,6 +144,7 @@ export function resolvePortalNavId(pathname: string): PortalNavId {
   if (pathname.startsWith(Routes.vendor.earnings)) return "earnings";
   if (pathname.startsWith(Routes.vendor.branches)) return "branches";
   if (pathname.startsWith(Routes.vendor.coupons)) return "coupons";
+  if (pathname.startsWith(Routes.vendor.telehealth)) return "telehealth";
   return "dashboard";
 }
 
@@ -145,6 +152,7 @@ const PRODUCT_EDIT_PATH = /^\/products\/[^/]+\/edit\/?$/;
 const ORDER_DETAIL_PATH = /^\/orders\/[^/]+\/?$/;
 const BRANCH_DETAIL_PATH = /^\/branches\/[^/]+\/?$/;
 const COUPON_DETAIL_PATH = /^\/coupons\/[^/]+\/?$/;
+const TELEHEALTH_CHAT_PATH = /^\/telehealth\/[^/]+\/?$/;
 
 export function resolvePortalPageMeta(pathname: string, strings: AppStrings): PortalPageMeta {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
@@ -195,6 +203,13 @@ export function resolvePortalPageMeta(pathname: string, strings: AppStrings): Po
     return {
       title: strings.pages.coupons.detailTitle,
       subtitle: strings.pages.coupons.detailSubtitle,
+    };
+  }
+
+  if (TELEHEALTH_CHAT_PATH.test(normalizedPath)) {
+    return {
+      title: strings.pages.telehealth.chatTitle,
+      subtitle: strings.pages.telehealth.chatSubtitle,
     };
   }
 

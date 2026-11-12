@@ -41,7 +41,7 @@ const CANONICAL = {
     },
     availability: { store: "hidden", clinic: "hidden", groomer: "hidden", doctor: "hidden" },
     reviews: { store: "hidden", clinic: "hidden", groomer: "hidden", doctor: "hidden" },
-    telehealth: { store: "hidden", clinic: "hidden", groomer: "hidden", doctor: "comingSoon" },
+    telehealth: { store: "hidden", clinic: "hidden", groomer: "hidden", doctor: "visible" },
     coupons: { store: "visible", clinic: "visible", groomer: "visible", doctor: "hidden" },
   } as Record<string, Record<string, ScreenState>>,
   requiresActive: {
