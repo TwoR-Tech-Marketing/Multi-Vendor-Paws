@@ -3,6 +3,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import { firebaseFunctions } from "@/lib/firebase";
 import { firebaseStorage } from "@/lib/firebase";
+import { StoragePaths } from "@/lib/storage-paths";
 import type { VendorSignupPayload } from "@/features/auth/domain/types";
 
 type SubmitSignupResponse = {
@@ -22,6 +23,19 @@ export async function uploadVendorLogo(file: File): Promise<string> {
     `vendor_signup_logos/${Date.now()}_${safeName}`,
   );
   await uploadBytes(objectRef, file);
+  return getDownloadURL(objectRef);
+}
+
+/**
+ * Uploads the optional logo before the signup request exists. The Storage
+ * rules allow unauthenticated images only under `vendor_signup_requests/`.
+ */
+export async function uploadSignupLogo(file: File): Promise<string> {
+  const objectRef = ref(
+    firebaseStorage,
+    StoragePaths.signupRequestLogo(crypto.randomUUID(), file.name),
+  );
+  await uploadBytes(objectRef, file, { contentType: file.type });
   return getDownloadURL(objectRef);
 }
 
