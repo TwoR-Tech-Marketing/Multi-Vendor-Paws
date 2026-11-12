@@ -5,11 +5,10 @@ import { cookies } from "next/headers";
 import { isAllowedPortalSessionKind } from "@/features/auth/domain/portal-account-gate";
 import type { VendorSessionDto } from "@/features/auth/domain/session-dto";
 import { resolveVendorSessionViaCallableForUid } from "@/features/auth/infrastructure/resolve-vendor-session.callable";
-import { getVendorPreferencesAdmin } from "@/features/vendor/infrastructure/vendor-preferences.admin.repository";
 import { getVendorStoreProfileAdmin } from "@/features/vendor/infrastructure/vendor-store-profile.admin.repository";
 import { SESSION_COOKIE_NAME } from "@/lib/auth-cookies";
 import { getAdminAuth } from "@/lib/firebase-admin";
-import { DEFAULT_VENDOR_PREFERENCES } from "@/shared/preferences/domain/types";
+import { mapSessionPreferences } from "@/shared/preferences/domain/session-preferences";
 
 export type VerifiedSession = {
   uid: string;
@@ -56,11 +55,10 @@ export async function buildVendorSessionDto(
   verified: VerifiedSession,
 ): Promise<VendorSessionDto | null> {
   // Kind and profile come from the shared callable, not the local Admin mirror.
-  const [resolution, authUser, storeProfile, accountPreferences] = await Promise.all([
+  const [resolution, authUser, storeProfile] = await Promise.all([
     resolveVendorSessionViaCallableForUid(verified.uid),
     getAdminAuth().getUser(verified.uid),
     getVendorStoreProfileAdmin(verified.uid, verified.email),
-    getVendorPreferencesAdmin(verified.uid).catch(() => null),
   ]);
 
   if (!isAllowedPortalSessionKind(resolution.kind) || !resolution.profile) {
@@ -82,8 +80,8 @@ export async function buildVendorSessionDto(
       storeName: storeProfile?.storeName ?? resolution.profile.storeName,
       logoUrl: storeProfile?.logoUrl ?? resolution.profile.logoUrl ?? null,
     },
-    preferences: accountPreferences ?? { ...DEFAULT_VENDOR_PREFERENCES },
-    preferencesScope: accountPreferences ? "account" : "local",
+    // Preferences come from the session callable; absent fields mean local only.
+    ...(resolution.sessionPreferences ?? mapSessionPreferences(null)),
   };
 }
 

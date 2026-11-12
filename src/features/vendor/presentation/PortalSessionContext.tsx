@@ -20,11 +20,14 @@ import { normalizeVendorType } from "@/features/vendor/domain/vendor-type-config
 import { PortalShellSkeleton } from "@/features/vendor/presentation/PortalShellSkeleton";
 import { signOutVendor } from "@/lib/auth";
 import { fetchCurrentSession, logoutServerSession } from "@/lib/auth-client";
-import { usePreferences } from "@/shared/preferences/PreferencesContext";
 import {
-  normalizeVendorPreferences,
-  type PreferencesScope,
-} from "@/shared/preferences/domain/types";
+  saveVendorPreferences,
+  syncSessionPreferences,
+} from "@/features/settings/application/vendor-preferences.api";
+import { usePreferences } from "@/shared/preferences/PreferencesContext";
+import { mapSessionPreferences } from "@/shared/preferences/domain/session-preferences";
+import type { PreferencesScope } from "@/shared/preferences/domain/types";
+import { readCachedPreferences } from "@/shared/preferences/preferences-cache";
 
 type PortalSessionContextValue = {
   user: PortalUserDto;
@@ -40,6 +43,8 @@ type PortalSessionContextValue = {
   };
   /** "account" when appearance and language changes are saved on the account. */
   preferencesScope: PreferencesScope;
+  /** True once the account stores preferences. */
+  preferencesSet: boolean;
   refreshStoreBranding: () => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -69,7 +74,8 @@ function mapSessionDto(dto: VendorSessionDto): PortalSessionContextValue {
     isTestAccount: dto.profile.isTest === true,
     isLoggingOut: false,
     storeBranding: dto.storeBranding,
-    preferencesScope: dto.preferencesScope === "account" ? "account" : "local",
+    preferencesScope: mapSessionPreferences(dto).preferencesScope,
+    preferencesSet: mapSessionPreferences(dto).preferencesSet,
     refreshStoreBranding: async () => {},
     signOut: async () => {},
   };
@@ -111,12 +117,20 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
       return null;
     }
 
-    // The account value replaces the device cache once the session loads.
-    if (dto.preferencesScope === "account") {
-      applyAccountPreferences(normalizeVendorPreferences(dto.preferences));
-    }
+    const next = mapSessionDto(dto);
+    // Session-load rule: keep device, apply account, or save device values once.
+    const sessionPreferences = mapSessionPreferences(dto);
+    void syncSessionPreferences(sessionPreferences, {
+      applyAccount: applyAccountPreferences,
+      readDevice: () => readCachedPreferences(),
+      save: saveVendorPreferences,
+    }).then((stored) => {
+      if (stored && !sessionPreferences.preferencesSet) {
+        setSession((current) => (current ? { ...current, preferencesSet: true } : current));
+      }
+    });
 
-    return mapSessionDto(dto);
+    return next;
   }, [router, applyAccountPreferences]);
 
   useEffect(() => {
@@ -149,6 +163,8 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
             sessionKind: dto.sessionKind,
             isActiveVendor: dto.sessionKind === "active",
             isTestAccount: dto.profile.isTest === true,
+            preferencesScope: mapSessionPreferences(dto).preferencesScope,
+            preferencesSet: current.preferencesSet || mapSessionPreferences(dto).preferencesSet,
           }
         : current,
     );

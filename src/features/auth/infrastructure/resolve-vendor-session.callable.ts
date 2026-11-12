@@ -4,6 +4,7 @@ import {
   mapProfile,
   type CallableSessionProfile,
 } from "@/features/auth/infrastructure/session-profile.mapper";
+import { mapSessionPreferences } from "@/shared/preferences/domain/session-preferences";
 import type {
   VendorSessionKind,
   VendorSessionResolution,
@@ -14,6 +15,9 @@ type CallableSessionResponse = {
     kind: VendorSessionKind;
     profile: CallableSessionProfile | null;
     allowedPortalAccess?: boolean;
+    preferences?: unknown;
+    preferencesScope?: unknown;
+    preferencesSet?: unknown;
   };
   error?: { message?: string; status?: string };
 };
@@ -63,6 +67,7 @@ export async function resolveVendorSessionViaCallable(
     kind: body.result.kind,
     profile: mapProfile(body.result.profile),
     message: "",
+    sessionPreferences: mapSessionPreferences(body.result),
   };
 }
 

@@ -1,5 +1,9 @@
 import { invokeCallable } from "@/lib/callable";
 import {
+  decideSessionPreferences,
+  type SessionPreferences,
+} from "@/shared/preferences/domain/session-preferences";
+import {
   normalizeVendorPreferences,
   type PreferencesScope,
   type VendorPreferences,
@@ -48,5 +52,35 @@ export async function changeAppearancePreference(
     return "saved";
   } catch {
     return "failed";
+  }
+}
+
+type SessionSyncDeps = {
+  applyAccount: (prefs: VendorPreferences) => void;
+  readDevice: () => VendorPreferences;
+  save: (patch: VendorPreferencesPatch) => Promise<unknown>;
+};
+
+/**
+ * Runs the session-load rule once: keep the device values without an account
+ * record, apply the account value when one is stored, otherwise save the
+ * device values to the account (they stay on screen either way).
+ * Resolves true when the account holds preferences afterwards.
+ */
+export async function syncSessionPreferences(
+  session: SessionPreferences,
+  { applyAccount, readDevice, save }: SessionSyncDeps,
+): Promise<boolean> {
+  const action = decideSessionPreferences(session);
+  if (action === "keepDevice") return false;
+  if (action === "applyAccount") {
+    applyAccount(session.preferences);
+    return true;
+  }
+  try {
+    await save(readDevice());
+    return true;
+  } catch {
+    return false;
   }
 }

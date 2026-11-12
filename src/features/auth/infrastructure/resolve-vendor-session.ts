@@ -13,6 +13,7 @@ import type { User } from "firebase/auth";
 import { firestore } from "@/lib/firebase";
 import type { VendorAccountStatus, VendorProfile } from "@/features/auth/domain/types";
 import { normalizeVendorType } from "@/features/vendor/domain/vendor-type-config";
+import type { SessionPreferences } from "@/shared/preferences/domain/session-preferences";
 import { syncVendorAccess } from "@/features/auth/infrastructure/sync-vendor-access.service";
 
 type UserDoc = {
@@ -66,6 +67,8 @@ export type VendorSessionResolution = {
   kind: VendorSessionKind;
   profile: VendorProfile | null;
   message: string;
+  /** Present when the shared session callable resolved the session. */
+  sessionPreferences?: SessionPreferences;
 };
 
 function toDate(value: Timestamp | undefined): Date | null {
