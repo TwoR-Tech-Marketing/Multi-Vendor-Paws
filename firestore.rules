@@ -48,7 +48,14 @@ service cloud.firestore {
     // -----------------------------------------------------------------
     match /users/{uid} {
       allow read: if isSignedIn();
-      allow write: if isOwner(uid) || isAdmin();
+      // The isTest flag is set only by Cloud Functions; a non-admin write may
+      // not add, change or remove it.
+      allow create: if isAdmin()
+        || (isOwner(uid) && !('isTest' in request.resource.data));
+      allow update: if isAdmin()
+        || (isOwner(uid) && !request.resource.data.diff(resource.data)
+              .affectedKeys().hasAny(['isTest']));
+      allow delete: if isOwner(uid) || isAdmin();
 
       // Pet swipe deck reads strangers' paws; only owners can edit.
       match /paws/{pawId} {
@@ -72,7 +79,7 @@ service cloud.firestore {
       allow create: if false;
       allow update: if isOwner(vendorId) && isVendor()
         && !request.resource.data.diff(resource.data).affectedKeys()
-          .hasAny(['vendorType', 'providerProfile']);
+          .hasAny(['vendorType', 'providerProfile', 'isTest']);
       allow delete: if isOwner(vendorId) && isVendor();
     }
 
