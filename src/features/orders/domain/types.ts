@@ -28,10 +28,14 @@ export type VendorStoreSnapshot = {
   contactAddress: string | null;
 };
 
+export const ORDER_HISTORY_ROLES = ["vendor", "admin", "system"] as const;
+
+export type OrderHistoryRole = (typeof ORDER_HISTORY_ROLES)[number];
+
 export type VendorOrderStatusEvent = {
   status: VendorOrderStatus;
   at: Date;
-  by: string;
+  byRole: OrderHistoryRole;
   note: string | null;
 };
 

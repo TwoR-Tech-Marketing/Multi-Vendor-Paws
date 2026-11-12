@@ -48,7 +48,7 @@ describe("normalizeCallableOrder", () => {
     expect(order.updatedAt).toBe("2026-11-11T08:30:00.000Z");
   });
 
-  it("uses history atMs and maps byRole into by", () => {
+  it("uses history atMs and keeps byRole", () => {
     const order = normalizeCallableOrder(
       baseOrder({
         statusHistory: [
@@ -59,28 +59,35 @@ describe("normalizeCallableOrder", () => {
       }),
     );
     expect(order.statusHistory).toEqual([
-      { status: "pending", at: new Date(PLACED_MS).toISOString(), by: "system", note: null },
-      { status: "confirmed", at: new Date(UPDATED_MS).toISOString(), by: "vendor", note: "Ready" },
+      { status: "pending", at: new Date(PLACED_MS).toISOString(), byRole: "system", note: null },
+      { status: "confirmed", at: new Date(UPDATED_MS).toISOString(), byRole: "vendor", note: "Ready" },
       {
         status: "shipped",
         at: new Date(UPDATED_MS + 1000).toISOString(),
-        by: "admin",
+        byRole: "admin",
         note: null,
       },
     ]);
   });
 
-  it("keeps an older by value and ISO at when byRole and atMs are absent", () => {
+  it("maps an older raw by value to a role and never keeps the uid", () => {
     const order = normalizeCallableOrder(
       baseOrder({
         statusHistory: [
           { status: "pending", at: "2026-11-10T21:59:00.000Z", by: "system", note: null },
+          { status: "confirmed", at: "2026-11-10T22:00:00.000Z", by: "vendor-1", note: null },
+          { status: "shipped", at: "2026-11-10T23:00:00.000Z", by: "admin-uid-9", note: null },
         ],
       }),
     );
-    expect(order.statusHistory).toEqual([
-      { status: "pending", at: "2026-11-10T21:59:00.000Z", by: "system", note: null },
+    expect(order.statusHistory.map((event) => event.byRole)).toEqual([
+      "system",
+      "vendor",
+      "admin",
     ]);
+    expect(order.statusHistory[0].at).toBe("2026-11-10T21:59:00.000Z");
+    expect(JSON.stringify(order.statusHistory)).not.toContain("admin-uid-9");
+    expect(order.statusHistory[1]).not.toHaveProperty("by");
   });
 
   it("returns an empty history when the field is missing or not an array", () => {

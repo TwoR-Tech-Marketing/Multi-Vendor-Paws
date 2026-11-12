@@ -16,10 +16,12 @@ import {
   type VendorOrderListPage,
   type VendorOrderStatus,
 } from "@/features/orders/domain/types";
+import { toOrderHistoryRole } from "@/features/orders/domain/history-role";
 import {
   orderMatchesDateFilter,
   orderMatchesSearchQuery,
 } from "@/features/orders/lib/orderListFilters";
+import { toVendorOrderStatusHistory } from "@/features/orders/infrastructure/vendor-order-history.mapper";
 import { syncVendorOrdersForVendor } from "@/features/orders/infrastructure/orders-split.admin.service";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 
@@ -76,20 +78,6 @@ function clampPageSize(pageSize?: number): number {
   return Math.min(pageSize, MAX_PAGE_SIZE);
 }
 
-function toStatusHistoryTimestamp(at: unknown): Timestamp {
-  if (at instanceof Timestamp) return at;
-  if (at instanceof Date) return Timestamp.fromDate(at);
-  if (
-    at &&
-    typeof at === "object" &&
-    "toDate" in at &&
-    typeof (at as { toDate: () => Date }).toDate === "function"
-  ) {
-    return Timestamp.fromDate((at as { toDate: () => Date }).toDate());
-  }
-  return Timestamp.fromDate(new Date(0));
-}
-
 function toVendorOrder(snap: DocumentSnapshot<DocumentData>): VendorOrder {
   const data = snap.data() as VendorOrderDoc;
   return {
@@ -102,12 +90,7 @@ function toVendorOrder(snap: DocumentSnapshot<DocumentData>): VendorOrder {
     status: data.status,
     holdState: data.holdState === "held" ? "held" : null,
     heldReason: data.heldReason ?? null,
-    statusHistory: (data.statusHistory ?? []).map((event) => ({
-      status: event.status,
-      at: toStatusHistoryTimestamp(event.at).toDate(),
-      by: event.by,
-      note: event.note ?? null,
-    })),
+    statusHistory: toVendorOrderStatusHistory(data.statusHistory, data.vendorId),
     lineItems: data.lineItems ?? [],
     itemCount: data.itemCount ?? 0,
     subtotalPiastres: data.subtotalPiastres ?? 0,
@@ -223,13 +206,9 @@ export async function updateVendorOrderStatus(
     }
 
     const now = Timestamp.now();
+    const storedHistory = (snap.data() as VendorOrderDoc).statusHistory;
     const statusHistory = [
-      ...current.statusHistory.map((event) => ({
-        status: event.status,
-        at: Timestamp.fromDate(event.at),
-        by: event.by,
-        note: event.note ?? null,
-      })),
+      ...(Array.isArray(storedHistory) ? storedHistory : []),
       {
         status: input.status,
         at: now,
@@ -247,12 +226,15 @@ export async function updateVendorOrderStatus(
     return {
       ...current,
       status: input.status,
-      statusHistory: statusHistory.map((event) => ({
-        status: event.status,
-        at: event.at instanceof Timestamp ? event.at.toDate() : event.at,
-        by: event.by,
-        note: event.note ?? null,
-      })),
+      statusHistory: [
+        ...current.statusHistory,
+        {
+          status: input.status,
+          at: now.toDate(),
+          byRole: toOrderHistoryRole(actorUid, current.vendorId),
+          note: input.note ?? null,
+        },
+      ],
       updatedAt: new Date(),
     } satisfies VendorOrder;
   });

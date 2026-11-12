@@ -128,7 +128,6 @@ function buildOrderSearchHaystack(order: VendorOrder): string[] {
     ...order.statusHistory.flatMap((event) => [
       event.status,
       event.note ?? "",
-      event.by,
     ]),
   ]
     .map((part) => part.trim().toLowerCase())

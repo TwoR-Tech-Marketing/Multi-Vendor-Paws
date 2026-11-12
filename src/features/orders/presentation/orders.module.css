@@ -272,6 +272,25 @@
 .timeline {
   display: grid;
   gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timelineMain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.timelineRole {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.timelineNote {
+  color: var(--color-text-muted);
 }
 
 .timelineItem {

@@ -612,6 +612,11 @@ export const arStrings: AppStrings = {
     itemsSection: "العناصر",
     summarySection: "الملخص",
     timelineSection: "سجل الحالة",
+    historyRoleLabels: {
+      vendor: "التاجر",
+      admin: "الإدارة",
+      system: "النظام",
+    },
     updateStatus: "تحديث الحالة",
     statusNote: "ملاحظة (اختياري)",
     subtotal: "المجموع الفرعي",
