@@ -78,20 +78,8 @@
 }
 
 .panelAction {
-  display: inline-flex;
+  composes: button primary from "../../../components/ui/button/button.module.css";
   margin-top: var(--space-4);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background-color var(--duration-base);
-}
-
-.panelAction:hover {
-  background: var(--color-primary-2);
 }
 
 .commissionHighlight {
@@ -254,19 +242,7 @@ a.snapshotCard:hover {
 }
 
 .retryButton {
-  border: 1px solid var(--color-error-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  color: var(--color-error);
-  font-size: 13px;
-  font-weight: 600;
-  padding: var(--space-1) var(--space-3);
-  cursor: pointer;
-  font-family: var(--font);
-}
-
-.retryButton:hover {
-  background: var(--color-error-bg);
+  composes: button secondary small from "../../../components/ui/button/button.module.css";
 }
 
 .segmentedControl {

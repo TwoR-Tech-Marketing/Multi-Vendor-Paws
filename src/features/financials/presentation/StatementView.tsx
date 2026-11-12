@@ -53,7 +53,7 @@ function PayoutsTable({
             <tr>
               <th>{t.reference}</th>
               <th>{t.paidOn}</th>
-              <th>{t.amount}</th>
+              <th className={styles.money}>{t.amount}</th>
             </tr>
           </thead>
           <tbody>
@@ -61,7 +61,9 @@ function PayoutsTable({
               <tr key={payout.entryId}>
                 <td>{payout.transferReference ?? "-"}</td>
                 <td>{formatCairoDate(payout.paidAtMs ?? payout.createdAtMs, locale)}</td>
-                <td className={styles.negative}>{formatEgp(-payout.amountPiastres)}</td>
+                <td className={`${styles.money} ${styles.negative}`}>
+                  {formatEgp(-payout.amountPiastres)}
+                </td>
               </tr>
             ))}
           </tbody>

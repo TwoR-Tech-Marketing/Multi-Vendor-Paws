@@ -40,29 +40,23 @@
 }
 
 .tabTextActive {
-  color: var(--color-primary);
-  font-size: 18px;
-  font-weight: 600;
+  color: var(--tp-color-text-primary);
+  font-size: var(--tp-font-size-18);
+  font-weight: var(--tp-font-weight-semibold);
   line-height: 1.25;
 }
 
 .tabTextInactive {
-  color: var(--color-text-muted);
-  font-size: 18px;
-  font-weight: 400;
+  color: var(--tp-color-text-secondary);
+  font-size: var(--tp-font-size-18);
+  font-weight: var(--tp-font-weight-regular);
   line-height: 1.25;
-  transition: color var(--duration-base);
-}
-
-.tabItem:hover .tabTextInactive {
-  color: var(--color-text);
 }
 
 .tabIndicatorActive {
   height: 2px;
   width: 100%;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-  background: var(--color-primary);
+  background: var(--tp-color-line);
 }
 
 .tabIndicatorInactive {
@@ -74,79 +68,26 @@
 .tabsDivider {
   height: 1px;
   width: 100%;
-  background: var(--color-border);
+  background: var(--tp-color-border-default);
 }
 
 .addProductBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  height: 40px;
-  padding-inline: var(--space-4);
-  border-radius: var(--radius-sm);
-  border: none;
-  background: var(--gradient-primary);
-  color: var(--color-icon-on-primary);
-  font-size: 14px;
-  font-weight: 600;
-  font-family: var(--font);
-  text-decoration: none;
-  cursor: pointer;
-  white-space: nowrap;
+  composes: button primary from "../../../components/ui/button/button.module.css";
   flex-shrink: 0;
-  box-shadow: var(--color-primary-shadow);
-  transition: opacity var(--duration-base);
-}
-
-.addProductBtn:hover {
-  opacity: 0.92;
 }
 
 /* ===== Content panel ===== */
 .panel {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  composes: card from "../../../components/ui/card/card.module.css";
   overflow: hidden;
 }
 
 .tableWrap {
-  overflow-x: auto;
+  composes: tableWrap from "../../../components/ui/table/table.module.css";
 }
 
 .dataTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.dataTable th {
-  text-align: start;
-  padding: var(--space-3) var(--space-4);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-muted);
-  background: var(--color-surface-2);
-  border-bottom: 1px solid var(--color-border);
-  white-space: nowrap;
-}
-
-.dataTable td {
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
-  vertical-align: middle;
-}
-
-.dataTable tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.dataTable tbody tr:hover {
-  background: var(--color-surface-2);
+  composes: table from "../../../components/ui/table/table.module.css";
 }
 
 .productCell {
@@ -224,38 +165,6 @@
   background: var(--color-error-bg);
 }
 
-/* ===== Status pills ===== */
-.pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.pillSuccess {
-  background: var(--color-success-surface);
-  color: var(--color-success);
-}
-
-.pillWarning {
-  background: var(--color-warning-surface);
-  color: var(--color-warning);
-}
-
-.pillDanger {
-  background: var(--color-error-bg);
-  color: var(--color-error);
-}
-
-.pillMuted {
-  background: var(--color-surface-2);
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border);
-}
-
 .stockLow {
   color: var(--color-warning);
   font-weight: 600;
@@ -263,102 +172,11 @@
 
 /* ===== Buttons ===== */
 .btnPrimary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  height: var(--control-height);
-  padding-inline: var(--space-4);
-  background: var(--gradient-primary);
-  color: var(--color-icon-on-primary);
-  border: none;
-  border-radius: var(--radius-control);
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 1;
-  cursor: pointer;
-  font-family: var(--font);
-  box-shadow: var(--color-primary-shadow);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: opacity var(--duration-base);
-}
-
-.btnPrimary:hover {
-  opacity: 0.92;
-}
-
-.btnPrimary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  composes: button primary from "../../../components/ui/button/button.module.css";
 }
 
 .btnSecondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  height: var(--control-height);
-  padding-inline: var(--space-4);
-  background: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 1;
-  cursor: pointer;
-  font-family: var(--font);
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    border-color var(--duration-base),
-    background var(--duration-base);
-}
-
-.btnSecondary:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
-}
-
-/* ===== Empty state ===== */
-.emptyState {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-12) var(--space-6);
-  text-align: center;
-}
-
-.emptyIcon {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  display: grid;
-  place-items: center;
-  margin-bottom: var(--space-4);
-}
-
-.emptyState h3 {
-  margin: 0 0 var(--space-2);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.emptyState p {
-  margin: 0;
-  max-width: 360px;
-  color: var(--color-text-muted);
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.emptyStateAction {
-  margin-top: var(--space-6);
+  composes: button secondary from "../../../components/ui/button/button.module.css";
 }
 
 /* ===== Alerts ===== */
@@ -417,22 +235,31 @@
   font-weight: 600;
 }
 
-.field input,
+.field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 .field textarea {
-  padding: 12px 14px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  font-size: 14px;
-  font-family: var(--font);
-  background: var(--color-surface);
-  color: var(--color-text);
+  width: 100%;
+  min-height: var(--tp-size-input);
+  padding: 0 var(--tp-space-3);
+  border: 1px solid var(--tp-color-border-input);
+  border-radius: var(--tp-radius-control);
+  background: var(--tp-color-surface-input);
+  color: var(--tp-color-text-primary);
+  font-family: inherit;
+  font-size: var(--tp-font-size-16);
+  box-sizing: border-box;
 }
 
-.field input:focus,
+.field textarea {
+  min-height: calc(var(--tp-size-input) * 2);
+  padding: var(--tp-space-3);
+  resize: vertical;
+}
+
+.field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
 .field textarea:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-soft);
+  border-color: var(--tp-color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tp-color-focus) 30%, transparent);
 }
 
 .fieldHint {
@@ -534,14 +361,7 @@
 }
 
 .phaseBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 12px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-size: 12px;
-  font-weight: 600;
+  composes: badge confirmed from "../../../components/ui/badge/statusBadge.module.css";
 }
 
 /* ===== Responsive ===== */
@@ -589,4 +409,14 @@
   .dataTable td:nth-child(4) {
     display: none;
   }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tabItem:hover .tabTextInactive {
+    color: var(--tp-color-text-primary);
+  }
+}
+
+.money {
+  composes: numeric from "../../../components/ui/table/table.module.css";
 }

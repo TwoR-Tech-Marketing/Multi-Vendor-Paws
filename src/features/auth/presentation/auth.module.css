@@ -7,13 +7,10 @@
 }
 
 .card {
+  composes: card from "../../../components/ui/card/card.module.css";
   width: 100%;
   max-width: 420px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
   padding: 40px;
-  box-shadow: var(--shadow);
 }
 
 .cardWide {
@@ -104,22 +101,31 @@
   color: var(--color-text);
 }
 
-.field input,
+.field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 .field textarea {
-  padding: 12px 14px;
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  font-size: 14px;
-  font-family: var(--font);
-  background: var(--color-surface);
-  color: var(--color-text);
+  width: 100%;
+  min-height: var(--tp-size-input);
+  padding: 0 var(--tp-space-3);
+  border: 1px solid var(--tp-color-border-input);
+  border-radius: var(--tp-radius-control);
+  background: var(--tp-color-surface-input);
+  color: var(--tp-color-text-primary);
+  font-family: inherit;
+  font-size: var(--tp-font-size-16);
+  box-sizing: border-box;
 }
 
-.field input:focus,
+.field textarea {
+  min-height: calc(var(--tp-size-input) * 2);
+  padding: var(--tp-space-3);
+  resize: vertical;
+}
+
+.field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
 .field textarea:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-soft);
+  border-color: var(--tp-color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tp-color-focus) 30%, transparent);
 }
 
 .fieldHint {
@@ -144,42 +150,15 @@
 }
 
 .btnPrimary {
-  background: var(--gradient-primary);
-  color: var(--color-on-primary);
-  border: none;
-  border-radius: 10px;
-  padding: 12px 20px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  font-family: var(--font);
-  box-shadow: var(--color-primary-shadow);
-  transition: transform 0.15s;
-}
-
-.btnPrimary:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.btnPrimary:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+  composes: button primary from "../../../components/ui/button/button.module.css";
 }
 
 .btnSecondary {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  padding: 12px 20px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--font);
+  composes: button secondary from "../../../components/ui/button/button.module.css";
 }
 
 .btnBlock {
   width: 100%;
-  display: block;
-  text-align: center;
 }
 
 .actions {
@@ -292,13 +271,7 @@
 }
 
 .badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-size: 12px;
-  font-weight: 700;
+  composes: badge confirmed from "../../../components/ui/badge/statusBadge.module.css";
 }
 
 .landingCopy h1 {
@@ -373,13 +346,10 @@
 }
 
 .statusCard {
+  composes: card from "../../../components/ui/card/card.module.css";
   max-width: 640px;
   margin: 48px auto;
   padding: 32px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
 }
 
 .statusPending {

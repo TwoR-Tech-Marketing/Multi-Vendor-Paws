@@ -33,25 +33,10 @@
 }
 
 .closeBtn {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--color-text-muted);
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition:
-    background var(--duration-base),
-    color var(--duration-base);
-}
-
-.closeBtn:hover {
-  background: var(--color-surface-2);
-  color: var(--color-text);
+  composes: button ghost small from "../../../components/ui/button/button.module.css";
+  width: calc(var(--tp-size-control) - var(--tp-space-2));
+  padding: 0;
+  color: var(--tp-color-text-muted);
 }
 
 .summary {
@@ -135,42 +120,12 @@
 }
 
 .resetBtn {
-  padding: 10px var(--space-3);
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-primary);
-  font-family: var(--font);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition:
-    border-color var(--duration-base),
-    background var(--duration-base);
-}
-
-.resetBtn:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
+  composes: button secondary small from "../../../components/ui/button/button.module.css";
 }
 
 .applyBtn {
+  composes: button primary small from "../../../components/ui/button/button.module.css";
   flex: 1;
   min-width: 0;
-  padding: 10px var(--space-3);
-  background: var(--gradient-primary);
-  border: none;
-  border-radius: var(--radius-sm);
-  color: var(--color-icon-on-primary);
-  font-family: var(--font);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--color-primary-shadow);
-  transition: opacity var(--duration-base);
 }
 
-.applyBtn:hover {
-  opacity: 0.92;
-}

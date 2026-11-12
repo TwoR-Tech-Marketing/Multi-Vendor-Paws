@@ -60,9 +60,9 @@ function EntriesTable({ strings, entries }: { strings: AppStrings; entries: Vend
             <th>{strings.earnings.tableDate}</th>
             <th>{strings.earnings.tableType}</th>
             <th>{strings.earnings.tableDescription}</th>
-            <th>{strings.earnings.tableAmount}</th>
-            <th>{strings.earnings.tableCommission}</th>
-            <th>{strings.earnings.tableNet}</th>
+            <th className={styles.money}>{strings.earnings.tableAmount}</th>
+            <th className={styles.money}>{strings.earnings.tableCommission}</th>
+            <th className={styles.money}>{strings.earnings.tableNet}</th>
           </tr>
         </thead>
         <tbody>
@@ -83,9 +83,9 @@ function EntriesTable({ strings, entries }: { strings: AppStrings; entries: Vend
                   (entry.description ?? "-")
                 )}
               </td>
-              <td>{formatEgp(entry.amountPiastres)}</td>
-              <td>{formatEgp(entry.commissionPiastres)}</td>
-              <td>{formatEgp(entry.netPiastres)}</td>
+              <td className={styles.money}>{formatEgp(entry.amountPiastres)}</td>
+              <td className={styles.money}>{formatEgp(entry.commissionPiastres)}</td>
+              <td className={styles.money}>{formatEgp(entry.netPiastres)}</td>
             </tr>
           ))}
         </tbody>

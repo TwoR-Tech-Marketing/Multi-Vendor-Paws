@@ -129,6 +129,12 @@ describe("EarningsView", () => {
     expect(html).toMatch(/-EGP\s?0\.5/);
   });
 
+  it("aligns the three money columns to the end edge", () => {
+    const html = render({ entries: [entry()] });
+    expect(html.match(/<th class="[^"]*money[^"]*"/g)).toHaveLength(3);
+    expect(html.match(/<td class="[^"]*money[^"]*"/g)).toHaveLength(3);
+  });
+
   it("links to the statement page", () => {
     const html = render({ entries: [entry()] });
     expect(html).toContain('href="/earnings/payouts"');

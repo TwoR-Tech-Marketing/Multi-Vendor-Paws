@@ -1,23 +1,13 @@
 .overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--color-overlay);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-4);
-  z-index: 200;
+  composes: scrim from "../../../components/ui/dialog/dialog.module.css";
 }
 
 .modal {
-  width: 100%;
+  composes: dialog from "../../../components/ui/dialog/dialog.module.css";
   max-width: 560px;
   max-height: min(90vh, 720px);
   display: flex;
   flex-direction: column;
-  background: var(--color-surface);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
   padding: var(--space-6);
 }
 
@@ -66,28 +56,11 @@
 }
 
 .chooseFileButton {
-  height: 44px;
-  padding-inline: var(--space-4);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-primary);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--font);
+  composes: button secondary from "../../../components/ui/button/button.module.css";
 }
 
 .templateButton {
-  height: 40px;
-  padding-inline: var(--space-3);
-  border: none;
-  background: transparent;
-  color: var(--color-primary);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--font);
+  composes: button ghost small from "../../../components/ui/button/button.module.css";
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -158,23 +131,15 @@
 }
 
 .badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 700;
-  flex-shrink: 0;
+  composes: badge from "../../../components/ui/badge/statusBadge.module.css";
 }
 
 .badgeValid {
-  background: var(--color-success-surface);
-  color: var(--color-success);
+  composes: success from "../../../components/ui/badge/statusBadge.module.css";
 }
 
 .badgeInvalid {
-  background: var(--color-error-surface);
-  color: var(--color-error);
+  composes: danger from "../../../components/ui/badge/statusBadge.module.css";
 }
 
 .issueList {
@@ -197,35 +162,11 @@
 }
 
 .btnCancel {
-  height: 44px;
-  padding-inline: var(--space-4);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--font);
+  composes: button secondary from "../../../components/ui/button/button.module.css";
 }
 
 .btnPrimary {
-  height: 44px;
-  padding-inline: var(--space-4);
-  border-radius: var(--radius-sm);
-  border: none;
-  background: var(--gradient-primary);
-  color: var(--color-icon-on-primary);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: var(--font);
-}
-
-.btnCancel:disabled,
-.btnPrimary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  composes: button primary from "../../../components/ui/button/button.module.css";
 }
 
 .parsing {

@@ -1,27 +1,14 @@
 .tabs {
-  display: flex;
+  composes: tabs from "../../../components/ui/tabs/tabs.module.css";
   flex-wrap: wrap;
-  gap: var(--space-2);
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: var(--space-2);
 }
 
 .tab {
-  min-height: var(--control-height);
-  padding: 0 var(--space-4);
-  border: 1px solid transparent;
-  border-radius: var(--radius-control);
-  background: transparent;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  cursor: pointer;
+  composes: tab from "../../../components/ui/tabs/tabs.module.css";
 }
 
 .tabActive {
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  border-color: var(--color-tab-border);
+  composes: tabActive from "../../../components/ui/tabs/tabs.module.css";
 }
 
 .dayList {
@@ -87,20 +74,7 @@
 }
 
 .smallButton {
-  min-height: var(--space-8);
-  padding: 0 var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-size: var(--text-xs);
-  font-weight: var(--font-medium);
-  cursor: pointer;
-}
-
-.smallButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  composes: button secondary small from "../../../components/ui/button/button.module.css";
 }
 
 .removeButton {
@@ -283,16 +257,7 @@
 }
 
 .textarea {
-  width: 100%;
-  min-height: calc(var(--control-height) * 2);
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-select-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
-  font-size: var(--text-sm);
-  resize: vertical;
+  composes: textarea from "../../../components/ui/field/field.module.css";
 }
 
 .upcomingList {
