@@ -15,11 +15,6 @@ export const APPOINTMENT_CALLABLES = {
   voidExtraInvoice: "vendor_appointments-voidExtraInvoice",
 } as const;
 
-/** Fresh idempotency key for one create request; retries of the same request reuse it. */
-export function newCallableRequestId(): string {
-  return globalThis.crypto.randomUUID();
-}
-
 export type AppointmentCallableName =
   (typeof APPOINTMENT_CALLABLES)[keyof typeof APPOINTMENT_CALLABLES];
 

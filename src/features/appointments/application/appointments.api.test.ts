@@ -15,12 +15,15 @@ import {
   mapAppointment,
   mapAppointmentRow,
   mapExtraInvoice,
-  newInvoiceRequestId,
+  newCallableRequestId,
   rescheduleVendorAppointment,
   resolveLateArrival,
   voidExtraInvoice,
 } from "@/features/appointments/application/appointments.api";
-import { appointmentErrorMessage } from "@/features/appointments/presentation/appointments-copy";
+import {
+  appointmentErrorMessage,
+  formatInstant,
+} from "@/features/appointments/presentation/appointments-copy";
 import { RAW_APPOINTMENT, RAW_ROW } from "@/features/appointments/presentation/test-fixtures";
 import { getStrings } from "@/shared/i18n/get-strings";
 
@@ -345,8 +348,8 @@ describe("no-show and extra invoice callables", () => {
   });
 
   it("generates distinct request ids within the server's 8 to 64 characters", () => {
-    const a = newInvoiceRequestId();
-    const b = newInvoiceRequestId();
+    const a = newCallableRequestId();
+    const b = newCallableRequestId();
     expect(a).not.toBe(b);
     expect(a.length).toBeGreaterThanOrEqual(8);
     expect(a.length).toBeLessThanOrEqual(64);
@@ -356,9 +359,15 @@ describe("no-show and extra invoice callables", () => {
     const en = getStrings("en");
     const ar = getStrings("ar");
     const err = (reason: string) => ({ code: "functions/failed-precondition", details: { reason } });
-    expect(appointmentErrorMessage(err("too_early"), en, "flagNoShow")).toBe(
-      en.errors.appointments.noShowTooEarly,
-    );
+    const startMs = Date.UTC(2026, 10, 14, 7, 30);
+    const opensAt = Date.UTC(2026, 10, 14, 9, 30);
+    expect(
+      appointmentErrorMessage(err("too_early"), en, { action: "flagNoShow", startMs, locale: "en" }),
+    ).toBe(en.appointments.noShow.tooEarly.replace("{time}", formatInstant(opensAt, "en")));
+    expect(
+      appointmentErrorMessage(err("too_early"), ar, { action: "flagNoShow", startMs, locale: "ar" }),
+    ).toBe(ar.appointments.noShow.tooEarly.replace("{time}", formatInstant(opensAt, "ar")));
+    expect(appointmentErrorMessage(err("too_early"), en)).toBe(en.errors.appointments.tooEarly);
     expect(appointmentErrorMessage(err("window_closed"), ar)).toBe(ar.errors.appointments.windowClosed);
     expect(appointmentErrorMessage(err("invoice_limit"), en)).toBe(en.errors.appointments.invoiceLimit);
   });

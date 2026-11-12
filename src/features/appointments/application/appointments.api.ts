@@ -24,7 +24,6 @@ import {
 import {
   APPOINTMENT_CALLABLES,
   invokeAppointmentCallable,
-  newCallableRequestId,
 } from "@/features/appointments/infrastructure/appointments.callables";
 
 /**
@@ -303,7 +302,10 @@ export async function resolveLateArrival(
   return mapAppointment(data.appointment);
 }
 
-export const newInvoiceRequestId = newCallableRequestId;
+/** Fresh idempotency key for one create request; a plain retry of the same request reuses it. */
+export function newCallableRequestId(): string {
+  return globalThis.crypto.randomUUID();
+}
 
 /**
  * Creates an unpaid extra invoice. `requestId` makes retries safe: the same id

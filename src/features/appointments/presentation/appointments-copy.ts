@@ -1,4 +1,5 @@
 import { mapAppointmentError } from "@/features/appointments/domain/errors";
+import { noShowAvailableAtMs } from "@/features/appointments/domain/no-show";
 import type {
   AppointmentHistoryEntry,
   AppointmentRow,
@@ -8,13 +9,23 @@ import { formatDayLabel, formatTime12, isIsoDate } from "@/features/availability
 import { CAIRO_TIME_ZONE } from "@/features/orders/lib/cairoDates";
 import type { AppStrings } from "@/shared/i18n/types";
 
-/** Localized copy for any appointments callable error. Never the raw message. */
+/** The call that failed, when its refusal needs the appointment to explain itself. */
+export type AppointmentErrorContext = { action: "flagNoShow"; startMs: number; locale: string };
+
+/**
+ * Localized copy for any appointments callable error. Never the raw message.
+ * A refused no-show flag says when it becomes available (start plus 120 minutes).
+ */
 export function appointmentErrorMessage(
   error: unknown,
   strings: AppStrings,
-  action?: string,
+  context?: AppointmentErrorContext,
 ): string {
-  const key = mapAppointmentError(error, action);
+  const key = mapAppointmentError(error, context?.action);
+  if (key === "noShowTooEarly") {
+    const at = context ? formatInstant(noShowAvailableAtMs(context.startMs), context.locale) : "";
+    return strings.appointments.noShow.tooEarly.replace("{time}", at);
+  }
   return key === "generic" ? strings.errors.generic : strings.errors.appointments[key];
 }
 

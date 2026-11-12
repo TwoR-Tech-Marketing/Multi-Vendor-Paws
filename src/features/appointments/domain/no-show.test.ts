@@ -19,9 +19,10 @@ describe("no-show rules", () => {
     expect(noShowQuestionKey("")).toBe("question");
   });
 
-  it("explains the wait only for a booked, actionable appointment the server does not let flag yet", () => {
+  it("explains the wait only after the start, while the server offers complete but not the flag", () => {
     expect(showNoShowTooEarly(booked, ["complete"])).toBe(true);
-    expect(showNoShowTooEarly({ ...booked, status: "rescheduled" }, ["cancel"])).toBe(true);
+    expect(showNoShowTooEarly({ ...booked, status: "rescheduled" }, ["complete", "reschedule"])).toBe(true);
+    expect(showNoShowTooEarly(booked, ["cancel", "reschedule"])).toBe(false);
     expect(showNoShowTooEarly(booked, ["complete", "flagNoShow"])).toBe(false);
     expect(showNoShowTooEarly(booked, [])).toBe(false);
     expect(showNoShowTooEarly({ ...booked, held: true }, ["complete"])).toBe(false);

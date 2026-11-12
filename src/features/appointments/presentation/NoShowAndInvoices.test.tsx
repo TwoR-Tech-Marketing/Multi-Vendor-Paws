@@ -7,6 +7,9 @@ import { emptyInvoiceLine } from "@/features/appointments/domain/extra-invoices"
 import { makeAppointment } from "@/features/appointments/presentation/test-fixtures";
 import { getStrings } from "@/shared/i18n/get-strings";
 
+vi.mock("@/features/appointments/application/appointments.api", () => ({
+  newCallableRequestId: vi.fn(() => "req-test-0001"),
+}));
 vi.mock("@/features/appointments/application/invoice-services", () => ({
   listInvoiceServices: vi.fn(() => new Promise(() => {})),
 }));
@@ -59,8 +62,12 @@ describe("NoShowPanel", () => {
     expect(html).toContain(en.appointments.noShow.tooEarly.replace("{time}", formatInstant(opensAt, "en")));
     expect(html).toContain("11:30");
     const htmlAr = renderToStaticMarkup(
-      <NoShowPanel appointment={appointment} allowedActions={["cancel"]} strings={ar} locale="ar" />,
+      <NoShowPanel appointment={appointment} allowedActions={["complete"]} strings={ar} locale="ar" />,
     );
+    const beforeStart = renderToStaticMarkup(
+      <NoShowPanel appointment={appointment} allowedActions={["cancel", "reschedule"]} strings={en} locale="en" />,
+    );
+    expect(beforeStart).toBe("");
     expect(htmlAr).toContain(ar.appointments.noShow.tooEarly.replace("{time}", formatInstant(opensAt, "ar")));
     const held = renderToStaticMarkup(
       <NoShowPanel appointment={{ ...appointment, held: true }} allowedActions={[]} strings={en} locale="en" />,
@@ -300,6 +307,9 @@ describe("ExtraInvoicesCard", () => {
     expect(html).toContain(ar.extraInvoices.title);
     expect(html).toContain(ar.extraInvoices.status.unpaid);
     expect(html).not.toContain(ar.extraInvoices.void);
+    expect(ar.extraInvoices.hint).toBe("أضف الخدمات أو البنود المقدمة أثناء الزيارة.");
+    expect(en.extraInvoices.hint).toBe("Add services or items given during the visit.");
+    expect(`${en.extraInvoices.hint} ${en.extraInvoices.voidBody}`).not.toMatch(/pay/i);
   });
 
   it("stops offering new invoices at five non-void ones and shows the limit", () => {
@@ -307,11 +317,12 @@ describe("ExtraInvoicesCard", () => {
     const all = [...five, invoice({ invoiceId: "f", status: "void", voidedAtMs: 2_000 })];
     const html = card(all, ["createExtraInvoice"]);
     expect(html).not.toContain(en.extraInvoices.add);
-    expect(html).toContain(en.extraInvoices.limit);
+    expect(html).toContain(en.extraInvoices.limit.replace("{max}", "5"));
     const serverAtLimit = card(all, ["complete", "voidExtraInvoice"]);
-    expect(serverAtLimit).toContain(en.extraInvoices.limit);
+    expect(serverAtLimit).toContain(en.extraInvoices.limit.replace("{max}", "5"));
     expect(serverAtLimit).not.toContain(en.extraInvoices.windowClosed);
     expect(serverAtLimit).toContain(en.extraInvoices.void);
+    expect(html).toContain("This appointment has 5 extra invoices, the maximum.");
     expect(html).toContain("5 of 5 invoices");
     expect(html).toContain(en.extraInvoices.status.void);
   });

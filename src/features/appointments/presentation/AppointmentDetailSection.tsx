@@ -11,7 +11,6 @@ import {
   createExtraInvoice,
   flagNoShow,
   getVendorAppointment,
-  newInvoiceRequestId,
   rescheduleVendorAppointment,
   resolveLateArrival,
   voidExtraInvoice,
@@ -25,7 +24,10 @@ import { CancelAppointmentDialog } from "@/features/appointments/presentation/Ca
 import { ExtraInvoiceDialog } from "@/features/appointments/presentation/ExtraInvoiceDialog";
 import { ExtraInvoicesCard } from "@/features/appointments/presentation/ExtraInvoicesCard";
 import { RescheduleDialog } from "@/features/appointments/presentation/RescheduleDialog";
-import { appointmentErrorMessage } from "@/features/appointments/presentation/appointments-copy";
+import {
+  appointmentErrorMessage,
+  type AppointmentErrorContext,
+} from "@/features/appointments/presentation/appointments-copy";
 import {
   confirmCopy,
   isConfirmKind,
@@ -48,8 +50,6 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [success, setSuccess] = useState<SuccessKey | null>(null);
-  /** One id per invoice dialog, so a retry after a lost response never creates a second invoice. */
-  const [invoiceRequestId, setInvoiceRequestId] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -68,12 +68,15 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
   function open(next: DetailDialog) {
     setActionError(null);
     setSuccess(null);
-    if (next.kind === "createInvoice") setInvoiceRequestId(newInvoiceRequestId());
     setDialog(next);
   }
 
   /** Runs one action, then reloads so the buttons follow the new allowed actions. */
-  async function run(action: () => Promise<unknown>, done: SuccessKey, errorContext?: string) {
+  async function run(
+    action: () => Promise<unknown>,
+    done: SuccessKey,
+    errorContext?: AppointmentErrorContext,
+  ) {
     setIsSubmitting(true);
     setActionError(null);
     try {
@@ -95,7 +98,11 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
       case "complete":
         return run(() => completeVendorAppointment(appointmentId), "completed");
       case "flagNoShow":
-        return run(() => flagNoShow(appointmentId), "flagNoShow", "flagNoShow");
+        return run(() => flagNoShow(appointmentId), "flagNoShow", {
+          action: "flagNoShow",
+          startMs: detail?.appointment.startMs ?? 0,
+          locale,
+        });
       case "markCompleted":
         return run(() => resolveLateArrival(appointmentId, "completed"), "markCompleted");
       case "confirmNoShow":
@@ -105,9 +112,9 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
     }
   }
 
-  function createInvoice(payload: CreateExtraInvoicePayload) {
+  function createInvoice(payload: CreateExtraInvoicePayload, requestId: string) {
     void run(
-      () => createExtraInvoice({ appointmentId, requestId: invoiceRequestId, payload }),
+      () => createExtraInvoice({ appointmentId, requestId, payload }),
       "invoiceCreated",
     );
   }

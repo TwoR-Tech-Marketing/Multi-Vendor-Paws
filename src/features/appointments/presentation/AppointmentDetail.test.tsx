@@ -14,6 +14,7 @@ vi.mock("@/features/appointments/application/appointments.api", () => ({
   completeVendorAppointment: vi.fn(),
   cancelVendorAppointment: vi.fn(),
   rescheduleVendorAppointment: vi.fn(),
+  newCallableRequestId: vi.fn(() => "req-test-0001"),
 }));
 
 vi.mock("@/features/appointments/application/invoice-services", () => ({

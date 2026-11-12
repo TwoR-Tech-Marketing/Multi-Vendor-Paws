@@ -4,6 +4,7 @@ import {
   activeInvoiceCount,
   canAddInvoice,
   checkInvoiceDraft,
+  editInvoiceDraft,
   emptyInvoiceLine,
   parsePriceEgp,
   parseQuantity,
@@ -126,5 +127,20 @@ describe("invoice limit", () => {
     expect(activeInvoiceCount(four)).toBe(4);
     expect(canAddInvoice(four)).toBe(true);
     expect(canAddInvoice([...four, { status: "unpaid" as const }])).toBe(false);
+  });
+});
+
+describe("editInvoiceDraft", () => {
+  it("keeps the request id on a plain retry and makes a new one after any edit", () => {
+    let n = 0;
+    const next = () => `req-${++n}`;
+    const start = { draft: { lines: [service("a")], note: "" }, requestId: "req-0" };
+    expect(editInvoiceDraft(start, (d) => d, next)).toBe(start);
+    const edited = editInvoiceDraft(start, (d) => ({ ...d, lines: [service("a", "2")] }), next);
+    expect(edited.requestId).toBe("req-1");
+    expect(edited.draft.lines[0].quantity).toBe("2");
+    const noted = editInvoiceDraft(edited, (d) => ({ ...d, note: "Thanks" }), next);
+    expect(noted.requestId).toBe("req-2");
+    expect(noted.draft.note).toBe("Thanks");
   });
 });

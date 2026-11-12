@@ -164,7 +164,11 @@ export function ExtraInvoicesCard({
           </button>
         </div>
       ) : null}
-      {windowOpen && !underLimit ? <p className={branchStyles.muted}>{t.limit}</p> : null}
+      {windowOpen && !underLimit ? (
+        <p className={branchStyles.muted}>
+          {t.limit.replace("{max}", String(EXTRA_INVOICE_LIMITS.maxInvoices))}
+        </p>
+      ) : null}
       {!windowOpen && allowedActions.length > 0 ? (
         <p className={branchStyles.muted}>{t.windowClosed}</p>
       ) : null}

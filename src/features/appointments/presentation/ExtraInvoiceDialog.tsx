@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useId, useMemo, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useState } from "react";
 
 import { SkeletonButton, SkeletonFormField } from "@/components/ui/skeleton";
+import { newCallableRequestId } from "@/features/appointments/application/appointments.api";
 import { listInvoiceServices } from "@/features/appointments/application/invoice-services";
 import {
   checkInvoiceDraft,
+  editInvoiceDraft,
   emptyInvoiceLine,
   type CreateExtraInvoicePayload,
   type InvoiceDraft,
   type InvoiceDraftCheck,
+  type InvoiceRequestState,
   type InvoiceServiceOption,
 } from "@/features/appointments/domain/extra-invoices";
 import { EXTRA_INVOICE_LIMITS } from "@/features/appointments/domain/types";
@@ -31,7 +34,8 @@ type ExtraInvoiceDialogProps = {
   locale: string;
   isSubmitting: boolean;
   error: string | null;
-  onConfirm: (payload: CreateExtraInvoicePayload) => void;
+  /** `requestId` stays the same on a plain retry and changes after any edit. */
+  onConfirm: (payload: CreateExtraInvoicePayload, requestId: string) => void;
   onClose: () => void;
 };
 
@@ -76,7 +80,15 @@ export function ExtraInvoiceDialog({
   const noteId = useId();
   const [services, setServices] = useState<ServicesState>({ kind: "loading" });
   const [nextKey, setNextKey] = useState(1);
-  const [draft, setDraft] = useState<InvoiceDraft>({ lines: [emptyInvoiceLine("0")], note: "" });
+  const [request, setRequest] = useState<InvoiceRequestState>(() => ({
+    draft: { lines: [emptyInvoiceLine("0")], note: "" },
+    requestId: newCallableRequestId(),
+  }));
+  const { draft, requestId } = request;
+
+  const setDraft = useCallback((update: (d: InvoiceDraft) => InvoiceDraft) => {
+    setRequest((current) => editInvoiceDraft(current, update, newCallableRequestId));
+  }, []);
   const [showErrors, setShowErrors] = useState(false);
 
   useEffect(() => {
@@ -98,7 +110,7 @@ export function ExtraInvoiceDialog({
     return () => {
       active = false;
     };
-  }, [branchId]);
+  }, [branchId, setDraft]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -123,7 +135,7 @@ export function ExtraInvoiceDialog({
 
   function submit() {
     setShowErrors(true);
-    if (check.payload) onConfirm(check.payload);
+    if (check.payload) onConfirm(check.payload, requestId);
   }
 
   return (

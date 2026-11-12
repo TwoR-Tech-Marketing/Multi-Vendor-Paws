@@ -56,6 +56,23 @@ export type InvoiceDraftCheck = {
   payload: CreateExtraInvoicePayload | null;
 };
 
+/** A draft with the idempotency key of the request it would send. */
+export type InvoiceRequestState = { draft: InvoiceDraft; requestId: string };
+
+/**
+ * Applies one edit. Any edit makes a new request with a fresh id; submitting
+ * again without edits keeps the id, so a retry after a lost response replays
+ * the stored invoice instead of creating a second one.
+ */
+export function editInvoiceDraft(
+  state: InvoiceRequestState,
+  update: (draft: InvoiceDraft) => InvoiceDraft,
+  newRequestId: () => string,
+): InvoiceRequestState {
+  const draft = update(state.draft);
+  return draft === state.draft ? state : { draft, requestId: newRequestId() };
+}
+
 export function emptyInvoiceLine(key: string, kind: InvoiceLineKind = "service"): InvoiceLineDraft {
   return { key, kind, serviceId: "", name: "", priceEgp: "", quantity: "1" };
 }
