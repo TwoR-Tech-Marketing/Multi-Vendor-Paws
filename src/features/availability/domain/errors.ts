@@ -15,19 +15,31 @@ export type AvailabilityErrorKey =
   | "archived"
   | "date"
   | "note"
+  | "invalidField"
+  | "serviceArchived"
   | "generic";
 
-/** Backend `details.reason` codes, preferred over message matching. */
+/** Backend `details.reason` codes, mapped before the error code. */
 const REASON_KEYS: Record<string, AvailabilityErrorKey> = {
   interval_limit: "limit",
   overlap: "overlap",
   grid: "invalidInterval",
-  exception_limit: "limit",
-  archived: "archived",
-  invalid_date: "date",
+  invalid_interval: "invalidInterval",
+  invalid_weekly: "invalidInterval",
+  unknown_field: "invalidField",
+  capacity_range: "invalidField",
+  keep_limit: "limit",
+  invalid_exception: "invalidField",
   note_too_long: "note",
-  version_changed: "versionChanged",
+  invalid_date: "date",
+  invalid_range: "invalidField",
+  invalid_field: "invalidField",
+  archived: "archived",
+  service_archived: "serviceArchived",
+  exception_limit: "limit",
   conflicts: "conflicts",
+  version_changed: "versionChanged",
+  not_found: "notFound",
 };
 
 function read(error: unknown, key: string): unknown {

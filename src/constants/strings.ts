@@ -485,6 +485,8 @@ export const Strings = {
       archived: "Restore this branch before changing its hours.",
       note: "Keep the note under 120 characters.",
       date: "Pick a day from today up to one year ahead.",
+      invalidField: "Please check the details and try again.",
+      serviceArchived: "This service is archived. Pick another service.",
     },
     coupons: {
       codeTaken: "This code is already in use. Choose another code.",
