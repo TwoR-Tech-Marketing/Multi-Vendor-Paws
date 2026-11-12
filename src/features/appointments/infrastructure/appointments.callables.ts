@@ -9,6 +9,10 @@ export const APPOINTMENT_CALLABLES = {
   complete: "vendor_appointments-completeVendorAppointment",
   cancel: "vendor_appointments-cancelVendorAppointment",
   reschedule: "vendor_appointments-rescheduleVendorAppointment",
+  flagNoShow: "vendor_appointments-flagNoShow",
+  resolveLateArrival: "vendor_appointments-resolveLateArrival",
+  createExtraInvoice: "vendor_appointments-createExtraInvoice",
+  voidExtraInvoice: "vendor_appointments-voidExtraInvoice",
 } as const;
 
 export type AppointmentCallableName =

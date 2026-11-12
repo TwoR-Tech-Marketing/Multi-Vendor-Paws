@@ -12,6 +12,9 @@ export type AppointmentErrorKey =
   | "slotTaken"
   | "slotUnavailable"
   | "rescheduleLimit"
+  | "noShowTooEarly"
+  | "windowClosed"
+  | "invoiceLimit"
   | "busy"
   | "notFound"
   | "notAllowed"
@@ -31,14 +34,21 @@ const REASON_KEYS: Record<string, AppointmentErrorKey> = {
   not_found: "notFound",
   invalid_field: "invalidField",
   reschedule_limit: "rescheduleLimit",
+  window_closed: "windowClosed",
+  invoice_limit: "invoiceLimit",
 };
 
 function read(value: unknown, key: string): unknown {
   return value && typeof value === "object" ? (value as Record<string, unknown>)[key] : undefined;
 }
 
-export function mapAppointmentError(error: unknown): AppointmentErrorKey {
+/**
+ * `action` names the call that failed: `too_early` on the no-show flag means
+ * the 120 minute wait, not the appointment start.
+ */
+export function mapAppointmentError(error: unknown, action?: string): AppointmentErrorKey {
   const reason = read(read(error, "details"), "reason");
+  if (reason === "too_early" && action === "flagNoShow") return "noShowTooEarly";
   if (typeof reason === "string" && Object.hasOwn(REASON_KEYS, reason)) return REASON_KEYS[reason];
   const rawCode = read(error, "code");
   const code = typeof rawCode === "string" ? rawCode.replace(/^functions\//, "") : "";

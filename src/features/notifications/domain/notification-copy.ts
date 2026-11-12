@@ -19,6 +19,9 @@ const TYPE_TO_KEY: Record<string, TypeKey> = {
   appointment_new: "appointmentNew",
   appointment_cancelled: "appointmentCancelled",
   appointment_rescheduled: "appointmentRescheduled",
+  appointment_no_show_late: "appointmentNoShowLate",
+  appointment_no_show_review: "appointmentNoShowReview",
+  appointment_no_show_resolved: "appointmentNoShowResolved",
 };
 
 function fillTemplate(template: string, params: Record<string, string>): string {
@@ -37,13 +40,18 @@ function paramsForDisplay(
   for (const [key, value] of Object.entries(notification.params)) {
     out[key] = String(value);
   }
-  const { amount, status, documentNameAr } = notification.params;
+  const { amount, status, documentNameAr, outcome } = notification.params;
   if (notification.type === "payout_recorded" && typeof amount === "number") {
     out.amount = formatEgp(Math.trunc(amount));
   }
   if (notification.type.startsWith("appointment_")) {
     if (out.date && isIsoDate(out.date)) out.date = formatDayLabel(out.date, locale);
     if (out.time) out.time = formatTime12(out.time, strings.availability);
+  }
+  if (notification.type === "appointment_no_show_resolved") {
+    const outcomes = strings.notifications.noShowOutcome;
+    if (outcome === "confirmed" || outcome === "overturned") out.outcome = outcomes[outcome];
+    else delete out.outcome;
   }
   if (notification.type === "document_reviewed") {
     if (status === "approved" || status === "rejected") {
@@ -68,9 +76,13 @@ export function resolveNotificationCopy(
   const key = TYPE_TO_KEY[notification.type];
   if (key) {
     const params = paramsForDisplay(notification, strings, locale);
+    const template = t.types[key].body;
+    const missing = template.includes("{outcome}") && params.outcome === undefined;
     return {
       title: fillTemplate(t.types[key].title, params),
-      body: fillTemplate(t.types[key].body, params),
+      body: missing
+        ? notification.bodyFallback?.trim() || t.fallbackBody
+        : fillTemplate(template, params),
     };
   }
   return {
