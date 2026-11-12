@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  getEarningsDataSource,
   getNotificationsDataSource,
   getOrdersDataSource,
   getProductsDataSource,
@@ -14,6 +15,7 @@ const FLAGS: Array<[string, () => VendorDataSource]> = [
   ["NEXT_PUBLIC_VENDOR_ORDERS_DATA_SOURCE", getOrdersDataSource],
   ["NEXT_PUBLIC_VENDOR_NOTIFICATIONS_DATA_SOURCE", getNotificationsDataSource],
   ["NEXT_PUBLIC_VENDOR_SETTINGS_DATA_SOURCE", getSettingsDataSource],
+  ["NEXT_PUBLIC_VENDOR_EARNINGS_DATA_SOURCE", getEarningsDataSource],
 ];
 
 describe("portal data-source flags", () => {
