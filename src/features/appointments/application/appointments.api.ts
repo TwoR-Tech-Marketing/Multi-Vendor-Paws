@@ -1,8 +1,12 @@
 import { pickAllowedActions } from "@/features/appointments/domain/actions";
 import type { AppointmentListRequest } from "@/features/appointments/domain/filters";
+import type { CreateExtraInvoicePayload } from "@/features/appointments/domain/extra-invoices";
 import {
   APPOINTMENT_STATUSES,
+  EXTRA_INVOICE_STATUSES,
   HISTORY_ROLES,
+  NO_SHOW_ANSWERS,
+  NO_SHOW_CONFIRMERS,
   NO_SHOW_STATES,
   type Appointment,
   type AppointmentDetail,
@@ -12,12 +16,15 @@ import {
   type AppointmentRow,
   type AppointmentService,
   type AppointmentStatus,
+  type ExtraInvoice,
+  type ExtraInvoiceLine,
   type LocalizedName,
   type NoShowState,
 } from "@/features/appointments/domain/types";
 import {
   APPOINTMENT_CALLABLES,
   invokeAppointmentCallable,
+  newCallableRequestId,
 } from "@/features/appointments/infrastructure/appointments.callables";
 
 /**
@@ -125,8 +132,38 @@ function mapNoShow(value: unknown): AppointmentNoShow | null {
     state,
     flaggedAtMs: asMillis(raw.flaggedAtMs),
     answerDueAtMs: asMillis(raw.answerDueAtMs),
-    answer: asNullableString(raw.answer),
+    answer: NO_SHOW_ANSWERS.find((a) => a === raw.answer) ?? null,
+    answeredAtMs: asMillis(raw.answeredAtMs),
     buyerNote: asNullableString(raw.buyerNote),
+    confirmedBy: NO_SHOW_CONFIRMERS.find((c) => c === raw.confirmedBy) ?? null,
+  };
+}
+
+function mapInvoiceLine(value: unknown): ExtraInvoiceLine {
+  const raw = asObject(value);
+  const nameEn = asString(raw.nameEn);
+  return {
+    kind: raw.kind === "service" ? "service" : "custom",
+    serviceId: asNullableString(raw.serviceId),
+    nameEn,
+    nameAr: asString(raw.nameAr) || nameEn,
+    unitPricePiastres: asInt(raw.unitPricePiastres),
+    quantity: asInt(raw.quantity),
+    lineTotalPiastres: asInt(raw.lineTotalPiastres),
+  };
+}
+
+export function mapExtraInvoice(value: unknown): ExtraInvoice {
+  const raw = asObject(value);
+  return {
+    invoiceId: asString(raw.invoiceId),
+    status: EXTRA_INVOICE_STATUSES.find((s) => s === raw.status) ?? "unpaid",
+    lines: asArray(raw.lines).map(mapInvoiceLine),
+    totalPiastres: asInt(raw.totalPiastres),
+    note: asNullableString(raw.note),
+    createdAtMs: asMillis(raw.createdAtMs),
+    paidAtMs: asMillis(raw.paidAtMs),
+    voidedAtMs: asMillis(raw.voidedAtMs),
   };
 }
 
@@ -195,6 +232,9 @@ export async function getVendorAppointment(appointmentId: string): Promise<Appoi
   );
   return {
     appointment: mapAppointment(data.appointment),
+    extraInvoices: asArray(data.extraInvoices)
+      .map(mapExtraInvoice)
+      .filter((invoice) => invoice.invoiceId),
     allowedActions: pickAllowedActions(data.allowedActions),
   };
 }
@@ -239,4 +279,61 @@ export async function rescheduleVendorAppointment(input: {
     }),
   );
   return mapAppointment(data.appointment);
+}
+
+/** Flags a no-show. The server checks the 120 minute wait on its own clock. */
+export async function flagNoShow(appointmentId: string): Promise<Appointment> {
+  const data = asObject(
+    await invokeAppointmentCallable(APPOINTMENT_CALLABLES.flagNoShow, { appointmentId }),
+  );
+  return mapAppointment(data.appointment);
+}
+
+/** After the customer said they arrived late: the visit took place, or the no-show stands. */
+export async function resolveLateArrival(
+  appointmentId: string,
+  outcome: "completed" | "no_show",
+): Promise<Appointment> {
+  const data = asObject(
+    await invokeAppointmentCallable(APPOINTMENT_CALLABLES.resolveLateArrival, {
+      appointmentId,
+      outcome,
+    }),
+  );
+  return mapAppointment(data.appointment);
+}
+
+export const newInvoiceRequestId = newCallableRequestId;
+
+/**
+ * Creates an unpaid extra invoice. `requestId` makes retries safe: the same id
+ * returns the stored invoice instead of a second one.
+ */
+export async function createExtraInvoice(input: {
+  appointmentId: string;
+  requestId: string;
+  payload: CreateExtraInvoicePayload;
+}): Promise<{ invoice: ExtraInvoice; replayed: boolean }> {
+  const data = asObject(
+    await invokeAppointmentCallable(APPOINTMENT_CALLABLES.createExtraInvoice, {
+      appointmentId: input.appointmentId,
+      requestId: input.requestId,
+      lines: input.payload.lines.map((line) => ({ ...line })),
+      ...(input.payload.note ? { note: input.payload.note } : {}),
+    }),
+  );
+  return { invoice: mapExtraInvoice(data.invoice), replayed: data.replayed === true };
+}
+
+export async function voidExtraInvoice(
+  appointmentId: string,
+  invoiceId: string,
+): Promise<ExtraInvoice> {
+  const data = asObject(
+    await invokeAppointmentCallable(APPOINTMENT_CALLABLES.voidExtraInvoice, {
+      appointmentId,
+      invoiceId,
+    }),
+  );
+  return mapExtraInvoice(data.invoice);
 }

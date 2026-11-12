@@ -9,8 +9,12 @@ import { CAIRO_TIME_ZONE } from "@/features/orders/lib/cairoDates";
 import type { AppStrings } from "@/shared/i18n/types";
 
 /** Localized copy for any appointments callable error. Never the raw message. */
-export function appointmentErrorMessage(error: unknown, strings: AppStrings): string {
-  const key = mapAppointmentError(error);
+export function appointmentErrorMessage(
+  error: unknown,
+  strings: AppStrings,
+  action?: string,
+): string {
+  const key = mapAppointmentError(error, action);
   return key === "generic" ? strings.errors.generic : strings.errors.appointments[key];
 }
 

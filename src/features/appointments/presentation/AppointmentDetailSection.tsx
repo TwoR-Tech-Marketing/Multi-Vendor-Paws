@@ -8,21 +8,34 @@ import { Routes } from "@/constants/routes";
 import {
   cancelVendorAppointment,
   completeVendorAppointment,
+  createExtraInvoice,
+  flagNoShow,
   getVendorAppointment,
+  newInvoiceRequestId,
   rescheduleVendorAppointment,
+  resolveLateArrival,
+  voidExtraInvoice,
 } from "@/features/appointments/application/appointments.api";
-import type { AppointmentAction, AppointmentDetail } from "@/features/appointments/domain/types";
+import type { CreateExtraInvoicePayload } from "@/features/appointments/domain/extra-invoices";
+import type { AppointmentDetail } from "@/features/appointments/domain/types";
 import { AppointmentActionBar } from "@/features/appointments/presentation/AppointmentActionBar";
 import { AppointmentDetailView } from "@/features/appointments/presentation/AppointmentDetailView";
 import { AppointmentDetailSkeleton } from "@/features/appointments/presentation/AppointmentsSkeletons";
 import { CancelAppointmentDialog } from "@/features/appointments/presentation/CancelAppointmentDialog";
+import { ExtraInvoiceDialog } from "@/features/appointments/presentation/ExtraInvoiceDialog";
+import { ExtraInvoicesCard } from "@/features/appointments/presentation/ExtraInvoicesCard";
 import { RescheduleDialog } from "@/features/appointments/presentation/RescheduleDialog";
 import { appointmentErrorMessage } from "@/features/appointments/presentation/appointments-copy";
+import {
+  confirmCopy,
+  isConfirmKind,
+  type ConfirmKind,
+  type DetailDialog,
+  type SuccessKey,
+} from "@/features/appointments/presentation/detail-dialogs";
 import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 import branchStyles from "@/features/branches/presentation/branches.module.css";
-
-type SuccessKey = "completed" | "cancelled" | "rescheduled";
 
 export function AppointmentDetailSection({ appointmentId }: { appointmentId: string }) {
   const strings = useStrings();
@@ -31,10 +44,12 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
 
   const [detail, setDetail] = useState<AppointmentDetail | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [dialog, setDialog] = useState<AppointmentAction | null>(null);
+  const [dialog, setDialog] = useState<DetailDialog | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [success, setSuccess] = useState<SuccessKey | null>(null);
+  /** One id per invoice dialog, so a retry after a lost response never creates a second invoice. */
+  const [invoiceRequestId, setInvoiceRequestId] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -50,14 +65,15 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
     return () => window.clearTimeout(timer);
   }, [load]);
 
-  function open(action: AppointmentAction) {
+  function open(next: DetailDialog) {
     setActionError(null);
     setSuccess(null);
-    setDialog(action);
+    if (next.kind === "createInvoice") setInvoiceRequestId(newInvoiceRequestId());
+    setDialog(next);
   }
 
   /** Runs one action, then reloads so the buttons follow the new allowed actions. */
-  async function run(action: () => Promise<unknown>, done: SuccessKey) {
+  async function run(action: () => Promise<unknown>, done: SuccessKey, errorContext?: string) {
     setIsSubmitting(true);
     setActionError(null);
     try {
@@ -66,12 +82,34 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
       setSuccess(done);
       await load();
     } catch (error) {
-      if (dialog === "complete") setDialog(null);
-      setActionError(appointmentErrorMessage(error, strings));
+      if (dialog && isConfirmKind(dialog.kind)) setDialog(null);
+      setActionError(appointmentErrorMessage(error, strings, errorContext));
       await load();
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  function confirm(kind: ConfirmKind, invoiceId?: string) {
+    switch (kind) {
+      case "complete":
+        return run(() => completeVendorAppointment(appointmentId), "completed");
+      case "flagNoShow":
+        return run(() => flagNoShow(appointmentId), "flagNoShow", "flagNoShow");
+      case "markCompleted":
+        return run(() => resolveLateArrival(appointmentId, "completed"), "markCompleted");
+      case "confirmNoShow":
+        return run(() => resolveLateArrival(appointmentId, "no_show"), "confirmNoShow");
+      case "voidInvoice":
+        return run(() => voidExtraInvoice(appointmentId, invoiceId ?? ""), "invoiceVoided");
+    }
+  }
+
+  function createInvoice(payload: CreateExtraInvoicePayload) {
+    void run(
+      () => createExtraInvoice({ appointmentId, requestId: invoiceRequestId, payload }),
+      "invoiceCreated",
+    );
   }
 
   if (!detail) {
@@ -93,7 +131,10 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
     );
   }
 
-  const { appointment, allowedActions } = detail;
+  const { appointment, allowedActions, extraInvoices } = detail;
+  const confirmKind = dialog && isConfirmKind(dialog.kind) ? dialog.kind : null;
+  const copy = confirmCopy(confirmKind ?? "complete", strings);
+  const voidInvoiceId = dialog && "invoiceId" in dialog ? dialog.invoiceId : undefined;
 
   return (
     <div className={branchStyles.stack}>
@@ -112,24 +153,38 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
           {actionError}
         </div>
       ) : null}
-      <AppointmentDetailView appointment={appointment} strings={strings} locale={locale} />
+      <AppointmentDetailView
+        appointment={appointment}
+        allowedActions={allowedActions}
+        strings={strings}
+        locale={locale}
+      />
+      <ExtraInvoicesCard
+        invoices={extraInvoices}
+        allowedActions={allowedActions}
+        strings={strings}
+        locale={locale}
+        disabled={isSubmitting}
+        onAdd={() => open({ kind: "createInvoice" })}
+        onVoid={(invoiceId) => open({ kind: "voidInvoice", invoiceId })}
+      />
       <AppointmentActionBar
         actions={allowedActions}
         strings={strings}
         disabled={isSubmitting}
-        onAction={open}
+        onAction={(kind) => open({ kind })}
       />
       <ConfirmDialog
-        open={dialog === "complete"}
-        title={t.dialogs.completeTitle}
-        message={t.dialogs.completeBody}
-        confirmLabel={isSubmitting ? t.actions.working : t.actions.complete}
-        cancelLabel={strings.common.cancel}
+        open={confirmKind !== null}
+        title={copy.title}
+        message={copy.message}
+        confirmLabel={isSubmitting ? t.actions.working : copy.confirmLabel}
+        cancelLabel={copy.cancelLabel}
         isConfirming={isSubmitting}
         onCancel={() => setDialog(null)}
-        onConfirm={() => run(() => completeVendorAppointment(appointmentId), "completed")}
+        onConfirm={() => (confirmKind ? confirm(confirmKind, voidInvoiceId) : undefined)}
       />
-      {dialog === "cancel" ? (
+      {dialog?.kind === "cancel" ? (
         <CancelAppointmentDialog
           strings={strings}
           isSubmitting={isSubmitting}
@@ -140,7 +195,7 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
           onClose={() => setDialog(null)}
         />
       ) : null}
-      {dialog === "reschedule" ? (
+      {dialog?.kind === "reschedule" ? (
         <RescheduleDialog
           appointment={appointment}
           strings={strings}
@@ -153,6 +208,17 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
               "rescheduled",
             )
           }
+          onClose={() => setDialog(null)}
+        />
+      ) : null}
+      {dialog?.kind === "createInvoice" ? (
+        <ExtraInvoiceDialog
+          branchId={appointment.branchId}
+          strings={strings}
+          locale={locale}
+          isSubmitting={isSubmitting}
+          error={actionError}
+          onConfirm={createInvoice}
           onClose={() => setDialog(null)}
         />
       ) : null}

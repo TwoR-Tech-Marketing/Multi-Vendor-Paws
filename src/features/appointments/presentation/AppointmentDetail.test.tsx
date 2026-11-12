@@ -16,6 +16,10 @@ vi.mock("@/features/appointments/application/appointments.api", () => ({
   rescheduleVendorAppointment: vi.fn(),
 }));
 
+vi.mock("@/features/appointments/application/invoice-services", () => ({
+  listInvoiceServices: vi.fn(() => new Promise(() => {})),
+}));
+
 vi.mock("@/features/availability/application/availability.api", () => ({
   listBranchSlots: vi.fn(() => new Promise(() => {})),
 }));
@@ -91,7 +95,9 @@ describe("AppointmentDetailView", () => {
             flaggedAtMs: 1_000,
             answerDueAtMs: null,
             answer: "arrived_late",
+            answeredAtMs: null,
             buyerNote: null,
+            confirmedBy: null,
           },
         })}
         strings={ar}

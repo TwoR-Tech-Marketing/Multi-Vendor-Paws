@@ -1,5 +1,6 @@
-import type { Appointment } from "@/features/appointments/domain/types";
+import type { Appointment, AppointmentAction } from "@/features/appointments/domain/types";
 import { AppointmentBadges } from "@/features/appointments/presentation/AppointmentBadges";
+import { NoShowPanel } from "@/features/appointments/presentation/NoShowPanel";
 import {
   appointmentWhen,
   formatInstant,
@@ -118,20 +119,6 @@ function ServicesPanel({ appointment: a, strings, locale }: ViewProps) {
   );
 }
 
-function NoShowPanel({ appointment: a, strings, locale }: ViewProps) {
-  if (!a.noShow) return null;
-  const t = strings.appointments.noShow;
-  return (
-    <section className={branchStyles.panel}>
-      <h2 className={branchStyles.panelTitle}>{t.title}</h2>
-      <p className={styles.rowText}>{t.state[a.noShow.state]}</p>
-      {a.noShow.flaggedAtMs !== null ? (
-        <p className={branchStyles.muted}>{formatInstant(a.noShow.flaggedAtMs, locale)}</p>
-      ) : null}
-    </section>
-  );
-}
-
 function HistoryPanel({ appointment: a, strings, locale }: ViewProps) {
   const t = strings.appointments;
   return (
@@ -159,13 +146,16 @@ function HistoryPanel({ appointment: a, strings, locale }: ViewProps) {
 }
 
 /** Read only appointment detail. Pure: driven by props. */
-export function AppointmentDetailView(props: ViewProps) {
+export function AppointmentDetailView({
+  allowedActions = [],
+  ...props
+}: ViewProps & { allowedActions?: readonly AppointmentAction[] }) {
   return (
     <>
       <SummaryPanel {...props} />
       <BuyerPanel {...props} />
       <ServicesPanel {...props} />
-      <NoShowPanel {...props} />
+      <NoShowPanel {...props} allowedActions={allowedActions} />
       <HistoryPanel {...props} />
     </>
   );
