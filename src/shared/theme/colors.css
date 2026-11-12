@@ -52,6 +52,9 @@
   --color-warning-surface: #fef3c7;
   --color-pending-surface: #fffbeb;
   --color-pending-border: #fde68a;
+  --color-test-badge-surface: #fef3c7;
+  --color-test-badge-border: #fcd34d;
+  --color-test-badge-text: #92400e;
 
   --sidebar-width: 157px;
   --topbar-height: 64px;
@@ -139,6 +142,9 @@
   --color-warning-surface: #422006;
   --color-pending-surface: #422006;
   --color-pending-border: #78350f;
+  --color-test-badge-surface: #422006;
+  --color-test-badge-border: #b45309;
+  --color-test-badge-text: #fcd34d;
 
   --color-sidebar-glass: rgba(30, 41, 59, 0.88);
 

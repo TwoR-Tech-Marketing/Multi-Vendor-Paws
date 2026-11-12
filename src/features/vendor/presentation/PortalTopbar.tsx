@@ -4,7 +4,9 @@ import { NotificationBellButton } from "@/features/vendor/presentation/Notificat
 import { PortalBackButton } from "@/features/vendor/presentation/PortalBackButton";
 import { usePortalHeaderActions } from "@/features/vendor/presentation/PortalHeaderActionsContext";
 import { IconMenu } from "@/features/vendor/presentation/PortalNavIcons";
+import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { StoreAvatarButton } from "@/features/vendor/presentation/StoreAvatarButton";
+import { TestAccountBadge } from "@/features/vendor/presentation/TestAccountBadge";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./portal.module.css";
@@ -26,6 +28,7 @@ export function PortalTopbar({
 }: PortalTopbarProps) {
   const strings = useStrings();
   const { actions: headerActions } = usePortalHeaderActions();
+  const { isTestAccount } = usePortalSession();
 
   return (
     <header className={styles.topbar}>
@@ -40,6 +43,7 @@ export function PortalTopbar({
           >
             <IconMenu />
           </button>
+          <TestAccountBadge isTest={isTestAccount} />
         </div>
 
         <div className={styles.topbarTopRowRight}>
