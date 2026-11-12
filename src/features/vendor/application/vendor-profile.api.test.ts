@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  ensureClientAuth: vi.fn(async () => undefined),
   source: "bff" as "bff" | "callable",
   vendorApiGet: vi.fn(),
   vendorApiPatch: vi.fn(),
@@ -16,6 +17,7 @@ vi.mock("firebase/functions", () => ({
     return mocks.callable;
   },
 }));
+vi.mock("@/lib/client-auth", () => ({ ensureClientAuth: mocks.ensureClientAuth }));
 vi.mock("@/lib/firebase", () => ({ firebaseFunctions: {} }));
 vi.mock("@/lib/auth-client", () => {
   class ApiClientError extends Error {

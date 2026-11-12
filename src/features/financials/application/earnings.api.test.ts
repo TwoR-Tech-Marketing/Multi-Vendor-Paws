@@ -9,6 +9,7 @@ const vendorApiGet = vi.fn();
 vi.mock("firebase/functions", () => ({
   httpsCallable: (functions: unknown, name: string) => httpsCallable(functions, name),
 }));
+vi.mock("@/lib/client-auth", () => ({ ensureClientAuth: async () => undefined }));
 vi.mock("@/lib/firebase", () => ({ firebaseFunctions: {} }));
 vi.mock("@/lib/auth-client", () => ({ vendorApiGet: (path: string) => vendorApiGet(path) }));
 

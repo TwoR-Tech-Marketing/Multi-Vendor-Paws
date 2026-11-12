@@ -1,6 +1,4 @@
-import { httpsCallable } from "firebase/functions";
-
-import { firebaseFunctions } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
 
 /** Provider callables of the `appointment_reviews` export group. */
 export const REVIEW_CALLABLES = {
@@ -15,7 +13,5 @@ export async function invokeReviewCallable(
   name: ReviewCallableName,
   payload: Record<string, unknown>,
 ): Promise<unknown> {
-  const callable = httpsCallable(firebaseFunctions, name);
-  const result = await callable(payload);
-  return result.data;
+  return invokeCallable(name, payload);
 }

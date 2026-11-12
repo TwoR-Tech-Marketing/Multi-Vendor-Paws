@@ -1,6 +1,4 @@
-import { httpsCallable } from "firebase/functions";
-
-import { firebaseFunctions } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
 
 /** Callable names of the `vendor_coupons` export group (vendor side only). */
 export const COUPON_CALLABLES = {
@@ -18,7 +16,5 @@ export async function invokeCouponCallable(
   name: CouponCallableName,
   payload: Record<string, unknown>,
 ): Promise<unknown> {
-  const callable = httpsCallable(firebaseFunctions, name);
-  const result = await callable(payload);
-  return result.data;
+  return invokeCallable(name, payload);
 }

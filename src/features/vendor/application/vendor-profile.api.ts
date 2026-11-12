@@ -1,5 +1,3 @@
-import { httpsCallable } from "firebase/functions";
-
 import type {
   VendorAccountStatus,
   VendorRestrictionType,
@@ -22,7 +20,7 @@ import {
 } from "@/features/vendor/infrastructure/vendor-logo.storage";
 import { uploadVendorProviderPhoto } from "@/features/vendor/infrastructure/vendor-photos.storage";
 import { ApiClientError, vendorApiGet, vendorApiPatch } from "@/lib/auth-client";
-import { firebaseFunctions } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
 import { getProfileDataSource } from "@/lib/vendor-data-source";
 
 const CALLABLE_GET = "vendor_profile-getMyVendorProfile";
@@ -267,9 +265,8 @@ export function toSubmitErrorReason(error: unknown): VendorProfileSubmitErrorRea
 
 export async function fetchVendorProfileFromApi(): Promise<VendorProfileSnapshot> {
   if (getProfileDataSource() === "callable") {
-    const callable = httpsCallable(firebaseFunctions, CALLABLE_GET);
-    const result = await callable({});
-    return mapCallableProfile(result.data);
+    const result = await invokeCallable(CALLABLE_GET, {});
+    return mapCallableProfile(result);
   }
   return fetchProfileFromBff();
 }
@@ -284,8 +281,11 @@ export async function submitVendorProfileChangeFromApi(
 ): Promise<void> {
   try {
     if (getProfileDataSource() === "callable") {
-      const callable = httpsCallable(firebaseFunctions, CALLABLE_SUBMIT);
-      await callable({ ...payload, logoUrl: payload.logoUrl ?? null, source: "portal" });
+      await invokeCallable(CALLABLE_SUBMIT, {
+        ...payload,
+        logoUrl: payload.logoUrl ?? null,
+        source: "portal",
+      });
       return;
     }
     await vendorApiPatch<{ success: true }>("/api/vendor/profile", payload);
@@ -299,9 +299,8 @@ export async function fetchVendorProfileHistoryFromApi(
   cursor: string | null,
   pageSize = 20,
 ): Promise<VendorProfileHistoryPage> {
-  const callable = httpsCallable(firebaseFunctions, CALLABLE_LIST);
-  const result = await callable({ pageSize, cursor });
-  const data = asRecord(result.data);
+  const result = await invokeCallable(CALLABLE_LIST, { pageSize, cursor });
+  const data = asRecord(result);
   const items = Array.isArray(data.items) ? data.items.map(mapCallableChangeRequest) : [];
   return {
     items,

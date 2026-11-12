@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+  ensureClientAuth: vi.fn(async () => undefined),
   callableFn: vi.fn(),
   httpsCallable: vi.fn(),
   uploadBytes: vi.fn(),
@@ -14,6 +15,7 @@ vi.mock("firebase/storage", () => ({
   uploadBytes: mocks.uploadBytes,
   getDownloadURL: mocks.getDownloadURL,
 }));
+vi.mock("@/lib/client-auth", () => ({ ensureClientAuth: mocks.ensureClientAuth }));
 vi.mock("@/lib/firebase", () => ({ firebaseFunctions: {}, firebaseStorage: {} }));
 
 import {

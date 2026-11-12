@@ -8,6 +8,7 @@ const httpsCallable = vi.fn<(functions: unknown, name: string) => typeof callabl
 vi.mock("firebase/functions", () => ({
   httpsCallable: (functions: unknown, name: string) => httpsCallable(functions, name),
 }));
+vi.mock("@/lib/client-auth", () => ({ ensureClientAuth: async () => undefined }));
 vi.mock("@/lib/firebase", () => ({ firebaseFunctions: {} }));
 
 import {

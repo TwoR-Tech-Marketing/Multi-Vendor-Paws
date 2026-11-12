@@ -1,5 +1,3 @@
-import { httpsCallable } from "firebase/functions";
-
 import {
   buildListCallableRequest,
   normalizeCallableOrder,
@@ -11,7 +9,7 @@ import type {
   VendorOrderStatus,
 } from "@/features/orders/domain/types";
 import { vendorApiGet, vendorApiPatch } from "@/lib/auth-client";
-import { firebaseFunctions } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
 import { getOrdersDataSource } from "@/lib/vendor-data-source";
 
 type VendorOrderListResponse = {
@@ -51,9 +49,11 @@ export async function fetchVendorOrdersFromApi(
   filter: VendorOrderListFilter = {},
 ): Promise<{ items: VendorOrder[]; nextCursor: string | null; total: number }> {
   if (getOrdersDataSource() === "callable") {
-    const callable = httpsCallable(firebaseFunctions, "vendor_orders-listVendorOrders");
-    const result = await callable(buildListCallableRequest(filter));
-    const data = result.data as {
+    const result = await invokeCallable(
+      "vendor_orders-listVendorOrders",
+      buildListCallableRequest(filter),
+    );
+    const data = result as {
       items: Record<string, unknown>[];
       nextCursor: string | null;
       total: number;
@@ -78,9 +78,8 @@ export async function fetchVendorOrdersFromApi(
 
 export async function fetchVendorOrderFromApi(vendorOrderId: string): Promise<VendorOrder> {
   if (getOrdersDataSource() === "callable") {
-    const callable = httpsCallable(firebaseFunctions, "vendor_orders-getVendorOrder");
-    const result = await callable({ vendorOrderId });
-    const data = result.data as { order: Record<string, unknown> };
+    const result = await invokeCallable("vendor_orders-getVendorOrder", { vendorOrderId });
+    const data = result as { order: Record<string, unknown> };
     return deserializeVendorOrder(normalizeCallableOrder(data.order));
   }
 
@@ -96,12 +95,12 @@ export async function updateVendorOrderStatusFromApi(
   note?: string,
 ): Promise<VendorOrder> {
   if (getOrdersDataSource() === "callable") {
-    const callable = httpsCallable(
-      firebaseFunctions,
-      "vendor_orders-updateVendorOrderStatus",
-    );
-    const result = await callable({ vendorOrderId, status, note });
-    const data = result.data as { order: Record<string, unknown> };
+    const result = await invokeCallable("vendor_orders-updateVendorOrderStatus", {
+      vendorOrderId,
+      status,
+      note,
+    });
+    const data = result as { order: Record<string, unknown> };
     return deserializeVendorOrder(normalizeCallableOrder(data.order));
   }
 

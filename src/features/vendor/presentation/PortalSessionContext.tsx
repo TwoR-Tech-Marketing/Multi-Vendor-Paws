@@ -18,6 +18,7 @@ import type { VendorSessionKind } from "@/features/auth/infrastructure/resolve-v
 import { goOfflineQuietly } from "@/features/telehealth/application/telehealth.api";
 import { normalizeVendorType } from "@/features/vendor/domain/vendor-type-config";
 import { PortalShellSkeleton } from "@/features/vendor/presentation/PortalShellSkeleton";
+import { signOutVendor } from "@/lib/auth";
 import { fetchCurrentSession, logoutServerSession } from "@/lib/auth-client";
 
 type PortalSessionContextValue = {
@@ -76,6 +77,8 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
     const dto = await fetchCurrentSession();
 
     if (!dto) {
+      // No server session: drop any client user left from an earlier account.
+      await signOutVendor().catch(() => undefined);
       router.replace(Routes.auth.login);
       return null;
     }
@@ -127,6 +130,7 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
       if (isDoctor) await goOfflineQuietly();
       await logoutServerSession();
     } finally {
+      await signOutVendor().catch(() => undefined);
       router.replace(Routes.auth.login);
     }
   }, [router, isDoctor]);

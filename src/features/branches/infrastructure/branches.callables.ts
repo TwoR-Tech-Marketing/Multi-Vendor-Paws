@@ -1,7 +1,8 @@
-import { httpsCallable } from "firebase/functions";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
-import { firebaseFunctions, firebaseStorage } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
+import { ensureClientAuth } from "@/lib/client-auth";
+import { firebaseStorage } from "@/lib/firebase";
 import { StoragePaths } from "@/lib/storage-paths";
 
 /** Callable names of the `vendor_branches` export group. */
@@ -25,9 +26,7 @@ export async function invokeBranchCallable(
   name: BranchCallableName,
   payload: Record<string, unknown>,
 ): Promise<unknown> {
-  const callable = httpsCallable(firebaseFunctions, name);
-  const result = await callable(payload);
-  return result.data;
+  return invokeCallable(name, payload);
 }
 
 /** Uploads a service photo to the caller's branch folder; returns its download URL. */
@@ -37,6 +36,7 @@ export async function uploadServicePhotoFile(
   serviceId: string,
   file: File,
 ): Promise<string> {
+  await ensureClientAuth();
   const objectRef = ref(
     firebaseStorage,
     StoragePaths.vendorServicePhoto(vendorId, branchId, serviceId, file.name),

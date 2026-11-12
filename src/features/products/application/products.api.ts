@@ -1,5 +1,3 @@
-import { httpsCallable } from "firebase/functions";
-
 import type { Product, ProductListFilter, ProductStatus } from "@/features/products/domain/types";
 import type { CreateProductPayload, UpdateProductPayload } from "@/features/products/domain/schemas";
 import {
@@ -8,7 +6,7 @@ import {
   vendorApiPatch,
   vendorApiPost,
 } from "@/lib/auth-client";
-import { firebaseFunctions } from "@/lib/firebase";
+import { invokeCallable } from "@/lib/callable";
 import { getProductsDataSource } from "@/lib/vendor-data-source";
 
 export type ProductCategoryOption = {
@@ -104,12 +102,8 @@ export async function fetchProductCategoriesFromApi(options?: {
   // The callable returns active categories only; the category admin screen
   // (includeInactive) stays on the BFF.
   if (getProductsDataSource() === "callable" && !options?.includeInactive) {
-    const callable = httpsCallable(
-      firebaseFunctions,
-      "vendor_products-listVendorProductCategories",
-    );
-    const result = await callable({});
-    const data = result.data as { items?: Record<string, unknown>[] };
+    const result = await invokeCallable("vendor_products-listVendorProductCategories", {});
+    const data = result as { items?: Record<string, unknown>[] };
     return (data.items ?? []).map(callableCategoryToOption);
   }
 
@@ -164,13 +158,12 @@ export async function fetchVendorProductsFromApi(
   filter: ProductListFilter = {},
 ): Promise<{ items: Product[]; nextCursor: string | null; total: number }> {
   if (getProductsDataSource() === "callable") {
-    const callable = httpsCallable(firebaseFunctions, "vendor_products-listVendorProducts");
-    const result = await callable({
+    const result = await invokeCallable("vendor_products-listVendorProducts", {
       status: filter.status,
       pageSize: filter.pageSize,
       categoryId: filter.categoryId || undefined,
     });
-    const data = result.data as {
+    const data = result as {
       items: Record<string, unknown>[];
       nextCursor: string | null;
     };
@@ -193,9 +186,8 @@ export async function fetchVendorProductsFromApi(
 
 export async function fetchVendorProductFromApi(productId: string): Promise<Product> {
   if (getProductsDataSource() === "callable") {
-    const callable = httpsCallable(firebaseFunctions, "vendor_products-getVendorProduct");
-    const result = await callable({ productId });
-    const data = result.data as { product: Record<string, unknown> };
+    const result = await invokeCallable("vendor_products-getVendorProduct", { productId });
+    const data = result as { product: Record<string, unknown> };
     return deserializeProduct(callableProductToSerialized(data.product));
   }
 
@@ -207,9 +199,8 @@ export async function createVendorProductFromApi(
   payload: CreateProductPayload,
 ): Promise<Product> {
   if (getProductsDataSource() === "callable") {
-    const callable = httpsCallable(firebaseFunctions, "vendor_products-createVendorProduct");
-    const result = await callable(payload);
-    const data = result.data as { product: Record<string, unknown> };
+    const result = await invokeCallable("vendor_products-createVendorProduct", payload);
+    const data = result as { product: Record<string, unknown> };
     return deserializeProduct(callableProductToSerialized(data.product));
   }
 
@@ -222,9 +213,11 @@ export async function updateVendorProductFromApi(
   payload: UpdateProductPayload,
 ): Promise<Product> {
   if (getProductsDataSource() === "callable") {
-    const callable = httpsCallable(firebaseFunctions, "vendor_products-updateVendorProduct");
-    const result = await callable({ productId, ...payload });
-    const data = result.data as { product: Record<string, unknown> };
+    const result = await invokeCallable("vendor_products-updateVendorProduct", {
+      productId,
+      ...payload,
+    });
+    const data = result as { product: Record<string, unknown> };
     return deserializeProduct(callableProductToSerialized(data.product));
   }
 
@@ -237,8 +230,7 @@ export async function updateVendorProductFromApi(
 
 export async function archiveVendorProductFromApi(productId: string): Promise<void> {
   if (getProductsDataSource() === "callable") {
-    const callable = httpsCallable(firebaseFunctions, "vendor_products-archiveVendorProduct");
-    await callable({ productId });
+    await invokeCallable("vendor_products-archiveVendorProduct", { productId });
     return;
   }
 
