@@ -6,6 +6,12 @@ import type {
   VendorProfileChangePayload,
   VendorProfileChangeRequest,
 } from "@/features/vendor/domain/types";
+import type { ProviderProfile } from "@/features/vendor/domain/provider-profile-schema";
+import {
+  getProviderConfig,
+  normalizeVendorType,
+  type ProviderField,
+} from "@/features/vendor/domain/vendor-type-config";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 
 const COLLECTION = "vendor_profile_change_requests";
@@ -21,6 +27,18 @@ type ChangeRequestDoc = VendorProfileChangePayload & {
   reviewedBy?: string | null;
   reviewNotes?: string | null;
 };
+
+/** Keeps only the keys allowed for the vendor's type (contract 4.6). */
+function filterProviderProfile(
+  vendorType: unknown,
+  raw: ProviderProfile,
+): ProviderProfile | null {
+  const allowed = getProviderConfig(normalizeVendorType(vendorType)).providerFields;
+  const out = Object.fromEntries(
+    Object.entries(raw).filter(([key]) => allowed.includes(key as ProviderField)),
+  ) as ProviderProfile;
+  return Object.keys(out).length ? out : null;
+}
 
 function toDate(value: Timestamp | undefined): Date | null {
   if (!value?.toDate) return null;
@@ -43,6 +61,7 @@ function mapChangeRequest(
     contactEmail: data.contactEmail,
     contactAddress: data.contactAddress,
     logoUrl: data.logoUrl ?? null,
+    ...(data.providerProfile ? { providerProfile: data.providerProfile } : {}),
     status: data.status as VendorProfileChangeRequest["status"],
     createdAt: toDate(data.createdAt),
     reviewedAt: toDate(data.reviewedAt),
@@ -114,6 +133,10 @@ export async function submitProfileChangeRequestAdmin(
     contactEmail: payload.contactEmail.trim().toLowerCase(),
     contactAddress: payload.contactAddress.trim(),
     logoUrl: payload.logoUrl ?? null,
+    // S1.7: only when non-empty, so store requests stay exactly as before.
+    ...(payload.providerProfile && Object.keys(payload.providerProfile).length
+      ? { providerProfile: payload.providerProfile }
+      : {}),
     status: "pending",
     createdAt: FieldValue.serverTimestamp(),
     reviewedAt: null,
@@ -147,8 +170,16 @@ export async function reviewProfileChangeRequestAdmin(input: {
     const now = Timestamp.now();
     const reviewNotes = input.reviewNotes?.trim() || null;
 
+    const vendorRef = db.collection(VENDORS_COLLECTION).doc(request.vendorId);
+    const providerProfile =
+      input.decision === "approve" && request.providerProfile
+        ? filterProviderProfile(
+            (await tx.get(vendorRef)).get("vendorType"),
+            request.providerProfile,
+          )
+        : null;
+
     if (input.decision === "approve") {
-      const vendorRef = db.collection(VENDORS_COLLECTION).doc(request.vendorId);
       const userRef = db.collection(USERS_COLLECTION).doc(request.authUid);
 
       tx.set(
@@ -162,6 +193,8 @@ export async function reviewProfileChangeRequestAdmin(input: {
           contactEmail: request.contactEmail,
           contactAddress: request.contactAddress,
           logoUrl: request.logoUrl ?? null,
+          // S1.7: merged map, so keys not in the request are kept.
+          ...(providerProfile ? { providerProfile } : {}),
           updatedAt: now,
         },
         { merge: true },

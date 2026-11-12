@@ -12,6 +12,8 @@ import type { Timestamp } from "firebase/firestore";
 import type { VendorAccountStatus } from "@/features/auth/domain/types";
 import { firestore } from "@/lib/firebase";
 import type { VendorStoreProfile } from "@/features/vendor/domain/types";
+import type { ProviderProfile } from "@/features/vendor/domain/provider-profile-schema";
+import { normalizeVendorType } from "@/features/vendor/domain/vendor-type-config";
 
 type UserDoc = {
   role?: string;
@@ -37,6 +39,8 @@ type VendorDoc = {
   contactEmail?: string;
   contactAddress?: string;
   logoUrl?: string | null;
+  vendorType?: string;
+  providerProfile?: ProviderProfile;
   status?: VendorAccountStatus;
   approvalStatus?: string;
   isBanned?: boolean;
@@ -58,6 +62,8 @@ type SignupRequestDoc = {
   contactEmail?: string;
   contactAddress?: string;
   logoUrl?: string | null;
+  vendorType?: string;
+  providerProfile?: ProviderProfile;
   status?: string;
   authUid?: string;
   createdAt?: Timestamp;
@@ -171,6 +177,10 @@ export async function getVendorStoreProfile(
       vendorData?.contactAddress ?? signupRequest?.contactAddress ?? "",
     logoUrl:
       vendorData?.logoUrl ?? signupRequest?.logoUrl ?? null,
+    vendorType: normalizeVendorType(vendorData?.vendorType || signupRequest?.vendorType),
+    providerProfile: vendorData
+      ? (vendorData.providerProfile ?? {})
+      : (signupRequest?.providerProfile ?? {}),
     status,
     approvalStatus: vendorData?.approvalStatus,
     createdAt: toDate(vendorData?.createdAt ?? signupRequest?.createdAt),

@@ -10,6 +10,13 @@ import type {
   VendorStoreProfile,
 } from "@/features/vendor/domain/types";
 import { uploadVendorLogo } from "@/features/auth/infrastructure/vendor-signup.service";
+import {
+  buildProviderProfilePayload,
+  providerProfileSchema,
+  type ProviderTextFields,
+} from "@/features/vendor/domain/provider-profile-schema";
+import { getProviderConfig } from "@/features/vendor/domain/vendor-type-config";
+import { ProviderFieldsInputs } from "@/features/vendor/presentation/ProviderFieldsInputs";
 import type { AppStrings } from "@/shared/i18n/types";
 import { ApiClientError } from "@/lib/auth-client";
 
@@ -40,6 +47,14 @@ function buildFormState(profile: VendorStoreProfile): FormState {
   };
 }
 
+function buildProviderFields(profile: VendorStoreProfile): ProviderTextFields {
+  return {
+    specialty: profile.providerProfile?.specialty ?? "",
+    education: profile.providerProfile?.education ?? "",
+    experience: profile.providerProfile?.experience ?? "",
+  };
+}
+
 function validateForm(form: FormState, strings: AppStrings): string | null {
   if (!form.ownerName.trim()) return strings.profile.validation.ownerName;
   if (!form.phone.trim()) return strings.profile.validation.phone;
@@ -62,8 +77,13 @@ export function ProfileStoreForm({
   onSubmitted,
 }: ProfileStoreFormProps) {
   const t = strings.profile;
+  const providerConfig = getProviderConfig(profile.vendorType);
+  const typeStrings = strings.vendorTypes[providerConfig.type];
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState<FormState>(() => buildFormState(profile));
+  const [providerFields, setProviderFields] = useState<ProviderTextFields>(() =>
+    buildProviderFields(profile),
+  );
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(profile.logoUrl);
   const [error, setError] = useState<string | null>(null);
@@ -74,6 +94,7 @@ export function ProfileStoreForm({
   if (formSource.profile !== profile || formSource.pendingId !== pendingChange?.id) {
     setFormSource({ profile, pendingId: pendingChange?.id });
     setForm(buildFormState(profile));
+    setProviderFields(buildProviderFields(profile));
     setLogoPreview(profile.logoUrl);
     setLogoFile(null);
     setIsEditing(false);
@@ -105,6 +126,7 @@ export function ProfileStoreForm({
     setError(null);
     setSuccess(null);
     setForm(buildFormState(profile));
+    setProviderFields(buildProviderFields(profile));
     setLogoPreview(profile.logoUrl);
     setLogoFile(null);
     setIsEditing(false);
@@ -121,6 +143,20 @@ export function ProfileStoreForm({
       return;
     }
 
+    const providerProfile = buildProviderProfilePayload(
+      profile.vendorType,
+      providerFields,
+      true,
+    );
+    const checkedProvider = providerProfile
+      ? providerProfileSchema(profile.vendorType, "change").safeParse(providerProfile)
+      : null;
+    if (checkedProvider && !checkedProvider.success) {
+      const key = checkedProvider.error.issues[0]?.message as keyof typeof strings.vendorTypes.errors;
+      setError(strings.vendorTypes.errors[key] ?? t.changeRequestError);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -132,6 +168,7 @@ export function ProfileStoreForm({
       await submitVendorProfileChangeFromApi({
         ...form,
         logoUrl,
+        ...(checkedProvider?.success ? { providerProfile: checkedProvider.data } : {}),
       });
 
       setSuccess(t.changeRequestSuccess);
@@ -184,6 +221,13 @@ export function ProfileStoreForm({
       ) : null}
 
       <form className={styles.formStack} onSubmit={onSubmit}>
+        {providerConfig.type === "store" ? null : (
+          <label className={styles.field}>
+            {strings.vendorTypes.profileRow}
+            <input type="text" value={typeStrings.label} disabled readOnly />
+          </label>
+        )}
+
         <label className={styles.field}>
           {t.fields.ownerName}
           <input
@@ -213,7 +257,7 @@ export function ProfileStoreForm({
         </label>
 
         <label className={styles.field}>
-          {t.fields.storeName}
+          {typeStrings.fields.storeName}
           <input
             type="text"
             value={form.storeName}
@@ -224,7 +268,7 @@ export function ProfileStoreForm({
         </label>
 
         <label className={styles.field}>
-          {t.fields.storeDescription}
+          {typeStrings.fields.storeDescription}
           <textarea
             rows={4}
             value={form.storeDescription}
@@ -233,6 +277,15 @@ export function ProfileStoreForm({
             required
           />
         </label>
+
+        <ProviderFieldsInputs
+          strings={strings}
+          vendorType={profile.vendorType}
+          value={providerFields}
+          onChange={setProviderFields}
+          fieldClassName={styles.field}
+          disabled={fieldsDisabled}
+        />
 
         <label className={styles.field}>
           {t.fields.contactPhone}
@@ -268,7 +321,7 @@ export function ProfileStoreForm({
         </label>
 
         <label className={styles.field}>
-          {t.fields.logo}
+          {typeStrings.fields.logoUrl}
           <label className={`${styles.uploadBox} ${fieldsDisabled ? styles.uploadBoxDisabled : ""}`}>
             <input
               type="file"
