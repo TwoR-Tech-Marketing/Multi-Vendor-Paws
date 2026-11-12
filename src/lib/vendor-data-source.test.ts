@@ -4,6 +4,7 @@ import {
   getNotificationsDataSource,
   getOrdersDataSource,
   getProductsDataSource,
+  getProfileDataSource,
   getSettingsDataSource,
   parseVendorDataSource,
   type VendorDataSource,
@@ -14,6 +15,7 @@ const FLAGS: Array<[string, () => VendorDataSource]> = [
   ["NEXT_PUBLIC_VENDOR_ORDERS_DATA_SOURCE", getOrdersDataSource],
   ["NEXT_PUBLIC_VENDOR_NOTIFICATIONS_DATA_SOURCE", getNotificationsDataSource],
   ["NEXT_PUBLIC_VENDOR_SETTINGS_DATA_SOURCE", getSettingsDataSource],
+  ["NEXT_PUBLIC_VENDOR_PROFILE_DATA_SOURCE", getProfileDataSource],
 ];
 
 describe("portal data-source flags", () => {
