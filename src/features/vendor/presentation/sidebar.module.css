@@ -145,7 +145,7 @@
 }
 
 .navBadge {
-  font-size: 12px;
+  font-size: var(--text-xs);
   line-height: 1.2;
   text-align: center;
 }
