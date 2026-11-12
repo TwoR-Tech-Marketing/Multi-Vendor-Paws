@@ -88,14 +88,14 @@ describe("getPortalSidebarNavItems", () => {
     expect(resolvePortalNavId("/earnings/payouts")).toBe("earnings");
   });
 
-  it("links the telehealth item for doctors and locks it until active", () => {
+  it("links the telehealth item for doctors without an active lock", () => {
     const items = getPortalSidebarNavItems(strings, "doctor");
     expect(items.map((item) => item.id)).toEqual(["dashboard", "telehealth", "earnings", "settings"]);
     expect(items[1]).toMatchObject({
       comingSoon: false,
       href: Routes.vendor.telehealth,
       label: "Telehealth",
-      requiresActiveAccount: true,
+      requiresActiveAccount: false,
     });
     const ar = getStrings("ar");
     expect(getPortalSidebarNavItems(ar, "doctor")[1].label).toBe(ar.nav.telehealth);

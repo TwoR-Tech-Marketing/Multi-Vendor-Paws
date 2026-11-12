@@ -48,7 +48,7 @@ const CANONICAL = {
     store: ["products", "orders", "earnings", "coupons"],
     clinic: ["appointments", "earnings", "coupons"],
     groomer: ["appointments", "earnings", "coupons"],
-    doctor: ["telehealth", "earnings"],
+    doctor: ["earnings"],
   },
   requiresDeliveryCoverage: { store: true, clinic: false, groomer: false, doctor: false },
   supportsHomeVisit: { store: false, clinic: true, groomer: true, doctor: false },

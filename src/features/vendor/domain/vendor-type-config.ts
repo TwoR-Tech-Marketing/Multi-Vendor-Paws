@@ -147,7 +147,7 @@ const PROVIDER_CONFIGS: Record<VendorType, ProviderConfig> = {
     screens: buildScreens({
       telehealth: "visible",
     }),
-    requiresActive: ["telehealth", "earnings"],
+    requiresActive: ["earnings"],
     requiresDeliveryCoverage: false,
     supportsHomeVisit: false,
     reviewCategorySet: null,

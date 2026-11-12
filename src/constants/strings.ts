@@ -663,7 +663,6 @@ export const Strings = {
     endedEmpty: "You have no ended consultations yet.",
     accept: "Accept",
     accepting: "Accepting...",
-    acceptSuccess: "Consultation accepted.",
     openChat: "Open chat",
     waitingSince: "Waiting since {time}",
     expiresAt: "Expires at {time}",
