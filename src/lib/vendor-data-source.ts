@@ -5,6 +5,7 @@
  * NEXT_PUBLIC_VENDOR_ORDERS_DATA_SOURCE=bff|callable
  * NEXT_PUBLIC_VENDOR_NOTIFICATIONS_DATA_SOURCE=bff|callable
  * NEXT_PUBLIC_VENDOR_SETTINGS_DATA_SOURCE=bff|callable
+ * NEXT_PUBLIC_VENDOR_PROFILE_DATA_SOURCE=bff|callable
  * NEXT_PUBLIC_VENDOR_EARNINGS_DATA_SOURCE=bff|callable
  *
  * Every flag is read with a literal `process.env.NEXT_PUBLIC_*` expression so
@@ -32,6 +33,10 @@ export function getNotificationsDataSource(): VendorDataSource {
 
 export function getSettingsDataSource(): VendorDataSource {
   return parseVendorDataSource(process.env.NEXT_PUBLIC_VENDOR_SETTINGS_DATA_SOURCE);
+}
+
+export function getProfileDataSource(): VendorDataSource {
+  return parseVendorDataSource(process.env.NEXT_PUBLIC_VENDOR_PROFILE_DATA_SOURCE);
 }
 
 export function getEarningsDataSource(): VendorDataSource {
