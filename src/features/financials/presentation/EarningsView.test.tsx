@@ -110,6 +110,25 @@ describe("EarningsView", () => {
     expect(html).toContain(en.earnings.typeLabels.payout);
   });
 
+  it("shows a negative payout row and negative summary on the bff layout", () => {
+    const html = render({
+      paged: false,
+      summary: {
+        vendorId: "",
+        totalSalesPiastres: 0,
+        totalCommissionPiastres: 0,
+        netEarningsPiastres: -199,
+        pendingPayoutPiastres: -50,
+        currency: "EGP",
+        updatedAt: new Date(0),
+      },
+      entries: [entry({ entryId: "payout_M2026-10", type: "payout", amountPiastres: -2500, commissionPiastres: 0, netPiastres: -2500, vendorOrderId: null, description: "Payout M2026-10" })],
+    });
+    expect(html).toMatch(/-EGP\s?25/);
+    expect(html).toMatch(/-EGP\s?1\.99/);
+    expect(html).toMatch(/-EGP\s?0\.5/);
+  });
+
   it("renders Arabic copy for tabs and summary", () => {
     const html = render({ strings: ar, paged: true, entries: [entry()], hasMore: true });
     expect(html).toContain(ar.earnings.types.all);
