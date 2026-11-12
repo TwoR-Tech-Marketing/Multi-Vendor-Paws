@@ -9,8 +9,10 @@ import type {
   VendorEarningsEntry,
   VendorEarningsSummary,
 } from "@/features/financials/domain/types";
+import { EarningsEmptyState } from "@/features/financials/presentation/EarningsEmptyState";
 import { EarningsSkeleton } from "@/features/financials/presentation/EarningsSkeleton";
 import { formatEgp } from "@/features/products/domain/currency";
+import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./earnings.module.css";
@@ -24,6 +26,7 @@ function formatDate(date: Date): string {
 
 export function EarningsSection() {
   const strings = useStrings();
+  const { profile } = usePortalSession();
   const [summary, setSummary] = useState<VendorEarningsSummary | null>(null);
   const [entries, setEntries] = useState<VendorEarningsEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -95,13 +98,7 @@ export function EarningsSection() {
           <h2>{strings.earnings.ledgerTitle}</h2>
         </div>
         {entries.length === 0 ? (
-          <div className={styles.emptyState}>
-            <h3>{strings.earnings.emptyTitle}</h3>
-            <p>{strings.earnings.emptyDescription}</p>
-            <Link href={Routes.vendor.orders} className={styles.emptyCta}>
-              {strings.earnings.goToOrders}
-            </Link>
-          </div>
+          <EarningsEmptyState strings={strings} vendorType={profile.vendorType} />
         ) : (
           <div className={styles.tableWrap}>
             <table className={styles.dataTable}>

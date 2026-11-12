@@ -19,6 +19,7 @@ import type {
   VendorNotificationFilter,
 } from "@/features/notifications/domain/types";
 import { resolveNotificationHref } from "@/features/notifications/domain/notification-link";
+import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { usePreferences } from "@/shared/preferences/PreferencesContext";
 
 import { NotificationsView } from "./NotificationsView";
@@ -32,6 +33,7 @@ function notifyChanged() {
 export function NotificationsSection() {
   const router = useRouter();
   const { strings, locale } = usePreferences();
+  const { profile } = usePortalSession();
   const t = strings.notifications;
 
   const [tab, setTab] = useState<VendorNotificationFilter>("all");
@@ -116,7 +118,7 @@ export function NotificationsSection() {
   }
 
   async function onOpen(notification: VendorNotification) {
-    const href = resolveNotificationHref(notification.link);
+    const href = resolveNotificationHref(notification.link, profile.vendorType);
     if (!notification.isRead) {
       setItems((current) =>
         applyItemOpened(current, notification.notificationId, tab, new Date()),

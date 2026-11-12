@@ -649,6 +649,8 @@ export const arStrings: AppStrings = {
     emptyTitle: "لا توجد أرباح بعد",
     emptyDescription:
       "تظهر الأرباح هنا عند تحديد الطلبات كـ «تم التسليم». تُحسب العمولة تلقائياً.",
+    emptyDescriptionProvider:
+      "ستظهر أرباحك هنا بمجرد أن تبدأ في خدمة العملاء على Pawlio. تُحسب العمولة تلقائياً.",
     goToOrders: "عرض الطلبات",
     viewOrder: "عرض الطلب",
     loadError: "تعذر تحميل أرباحك. يرجى المحاولة مرة أخرى.",
