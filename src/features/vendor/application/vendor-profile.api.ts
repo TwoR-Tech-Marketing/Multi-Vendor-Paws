@@ -13,9 +13,14 @@ import type {
   VendorStoreProfile,
 } from "@/features/vendor/domain/types";
 import {
+  checkProviderPhotoFile,
+  type ProviderPhotoOwner,
+} from "@/features/vendor/domain/provider-photos";
+import {
   uploadVendorProfileLogo,
   VENDOR_LOGO_MAX_BYTES,
 } from "@/features/vendor/infrastructure/vendor-logo.storage";
+import { uploadVendorProviderPhoto } from "@/features/vendor/infrastructure/vendor-photos.storage";
 import { ApiClientError, vendorApiGet, vendorApiPatch } from "@/lib/auth-client";
 import { firebaseFunctions } from "@/lib/firebase";
 import { getProfileDataSource } from "@/lib/vendor-data-source";
@@ -41,11 +46,15 @@ export type VendorProfileHistoryPage = {
  * callable `already-exists`). `not_allowed`: the account cannot submit
  * changes right now (BFF 403, callable `failed-precondition`).
  * `logo_too_large`: the logo is over the Storage rule limit.
+ * `photo_too_large` and `photo_type_not_allowed`: a provider photo was
+ * refused before upload.
  */
 export type VendorProfileSubmitErrorReason =
   | "pending_exists"
   | "not_allowed"
   | "logo_too_large"
+  | "photo_too_large"
+  | "photo_type_not_allowed"
   | "failed";
 
 export class VendorProfileSubmitError extends Error {
@@ -127,7 +136,7 @@ async function fetchProfileFromBff(): Promise<VendorProfileSnapshot> {
 }
 
 // ---------------------------------------------------------------------------
-// Callable path (PC-2 shared callables, millis dates)
+// Callable path (shared callables, millis dates)
 // ---------------------------------------------------------------------------
 
 type RawRecord = Record<string, unknown>;
@@ -301,7 +310,7 @@ export async function fetchVendorProfileHistoryFromApi(
 }
 
 /**
- * Uploads a new store logo to `vendors/{vendorId}/logo/` (PC-2). Throws
+ * Uploads a new store logo to `vendors/{vendorId}/logo/`. Throws
  * `VendorProfileSubmitError("logo_too_large")` above the Storage rule limit.
  */
 export async function uploadVendorProfileLogoFromApi(
@@ -316,4 +325,36 @@ export async function uploadVendorProfileLogoFromApi(
   } catch {
     throw new VendorProfileSubmitError("failed");
   }
+}
+
+/**
+ * Uploads one clinic or groomer photo to `vendors/{vendorId}/photos/`. The
+ * file type and size are checked first, so nothing is sent for a refused file.
+ */
+export async function uploadVendorProviderPhotoFromApi(
+  vendorId: string,
+  file: File,
+): Promise<string> {
+  const issue = checkProviderPhotoFile(file);
+  if (issue === "photoTooLarge") throw new VendorProfileSubmitError("photo_too_large");
+  if (issue === "photoTypeNotAllowed") {
+    throw new VendorProfileSubmitError("photo_type_not_allowed");
+  }
+  try {
+    return await uploadVendorProviderPhoto(vendorId, file);
+  } catch {
+    throw new VendorProfileSubmitError("failed");
+  }
+}
+
+/** Photo owner rule for the change form, with the configured default bucket. */
+export function providerPhotoOwner(
+  vendorId: string,
+  storedUrls: readonly string[],
+): ProviderPhotoOwner {
+  return {
+    vendorId,
+    storedUrls,
+    bucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || null,
+  };
 }

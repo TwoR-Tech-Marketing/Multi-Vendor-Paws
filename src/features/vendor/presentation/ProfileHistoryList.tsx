@@ -2,6 +2,7 @@ import type {
   VendorProfileChangeHistoryItem,
   VendorProfileChangeRequestStatus,
 } from "@/features/vendor/domain/types";
+import { ProviderPhotoList } from "@/features/vendor/presentation/ProviderPhotoList";
 import type { AppStrings } from "@/shared/i18n/types";
 import type { AppLocale } from "@/shared/preferences/domain/types";
 
@@ -67,6 +68,13 @@ export function ProfileHistoryList({
               <span className={styles.meta}>
                 {t.historyReviewed.replace("{date}", formatHistoryDate(item.reviewedAt, locale))}
               </span>
+            ) : null}
+            {Array.isArray(item.providerProfile?.photoUrls) ? (
+              <ProviderPhotoList
+                strings={strings}
+                title={t.photos.proposedTitle}
+                urls={item.providerProfile.photoUrls}
+              />
             ) : null}
             {item.reviewNotes ? (
               <span className={styles.notes}>

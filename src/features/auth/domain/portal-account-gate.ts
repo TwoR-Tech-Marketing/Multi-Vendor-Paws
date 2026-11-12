@@ -4,7 +4,7 @@ export type PortalPostLoginDestination = "dashboard" | "profile" | "reject";
 
 /**
  * Maps a shared session kind to the portal post-login destination.
- * Kind only — never derive from profile fields (Gate C / S1.1).
+ * Kind only, never derive from profile fields.
  */
 export function portalPostLoginDestination(
   kind: string | null | undefined,

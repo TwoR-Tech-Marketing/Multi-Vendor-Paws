@@ -36,7 +36,7 @@ function callableUrl(): string {
 }
 
 /**
- * Calls the shared vendor_session-resolveVendorSession callable (D15 / S1.1).
+ * Calls the shared vendor_session-resolveVendorSession callable.
  */
 export async function resolveVendorSessionViaCallable(
   idToken: string,

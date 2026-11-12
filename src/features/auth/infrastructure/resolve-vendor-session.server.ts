@@ -342,6 +342,6 @@ export async function resolveVendorSessionServer(
 export { isAllowedPortalSessionKind } from "@/features/auth/domain/portal-account-gate";
 
 /**
- * @deprecated S1.1: prefer resolveVendorSessionViaCallable / ForUid.
+ * @deprecated Prefer resolveVendorSessionViaCallable / ForUid.
  * Kept until BFF callers are fully unused; do not delete.
  */

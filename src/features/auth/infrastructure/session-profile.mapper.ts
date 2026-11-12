@@ -14,7 +14,7 @@ export type CallableSessionProfile = Omit<
   isBanned?: boolean;
   logoUrl?: string | null;
   approvalStatus?: string | null;
-  /** S1.7: absent from callables deployed before S1.7, read as store. */
+  /** Absent from older callables, read as store. */
   vendorType?: string | null;
 };
 

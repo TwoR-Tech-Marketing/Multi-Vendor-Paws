@@ -53,7 +53,7 @@ export async function requireVerifiedSession(): Promise<VerifiedSession> {
 export async function buildVendorSessionDto(
   verified: VerifiedSession,
 ): Promise<VendorSessionDto | null> {
-  // S1.1 / D15: kind+profile come from the shared callable, not the local Admin mirror.
+  // Kind and profile come from the shared callable, not the local Admin mirror.
   const [resolution, authUser, storeProfile] = await Promise.all([
     resolveVendorSessionViaCallableForUid(verified.uid),
     getAdminAuth().getUser(verified.uid),

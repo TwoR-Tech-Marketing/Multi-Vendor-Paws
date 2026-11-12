@@ -4,10 +4,17 @@ import Image from "next/image";
 import { useState } from "react";
 
 import {
+  providerPhotoOwner,
   submitVendorProfileChangeFromApi,
   uploadVendorProfileLogoFromApi,
+  uploadVendorProviderPhotoFromApi,
   VendorProfileSubmitError,
 } from "@/features/vendor/application/vendor-profile.api";
+import {
+  checkProviderPhotoFile,
+  PROVIDER_PHOTOS_MAX,
+  samePhotoList,
+} from "@/features/vendor/domain/provider-photos";
 import type {
   VendorProfileChangePayload,
   VendorProfileChangeRequest,
@@ -20,6 +27,11 @@ import {
 } from "@/features/vendor/domain/provider-profile-schema";
 import { getProviderConfig } from "@/features/vendor/domain/vendor-type-config";
 import { ProviderFieldsInputs } from "@/features/vendor/presentation/ProviderFieldsInputs";
+import {
+  ProviderPhotoGrid,
+  type ProviderPhotoItem,
+} from "@/features/vendor/presentation/ProviderPhotoGrid";
+import { ProviderPhotoList } from "@/features/vendor/presentation/ProviderPhotoList";
 import type { AppStrings } from "@/shared/i18n/types";
 
 import portalStyles from "@/features/vendor/presentation/portal.module.css";
@@ -57,6 +69,10 @@ function submitErrorMessage(
       return lockMessage(profile.status === "suspended" ? "suspended" : "notApproved", strings);
     case "logo_too_large":
       return strings.profile.errors.logoTooLarge;
+    case "photo_too_large":
+      return strings.profile.errors.photoTooLarge;
+    case "photo_type_not_allowed":
+      return strings.profile.errors.photoTypeNotAllowed;
     default:
       return strings.profile.changeRequestError;
   }
@@ -84,6 +100,17 @@ function buildProviderFields(profile: VendorStoreProfile): ProviderTextFields {
     experience: profile.providerProfile?.experience ?? "",
   };
 }
+
+function storedPhotoUrls(profile: VendorStoreProfile): string[] {
+  const urls = profile.providerProfile?.photoUrls;
+  return Array.isArray(urls) ? urls : [];
+}
+
+function buildPhotoItems(profile: VendorStoreProfile): ProviderPhotoItem[] {
+  return storedPhotoUrls(profile).map((url) => ({ id: url, url }));
+}
+
+let nextPhotoId = 0;
 
 function validateForm(form: FormState, strings: AppStrings): string | null {
   if (!form.ownerName.trim()) return strings.profile.validation.ownerName;
@@ -117,6 +144,8 @@ export function ProfileStoreForm({
   );
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(profile.logoUrl);
+  const supportsPhotos = providerConfig.providerFields.includes("photoUrls");
+  const [photos, setPhotos] = useState<ProviderPhotoItem[]>(() => buildPhotoItems(profile));
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -128,6 +157,7 @@ export function ProfileStoreForm({
     setProviderFields(buildProviderFields(profile));
     setLogoPreview(profile.logoUrl);
     setLogoFile(null);
+    setPhotos(buildPhotoItems(profile));
     setIsEditing(false);
   }
 
@@ -147,6 +177,35 @@ export function ProfileStoreForm({
     setLogoPreview(URL.createObjectURL(file));
   }
 
+  function onPhotosAdded(files: File[]) {
+    setError(null);
+    const added: ProviderPhotoItem[] = [];
+    let issue: string | null = null;
+    for (const file of files) {
+      const fileIssue = checkProviderPhotoFile(file);
+      if (fileIssue) {
+        issue = strings.profile.errors[fileIssue];
+        continue;
+      }
+      if (photos.length + added.length >= PROVIDER_PHOTOS_MAX) {
+        issue = t.photos.limitReached.replace("{max}", String(PROVIDER_PHOTOS_MAX));
+        break;
+      }
+      nextPhotoId += 1;
+      added.push({ id: `new-${nextPhotoId}`, url: URL.createObjectURL(file), file });
+    }
+    if (issue) setError(issue);
+    if (added.length) setPhotos((current) => [...current, ...added]);
+  }
+
+  function onPhotoRemoved(id: string) {
+    setPhotos((current) => {
+      const removed = current.find((item) => item.id === id);
+      if (removed?.file) URL.revokeObjectURL(removed.url);
+      return current.filter((item) => item.id !== id);
+    });
+  }
+
   function startEditing() {
     setError(null);
     setSuccess(null);
@@ -160,7 +219,22 @@ export function ProfileStoreForm({
     setProviderFields(buildProviderFields(profile));
     setLogoPreview(profile.logoUrl);
     setLogoFile(null);
+    setPhotos(buildPhotoItems(profile));
     setIsEditing(false);
+  }
+
+  /** Uploads picked files in order; the full list when it changed, else undefined. */
+  async function resolvePhotoUrls(): Promise<string[] | undefined> {
+    if (!supportsPhotos) return undefined;
+    const urls: string[] = [];
+    for (const item of photos) {
+      urls.push(
+        item.file
+          ? await uploadVendorProviderPhotoFromApi(profile.vendorId, item.file)
+          : item.url,
+      );
+    }
+    return samePhotoList(urls, storedPhotoUrls(profile)) ? undefined : urls;
   }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -196,10 +270,25 @@ export function ProfileStoreForm({
         logoUrl = await uploadVendorProfileLogoFromApi(profile.vendorId, logoFile);
       }
 
+      const photoUrls = await resolvePhotoUrls();
+      let nextProvider = checkedProvider?.success ? checkedProvider.data : undefined;
+      if (photoUrls) {
+        const checkedPhotos = providerProfileSchema(
+          profile.vendorType,
+          "change",
+          providerPhotoOwner(profile.vendorId, storedPhotoUrls(profile)),
+        ).safeParse({ photoUrls });
+        if (!checkedPhotos.success) {
+          setError(strings.vendorTypes.errors.photoUrlsInvalid);
+          return;
+        }
+        nextProvider = { ...nextProvider, photoUrls };
+      }
+
       await submitVendorProfileChangeFromApi({
         ...form,
         logoUrl,
-        ...(checkedProvider?.success ? { providerProfile: checkedProvider.data } : {}),
+        ...(nextProvider ? { providerProfile: nextProvider } : {}),
       });
 
       setSuccess(t.changeRequestSuccess);
@@ -233,6 +322,14 @@ export function ProfileStoreForm({
         <div className={`${styles.alert} ${styles.alertInfo}`} role="status">
           {t.pendingChangeBanner}
         </div>
+      ) : null}
+
+      {isPending && supportsPhotos && Array.isArray(pendingChange.providerProfile?.photoUrls) ? (
+        <ProviderPhotoList
+          strings={strings}
+          title={t.photos.proposedTitle}
+          urls={pendingChange.providerProfile.photoUrls}
+        />
       ) : null}
 
       {!isPending && rejectedMessage ? (
@@ -319,6 +416,17 @@ export function ProfileStoreForm({
           fieldClassName={styles.field}
           disabled={fieldsDisabled}
         />
+
+        {supportsPhotos ? (
+          <ProviderPhotoGrid
+            strings={strings}
+            items={photos}
+            max={PROVIDER_PHOTOS_MAX}
+            disabled={fieldsDisabled}
+            onAdd={onPhotosAdded}
+            onRemove={onPhotoRemoved}
+          />
+        ) : null}
 
         <label className={styles.field}>
           {t.fields.contactPhone}

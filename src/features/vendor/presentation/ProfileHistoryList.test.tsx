@@ -94,4 +94,15 @@ describe("ProfileHistorySkeleton", () => {
     expect(html).toContain('role="status"');
     expect(html.match(/shimmer/g)?.length ?? 0).toBeGreaterThanOrEqual(9);
   });
+
+  it("shows the photos a request asked for, or that it cleared them", () => {
+    const withPhotos = render([
+      { ...base, providerProfile: { photoUrls: ["https://example.com/h1.jpg"] } },
+      { ...base, id: "r2", providerProfile: { photoUrls: [] } },
+    ]);
+    expect(withPhotos).toContain(en.profile.photos.proposedTitle);
+    expect(withPhotos).toContain("https://example.com/h1.jpg");
+    expect(withPhotos).toContain(en.profile.photos.cleared);
+    expect(render([base])).not.toContain(en.profile.photos.proposedTitle);
+  });
 });

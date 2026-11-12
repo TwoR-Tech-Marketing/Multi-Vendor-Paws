@@ -147,7 +147,7 @@ export async function fetchVendorNotifications(
 
 /**
  * Unread count for the top bar badge. Returns null on the BFF source, which
- * shows no badge (same as before PC-3).
+ * shows no badge (same as before the inbox).
  */
 export async function fetchVendorUnreadCount(): Promise<number | null> {
   if (getNotificationsDataSource() !== "callable") return null;

@@ -115,7 +115,7 @@ export async function submitProfileChangeRequestAdmin(
     contactEmail: payload.contactEmail.trim().toLowerCase(),
     contactAddress: payload.contactAddress.trim(),
     logoUrl: payload.logoUrl ?? null,
-    // S1.7: only when non-empty, so store requests stay exactly as before.
+    // Only when non-empty, so store requests stay exactly as before.
     ...(payload.providerProfile && Object.keys(payload.providerProfile).length
       ? { providerProfile: payload.providerProfile }
       : {}),

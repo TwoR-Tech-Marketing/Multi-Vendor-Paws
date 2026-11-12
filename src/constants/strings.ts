@@ -316,8 +316,22 @@ export const Strings = {
       approved: "Approved",
       rejected: "Declined",
     },
+    photos: {
+      title: "Photos",
+      hint: "Add up to {max} photos. JPEG, PNG or WebP, under 5 MB each.",
+      add: "Add photo",
+      remove: "Remove photo {index}",
+      removeShort: "Remove",
+      alt: "Photo {index}",
+      empty: "No photos yet",
+      proposedTitle: "Requested photos",
+      cleared: "All photos removed",
+      limitReached: "You can add up to {max} photos.",
+    },
     errors: {
       logoTooLarge: "The logo must be smaller than 5 MB.",
+      photoTooLarge: "Each photo must be smaller than 5 MB.",
+      photoTypeNotAllowed: "Photos must be JPEG, PNG or WebP images.",
     },
   },
   signOut: {

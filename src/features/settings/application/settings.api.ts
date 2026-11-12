@@ -13,7 +13,7 @@ function toInt(value: unknown): number {
   return Number.isFinite(n) ? Math.trunc(n) : 0;
 }
 
-/** Maps the PC-3 summary callable response to the same shape the BFF returns. */
+/** Maps the settings summary callable response to the same shape the BFF returns. */
 export function mapSettingsSummary(raw: unknown): VendorSettingsSnapshot {
   const data = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
   const rate = Number(data.commissionRatePercent);

@@ -78,6 +78,35 @@ describe("profileChangeSchema", () => {
     ).toBe(false);
   });
 
+  it("refuses duplicate photo URLs", () => {
+    expect(
+      profileChangeSchema("groomer").safeParse({
+        ...base,
+        providerProfile: { photoUrls: ["https://example.com/a.jpg", "https://example.com/a.jpg"] },
+      }).success,
+    ).toBe(false);
+  });
+
+  it("limits photos to the vendor photos folder or the stored list", () => {
+    const own = (path: string, bucket = "b1") =>
+      `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(path)}?alt=media`;
+    const owner = { vendorId: "v1", storedUrls: ["https://example.com/old.jpg"], bucket: "b1" };
+    const parse = (photoUrls: string[]) =>
+      profileChangeSchema("clinic", owner).safeParse({ ...base, providerProfile: { photoUrls } })
+        .success;
+    expect(parse([own("vendors/v1/photos/1_a.jpg"), "https://example.com/old.jpg"])).toBe(true);
+    expect(parse([])).toBe(true);
+    expect(parse([own("vendors/v2/photos/1_a.jpg")])).toBe(false);
+    expect(parse([own("vendors/v1/photos/1_a.jpg", "b2")])).toBe(false);
+    expect(parse(["https://example.com/new.jpg"])).toBe(false);
+    expect(
+      profileChangeSchema("clinic", owner).safeParse({
+        ...base,
+        providerProfile: { education: "Vet school" },
+      }).success,
+    ).toBe(true);
+  });
+
   it("refuses vendorType", () => {
     expect(profileChangeSchema("store").safeParse({ ...base, vendorType: "store" }).success).toBe(
       false,

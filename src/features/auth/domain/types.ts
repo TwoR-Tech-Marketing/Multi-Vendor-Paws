@@ -15,7 +15,7 @@ export type VendorSignupPayload = {
   contactEmail: string;
   contactAddress: string;
   logoUrl?: string | null;
-  /** S1.7: store when omitted. */
+  /** Store when omitted. */
   vendorType?: string;
   providerProfile?: ProviderProfile;
 };
@@ -35,12 +35,12 @@ export type VendorProfile = {
   restrictionReason?: string;
   restrictionExpiresAt?: Date | null;
   isPermanentRestriction?: boolean;
-  /** S1.2 / S1.14: hidden | view_only when suspended */
+  /** hidden | view_only when suspended */
   suspensionMode?: "hidden" | "view_only" | null;
   rejectionReason?: string | null;
   rejectedAt?: Date | null;
   signupRequestId?: string | null;
-  /** S1.7: normalized; "store" when the vendor and signup docs have none. */
+  /** Normalized; "store" when the vendor and signup docs have none. */
   vendorType: string;
 };
 

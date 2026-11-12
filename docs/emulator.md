@@ -1,4 +1,4 @@
-# Pointing clients at the Firebase emulator suite (T0.10)
+# Pointing clients at the Firebase emulator suite
 
 The suite lives in the panel repo (`tinderpaws_panel`), where the Cloud Functions source is. Always use project id `demo-tenderpaws`.
 
@@ -10,7 +10,7 @@ npm run emulators
 
 Full commands and seed details: `../tinderpaws_panel/functions/EMULATOR.md`.
 
-Until T0.14, the emulator loads Firestore and Storage rules from `tinderpaws_panel/emulator-rules/`, which is a copy of the buyer app rules (the buyer Firestore file includes the events block).
+Until the shared rules are in place, the emulator loads Firestore and Storage rules from `tinderpaws_panel/emulator-rules/`, which is a copy of the buyer app rules (the buyer Firestore file includes the events block).
 
 ## Vendor web portal (this repo)
 
