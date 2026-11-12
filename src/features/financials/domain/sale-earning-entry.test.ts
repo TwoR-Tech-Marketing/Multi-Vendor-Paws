@@ -111,4 +111,11 @@ describe("buildSaleEarningEntry", () => {
     expect(entry.dealType).toBeNull();
     expect(entry.createdBy).toBe("system");
   });
+
+  it("adds the test flag only for a test order or a test vendor", () => {
+    expect("isTest" in buildSaleEarningEntry(order(), "actor_1")).toBe(false);
+    expect("isTest" in buildSaleEarningEntry(order(), "actor_1", false)).toBe(false);
+    expect(buildSaleEarningEntry(order({ isTest: true }), "actor_1").isTest).toBe(true);
+    expect(buildSaleEarningEntry(order(), "actor_1", true).isTest).toBe(true);
+  });
 });

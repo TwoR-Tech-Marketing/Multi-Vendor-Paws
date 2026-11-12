@@ -22,6 +22,7 @@ export const arStrings: AppStrings = {
     closeMenu: "إغلاق القائمة",
     openProfile: "فتح الملف الشخصي",
     goBack: "رجوع",
+    testAccountBadge: "حساب تجريبي",
   },
   nav: {
     dashboard: "لوحة التحكم",

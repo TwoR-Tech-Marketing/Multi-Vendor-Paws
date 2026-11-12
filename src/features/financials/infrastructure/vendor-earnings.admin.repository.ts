@@ -114,6 +114,16 @@ export async function getVendorEarningsPage(vendorId: string): Promise<VendorEar
   return { summary, entries };
 }
 
+/** A failed or missing vendor read counts as a normal vendor. */
+async function isTestVendor(vendorId: string): Promise<boolean> {
+  try {
+    const snap = await getAdminFirestore().collection("vendors").doc(vendorId).get();
+    return snap.exists && snap.data()?.isTest === true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Records the sale for a delivered vendor order once per vendorOrderId.
  * Rows written by the shared functions writer count, and both writers use
@@ -123,6 +133,13 @@ export async function recordSaleEarningForDeliveredOrder(
   vendorOrder: VendorOrder,
   actorUid: string,
 ): Promise<boolean> {
+  // A test order only reaches the ledger of a test vendor. Test rows carry
+  // the flag, and the summary is flagged only for a test vendor.
+  const vendorIsTest = await isTestVendor(vendorOrder.vendorId);
+  if (vendorOrder.isTest === true && !vendorIsTest) {
+    return false;
+  }
+
   const db = getAdminFirestore();
   const entriesRef = earningsEntriesCollection(vendorOrder.vendorId);
   const summaryRef = db.collection(SUMMARY_COLLECTION).doc(vendorOrder.vendorId);
@@ -132,7 +149,7 @@ export async function recordSaleEarningForDeliveredOrder(
     .where("type", "==", "sale")
     .limit(1);
 
-  const entry = buildSaleEarningEntry(vendorOrder, actorUid);
+  const entry = buildSaleEarningEntry(vendorOrder, actorUid, vendorIsTest);
 
   return db.runTransaction(async (tx) => {
     const [existing, ownRow, summarySnap] = await Promise.all([
@@ -166,6 +183,7 @@ export async function recordSaleEarningForDeliveredOrder(
           (current.pendingPayoutPiastres ?? 0) + entry.netPiastres,
         currency: APP_CURRENCY,
         updatedAt: FieldValue.serverTimestamp(),
+        ...(vendorIsTest ? { isTest: true } : {}),
       },
       { merge: true },
     );

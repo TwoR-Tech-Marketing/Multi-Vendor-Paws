@@ -20,6 +20,7 @@ export const Strings = {
     closeMenu: "Close menu",
     openProfile: "Open profile",
     goBack: "Go back",
+    testAccountBadge: "Test account",
   },
   nav: {
     dashboard: "Dashboard",

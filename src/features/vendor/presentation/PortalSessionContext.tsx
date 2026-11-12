@@ -25,6 +25,8 @@ type PortalSessionContextValue = {
   profile: VendorProfile;
   sessionKind: VendorSessionKind;
   isActiveVendor: boolean;
+  /** True only when the session profile marks a test account. */
+  isTestAccount: boolean;
   isLoggingOut: boolean;
   storeBranding: {
     storeName: string;
@@ -56,6 +58,7 @@ function mapSessionDto(dto: VendorSessionDto): PortalSessionContextValue {
     profile: dto.profile,
     sessionKind: dto.sessionKind,
     isActiveVendor: dto.sessionKind === "active",
+    isTestAccount: dto.profile.isTest === true,
     isLoggingOut: false,
     storeBranding: dto.storeBranding,
     refreshStoreBranding: async () => {},
@@ -109,6 +112,7 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
             profile: dto.profile,
             sessionKind: dto.sessionKind,
             isActiveVendor: dto.sessionKind === "active",
+            isTestAccount: dto.profile.isTest === true,
           }
         : current,
     );

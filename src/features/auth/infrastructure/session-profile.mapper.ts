@@ -4,7 +4,7 @@ import { normalizeVendorType } from "@/features/vendor/domain/vendor-type-config
 /** `profile` as returned by vendor_session-resolveVendorSession. */
 export type CallableSessionProfile = Omit<
   VendorProfile,
-  "restrictionExpiresAt" | "rejectedAt" | "vendorType"
+  "restrictionExpiresAt" | "rejectedAt" | "vendorType" | "isTest"
 > & {
   restrictionExpiresAt?: string | null;
   rejectedAt?: string | null;
@@ -16,6 +16,8 @@ export type CallableSessionProfile = Omit<
   approvalStatus?: string | null;
   /** Absent from older callables, read as store. */
   vendorType?: string | null;
+  /** Absent from older callables, read as false. */
+  isTest?: boolean | null;
 };
 
 export function mapProfile(profile: CallableSessionProfile | null): VendorProfile | null {
@@ -41,5 +43,6 @@ export function mapProfile(profile: CallableSessionProfile | null): VendorProfil
     rejectedAt: profile.rejectedAt ? new Date(profile.rejectedAt) : null,
     signupRequestId: profile.signupRequestId ?? null,
     vendorType: normalizeVendorType(profile.vendorType),
+    isTest: profile.isTest === true,
   };
 }
