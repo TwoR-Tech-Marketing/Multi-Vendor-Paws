@@ -34,7 +34,7 @@
 
 .summaryValue {
   margin: 0;
-  font-size: 24px;
+  font-size: var(--text-2xl);
   font-weight: var(--font-bold);
   color: var(--color-text);
 }
@@ -91,8 +91,8 @@
 }
 
 .badgeSkeleton {
-  width: 64px;
-  height: 24px;
+  width: var(--space-16);
+  height: var(--space-6);
   border-radius: var(--radius-full);
 }
 

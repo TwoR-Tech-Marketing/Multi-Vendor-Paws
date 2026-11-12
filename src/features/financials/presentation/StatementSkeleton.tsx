@@ -24,7 +24,7 @@ function PeriodCardSkeleton() {
 }
 
 /** One shimmer per visible shape of the statement page. */
-export function StatementSkeleton({ label }: { label: string }) {
+export function StatementSkeleton({ label }: { label?: string }) {
   return (
     <section className={styles.sectionStack} role="status" aria-label={label} aria-busy="true">
       <div className={styles.summaryGrid}>

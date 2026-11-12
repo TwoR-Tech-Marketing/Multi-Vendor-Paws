@@ -64,6 +64,7 @@
   --space-6: 24px;
   --space-8: 32px;
   --space-12: 48px;
+  --space-16: 64px;
 
   --radius-sm: 8px;
   --radius-control: 10px;
@@ -75,6 +76,7 @@
   --text-sm: 14px;
   --text-base: 16px;
   --text-lg: 18px;
+  --text-2xl: 24px;
 
   --font-light: 300;
   --font-normal: 400;
