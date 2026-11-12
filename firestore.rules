@@ -250,6 +250,13 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // PC-3: vendor notifications inbox. Separate from buyer `notifications`.
+    // Owner read only; writes go through Cloud Functions (Admin SDK).
+    match /vendorNotifications/{id} {
+      allow read: if isSignedIn() && resource.data.vendorId == request.auth.uid;
+      allow write: if false;
+    }
+
     // -----------------------------------------------------------------
     // Admin governance + audit
     // -----------------------------------------------------------------

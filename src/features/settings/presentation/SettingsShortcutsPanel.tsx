@@ -12,10 +12,20 @@ import styles from "./settings.module.css";
 
 type SettingsShortcutsPanelProps = {
   strings: AppStrings;
+  isActiveVendor: boolean;
   vendorType?: string;
 };
 
-export function SettingsShortcutsPanel({ strings, vendorType }: SettingsShortcutsPanelProps) {
+/**
+ * Quick links are for active vendors only (PC-3 settings item 4), and only to
+ * screens the vendor type has (S1.7).
+ */
+export function SettingsShortcutsPanel({
+  strings,
+  isActiveVendor,
+  vendorType,
+}: SettingsShortcutsPanelProps) {
+  if (!isActiveVendor) return null;
   const t = strings.settings;
 
   const shortcuts = [

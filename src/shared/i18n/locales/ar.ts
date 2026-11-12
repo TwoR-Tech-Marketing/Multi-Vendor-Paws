@@ -244,6 +244,43 @@ export const arStrings: AppStrings = {
     emptyUnreadTitle: "لا توجد إشعارات غير مقروءة",
     emptySubtitle: "لقد اطلعت على كل شيء.",
     loading: "جاري تحميل الإشعارات…",
+    openWithUnread: "فتح الإشعارات، {count} غير مقروءة",
+    loadError: "تعذر تحميل الإشعارات. حاول مرة أخرى.",
+    markReadError: "تعذر تحديث الإشعارات. حاول مرة أخرى.",
+    loadMore: "عرض المزيد",
+    loadingMore: "جارٍ تحميل المزيد…",
+    unreadLabel: "غير مقروء",
+    justNow: "الآن",
+    fallbackTitle: "إشعار جديد",
+    fallbackBody: "لديك تحديث جديد على متجرك.",
+    types: {
+      orderNew: { title: "طلب جديد", body: "وصلك طلب جديد {orderNumber}." },
+      orderHold: { title: "طلب معلّق", body: "الطلب {orderNumber} معلّق." },
+      orderReleased: {
+        title: "تم إطلاق الطلب",
+        body: "تم إطلاق الطلب {orderNumber} وهو جاهز للتجهيز.",
+      },
+      accountApproved: {
+        title: "تمت الموافقة على الحساب",
+        body: "متجرك نشط الآن. يمكنك البدء في إضافة المنتجات.",
+      },
+      accountRejected: {
+        title: "لم تتم الموافقة على الطلب",
+        body: "لم تتم الموافقة على طلبك. {reason}",
+      },
+      documentReviewed: {
+        title: "تمت مراجعة المستند",
+        body: "تمت مراجعة مستندك {documentName}: {status}.",
+      },
+      accountSuspended: {
+        title: "تم تعليق الحساب",
+        body: "تم تعليق متجرك. افتح ملفك الشخصي لمعرفة التفاصيل.",
+      },
+      payoutRecorded: {
+        title: "تم تسجيل دفعة",
+        body: "تم تسجيل دفعة بقيمة {amount} لحسابك.",
+      },
+    },
   },
   settings: {
     appearanceTitle: "المظهر",

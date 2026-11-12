@@ -71,6 +71,17 @@
 
   --control-height: 48px;
 
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
   --duration-base: 200ms;
 
   /* Landing — Sign-Painter's Street */
