@@ -526,7 +526,7 @@ type Result<T> =
 ---
 
 ## 14) Auth and Role-Based Access
-- Firebase Auth (client) is used **only** for the login token exchange (`signInVendorForIdToken` in [`src/lib/auth.ts`](src/lib/auth.ts)).
+- Firebase Auth (client) is used for the login token exchange (`signInVendorForIdToken` in [`src/lib/auth.ts`](src/lib/auth.ts)) and, through a custom token derived from the session (`POST /api/auth/firebase-token`, `ensureClientAuth` in [`src/lib/client-auth.ts`](src/lib/client-auth.ts)), for shared callables and Storage uploads. Portal callables go through `invokeCallable` in [`src/lib/callable.ts`](src/lib/callable.ts); only the pre-session signup callables call `httpsCallable` directly. Sign-out and a missing session clear the client user.
 - **Production session:** httpOnly cookie `__session` via `POST /api/auth/session` — see [`docs/production-security.md`](docs/production-security.md).
 - Bootstrap portal session with `GET /api/auth/me` — not `onAuthStateChanged` + direct Firestore.
 - Two roles: `admin` and `vendor`. This app is **vendor-only**; admin uses the separate panel.
@@ -661,7 +661,7 @@ export const Routes = {
 
 ## This repo (Multi-Vendor-Paws) — current conventions
 - **Router**: App Router under `src/app/`.
-- **Auth**: httpOnly session cookie (`__session`); client Firebase Auth for login token exchange only; [`src/lib/auth-client.ts`](src/lib/auth-client.ts) for session API.
+- **Auth**: httpOnly session cookie (`__session`); client Firebase Auth for the login token exchange and, via a session-derived custom token, for shared callables; [`src/lib/auth-client.ts`](src/lib/auth-client.ts) for session API.
 - **Firebase**: Client init in `src/lib/firebase.ts`; Admin SDK in `src/lib/firebase-admin.ts` (server-only).
 - **BFF**: Vendor APIs under `src/app/api/vendor/`; profile via [`src/features/vendor/application/vendor-profile.api.ts`](src/features/vendor/application/vendor-profile.api.ts).
 - **Security docs**: [`docs/production-security.md`](docs/production-security.md).
