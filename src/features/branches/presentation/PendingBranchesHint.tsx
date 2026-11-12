@@ -9,7 +9,7 @@ import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./branches.module.css";
 
-/** Onboarding hint for pending and rejected clinics and groomers (C7). */
+/** Onboarding hint for pending and rejected clinics and groomers. */
 export function PendingBranchesHint({ showLink = false }: { showLink?: boolean }) {
   const strings = useStrings();
   const { profile, sessionKind } = usePortalSession();

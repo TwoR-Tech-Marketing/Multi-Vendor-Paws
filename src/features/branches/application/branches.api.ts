@@ -22,8 +22,8 @@ import {
 } from "@/features/branches/infrastructure/branches.callables";
 
 /**
- * Branches and services through the shared `vendor_branches` callables (S1.8,
- * D15). No BFF exists for this feature. vendorId is always the caller's auth
+ * Branches and services through the shared `vendor_branches` callables.
+ * No BFF exists for this feature. vendorId is always the caller's auth
  * uid on the server; nothing here sends one.
  */
 
@@ -272,7 +272,7 @@ export async function getBranchDeals(): Promise<BranchDeals> {
 }
 
 /**
- * Contract 2.4: create without photo, upload, then update with photoUrl.
+ * Photo flow: create without photo, upload, then update with photoUrl.
  * Returns the updated service.
  */
 export async function attachServicePhoto(input: {

@@ -1,5 +1,5 @@
 /**
- * Branches and services for clinic and groomer providers (S1.8).
+ * Branches and services for clinic and groomer providers.
  * Shapes match the vendor_branches callables. Money is integer piastres.
  */
 
@@ -94,7 +94,7 @@ export type BranchDeals = {
   branches: BranchDealRow[];
 };
 
-/** Limits shared with the callables (contract 2.1 to 2.3). */
+/** Limits shared with the callables (server limits). */
 export const BRANCH_LIMITS = {
   maxActiveBranches: 20,
   maxActiveServices: 100,

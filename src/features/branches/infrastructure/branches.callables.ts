@@ -4,7 +4,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { firebaseFunctions, firebaseStorage } from "@/lib/firebase";
 import { StoragePaths } from "@/lib/storage-paths";
 
-/** Callable names of the `vendor_branches` export group (S1.8). */
+/** Callable names of the `vendor_branches` export group. */
 export const BRANCH_CALLABLES = {
   list: "vendor_branches-listVendorBranches",
   get: "vendor_branches-getVendorBranch",

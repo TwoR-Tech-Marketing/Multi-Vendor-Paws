@@ -4,7 +4,7 @@ import type { AppStrings } from "@/shared/i18n/types";
 
 import styles from "./branches.module.css";
 
-/** Read only deal for one branch (DL-1). Deals are set by the admin. */
+/** Read only deal for one branch. Deals are set by the admin. */
 export function BranchDealCard({ deal, strings }: { deal: BranchDeal; strings: AppStrings }) {
   const copy = strings.deals.branch;
   return (

@@ -23,7 +23,7 @@ export const StoragePaths = {
       fileName,
     )}`;
   },
-  /** S1.8: service photo under the caller's branch folder (checked by the callable). */
+  /** Service photo under the caller's branch folder (checked by the callable). */
   vendorServicePhoto(
     vendorId: string,
     branchId: string,

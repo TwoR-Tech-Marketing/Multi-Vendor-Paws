@@ -76,7 +76,7 @@ service cloud.firestore {
       allow delete: if isOwner(vendorId) && isVendor();
     }
 
-    // S1.8: clinic and groomer branches and services. Owner and admin read;
+    // Clinic and groomer branches and services. Owner and admin read;
     // writes go through the vendor_branches Cloud Functions (Admin SDK).
     match /vendors/{vendorId}/branches/{branchId} {
       allow read: if isOwner(vendorId) || isAdmin();
