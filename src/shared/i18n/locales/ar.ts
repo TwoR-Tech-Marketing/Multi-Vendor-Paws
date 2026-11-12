@@ -1653,7 +1653,7 @@ export const arStrings: AppStrings = {
         d90: "90 يومًا",
       },
       visits: "الزيارات",
-      newPatients: "مرضى جدد",
+      newPatients: "عملاء جدد",
       newPatientsHint: "أول زيارة لأي من فروعك خلال هذه الفترة",
       services: "حصة الخدمات",
       servicesEmpty: "لا توجد زيارات مكتملة في هذه الفترة.",

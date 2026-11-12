@@ -9,7 +9,7 @@ import {
   getProviderDashboard,
   mapProviderDashboard,
 } from "@/features/provider-dashboard/application/provider-dashboard.api";
-import { formatPercent, halfUpPercent, topTags } from "@/features/provider-dashboard/domain/stats";
+import { formatPercent, topTags } from "@/features/provider-dashboard/domain/stats";
 
 const RAW_DASHBOARD = {
   ok: true,
@@ -55,18 +55,19 @@ describe("provider dashboard mapping", () => {
     expect(data.rating.tagCounts).toEqual({ friendly_doctor: 2, clean_clinic: 1 });
   });
 
-  it("uses safe defaults and computes a missing share half up", () => {
+  it("uses safe defaults and keeps server shares as given", () => {
     const data = mapProviderDashboard({
       services: [
-        { serviceId: "a", count: 1 },
-        { serviceId: "b", count: 2 },
-        { serviceId: "c", count: 0 },
+        { serviceId: "a", count: 1, sharePercent: 34 },
+        { serviceId: "b", count: 2, sharePercent: 68 },
+        { serviceId: "c", count: 0, sharePercent: 0 },
+        { serviceId: "d", count: 1 },
       ],
     });
     expect(data.range.preset).toBe(30);
     expect(data.visits).toBe(0);
     expect(data.categorySet).toBeNull();
-    expect(data.services.map((s) => s.sharePercent)).toEqual([33, 67]);
+    expect(data.services.map((s) => s.sharePercent)).toEqual([34, 68, 0]);
     expect(data.rating).toEqual({ count: 0, overallTenths: null, categories: [], tagCounts: {} });
   });
 });
@@ -83,13 +84,9 @@ describe("provider dashboard callable", () => {
 });
 
 describe("dashboard stats helpers", () => {
-  it("rounds percents half up with Western digits", () => {
-    expect(halfUpPercent(1, 8)).toBe(13);
-    expect(halfUpPercent(1, 3)).toBe(33);
-    expect(halfUpPercent(1, 200)).toBe(1);
-    expect(halfUpPercent(0, 5)).toBe(0);
-    expect(halfUpPercent(3, 0)).toBe(0);
+  it("formats percents with Western digits", () => {
     expect(formatPercent(45)).toBe("45%");
+    expect(formatPercent(102)).toBe("102%");
   });
 
   it("orders top tags by count then id and drops zeros", () => {

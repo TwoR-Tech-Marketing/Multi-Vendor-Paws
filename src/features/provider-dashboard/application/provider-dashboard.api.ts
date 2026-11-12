@@ -7,7 +7,6 @@ import {
   type ProviderDashboard,
   type ServiceShare,
 } from "@/features/provider-dashboard/domain/types";
-import { halfUpPercent } from "@/features/provider-dashboard/domain/stats";
 import { invokeProviderDashboard } from "@/features/provider-dashboard/infrastructure/provider-dashboard.callables";
 import {
   REVIEW_CATEGORY_IDS,
@@ -52,21 +51,18 @@ function asPreset(value: unknown): DashboardPreset {
 }
 
 function mapServices(value: unknown): ServiceShare[] {
-  const rows = asArray(value).map(asObject);
-  const total = rows.reduce((sum, row) => sum + asCount(row.count), 0);
-  return rows
-    .map((row) => {
-      const count = asCount(row.count);
-      const share = asIntOrNull(row.sharePercent);
-      return {
-        serviceId: asString(row.serviceId),
-        branchId: asString(row.branchId),
-        nameEn: asNullableString(row.nameEn),
-        nameAr: asNullableString(row.nameAr),
-        count,
-        sharePercent: share !== null && share >= 0 ? share : halfUpPercent(count, total),
-      };
-    })
+  // Shares are the server values as given; each is rounded on its own, so
+  // they may sum to slightly more or less than 100.
+  return asArray(value)
+    .map(asObject)
+    .map((row) => ({
+      serviceId: asString(row.serviceId),
+      branchId: asString(row.branchId),
+      nameEn: asNullableString(row.nameEn),
+      nameAr: asNullableString(row.nameAr),
+      count: asCount(row.count),
+      sharePercent: Math.max(0, asIntOrNull(row.sharePercent) ?? 0),
+    }))
     .filter((row) => row.serviceId && row.count > 0);
 }
 
