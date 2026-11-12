@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { serializeVendorOrder } from "@/features/orders/application/vendor-order.serializer";
 import { updateVendorOrderStatusSchema } from "@/features/orders/domain/schemas";
-import type { VendorOrder } from "@/features/orders/domain/types";
 import {
   getVendorOrder,
   isValidStatusTransition,
@@ -19,18 +19,6 @@ import { Strings } from "@/constants/strings";
 type RouteContext = {
   params: Promise<{ vendorOrderId: string }>;
 };
-
-function serializeVendorOrder(order: VendorOrder) {
-  return {
-    ...order,
-    placedAt: order.placedAt.toISOString(),
-    updatedAt: order.updatedAt.toISOString(),
-    statusHistory: order.statusHistory.map((event) => ({
-      ...event,
-      at: event.at.toISOString(),
-    })),
-  };
-}
 
 export async function GET(_request: Request, context: RouteContext) {
   const apiContext = await getActiveVendorApiContext();

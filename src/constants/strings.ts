@@ -611,6 +611,11 @@ export const Strings = {
     itemsSection: "Items",
     summarySection: "Summary",
     timelineSection: "Status history",
+    historyRoleLabels: {
+      vendor: "Vendor",
+      admin: "Admin",
+      system: "System",
+    },
     updateStatus: "Update status",
     statusNote: "Note (optional)",
     subtotal: "Subtotal",

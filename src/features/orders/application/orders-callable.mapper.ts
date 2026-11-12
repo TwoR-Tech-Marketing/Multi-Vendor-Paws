@@ -1,14 +1,17 @@
-import type {
-  VendorOrder,
-  VendorOrderListFilter,
-  VendorOrderStatus,
+import { toOrderHistoryRole } from "@/features/orders/domain/history-role";
+import {
+  ORDER_HISTORY_ROLES,
+  type OrderHistoryRole,
+  type VendorOrder,
+  type VendorOrderListFilter,
+  type VendorOrderStatus,
 } from "@/features/orders/domain/types";
 
 /** Wire shape shared by the BFF and the callable path before dates become `Date`. */
 export type VendorOrderStatusEventResponse = {
   status: VendorOrderStatus;
   at: string;
-  by: string;
+  byRole: OrderHistoryRole;
   note: string | null;
 };
 
@@ -26,8 +29,6 @@ export type VendorOrderListCallableRequest = {
   dateFrom?: string;
   dateTo?: string;
 };
-
-const HISTORY_ROLES = ["vendor", "admin", "system"] as const;
 
 function millisToIso(value: unknown): string | null {
   if (typeof value !== "number" || !Number.isFinite(value)) return null;
@@ -55,29 +56,33 @@ function preferMillis(millis: unknown, fallback: unknown): string {
   return millisToIso(millis) ?? toIso(fallback);
 }
 
-function historyActor(event: Record<string, unknown>): string {
+/** Uses `byRole`; an older response with a raw `by` is mapped to a role, never kept. */
+function historyRole(event: Record<string, unknown>, vendorId: string): OrderHistoryRole {
   const role = event.byRole;
-  if (typeof role === "string" && (HISTORY_ROLES as readonly string[]).includes(role)) {
-    return role;
+  if (typeof role === "string" && (ORDER_HISTORY_ROLES as readonly string[]).includes(role)) {
+    return role as OrderHistoryRole;
   }
-  return typeof event.by === "string" ? event.by : "";
+  return toOrderHistoryRole(event.by, vendorId);
 }
 
-function normalizeStatusHistory(raw: unknown): VendorOrderStatusEventResponse[] {
+function normalizeStatusHistory(
+  raw: unknown,
+  vendorId: string,
+): VendorOrderStatusEventResponse[] {
   if (!Array.isArray(raw)) return [];
   return raw
     .filter((event): event is Record<string, unknown> => !!event && typeof event === "object")
     .map((event) => ({
       status: event.status as VendorOrderStatus,
       at: preferMillis(event.atMs, event.at),
-      by: historyActor(event),
+      byRole: historyRole(event, vendorId),
       note: typeof event.note === "string" ? event.note : null,
     }));
 }
 
 /**
  * Maps a `vendor_orders` callable order into the wire shape the BFF returns.
- * Prefers `placedAtMs`, `updatedAtMs` and history `atMs`; maps `byRole` into `by`.
+ * Prefers `placedAtMs`, `updatedAtMs` and history `atMs`; keeps `byRole` only.
  */
 export function normalizeCallableOrder(raw: Record<string, unknown>): VendorOrderResponse {
   return {
@@ -86,7 +91,10 @@ export function normalizeCallableOrder(raw: Record<string, unknown>): VendorOrde
     heldReason: typeof raw.heldReason === "string" ? raw.heldReason : null,
     placedAt: preferMillis(raw.placedAtMs, raw.placedAt),
     updatedAt: preferMillis(raw.updatedAtMs, raw.updatedAt),
-    statusHistory: normalizeStatusHistory(raw.statusHistory),
+    statusHistory: normalizeStatusHistory(
+      raw.statusHistory,
+      typeof raw.vendorId === "string" ? raw.vendorId : "",
+    ),
   };
 }
 

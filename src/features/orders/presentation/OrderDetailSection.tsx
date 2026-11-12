@@ -15,6 +15,7 @@ import {
   type VendorOrderStatus,
 } from "@/features/orders/domain/types";
 import { OrderStatusBadge } from "@/features/orders/presentation/OrderStatusBadge";
+import { OrderStatusTimeline } from "@/features/orders/presentation/OrderStatusTimeline";
 import { OrdersSkeleton } from "@/features/orders/presentation/OrdersSkeleton";
 import { formatEgp } from "@/features/products/domain/currency";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
@@ -233,17 +234,11 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
       <article className={styles.panel}>
         <div className={styles.detailPanel}>
           <h2 className={styles.sectionTitle}>{strings.orders.timelineSection}</h2>
-          <div className={styles.timeline}>
-            {order.statusHistory.map((event) => (
-              <div key={`${event.status}-${event.at.toISOString()}`} className={styles.timelineItem}>
-                <span>
-                  <OrderStatusBadge status={event.status} strings={strings} />
-                  {event.note ? ` — ${event.note}` : ""}
-                </span>
-                <span>{formatDate(event.at)}</span>
-              </div>
-            ))}
-          </div>
+          <OrderStatusTimeline
+            events={order.statusHistory}
+            strings={strings}
+            formatDate={formatDate}
+          />
         </div>
       </article>
     </section>

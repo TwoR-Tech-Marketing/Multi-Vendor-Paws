@@ -1,26 +1,14 @@
 import { NextResponse } from "next/server";
 
+import { serializeVendorOrder } from "@/features/orders/application/vendor-order.serializer";
 import type {
   OrderDatePreset,
-  VendorOrder,
   VendorOrderListFilter,
   VendorOrderStatus,
 } from "@/features/orders/domain/types";
 import { listVendorOrders } from "@/features/orders/infrastructure/vendor-orders.admin.repository";
 import { apiGenericError, apiUnauthorized } from "@/lib/api/response";
 import { getActiveVendorApiContext } from "@/lib/auth/require-vendor-api";
-
-function serializeVendorOrder(order: VendorOrder) {
-  return {
-    ...order,
-    placedAt: order.placedAt.toISOString(),
-    updatedAt: order.updatedAt.toISOString(),
-    statusHistory: order.statusHistory.map((event) => ({
-      ...event,
-      at: event.at.toISOString(),
-    })),
-  };
-}
 
 const VALID_STATUSES: Array<VendorOrderStatus | "any"> = [
   "any",

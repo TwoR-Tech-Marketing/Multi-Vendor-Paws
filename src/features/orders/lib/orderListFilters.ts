@@ -3,6 +3,7 @@ import type {
   VendorOrder,
   VendorOrderStatus,
 } from "@/features/orders/domain/types";
+import { resolveCairoDateRange } from "@/features/orders/lib/cairoDates";
 import type { AppStrings } from "@/shared/i18n/types";
 
 export type OrderListFilters = {
@@ -19,57 +20,15 @@ export const EMPTY_ORDER_LIST_FILTERS: OrderListFilters = {
   dateTo: "",
 };
 
-function startOfDay(date: Date): Date {
-  const value = new Date(date);
-  value.setHours(0, 0, 0, 0);
-  return value;
-}
-
-function endOfDay(date: Date): Date {
-  const value = new Date(date);
-  value.setHours(23, 59, 59, 999);
-  return value;
-}
-
-function parseDateInput(value: string): Date | null {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
-  const parsed = new Date(`${value}T00:00:00`);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-}
-
 export function resolveOrderDateBounds(
   filters: Pick<OrderListFilters, "datePreset" | "dateFrom" | "dateTo">,
   now = new Date(),
 ): { from: Date | null; to: Date | null } {
-  switch (filters.datePreset) {
-    case "any":
-      return { from: null, to: null };
-    case "today":
-      return { from: startOfDay(now), to: endOfDay(now) };
-    case "yesterday": {
-      const yesterday = new Date(now);
-      yesterday.setDate(yesterday.getDate() - 1);
-      return { from: startOfDay(yesterday), to: endOfDay(yesterday) };
-    }
-    case "last7": {
-      const start = new Date(now);
-      start.setDate(start.getDate() - 6);
-      return { from: startOfDay(start), to: endOfDay(now) };
-    }
-    case "last30": {
-      const start = new Date(now);
-      start.setDate(start.getDate() - 29);
-      return { from: startOfDay(start), to: endOfDay(now) };
-    }
-    case "custom": {
-      const from = filters.dateFrom ? startOfDay(parseDateInput(filters.dateFrom) ?? new Date(0)) : null;
-      const to = filters.dateTo ? endOfDay(parseDateInput(filters.dateTo) ?? new Date(0)) : null;
-      if (!from && !to) return { from: null, to: null };
-      return { from, to };
-    }
-    default:
-      return { from: null, to: null };
-  }
+  const range = resolveCairoDateRange(filters, now.getTime());
+  return {
+    from: range?.fromMs == null ? null : new Date(range.fromMs),
+    to: range?.toMs == null ? null : new Date(range.toMs),
+  };
 }
 
 export function orderMatchesDateFilter(
@@ -128,7 +87,6 @@ function buildOrderSearchHaystack(order: VendorOrder): string[] {
     ...order.statusHistory.flatMap((event) => [
       event.status,
       event.note ?? "",
-      event.by,
     ]),
   ]
     .map((part) => part.trim().toLowerCase())
