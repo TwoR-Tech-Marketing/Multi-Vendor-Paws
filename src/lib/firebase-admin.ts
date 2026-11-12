@@ -19,10 +19,7 @@ function getAdminApp(): App {
   }
 
   const { projectId, clientEmail, privateKey } = getFirebaseAdminEnv();
-  const storageBucket =
-    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
-    process.env.FIREBASE_STORAGE_BUCKET ||
-    `${projectId}.appspot.com`;
+  const storageBucket = defaultBucketFor(projectId);
 
   adminApp = initializeApp({
     credential: cert({
@@ -35,6 +32,19 @@ function getAdminApp(): App {
   });
 
   return adminApp;
+}
+
+function defaultBucketFor(projectId: string): string {
+  return (
+    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET ||
+    process.env.FIREBASE_STORAGE_BUCKET ||
+    `${projectId}.appspot.com`
+  );
+}
+
+/** Default Storage bucket, the same one the Admin SDK is initialized with. */
+export function getDefaultStorageBucket(): string {
+  return defaultBucketFor(getFirebaseAdminEnv().projectId);
 }
 
 export function getAdminAuth(): Auth {

@@ -8,7 +8,7 @@ import {
 } from "@/features/vendor/domain/vendor-type-config";
 
 /**
- * Store and provider step of the vendor signup (S1.7). Issue messages are keys
+ * Store and provider step of the vendor signup. Issue messages are keys
  * of `vendorTypes.errors`. Mirrors the server checks in
  * vendor_signup-submitVendorSignupRequest, which stays the real validation.
  */

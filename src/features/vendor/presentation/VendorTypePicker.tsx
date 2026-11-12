@@ -11,7 +11,7 @@ type VendorTypePickerProps = {
   disabled?: boolean;
 };
 
-/** Signup and reapply account type choice (S1.7). One type per account. */
+/** Signup and reapply account type choice. One type per account. */
 export function VendorTypePicker({ strings, value, onChange, disabled }: VendorTypePickerProps) {
   const t = strings.vendorTypes;
   return (

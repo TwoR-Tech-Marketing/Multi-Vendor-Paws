@@ -9,7 +9,7 @@ import { getStrings } from "@/shared/i18n/get-strings";
 
 const strings = getStrings("en");
 
-/** The store sidebar exactly as it was before S1.7. */
+/** The store sidebar exactly as it was before vendor types. */
 const STORE_SIDEBAR_BEFORE_S17 = [
   { id: "dashboard", href: "/dashboard", label: "Dashboard", icon: "/portal-nav/nav-dashboard.svg", requiresActiveAccount: false },
   { id: "products", href: "/products", label: "Products", icon: "/portal-nav/nav-inventory.svg", requiresActiveAccount: true },
@@ -100,6 +100,11 @@ describe("getPortalSidebarNavItems", () => {
       strings.pages.statement.title,
     );
     expect(resolvePortalNavId("/earnings/payouts")).toBe("earnings");
+  });
+
+  it("gives the deal page its own title under earnings", () => {
+    expect(resolvePortalPageMeta("/earnings/deal", strings).title).toBe(strings.pages.deal.title);
+    expect(resolvePortalNavId("/earnings/deal")).toBe("earnings");
   });
 
   it("shows a comingSoon telehealth item for doctors", () => {
