@@ -54,3 +54,9 @@ export type VendorProfileChangeRequest = VendorProfileChangePayload & {
   reviewedBy?: string | null;
   reviewNotes?: string | null;
 };
+
+/** A change request as the shared callables return it (no owner or admin uid). */
+export type VendorProfileChangeHistoryItem = Omit<
+  VendorProfileChangeRequest,
+  "vendorId" | "authUid" | "reviewedBy"
+>;

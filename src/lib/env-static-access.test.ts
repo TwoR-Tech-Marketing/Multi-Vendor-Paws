@@ -62,6 +62,7 @@ describe("static NEXT_PUBLIC env access", () => {
       "NEXT_PUBLIC_VENDOR_ORDERS_DATA_SOURCE",
       "NEXT_PUBLIC_VENDOR_NOTIFICATIONS_DATA_SOURCE",
       "NEXT_PUBLIC_VENDOR_SETTINGS_DATA_SOURCE",
+      "NEXT_PUBLIC_VENDOR_PROFILE_DATA_SOURCE",
     ]) {
       expect(flags!.code).toContain(`process.env.${name}`);
     }
