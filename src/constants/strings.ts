@@ -188,6 +188,43 @@ export const Strings = {
     emptyUnreadTitle: "No unread notifications",
     emptySubtitle: "You're all caught up.",
     loading: "Loading notifications…",
+    openWithUnread: "Open notifications, {count} unread",
+    loadError: "We couldn't load your notifications. Please try again.",
+    markReadError: "We couldn't update your notifications. Please try again.",
+    loadMore: "Load more",
+    loadingMore: "Loading more…",
+    unreadLabel: "Unread",
+    justNow: "Just now",
+    fallbackTitle: "New notification",
+    fallbackBody: "You have a new update on your store.",
+    types: {
+      orderNew: { title: "New order", body: "You received a new order {orderNumber}." },
+      orderHold: { title: "Order on hold", body: "Order {orderNumber} is on hold." },
+      orderReleased: {
+        title: "Order released",
+        body: "Order {orderNumber} is released and ready to prepare.",
+      },
+      accountApproved: {
+        title: "Account approved",
+        body: "Your store is active. You can start adding products.",
+      },
+      accountRejected: {
+        title: "Application not approved",
+        body: "Your application was not approved. {reason}",
+      },
+      documentReviewed: {
+        title: "Document reviewed",
+        body: "Your document {documentName} was reviewed: {status}.",
+      },
+      accountSuspended: {
+        title: "Account suspended",
+        body: "Your store is suspended. Open your profile for details.",
+      },
+      payoutRecorded: {
+        title: "Payout recorded",
+        body: "A payout of {amount} was recorded to your account.",
+      },
+    },
   },
   settings: {
     appearanceTitle: "Appearance",

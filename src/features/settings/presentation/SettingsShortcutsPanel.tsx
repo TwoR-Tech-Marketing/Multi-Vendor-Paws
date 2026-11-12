@@ -8,9 +8,12 @@ import styles from "./settings.module.css";
 
 type SettingsShortcutsPanelProps = {
   strings: AppStrings;
+  isActiveVendor: boolean;
 };
 
-export function SettingsShortcutsPanel({ strings }: SettingsShortcutsPanelProps) {
+/** Quick links are for active vendors only (PC-3 settings item 4). */
+export function SettingsShortcutsPanel({ strings, isActiveVendor }: SettingsShortcutsPanelProps) {
+  if (!isActiveVendor) return null;
   const t = strings.settings;
 
   const shortcuts = [

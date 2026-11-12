@@ -1,92 +1,159 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
-import { ThemedSvgIcon } from "@/components/ui/themed-icon/ThemedIcon";
-import { uiAssets } from "@/shared/assets/ui-assets";
-import { useStrings } from "@/shared/preferences/PreferencesContext";
+import {
+  fetchVendorNotifications,
+  markVendorNotificationsRead,
+  NOTIFICATIONS_CHANGED_EVENT,
+} from "@/features/notifications/application/notifications.api";
+import {
+  appendPage,
+  applyItemOpened,
+  applyMarkAll,
+  createRequestTracker,
+} from "@/features/notifications/domain/notification-state";
+import type {
+  VendorNotification,
+  VendorNotificationFilter,
+} from "@/features/notifications/domain/types";
+import { resolveNotificationHref } from "@/features/notifications/domain/notification-link";
+import { usePreferences } from "@/shared/preferences/PreferencesContext";
 
-import { NotificationsSkeleton } from "./NotificationsSkeleton";
-import styles from "./notifications.module.css";
+import { NotificationsView } from "./NotificationsView";
 
-type NotificationTab = "all" | "unread";
+const PAGE_SIZE = 20;
 
-function formatUnreadSummary(
-  count: number,
-  strings: ReturnType<typeof useStrings>["notifications"],
-): string {
-  if (count === 0) return strings.unreadSummaryZero;
-  if (count === 1) return strings.unreadSummaryOne;
-  return strings.unreadSummaryMany.replace("{count}", String(count));
+function notifyChanged() {
+  window.dispatchEvent(new Event(NOTIFICATIONS_CHANGED_EVENT));
 }
 
 export function NotificationsSection() {
-  const strings = useStrings();
+  const router = useRouter();
+  const { strings, locale } = usePreferences();
   const t = strings.notifications;
-  const [tab, setTab] = useState<NotificationTab>("all");
 
-  const unreadCount = 0;
-  const visibleCount = 0;
-  const isLoading = false;
+  const [tab, setTab] = useState<VendorNotificationFilter>("all");
+  const [items, setItems] = useState<VendorNotification[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [now, setNow] = useState(() => new Date());
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isMarkingAll, setIsMarkingAll] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [requests] = useState(createRequestTracker);
 
-  const unreadSummary = useMemo(
-    () => formatUnreadSummary(unreadCount, t),
-    [t, unreadCount],
+  const loadFirstPage = useCallback(
+    async (filter: VendorNotificationFilter) => {
+      const requestId = requests.next();
+      setIsLoading(true);
+      setLoadError(null);
+      setActionError(null);
+      setItems([]);
+      try {
+        const page = await fetchVendorNotifications({ filter, pageSize: PAGE_SIZE });
+        if (!requests.isLatest(requestId)) return;
+        setItems(page.items);
+        setNextCursor(page.nextCursor);
+        setUnreadCount(page.unreadCount);
+        setNow(new Date());
+      } catch {
+        if (!requests.isLatest(requestId)) return;
+        setNextCursor(null);
+        setLoadError(t.loadError);
+      } finally {
+        if (requests.isLatest(requestId)) setIsLoading(false);
+      }
+    },
+    [requests, t.loadError],
   );
 
-  const emptyTitle = tab === "unread" ? t.emptyUnreadTitle : t.emptyAllTitle;
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      void loadFirstPage(tab);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [loadFirstPage, tab]);
+
+  async function onLoadMore() {
+    if (!nextCursor || isLoadingMore) return;
+    const requestId = requests.next();
+    setIsLoadingMore(true);
+    setActionError(null);
+    try {
+      const page = await fetchVendorNotifications({
+        filter: tab,
+        pageSize: PAGE_SIZE,
+        cursor: nextCursor,
+      });
+      if (!requests.isLatest(requestId)) return;
+      setItems((current) => appendPage(current, page.items));
+      setNextCursor(page.nextCursor);
+      setUnreadCount(page.unreadCount);
+    } catch {
+      if (requests.isLatest(requestId)) setActionError(t.loadError);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }
+
+  async function onMarkAll() {
+    setIsMarkingAll(true);
+    setActionError(null);
+    try {
+      const result = await markVendorNotificationsRead({ all: true });
+      setItems((current) => applyMarkAll(current, tab, new Date()));
+      setUnreadCount(result.unreadCount);
+      notifyChanged();
+    } catch {
+      setActionError(t.markReadError);
+    } finally {
+      setIsMarkingAll(false);
+    }
+  }
+
+  async function onOpen(notification: VendorNotification) {
+    const href = resolveNotificationHref(notification.link);
+    if (!notification.isRead) {
+      setItems((current) =>
+        applyItemOpened(current, notification.notificationId, tab, new Date()),
+      );
+      setUnreadCount((count) => Math.max(0, count - 1));
+      try {
+        const result = await markVendorNotificationsRead({
+          notificationIds: [notification.notificationId],
+        });
+        setUnreadCount(result.unreadCount);
+        notifyChanged();
+      } catch {
+        if (!href) setActionError(t.markReadError);
+      }
+    }
+    if (href) router.push(href);
+  }
 
   return (
-    <section className={styles.section} aria-label={strings.pages.notifications.title}>
-      <div className={styles.header}>
-        <p className={styles.subtitle}>{unreadSummary}</p>
-        <button
-          type="button"
-          className={styles.markAllBtn}
-          disabled={isLoading || unreadCount === 0}
-        >
-          {isLoading ? t.markAllBusy : t.markAllAsRead}
-        </button>
-      </div>
-
-      <div className={styles.tabs} role="tablist" aria-label={strings.pages.notifications.title}>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "all"}
-          className={`${styles.tab} ${tab === "all" ? styles.tabActive : ""}`}
-          onClick={() => setTab("all")}
-        >
-          {t.tabAll}
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "unread"}
-          className={`${styles.tab} ${tab === "unread" ? styles.tabActive : ""}`}
-          onClick={() => setTab("unread")}
-        >
-          {t.tabUnread}
-        </button>
-      </div>
-
-      {isLoading && visibleCount === 0 ? <NotificationsSkeleton /> : null}
-
-      {!isLoading && visibleCount === 0 ? (
-        <div className={styles.emptyState} role="status" aria-live="polite">
-          <div className={styles.emptyIcon} aria-hidden>
-            <ThemedSvgIcon
-              src={uiAssets.bellRead}
-              className={styles.emptyBell}
-              tone="muted"
-              width={26}
-              height={34}
-            />
-          </div>
-          <p className={styles.emptyTitle}>{emptyTitle}</p>
-          <p className={styles.emptySubtitle}>{t.emptySubtitle}</p>
-        </div>
-      ) : null}
-    </section>
+    <NotificationsView
+      strings={strings}
+      locale={locale}
+      now={now}
+      tab={tab}
+      items={items}
+      unreadCount={unreadCount}
+      isLoading={isLoading}
+      loadError={loadError}
+      actionError={actionError}
+      isMarkingAll={isMarkingAll}
+      hasMore={nextCursor !== null}
+      isLoadingMore={isLoadingMore}
+      onTabChange={setTab}
+      onMarkAll={() => void onMarkAll()}
+      onOpen={(notification) => void onOpen(notification)}
+      onLoadMore={() => void onLoadMore()}
+      onRetry={() => void loadFirstPage(tab)}
+    />
   );
 }
