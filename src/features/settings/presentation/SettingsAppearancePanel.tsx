@@ -64,15 +64,19 @@ export function SettingsAppearancePanel({
               const selected = id === theme;
               const swatch = TP_COLOR_VALUES[id][resolvedMode];
               return (
-                <button
+                <label
                   key={id}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
                   data-theme-id={id}
                   className={`${styles.themeOption} ${selected ? styles.themeOptionSelected : ""}`}
-                  onClick={() => onThemeChange(id)}
                 >
+                  <input
+                    type="radio"
+                    name="settings-theme"
+                    value={id}
+                    checked={selected}
+                    onChange={() => onThemeChange(id)}
+                    className={styles.themeRadio}
+                  />
                   <span className={styles.themeSwatch} aria-hidden="true">
                     <span style={{ background: swatch.actionPrimary }} />
                     <span style={{ background: swatch.selectedBg }} />
@@ -82,7 +86,7 @@ export function SettingsAppearancePanel({
                   {id === DEFAULT_VENDOR_PREFERENCES.theme ? (
                     <span className={styles.themeDefault}>{t.themeDefault}</span>
                   ) : null}
-                </button>
+                </label>
               );
             })}
           </div>

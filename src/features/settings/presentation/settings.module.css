@@ -337,6 +337,7 @@ a.snapshotCard:hover {
 }
 
 .themeOption {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -358,9 +359,22 @@ a.snapshotCard:hover {
   border-color: var(--color-border-strong);
 }
 
-.themeOption:focus-visible {
+.themeOption:has(.themeRadio:focus-visible) {
   outline: var(--focus-ring-width) solid var(--color-focus);
   outline-offset: 2px;
+}
+
+/* Native radio kept for keyboard and screen readers; the card shows the state. */
+.themeRadio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .themeOptionSelected {

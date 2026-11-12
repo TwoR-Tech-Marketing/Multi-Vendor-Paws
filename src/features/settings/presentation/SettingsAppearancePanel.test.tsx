@@ -51,8 +51,12 @@ describe("SettingsAppearancePanel", () => {
 
   it("marks the selected theme and mode", () => {
     const html = render("en", { theme: "cobalt", mode: "dark" });
-    expect(html).toMatch(/aria-checked="true"[^>]*data-theme-id="cobalt"/);
-    expect(html.match(/aria-checked="true"/g)).toHaveLength(1);
+    const inputs = html.match(/<input[^>]*>/g) ?? [];
+    const checked = inputs.filter((tag) => tag.includes('checked=""'));
+    expect(checked).toHaveLength(1);
+    expect(checked[0]).toContain('value="cobalt"');
+    expect(html.match(/name="settings-theme"/g)).toHaveLength(4);
+    expect(html.match(/checked=""/g)).toHaveLength(1);
     expect(html).toMatch(/data-mode="dark"[^>]*aria-pressed="true"/);
     expect(html).toMatch(/data-mode="system"[^>]*aria-pressed="false"/);
   });
