@@ -67,13 +67,10 @@ export function classifyWriteError(error: unknown, kept: string[]): WriteFailure
 }
 
 /**
- * Reload after a version change: take the latest doc and version, but keep
- * a draft that had unsaved edits so the provider can review and save again.
+ * Load or reload: the server doc replaces the draft. After a version change
+ * local edits are discarded, so a later save can never overwrite the other
+ * change behind the version check.
  */
-export function applyReload(previous: EditorData | null, loaded: AvailabilityState): EditorData {
-  const keepDraft = previous !== null && isDirty(previous.draft, previous.state.availability);
-  return {
-    state: loaded,
-    draft: keepDraft ? previous.draft : payloadOf(loaded.availability),
-  };
+export function applyReload(loaded: AvailabilityState): EditorData {
+  return { state: loaded, draft: payloadOf(loaded.availability) };
 }

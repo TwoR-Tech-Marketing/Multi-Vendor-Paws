@@ -92,7 +92,7 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
         getBranchAvailability(branchId),
         getBranch(branchId, { includeArchived: true }),
       ]);
-      setData((previous) => applyReload(previous, loaded));
+      setData(applyReload(loaded));
       setBranch(detail.branch);
       const active = detail.services.filter((s) => s.status === "active");
       setServices(active);

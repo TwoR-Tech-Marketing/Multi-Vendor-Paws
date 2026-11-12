@@ -120,20 +120,18 @@ describe("applyReload", () => {
   const loaded = editor(latest).state;
 
   it("takes the server doc on first load", () => {
-    const next = applyReload(null, loaded);
+    const next = applyReload(loaded);
     expect(next.state).toBe(loaded);
     expect(next.draft).toEqual(payloadOf(latest));
   });
 
-  it("keeps a dirty draft and takes the new version after a version change", () => {
+  it("discards unsaved edits after a version change so the next save cannot overwrite", () => {
     const before = editor(availability(), EDITED);
-    const next = applyReload(before, loaded);
+    expect(isDirty(before.draft, before.state.availability)).toBe(true);
+    const next = applyReload(loaded);
     expect(next.state.availability.version).toBe(5);
-    expect(next.draft).toBe(before.draft);
-  });
-
-  it("takes the latest hours when there were no unsaved edits", () => {
-    const next = applyReload(editor(availability()), loaded);
     expect(next.draft).toEqual(payloadOf(latest));
+    expect(next.draft.capacity).toBe(2);
+    expect(isDirty(next.draft, next.state.availability)).toBe(false);
   });
 });
