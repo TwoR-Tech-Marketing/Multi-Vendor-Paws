@@ -35,8 +35,8 @@ const CANONICAL = {
     services: { store: "hidden", clinic: "visible", groomer: "visible", doctor: "hidden" },
     appointments: {
       store: "hidden",
-      clinic: "comingSoon",
-      groomer: "comingSoon",
+      clinic: "visible",
+      groomer: "visible",
       doctor: "hidden",
     },
     availability: { store: "hidden", clinic: "visible", groomer: "visible", doctor: "hidden" },

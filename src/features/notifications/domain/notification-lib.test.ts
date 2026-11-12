@@ -107,6 +107,20 @@ describe("resolveNotificationHref", () => {
   });
 });
 
+describe("resolveNotificationHref appointment target", () => {
+  it("opens the appointment detail for clinics and groomers only", () => {
+    const link = { target: "appointment", id: "appt1" } as const;
+    expect(resolveNotificationHref(link, "clinic")).toBe(Routes.vendor.appointmentDetail("appt1"));
+    expect(resolveNotificationHref(link, "groomer")).toBe(Routes.vendor.appointmentDetail("appt1"));
+    expect(resolveNotificationHref({ target: "appointment", id: null }, "clinic")).toBe(
+      Routes.vendor.appointments,
+    );
+    expect(resolveNotificationHref(link, "store")).toBeNull();
+    expect(resolveNotificationHref(link, "doctor")).toBeNull();
+    expect(resolveNotificationHref(link)).toBeNull();
+  });
+});
+
 describe("notification list state", () => {
   const now = new Date("2026-11-12T00:00:00.000Z");
   const readAt = new Date("2026-11-01T00:00:00.000Z");

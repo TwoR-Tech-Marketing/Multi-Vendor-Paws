@@ -307,6 +307,19 @@ service cloud.firestore {
     match /doctorAvailability/{doctorId} { allow read: if isOwner(doctorId) || isAdmin(); allow write: if false; }
     match /telehealthConfig/{docId}      { allow read: if isSignedIn(); allow write: if false; }
 
+    // Appointments. All writes are Cloud Functions only. The provider and the
+    // buyer of an appointment read it; admins read everything.
+    match /appointments/{id} {
+      allow read: if isAdmin() || (isSignedIn() && (resource.data.vendorId == request.auth.uid || resource.data.buyerUid == request.auth.uid));
+      allow write: if false;
+      match /extraInvoices/{invoiceId} {
+        allow read: if isAdmin() || (isSignedIn() && (resource.data.vendorId == request.auth.uid || resource.data.buyerUid == request.auth.uid));
+        allow write: if false;
+      }
+    }
+    match /supportCases/{id} { allow read: if isAdmin(); allow write: if false; }
+    match /appointmentsConfig/{id} { allow read: if isAdmin(); allow write: if false; }
+
     // -----------------------------------------------------------------
     // Admin governance + audit
     // -----------------------------------------------------------------

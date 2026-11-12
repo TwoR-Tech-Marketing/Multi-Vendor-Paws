@@ -4,7 +4,7 @@ import { isScreenVisible } from "@/features/vendor/domain/vendor-type-config";
 
 /**
  * Maps a notification link target to a portal route, or null for no tap action.
- * Order and product targets have no action for types without those screens.
+ * Order, product and appointment targets have no action for types without those screens.
  */
 export function resolveNotificationHref(
   link: VendorNotificationLink | null,
@@ -17,6 +17,9 @@ export function resolveNotificationHref(
       return link.id ? Routes.vendor.orderDetail(link.id) : Routes.vendor.orders;
     case "products":
       return isScreenVisible(vendorType, "products") ? Routes.vendor.products : null;
+    case "appointment":
+      if (!isScreenVisible(vendorType, "appointments")) return null;
+      return link.id ? Routes.vendor.appointmentDetail(link.id) : Routes.vendor.appointments;
     case "earnings":
       return Routes.vendor.earnings;
     case "profile":

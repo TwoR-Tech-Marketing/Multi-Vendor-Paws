@@ -26,8 +26,17 @@ describe("middleware", () => {
     expect(res.headers.get("location")).toBeNull();
   });
 
+  it("sends signed out visitors of appointment pages to login and lets providers in", () => {
+    for (const path of [Routes.vendor.appointments, Routes.vendor.appointmentDetail("a1")]) {
+      const res = middleware(request(path, false));
+      expect(res.headers.get("location")).toBe(`https://portal.example${Routes.auth.login}`);
+      expect(middleware(request(path, true)).headers.get("location")).toBeNull();
+    }
+  });
+
   it("protects every portal matcher", () => {
     expect(config.matcher).toContain("/telehealth/:path*");
+    expect(config.matcher).toContain("/appointments/:path*");
     for (const matcher of config.matcher.filter((m) => !AUTH_MATCHERS.includes(m))) {
       const path = matcher.replace("/:path*", "");
       const res = middleware(request(path, false));

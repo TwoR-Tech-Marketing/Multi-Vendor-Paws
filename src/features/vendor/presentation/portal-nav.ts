@@ -16,7 +16,8 @@ export type PortalNavId =
   | "notifications"
   | "branches"
   | "coupons"
-  | "telehealth";
+  | "telehealth"
+  | "appointments";
 
 export type PortalNavItem = {
   id: VendorScreenKey;
@@ -58,7 +59,7 @@ const NAV_TARGETS: Partial<Record<VendorScreenKey, NavTarget>> = {
     label: (s) => s.nav.branches,
   },
   appointments: {
-    href: null,
+    href: Routes.vendor.appointments,
     icon: portalNavAssets.navAppointments,
     label: (s) => s.nav.appointments,
   },
@@ -132,6 +133,7 @@ export function getPortalPageMeta(strings: AppStrings): Record<PortalNavId, Port
     branches: strings.pages.branches,
     coupons: strings.pages.coupons,
     telehealth: strings.pages.telehealth,
+    appointments: strings.pages.appointments,
   };
 }
 
@@ -145,6 +147,7 @@ export function resolvePortalNavId(pathname: string): PortalNavId {
   if (pathname.startsWith(Routes.vendor.branches)) return "branches";
   if (pathname.startsWith(Routes.vendor.coupons)) return "coupons";
   if (pathname.startsWith(Routes.vendor.telehealth)) return "telehealth";
+  if (pathname.startsWith(Routes.vendor.appointments)) return "appointments";
   return "dashboard";
 }
 
@@ -154,6 +157,7 @@ const BRANCH_DETAIL_PATH = /^\/branches\/[^/]+\/?$/;
 const BRANCH_AVAILABILITY_PATH = /^\/branches\/[^/]+\/availability\/?$/;
 const COUPON_DETAIL_PATH = /^\/coupons\/[^/]+\/?$/;
 const TELEHEALTH_CHAT_PATH = /^\/telehealth\/[^/]+\/?$/;
+const APPOINTMENT_DETAIL_PATH = /^\/appointments\/[^/]+\/?$/;
 
 export function resolvePortalPageMeta(pathname: string, strings: AppStrings): PortalPageMeta {
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
@@ -225,6 +229,13 @@ export function resolvePortalPageMeta(pathname: string, strings: AppStrings): Po
     return {
       title: strings.pages.telehealth.chatTitle,
       subtitle: strings.pages.telehealth.chatSubtitle,
+    };
+  }
+
+  if (APPOINTMENT_DETAIL_PATH.test(normalizedPath)) {
+    return {
+      title: strings.pages.appointments.detailTitle,
+      subtitle: strings.pages.appointments.detailSubtitle,
     };
   }
 

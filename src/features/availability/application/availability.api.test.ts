@@ -199,6 +199,24 @@ describe("availability.api callables", () => {
     expect(preview.days[1].closed).toBe(true);
   });
 
+  it("sends several services as serviceIds for a summed slot length", async () => {
+    mocks.callableFn.mockResolvedValue({ data: { ok: true, durationMinutes: 60, days: [] } });
+    await listBranchSlots({
+      branchId: "b1",
+      serviceIds: ["s1", "s2"],
+      mode: "branch",
+      fromDate: "2026-11-14",
+      toDate: "2026-11-20",
+    });
+    expect(lastCall().payload).toEqual({
+      branchId: "b1",
+      serviceIds: ["s1", "s2"],
+      mode: "branch",
+      fromDate: "2026-11-14",
+      toDate: "2026-11-20",
+    });
+  });
+
   it("propagates callable errors", async () => {
     mocks.callableFn.mockRejectedValueOnce({ code: "functions/aborted", message: "x" });
     await expect(getBranchAvailability("b1")).rejects.toMatchObject({ code: "functions/aborted" });

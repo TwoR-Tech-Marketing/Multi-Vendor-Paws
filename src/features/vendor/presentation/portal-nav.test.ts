@@ -40,7 +40,7 @@ describe("getPortalSidebarNavItems", () => {
   });
 
   it.each(["clinic", "groomer"])(
-    "shows visible branches and comingSoon appointments for %s",
+    "shows visible branches and linked appointments for %s",
     (type) => {
       const items = getPortalSidebarNavItems(strings, type);
       expect(items.map((item) => item.id)).toEqual([
@@ -59,9 +59,10 @@ describe("getPortalSidebarNavItems", () => {
         requiresActiveAccount: false,
       });
       expect(items.find((item) => item.id === "appointments")).toMatchObject({
-        href: null,
-        comingSoon: true,
+        href: Routes.vendor.appointments,
+        comingSoon: false,
         requiresActiveAccount: true,
+        label: strings.nav.appointments,
       });
       expect(items.find((item) => item.id === "earnings")?.href).toBe("/earnings");
     },
@@ -152,6 +153,24 @@ describe("getPortalSidebarNavItems", () => {
       "dashboard",
       "settings",
     ]);
+  });
+
+  it("resolves the appointments inbox and detail headers", () => {
+    expect(resolvePortalNavId(Routes.vendor.appointments)).toBe("appointments");
+    expect(resolvePortalNavId(Routes.vendor.appointmentDetail("a1"))).toBe("appointments");
+    expect(resolvePortalPageMeta(Routes.vendor.appointments, strings).title).toBe(
+      strings.pages.appointments.title,
+    );
+    expect(resolvePortalPageMeta(Routes.vendor.appointmentDetail("a1"), strings).title).toBe(
+      strings.pages.appointments.detailTitle,
+    );
+  });
+
+  it("never shows appointments to store, doctor or unknown types", () => {
+    for (const type of ["store", "doctor", "hotel"]) {
+      const ids = getPortalSidebarNavItems(strings, type).map((item) => item.id as string);
+      expect(ids).not.toContain("appointments");
+    }
   });
 
   it("uses the Arabic labels", () => {

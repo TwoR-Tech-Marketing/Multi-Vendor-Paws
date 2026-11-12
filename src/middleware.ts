@@ -15,6 +15,7 @@ const PORTAL_PATHS = [
   Routes.vendor.branches,
   Routes.vendor.coupons,
   Routes.vendor.telehealth,
+  Routes.vendor.appointments,
 ] as const;
 
 const AUTH_PATHS = [
@@ -64,6 +65,7 @@ export const config = {
     "/branches/:path*",
     "/coupons/:path*",
     "/telehealth/:path*",
+    "/appointments/:path*",
     "/login",
     "/register",
     "/forgot-password",
