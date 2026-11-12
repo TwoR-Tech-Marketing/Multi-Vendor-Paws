@@ -1,3 +1,6 @@
+import Link from "next/link";
+
+import { Routes } from "@/constants/routes";
 import { formatPeriodRange, formatCairoDate } from "@/features/financials/domain/statement-dates";
 import type {
   StatementPayout,
@@ -140,7 +143,12 @@ export function StatementView({ strings, locale, statement, isLoading, error, on
         </article>
       </div>
 
-      <h2 className={styles.sectionTitle}>{t.periodsTitle}</h2>
+      <div className={styles.titleRow}>
+        <h2 className={styles.sectionTitle}>{t.periodsTitle}</h2>
+        <Link href={Routes.vendor.deal} className={styles.link}>
+          {strings.earnings.viewDeal}
+        </Link>
+      </div>
       {statement.periods.length === 0 ? (
         <p className={styles.empty}>{t.empty}</p>
       ) : (

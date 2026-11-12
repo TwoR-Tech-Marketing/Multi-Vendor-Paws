@@ -135,6 +135,12 @@ describe("EarningsView", () => {
     expect(html).toContain(en.statement.viewStatement);
   });
 
+  it("links to the deal page", () => {
+    const html = render({ entries: [] });
+    expect(html).toContain('href="/earnings/deal"');
+    expect(html).toContain(en.earnings.viewDeal);
+  });
+
   it("renders Arabic copy for tabs and summary", () => {
     const html = render({ strings: ar, paged: true, entries: [entry()], hasMore: true });
     expect(html).toContain(ar.earnings.types.all);
