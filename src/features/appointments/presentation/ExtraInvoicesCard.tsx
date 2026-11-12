@@ -1,3 +1,4 @@
+import { StatusBadge, type StatusTone } from "@/components/ui/badge/StatusBadge";
 import { activeInvoiceCount, canAddInvoice } from "@/features/appointments/domain/extra-invoices";
 import {
   EXTRA_INVOICE_LIMITS,
@@ -12,10 +13,10 @@ import type { AppStrings } from "@/shared/i18n/types";
 import branchStyles from "@/features/branches/presentation/branches.module.css";
 import styles from "./appointments.module.css";
 
-const STATUS_TONE: Record<ExtraInvoiceStatus, string> = {
-  unpaid: styles.toneWarning,
-  paid: styles.toneDone,
-  void: styles.toneMuted,
+const STATUS_TONE: Record<ExtraInvoiceStatus, StatusTone> = {
+  unpaid: "warning",
+  paid: "success",
+  void: "cancelled",
 };
 
 type ExtraInvoicesCardProps = {
@@ -52,9 +53,11 @@ function InvoiceItem({
         <span className={styles.rowTitle}>
           {t.invoiceLabel.replace("{number}", String(index + 1))}
         </span>
-        <span className={`${styles.badge} ${STATUS_TONE[invoice.status]}`}>
-          {t.status[invoice.status]}
-        </span>
+        <StatusBadge
+          tone={STATUS_TONE[invoice.status]}
+          label={t.status[invoice.status]}
+          status={invoice.status}
+        />
       </div>
       <ul className={styles.lines}>
         {invoice.lines.map((line, lineIndex) => (

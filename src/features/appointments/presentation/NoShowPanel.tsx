@@ -1,3 +1,4 @@
+import { StatusBadge } from "@/components/ui/badge/StatusBadge";
 import {
   noShowAvailableAtMs,
   noShowQuestionKey,
@@ -54,7 +55,7 @@ export function NoShowPanel({ appointment: a, allowedActions, strings, locale }:
     <section className={branchStyles.panel}>
       <div className={branchStyles.panelHeader}>
         <h2 className={branchStyles.panelTitle}>{t.title}</h2>
-        <span className={`${styles.badge} ${styles.toneError}`}>{t.state[noShow.state]}</span>
+        <StatusBadge tone="danger" label={t.state[noShow.state]} status={noShow.state} />
       </div>
       {noShow.state === "late_returned" ? (
         <div className={styles.notice} role="status">

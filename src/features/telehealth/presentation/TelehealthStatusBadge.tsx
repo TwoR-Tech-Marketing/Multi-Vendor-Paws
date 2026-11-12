@@ -1,14 +1,13 @@
+import { StatusBadge, type StatusTone } from "@/components/ui/badge/StatusBadge";
 import type { TelehealthSessionStatus } from "@/features/telehealth/domain/types";
 import type { AppStrings } from "@/shared/i18n/types";
 
-import styles from "./telehealth.module.css";
-
-const TONE: Record<TelehealthSessionStatus, string> = {
-  queued: styles.badgeWaiting,
-  active: styles.badgeOnline,
-  ended: styles.badgeClosed,
-  refund_flagged: styles.badgeClosed,
-  unknown: styles.badgeClosed,
+export const TELEHEALTH_STATUS_TONE: Record<TelehealthSessionStatus, StatusTone> = {
+  queued: "warning",
+  active: "success",
+  ended: "neutral",
+  refund_flagged: "neutral",
+  unknown: "neutral",
 };
 
 export function TelehealthStatusBadge({
@@ -19,8 +18,10 @@ export function TelehealthStatusBadge({
   strings: AppStrings;
 }) {
   return (
-    <span className={`${styles.badge} ${TONE[status]}`}>
-      {strings.telehealth.statusLabels[status]}
-    </span>
+    <StatusBadge
+      tone={TELEHEALTH_STATUS_TONE[status]}
+      label={strings.telehealth.statusLabels[status]}
+      status={status}
+    />
   );
 }

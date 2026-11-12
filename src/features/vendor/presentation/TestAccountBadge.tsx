@@ -1,8 +1,7 @@
 "use client";
 
+import { StatusBadge } from "@/components/ui/badge/StatusBadge";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
-
-import styles from "./testAccountBadge.module.css";
 
 type TestAccountBadgeProps = {
   isTest: boolean;
@@ -15,8 +14,10 @@ export function TestAccountBadge({ isTest }: TestAccountBadgeProps) {
   if (!isTest) return null;
 
   return (
-    <span className={styles.badge} data-testid="test-account-badge">
-      {strings.portal.testAccountBadge}
-    </span>
+    <StatusBadge
+      tone="warning"
+      label={strings.portal.testAccountBadge}
+      testId="test-account-badge"
+    />
   );
 }
