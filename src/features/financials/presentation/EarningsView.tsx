@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { Routes } from "@/constants/routes";
-import { formatSignedEgp } from "@/features/financials/domain/money-format";
 import type {
   EarningsEntryFilter,
   VendorEarningsEntry,
@@ -13,6 +12,7 @@ import {
   EarningsSkeleton,
 } from "@/features/financials/presentation/EarningsSkeleton";
 import { EarningsTypeTabs } from "@/features/financials/presentation/EarningsTypeTabs";
+import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
 
 import styles from "./earnings.module.css";
@@ -46,7 +46,7 @@ function SummaryCard({ label, piastres, highlight }: { label: string; piastres: 
   return (
     <article className={`${styles.statCard} ${highlight ? styles.statCardHighlight : ""}`}>
       <span className={styles.statLabel}>{label}</span>
-      <p className={styles.statValue}>{formatSignedEgp(piastres)}</p>
+      <p className={styles.statValue}>{formatEgp(piastres)}</p>
     </article>
   );
 }
@@ -83,9 +83,9 @@ function EntriesTable({ strings, entries }: { strings: AppStrings; entries: Vend
                   (entry.description ?? "-")
                 )}
               </td>
-              <td>{formatSignedEgp(entry.amountPiastres)}</td>
-              <td>{formatSignedEgp(entry.commissionPiastres)}</td>
-              <td>{formatSignedEgp(entry.netPiastres)}</td>
+              <td>{formatEgp(entry.amountPiastres)}</td>
+              <td>{formatEgp(entry.commissionPiastres)}</td>
+              <td>{formatEgp(entry.netPiastres)}</td>
             </tr>
           ))}
         </tbody>
@@ -153,8 +153,11 @@ export function EarningsView(props: EarningsViewProps) {
       </div>
 
       <article className={styles.panel}>
-        <div className={styles.panelHeader}>
+        <div className={`${styles.panelHeader} ${styles.panelHeaderRow}`}>
           <h2>{strings.earnings.ledgerTitle}</h2>
+          <Link href={Routes.vendor.payouts} className={styles.orderLink}>
+            {strings.statement.viewStatement}
+          </Link>
         </div>
         {props.paged ? (
           <EarningsTypeTabs strings={strings} tab={props.tab} onTabChange={props.onTabChange} />
