@@ -106,16 +106,32 @@ describe("buildProviderProfilePayload", () => {
 describe("buildReapplyProviderProfile", () => {
   const empty = { specialty: "", education: "", experience: "" };
 
-  it("omits provider fields when the type is kept and nothing was typed", () => {
-    expect(buildReapplyProviderProfile("doctor", "doctor", empty)).toBe(undefined);
-    expect(buildReapplyProviderProfile("store", "store", empty)).toBe(undefined);
+  it("sends the full text map of a provider type, empty fields included", () => {
+    expect(
+      buildReapplyProviderProfile("clinic", { ...empty, education: "DVM" }),
+    ).toEqual({ education: "DVM", experience: "" });
+    expect(buildReapplyProviderProfile("clinic", empty)).toEqual({
+      education: "",
+      experience: "",
+    });
+    expect(buildReapplyProviderProfile("doctor", { ...empty, specialty: "Surgery" })).toEqual({
+      specialty: "Surgery",
+    });
   });
 
-  it("sends provider fields when the type changes or the applicant typed", () => {
-    expect(buildReapplyProviderProfile("store", "doctor", empty)).toEqual({ specialty: "" });
-    expect(
-      buildReapplyProviderProfile("clinic", "clinic", { ...empty, education: "DVM" }),
-    ).toEqual({ education: "DVM" });
-    expect(buildReapplyProviderProfile("doctor", "store", empty)).toBe(undefined);
+  it("clears a prefilled field after validation", async () => {
+    const { providerProfileSchema } = await import(
+      "@/features/vendor/domain/provider-profile-schema"
+    );
+    const payload = buildReapplyProviderProfile("clinic", { ...empty, education: "" });
+    expect(providerProfileSchema("clinic", "signup").parse(payload)).toEqual({
+      education: null,
+      experience: null,
+    });
+  });
+
+  it("sends nothing for types without text fields", () => {
+    expect(buildReapplyProviderProfile("store", empty)).toBe(undefined);
+    expect(buildReapplyProviderProfile("groomer", empty)).toBe(undefined);
   });
 });

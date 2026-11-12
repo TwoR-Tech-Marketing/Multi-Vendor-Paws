@@ -72,11 +72,7 @@ export function RejectedReapplyForm({ profile, storedProviderProfile }: Rejected
       return;
     }
 
-    const providerProfile = buildReapplyProviderProfile(
-      storedType,
-      effectiveType,
-      providerFields,
-    );
+    const providerProfile = buildReapplyProviderProfile(effectiveType, providerFields);
     if (providerProfile) {
       const checked = providerProfileSchema(effectiveType, "signup").safeParse(providerProfile);
       if (!checked.success) {

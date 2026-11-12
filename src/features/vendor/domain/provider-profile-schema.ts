@@ -107,16 +107,14 @@ export function buildProviderProfilePayload(
 }
 
 /**
- * Reapply (rejected applicant): send provider fields only when the type changed
- * or the applicant typed something; omitted keeps the stored map.
+ * Reapply (rejected applicant): the form is prefilled from the stored map, so
+ * the full text map of the chosen type is sent, empty fields included, and a
+ * cleared field is cleared on the request. Undefined for types without text
+ * fields (the server then keeps or drops the map by type).
  */
 export function buildReapplyProviderProfile(
-  storedType: string,
   nextType: string,
   value: ProviderTextFields,
 ): ReturnType<typeof buildProviderProfilePayload> {
-  const draft = buildProviderProfilePayload(nextType, value);
-  if (!draft) return undefined;
-  const typed = Object.values(draft).some((text) => text.trim());
-  return storedType !== nextType || typed ? draft : undefined;
+  return buildProviderProfilePayload(nextType, value, true);
 }
