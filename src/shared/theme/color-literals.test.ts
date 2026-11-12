@@ -16,7 +16,12 @@ const ALLOWLIST = new Set([
   "shared/theme/brand-art.css",
 ]);
 
-const LITERAL = /#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(/g;
+const LITERAL = /#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|hwb|oklch|oklab|lch|lab)\(/g;
+
+/** CSS declaration values (text after a colon, up to ; or a brace). */
+const CSS_VALUE = /:([^;{}]*)/g;
+/** Named white or black as a whole word, not part of names like white-space. */
+const NAMED = /(?<![-\w])(?:white|black)(?![-\w])/gi;
 
 function isTestFile(rel: string): boolean {
   return /\.test\.(ts|tsx)$/.test(rel);
@@ -35,9 +40,15 @@ function listSourceFiles(dir: string): string[] {
   return out;
 }
 
-function findColorLiterals(source: string): string[] {
+function findColorLiterals(source: string, isCss = false): string[] {
   const withoutComments = source.replace(/\/\*[\s\S]*?\*\//g, "");
-  return [...withoutComments.matchAll(LITERAL)].map((m) => m[0]);
+  const found = [...withoutComments.matchAll(LITERAL)].map((m) => m[0]);
+  if (isCss) {
+    for (const value of withoutComments.matchAll(CSS_VALUE)) {
+      found.push(...[...value[1].matchAll(NAMED)].map((m) => m[0]));
+    }
+  }
+  return found;
 }
 
 describe("colour literal check", () => {
@@ -50,12 +61,27 @@ describe("colour literal check", () => {
     expect(findColorLiterals("a { color: var(--color-text); }")).toEqual([]);
   });
 
+  it("detects hwb, oklch, oklab, lch and lab functions", () => {
+    expect(
+      findColorLiterals("a { color: hwb(1 2% 3%); b: oklch(1 2 3); c: oklab(1 2 3); d: lch(1 2 3); e: lab(1 2 3); }"),
+    ).toEqual(["hwb(", "oklch(", "oklab(", "lch(", "lab("]);
+  });
+
+  it("detects named white and black in CSS values only", () => {
+    expect(findColorLiterals("a { color: white; border: 1px solid Black; }", true)).toEqual([
+      "white",
+      "Black",
+    ]);
+    expect(findColorLiterals("a { white-space: nowrap; color: var(--color-text); }", true)).toEqual([]);
+    expect(findColorLiterals("a { font-family: var(--font-blackletter); }", true)).toEqual([]);
+  });
+
   it("finds no colour literal in src outside the generated files and the allowlist", () => {
     const offenders: string[] = [];
     for (const file of listSourceFiles(SRC)) {
       const rel = path.relative(SRC, file).split(path.sep).join("/");
       if (ALLOWLIST.has(rel) || isTestFile(rel)) continue;
-      const found = findColorLiterals(readFileSync(file, "utf8"));
+      const found = findColorLiterals(readFileSync(file, "utf8"), rel.endsWith(".css"));
       if (found.length > 0) offenders.push(`${rel}: ${found.join(", ")}`);
     }
     expect(offenders).toEqual([]);
