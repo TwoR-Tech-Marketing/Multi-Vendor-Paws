@@ -20,6 +20,11 @@ import { normalizeVendorType } from "@/features/vendor/domain/vendor-type-config
 import { PortalShellSkeleton } from "@/features/vendor/presentation/PortalShellSkeleton";
 import { signOutVendor } from "@/lib/auth";
 import { fetchCurrentSession, logoutServerSession } from "@/lib/auth-client";
+import { usePreferences } from "@/shared/preferences/PreferencesContext";
+import {
+  normalizeVendorPreferences,
+  type PreferencesScope,
+} from "@/shared/preferences/domain/types";
 
 type PortalSessionContextValue = {
   user: PortalUserDto;
@@ -33,6 +38,8 @@ type PortalSessionContextValue = {
     storeName: string;
     logoUrl: string | null;
   };
+  /** "account" when appearance and language changes are saved on the account. */
+  preferencesScope: PreferencesScope;
   refreshStoreBranding: () => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -62,6 +69,7 @@ function mapSessionDto(dto: VendorSessionDto): PortalSessionContextValue {
     isTestAccount: dto.profile.isTest === true,
     isLoggingOut: false,
     storeBranding: dto.storeBranding,
+    preferencesScope: dto.preferencesScope === "account" ? "account" : "local",
     refreshStoreBranding: async () => {},
     signOut: async () => {},
   };
@@ -90,6 +98,7 @@ export async function endPortalSession(isDoctor: boolean): Promise<void> {
 
 export function PortalSessionProvider({ children }: PortalSessionProviderProps) {
   const router = useRouter();
+  const { applyAccountPreferences } = usePreferences();
   const [session, setSession] = useState<PortalSessionContextValue | null>(null);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -102,8 +111,13 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
       return null;
     }
 
+    // The account value replaces the device cache once the session loads.
+    if (dto.preferencesScope === "account") {
+      applyAccountPreferences(normalizeVendorPreferences(dto.preferences));
+    }
+
     return mapSessionDto(dto);
-  }, [router]);
+  }, [router, applyAccountPreferences]);
 
   useEffect(() => {
     let cancelled = false;

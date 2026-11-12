@@ -57,7 +57,7 @@
 
 .segmentSkeleton {
   height: 40px;
-  width: 180px;
+  width: 240px;
   border-radius: var(--radius-sm);
 }
 
@@ -88,5 +88,22 @@
 
   .shortcutsGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+.themeGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.themeSkeleton {
+  height: 84px;
+  border-radius: var(--radius-control);
+}
+
+@media (max-width: 900px) {
+  .themeGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

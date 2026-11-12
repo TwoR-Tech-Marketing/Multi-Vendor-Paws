@@ -7,95 +7,95 @@ import {
   useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 
 import { getStrings } from "@/shared/i18n/get-strings";
 import type { AppStrings } from "@/shared/i18n/types";
 import {
-  PREFERENCE_STORAGE_KEYS,
+  resolveThemeMode,
   type AppLocale,
+  type ModePreference,
   type ThemeMode,
+  type VendorPreferences,
+  type VendorThemeId,
 } from "@/shared/preferences/domain/types";
+import {
+  applyDocumentPreferences,
+  readCachedPreferences,
+  readPrefersDark,
+  subscribePrefersDark,
+  writeCachedPreferences,
+} from "@/shared/preferences/preferences-cache";
 
 type PreferencesContextValue = {
-  theme: ThemeMode;
+  /** Colour theme id. */
+  theme: VendorThemeId;
+  /** Mode the vendor chose (light, dark or system). */
+  mode: ModePreference;
+  /** Mode applied to the page, with "system" resolved. */
+  resolvedMode: ThemeMode;
   locale: AppLocale;
   dir: "ltr" | "rtl";
   strings: AppStrings;
-  setTheme: (theme: ThemeMode) => void;
+  setTheme: (theme: VendorThemeId) => void;
+  setMode: (mode: ModePreference) => void;
   setLocale: (locale: AppLocale) => void;
+  /** Replaces the device values with the account values and caches them. */
+  applyAccountPreferences: (prefs: VendorPreferences) => void;
 };
 
 const PreferencesContext = createContext<PreferencesContextValue | null>(null);
-
-function readStoredTheme(): ThemeMode {
-  if (typeof window === "undefined") return "light";
-  try {
-    const value = localStorage.getItem(PREFERENCE_STORAGE_KEYS.theme);
-    return value === "dark" ? "dark" : "light";
-  } catch {
-    return "light";
-  }
-}
-
-function readStoredLocale(): AppLocale {
-  if (typeof window === "undefined") return "en";
-  try {
-    const value = localStorage.getItem(PREFERENCE_STORAGE_KEYS.locale);
-    return value === "ar" ? "ar" : "en";
-  } catch {
-    return "en";
-  }
-}
-
-function applyDocumentPreferences(theme: ThemeMode, locale: AppLocale) {
-  const root = document.documentElement;
-  root.setAttribute("data-theme", theme);
-  root.lang = locale;
-  root.dir = locale === "ar" ? "rtl" : "ltr";
-}
 
 type PreferencesProviderProps = {
   children: ReactNode;
 };
 
+function getServerPrefersDark(): boolean {
+  return false;
+}
+
 export function PreferencesProvider({ children }: PreferencesProviderProps) {
-  const [theme, setThemeState] = useState<ThemeMode>(() => readStoredTheme());
-  const [locale, setLocaleState] = useState<AppLocale>(() => readStoredLocale());
+  const [prefs, setPrefs] = useState<VendorPreferences>(() => readCachedPreferences());
+  const prefersDark = useSyncExternalStore(
+    subscribePrefersDark,
+    readPrefersDark,
+    getServerPrefersDark,
+  );
+  const resolvedMode = resolveThemeMode(prefs.mode, prefersDark);
 
-  const setTheme = useCallback((next: ThemeMode) => {
-    setThemeState(next);
-    try {
-      localStorage.setItem(PREFERENCE_STORAGE_KEYS.theme, next);
-    } catch {
-      /* ignore */
-    }
+  const update = useCallback((patch: Partial<VendorPreferences>) => {
+    setPrefs((current) => ({ ...current, ...patch }));
+    writeCachedPreferences(patch);
   }, []);
 
-  const setLocale = useCallback((next: AppLocale) => {
-    setLocaleState(next);
-    try {
-      localStorage.setItem(PREFERENCE_STORAGE_KEYS.locale, next);
-    } catch {
-      /* ignore */
-    }
-  }, []);
+  const setTheme = useCallback((theme: VendorThemeId) => update({ theme }), [update]);
+  const setMode = useCallback((mode: ModePreference) => update({ mode }), [update]);
+  const setLocale = useCallback((language: AppLocale) => update({ language }), [update]);
+  const applyAccountPreferences = useCallback(
+    (next: VendorPreferences) => update(next),
+    [update],
+  );
 
   useEffect(() => {
-    applyDocumentPreferences(theme, locale);
-  }, [theme, locale]);
+    applyDocumentPreferences(document.documentElement, prefs, resolvedMode);
+  }, [prefs, resolvedMode]);
 
   const value = useMemo<PreferencesContextValue>(
     () => ({
-      theme,
-      locale,
-      dir: locale === "ar" ? "rtl" : "ltr",
-      strings: getStrings(locale),
+      theme: prefs.theme,
+      mode: prefs.mode,
+      resolvedMode,
+      locale: prefs.language,
+      dir: prefs.language === "ar" ? "rtl" : "ltr",
+      strings: getStrings(prefs.language),
       setTheme,
+      setMode,
       setLocale,
+      applyAccountPreferences,
     }),
-    [locale, setLocale, setTheme, theme],
+    [prefs, resolvedMode, setTheme, setMode, setLocale, applyAccountPreferences],
   );
 
   return (
