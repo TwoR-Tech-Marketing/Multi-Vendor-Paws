@@ -73,6 +73,21 @@ describe("getPortalSidebarNavItems", () => {
     );
   });
 
+  it("gives the branch availability page its own title under branches", () => {
+    expect(resolvePortalPageMeta("/branches/b1/availability", strings).title).toBe(
+      strings.pages.availability.title,
+    );
+    expect(resolvePortalPageMeta("/branches/b1/availability/", strings).subtitle).toBe(
+      strings.pages.availability.subtitle,
+    );
+    expect(resolvePortalNavId("/branches/b1/availability")).toBe("branches");
+  });
+
+  it.each(["clinic", "groomer"])("keeps availability out of the %s sidebar (branch sub-screen)", (type) => {
+    const ids = getPortalSidebarNavItems(strings, type).map((item) => item.id as string);
+    expect(ids).not.toContain("availability");
+  });
+
   it("gives coupon pages their own title", () => {
     expect(resolvePortalPageMeta("/coupons", strings).title).toBe(strings.pages.coupons.title);
     expect(resolvePortalPageMeta("/coupons/uid1_SAVE10", strings).title).toBe(

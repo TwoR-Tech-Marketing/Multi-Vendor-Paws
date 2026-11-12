@@ -144,6 +144,7 @@ export function resolvePortalNavId(pathname: string): PortalNavId {
 const PRODUCT_EDIT_PATH = /^\/products\/[^/]+\/edit\/?$/;
 const ORDER_DETAIL_PATH = /^\/orders\/[^/]+\/?$/;
 const BRANCH_DETAIL_PATH = /^\/branches\/[^/]+\/?$/;
+const BRANCH_AVAILABILITY_PATH = /^\/branches\/[^/]+\/availability\/?$/;
 const COUPON_DETAIL_PATH = /^\/coupons\/[^/]+\/?$/;
 
 export function resolvePortalPageMeta(pathname: string, strings: AppStrings): PortalPageMeta {
@@ -181,6 +182,13 @@ export function resolvePortalPageMeta(pathname: string, strings: AppStrings): Po
     return {
       title: strings.orders.detailTitle,
       subtitle: strings.orders.detailSubtitle,
+    };
+  }
+
+  if (BRANCH_AVAILABILITY_PATH.test(normalizedPath)) {
+    return {
+      title: strings.pages.availability.title,
+      subtitle: strings.pages.availability.subtitle,
     };
   }
 
