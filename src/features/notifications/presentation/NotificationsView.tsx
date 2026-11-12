@@ -3,8 +3,8 @@ import type {
   VendorNotification,
   VendorNotificationFilter,
 } from "@/features/notifications/domain/types";
-import { resolveNotificationCopy } from "@/features/notifications/lib/notification-copy";
-import { formatRelativeTime } from "@/features/notifications/lib/relative-time";
+import { resolveNotificationCopy } from "@/features/notifications/domain/notification-copy";
+import { formatRelativeTime } from "@/features/notifications/domain/relative-time";
 import { uiAssets } from "@/shared/assets/ui-assets";
 import type { AppStrings } from "@/shared/i18n/types";
 import type { AppLocale } from "@/shared/preferences/domain/types";

@@ -3,13 +3,15 @@ import { describe, expect, it } from "vitest";
 import { Routes } from "@/constants/routes";
 import {
   appendPage,
+  applyItemOpened,
+  createRequestTracker,
   formatUnreadBadge,
   markAllItemsRead,
   markItemRead,
 } from "@/features/notifications/domain/notification-state";
 import type { VendorNotification } from "@/features/notifications/domain/types";
-import { resolveNotificationCopy } from "@/features/notifications/lib/notification-copy";
-import { resolveNotificationHref } from "@/features/notifications/lib/notification-link";
+import { resolveNotificationCopy } from "@/features/notifications/domain/notification-copy";
+import { resolveNotificationHref } from "@/features/notifications/domain/notification-link";
 import { getStrings } from "@/shared/i18n/get-strings";
 
 const en = getStrings("en");
@@ -88,6 +90,22 @@ describe("notification list state", () => {
   it("appends pages without duplicates", () => {
     const merged = appendPage([item("a"), item("b")], [item("b"), item("c")]);
     expect(merged.map((n) => n.notificationId)).toEqual(["a", "b", "c"]);
+  });
+
+  it("removes an opened item on the Unread tab and marks it read on All", () => {
+    const items = [item("a"), item("b")];
+    expect(applyItemOpened(items, "a", "unread", now).map((n) => n.notificationId)).toEqual(["b"]);
+    const all = applyItemOpened(items, "a", "all", now);
+    expect(all).toHaveLength(2);
+    expect(all[0]).toMatchObject({ isRead: true, readAt: now });
+  });
+
+  it("ignores a slow older request after a newer one starts", () => {
+    const requests = createRequestTracker();
+    const allTab = requests.next();
+    const unreadTab = requests.next();
+    expect(requests.isLatest(allTab)).toBe(false);
+    expect(requests.isLatest(unreadTab)).toBe(true);
   });
 
   it("formats the bell badge", () => {

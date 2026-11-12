@@ -16,8 +16,11 @@ import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./portal.module.css";
 
-/** Unread count for the bell; null on the BFF source (no badge, same as before PC-3). */
-function useUnreadCount(pathname: string): number | null {
+/**
+ * Unread count for the bell; null on the BFF source (no badge, same as before PC-3).
+ * Refreshes on mount, when the inbox changes read state, and on window focus.
+ */
+function useUnreadCount(): number | null {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -28,17 +31,19 @@ function useUnreadCount(pathname: string): number | null {
           if (!cancelled) setCount(value);
         })
         .catch(() => {
-          // ponytail: a failed badge refresh keeps the last count; the inbox shows errors.
+          // A failed badge refresh keeps the last count; the inbox shows errors.
         });
     };
     const timer = window.setTimeout(refresh, 0);
     window.addEventListener(NOTIFICATIONS_CHANGED_EVENT, refresh);
+    window.addEventListener("focus", refresh);
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
       window.removeEventListener(NOTIFICATIONS_CHANGED_EVENT, refresh);
+      window.removeEventListener("focus", refresh);
     };
-  }, [pathname]);
+  }, []);
 
   return count;
 }
@@ -47,7 +52,7 @@ export function NotificationBellButton() {
   const strings = useStrings();
   const pathname = usePathname();
   const isNotificationsActive = pathname.startsWith(Routes.vendor.notifications);
-  const badge = formatUnreadBadge(useUnreadCount(pathname) ?? 0);
+  const badge = formatUnreadBadge(useUnreadCount() ?? 0);
   const ariaLabel = badge
     ? strings.notifications.openWithUnread.replace("{count}", badge)
     : strings.notifications.open;

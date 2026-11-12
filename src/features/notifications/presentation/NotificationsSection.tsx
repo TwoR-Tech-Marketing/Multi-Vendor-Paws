@@ -10,14 +10,15 @@ import {
 } from "@/features/notifications/application/notifications.api";
 import {
   appendPage,
+  applyItemOpened,
+  createRequestTracker,
   markAllItemsRead,
-  markItemRead,
 } from "@/features/notifications/domain/notification-state";
 import type {
   VendorNotification,
   VendorNotificationFilter,
 } from "@/features/notifications/domain/types";
-import { resolveNotificationHref } from "@/features/notifications/lib/notification-link";
+import { resolveNotificationHref } from "@/features/notifications/domain/notification-link";
 import { usePreferences } from "@/shared/preferences/PreferencesContext";
 
 import { NotificationsView } from "./NotificationsView";
@@ -43,27 +44,31 @@ export function NotificationsSection() {
   const [isMarkingAll, setIsMarkingAll] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [requests] = useState(createRequestTracker);
 
   const loadFirstPage = useCallback(
     async (filter: VendorNotificationFilter) => {
+      const requestId = requests.next();
       setIsLoading(true);
       setLoadError(null);
       setActionError(null);
       setItems([]);
       try {
         const page = await fetchVendorNotifications({ filter, pageSize: PAGE_SIZE });
+        if (!requests.isLatest(requestId)) return;
         setItems(page.items);
         setNextCursor(page.nextCursor);
         setUnreadCount(page.unreadCount);
         setNow(new Date());
       } catch {
+        if (!requests.isLatest(requestId)) return;
         setNextCursor(null);
         setLoadError(t.loadError);
       } finally {
-        setIsLoading(false);
+        if (requests.isLatest(requestId)) setIsLoading(false);
       }
     },
-    [t.loadError],
+    [requests, t.loadError],
   );
 
   useEffect(() => {
@@ -75,6 +80,7 @@ export function NotificationsSection() {
 
   async function onLoadMore() {
     if (!nextCursor || isLoadingMore) return;
+    const requestId = requests.next();
     setIsLoadingMore(true);
     setActionError(null);
     try {
@@ -83,11 +89,12 @@ export function NotificationsSection() {
         pageSize: PAGE_SIZE,
         cursor: nextCursor,
       });
+      if (!requests.isLatest(requestId)) return;
       setItems((current) => appendPage(current, page.items));
       setNextCursor(page.nextCursor);
       setUnreadCount(page.unreadCount);
     } catch {
-      setActionError(t.loadError);
+      if (requests.isLatest(requestId)) setActionError(t.loadError);
     } finally {
       setIsLoadingMore(false);
     }
@@ -111,7 +118,9 @@ export function NotificationsSection() {
   async function onOpen(notification: VendorNotification) {
     const href = resolveNotificationHref(notification.link);
     if (!notification.isRead) {
-      setItems((current) => markItemRead(current, notification.notificationId, new Date()));
+      setItems((current) =>
+        applyItemOpened(current, notification.notificationId, tab, new Date()),
+      );
       setUnreadCount((count) => Math.max(0, count - 1));
       try {
         const result = await markVendorNotificationsRead({
