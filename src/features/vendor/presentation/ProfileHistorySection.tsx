@@ -4,8 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 
 import { fetchVendorProfileHistoryFromApi } from "@/features/vendor/application/vendor-profile.api";
 import type { VendorProfileChangeHistoryItem } from "@/features/vendor/domain/types";
-import { ProfileHistoryList } from "@/features/vendor/presentation/ProfileHistoryList";
-import { ProfileHistorySkeleton } from "@/features/vendor/presentation/ProfileHistorySkeleton";
+import {
+  ProfileHistoryContent,
+  type ProfileHistoryLoadError,
+} from "@/features/vendor/presentation/ProfileHistoryContent";
 import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 import portalStyles from "@/features/vendor/presentation/portal.module.css";
@@ -23,17 +25,19 @@ export function ProfileHistorySection({ reloadKey }: ProfileHistorySectionProps)
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [loadError, setLoadError] = useState<ProfileHistoryLoadError>(null);
 
   const loadFirstPage = useCallback(async () => {
     setIsLoading(true);
-    setHasError(false);
+    setLoadError(null);
     try {
       const page = await fetchVendorProfileHistoryFromApi(null);
       setItems(page.items);
       setNextCursor(page.nextCursor);
     } catch {
-      setHasError(true);
+      setItems([]);
+      setNextCursor(null);
+      setLoadError("first");
     } finally {
       setIsLoading(false);
     }
@@ -49,12 +53,13 @@ export function ProfileHistorySection({ reloadKey }: ProfileHistorySectionProps)
   async function loadMore() {
     if (!nextCursor) return;
     setIsLoadingMore(true);
+    setLoadError(null);
     try {
       const page = await fetchVendorProfileHistoryFromApi(nextCursor);
       setItems((current) => [...current, ...page.items]);
       setNextCursor(page.nextCursor);
     } catch {
-      setHasError(true);
+      setLoadError("more");
     } finally {
       setIsLoadingMore(false);
     }
@@ -63,26 +68,17 @@ export function ProfileHistorySection({ reloadKey }: ProfileHistorySectionProps)
   return (
     <section className={portalStyles.panel}>
       <h3 className={styles.panelTitle}>{strings.profile.historyTitle}</h3>
-      {hasError ? (
-        <div className={`${styles.alert} ${styles.alertError}`} role="alert">
-          {strings.profile.historyLoadError}{" "}
-          <button type="button" className={styles.btnSecondary} onClick={() => void loadFirstPage()}>
-            {strings.common.retry}
-          </button>
-        </div>
-      ) : null}
-      {isLoading ? (
-        <ProfileHistorySkeleton strings={strings} />
-      ) : (
-        <ProfileHistoryList
-          strings={strings}
-          locale={locale}
-          items={items}
-          hasMore={nextCursor !== null}
-          isLoadingMore={isLoadingMore}
-          onLoadMore={() => void loadMore()}
-        />
-      )}
+      <ProfileHistoryContent
+        strings={strings}
+        locale={locale}
+        items={items}
+        isLoading={isLoading}
+        loadError={loadError}
+        hasMore={nextCursor !== null}
+        isLoadingMore={isLoadingMore}
+        onRetry={() => void loadFirstPage()}
+        onLoadMore={() => void loadMore()}
+      />
     </section>
   );
 }
