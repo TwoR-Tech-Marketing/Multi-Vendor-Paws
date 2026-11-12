@@ -5,7 +5,8 @@ import styles from "./vendorTypePicker.module.css";
 
 type VendorTypePickerProps = {
   strings: AppStrings;
-  value: VendorType;
+  /** null when no known type is selected yet. */
+  value: VendorType | null;
   onChange: (type: VendorType) => void;
   disabled?: boolean;
 };

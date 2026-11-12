@@ -285,7 +285,7 @@ export function RegisterClient() {
                     required
                     value={form.storeName}
                     onChange={(e) => updateField("storeName", e.target.value)}
-                    placeholder="Happy Tails Hub"
+                    placeholder={typeStrings.placeholders.storeName}
                   />
                 </label>
                 <label className={`${styles.field} ${styles.span2}`}>
@@ -295,7 +295,7 @@ export function RegisterClient() {
                     required
                     value={form.storeDescription}
                     onChange={(e) => updateField("storeDescription", e.target.value)}
-                    placeholder="What products do you sell?"
+                    placeholder={typeStrings.placeholders.storeDescription}
                   />
                 </label>
                 <ProviderFieldsInputs

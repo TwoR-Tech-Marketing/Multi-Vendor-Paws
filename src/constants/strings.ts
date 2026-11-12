@@ -41,16 +41,19 @@ export const Strings = {
     store: {
       label: "Pet store",
       description: "Sell pet products with delivery",
+      placeholders: { storeName: "Happy Tails Hub", storeDescription: "What products do you sell?" },
       fields: { storeName: "Store name", storeDescription: "Store description", logoUrl: "Store logo" },
     },
     clinic: {
       label: "Veterinary clinic",
       description: "Offer vet visits and services",
+      placeholders: { storeName: "Happy Paws Veterinary Clinic", storeDescription: "What care and services does your clinic offer?" },
       fields: { storeName: "Clinic name", storeDescription: "About the clinic", logoUrl: "Clinic logo" },
     },
     groomer: {
       label: "Groomer",
       description: "Offer grooming services",
+      placeholders: { storeName: "Fluffy Grooming Studio", storeDescription: "What grooming services do you offer?" },
       fields: {
         storeName: "Business name",
         storeDescription: "About the business",
@@ -60,11 +63,13 @@ export const Strings = {
     doctor: {
       label: "Doctor",
       description: "Offer online consultations",
+      placeholders: { storeName: "Dr. Sara Ali", storeDescription: "Your background and the pets you treat" },
       fields: { storeName: "Doctor name", storeDescription: "Short bio", logoUrl: "Photo" },
     },
     unknown: {
       label: "Partner",
       description: "Partner account",
+      placeholders: { storeName: "Your business name", storeDescription: "Tell customers about your business" },
       fields: { storeName: "Business name", storeDescription: "Description", logoUrl: "Logo" },
     },
     providerFields: {

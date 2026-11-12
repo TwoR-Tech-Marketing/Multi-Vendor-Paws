@@ -10,9 +10,12 @@ import {
   EMPTY_PROVIDER_TEXT_FIELDS,
   buildReapplyProviderProfile,
   providerProfileSchema,
+  type ProviderProfile,
   type ProviderTextFields,
 } from "@/features/vendor/domain/provider-profile-schema";
 import {
+  PROVIDER_FIELD_LIMITS,
+  getProviderConfig,
   isKnownVendorType,
   type VendorType,
 } from "@/features/vendor/domain/vendor-type-config";
@@ -24,19 +27,27 @@ import styles from "./profile.module.css";
 
 type RejectedReapplyFormProps = {
   profile: VendorProfile;
+  /** Stored provider fields of the rejected request, used to prefill. */
+  storedProviderProfile?: ProviderProfile;
 };
 
-export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
+export function RejectedReapplyForm({ profile, storedProviderProfile }: RejectedReapplyFormProps) {
   const strings = useStrings();
   const router = useRouter();
   const storedType = profile.vendorType;
-  const [vendorType, setVendorType] = useState<VendorType>(
-    isKnownVendorType(storedType) ? storedType : "store",
+  // null while the stored type is unknown and the applicant has not chosen one:
+  // vendorType is then not sent, so the stored value is kept.
+  const [chosenType, setChosenType] = useState<VendorType | null>(
+    isKnownVendorType(storedType) ? storedType : null,
   );
-  const [providerFields, setProviderFields] = useState<ProviderTextFields>(
-    EMPTY_PROVIDER_TEXT_FIELDS,
-  );
-  const typeStrings = strings.vendorTypes[vendorType];
+  const effectiveType = chosenType ?? storedType;
+  const [providerFields, setProviderFields] = useState<ProviderTextFields>(() => ({
+    ...EMPTY_PROVIDER_TEXT_FIELDS,
+    specialty: storedProviderProfile?.specialty ?? "",
+    education: storedProviderProfile?.education ?? "",
+    experience: storedProviderProfile?.experience ?? "",
+  }));
+  const typeStrings = strings.vendorTypes[getProviderConfig(effectiveType).type];
   const [ownerName, setOwnerName] = useState(profile.ownerName);
   const [storeName, setStoreName] = useState(profile.storeName);
   const [storeDescription, setStoreDescription] = useState("");
@@ -53,9 +64,21 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
     setError(null);
     setSuccess(null);
 
-    const providerProfile = buildReapplyProviderProfile(storedType, vendorType, providerFields);
+    if (
+      effectiveType === "doctor" &&
+      storeDescription.trim().length > PROVIDER_FIELD_LIMITS.doctorDescriptionMax
+    ) {
+      setError(strings.vendorTypes.errors.descriptionTooLong);
+      return;
+    }
+
+    const providerProfile = buildReapplyProviderProfile(
+      storedType,
+      effectiveType,
+      providerFields,
+    );
     if (providerProfile) {
-      const checked = providerProfileSchema(vendorType, "signup").safeParse(providerProfile);
+      const checked = providerProfileSchema(effectiveType, "signup").safeParse(providerProfile);
       if (!checked.success) {
         const key = checked.error.issues[0]?.message as keyof typeof strings.vendorTypes.errors;
         setError(strings.vendorTypes.errors[key] ?? strings.accountStatus.reapplyError);
@@ -67,7 +90,7 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
 
     try {
       await reapplyVendorSignupRequest({
-        vendorType,
+        ...(chosenType ? { vendorType: chosenType } : {}),
         ...(providerProfile ? { providerProfile } : {}),
         ownerName: ownerName.trim(),
         storeName: storeName.trim(),
@@ -102,7 +125,7 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
         </div>
       ) : null}
       <form className={styles.formStack} onSubmit={onSubmit}>
-        <VendorTypePicker strings={strings} value={vendorType} onChange={setVendorType} />
+        <VendorTypePicker strings={strings} value={chosenType} onChange={setChosenType} />
         <label>
           {strings.profile.fields.ownerName}
           <input
@@ -129,7 +152,7 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
         </label>
         <ProviderFieldsInputs
           strings={strings}
-          vendorType={vendorType}
+          vendorType={effectiveType}
           value={providerFields}
           onChange={setProviderFields}
         />

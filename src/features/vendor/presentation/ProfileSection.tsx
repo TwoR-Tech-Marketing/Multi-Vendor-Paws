@@ -32,6 +32,7 @@ export function ProfileSection() {
   const needsStoreProfile =
     sessionKind === "active" ||
     sessionKind === "pending" ||
+    sessionKind === "rejected" ||
     sessionKind === "suspended";
 
   const loadProfile = useCallback(async () => {
@@ -75,7 +76,10 @@ export function ProfileSection() {
     return (
       <>
         <AccountStatusBanner sessionKind={sessionKind} profile={profile} />
-        <RejectedReapplyForm profile={profile} />
+        <RejectedReapplyForm
+          profile={profile}
+          storedProviderProfile={storeProfile?.providerProfile}
+        />
         <VendorDocumentsSection />
         <ProfileActiveSessionCard />
       </>

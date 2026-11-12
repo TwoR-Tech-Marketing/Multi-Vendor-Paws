@@ -38,4 +38,19 @@ describe("RejectedReapplyForm", () => {
     expect(html).toContain(en.vendorTypes.store.fields.storeName);
     expect(html).not.toContain(en.vendorTypes.providerFields.specialty);
   });
+
+  it("prefills the stored provider fields", () => {
+    const html = renderToStaticMarkup(
+      <RejectedReapplyForm profile={profile} storedProviderProfile={{ specialty: "Surgery" }} />,
+    );
+    expect(html).toContain('value="Surgery"');
+  });
+
+  it("selects no type when the stored type is unknown", () => {
+    const html = renderToStaticMarkup(
+      <RejectedReapplyForm profile={{ ...profile, vendorType: "hotel" }} />,
+    );
+    expect(html).not.toContain('checked=""');
+    expect(html).toContain(en.vendorTypes.unknown.fields.storeName);
+  });
 });
