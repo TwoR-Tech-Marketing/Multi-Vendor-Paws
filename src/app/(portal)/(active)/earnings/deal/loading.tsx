@@ -1,5 +1,5 @@
-import { DealSkeleton } from "@/features/deals/presentation/DealSkeleton";
+import { DealPageSkeleton } from "@/features/deals/presentation/DealPageSkeleton";
 
 export default function DealLoading() {
-  return <DealSkeleton />;
+  return <DealPageSkeleton />;
 }

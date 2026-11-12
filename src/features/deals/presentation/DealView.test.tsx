@@ -24,6 +24,7 @@ vi.mock("@/features/deals/application/deals.api", () => ({
   fetchVendorDeal: vi.fn(),
 }));
 
+import { DealPageSkeleton } from "@/features/deals/presentation/DealPageSkeleton";
 import { DealSection } from "@/features/deals/presentation/DealSection";
 import { DealView, type DealViewProps } from "@/features/deals/presentation/DealView";
 
@@ -99,6 +100,15 @@ describe("DealSection", () => {
   });
 });
 
+describe("DealPageSkeleton", () => {
+  it("labels the route skeleton with the localized loading text", () => {
+    state.locale = "ar";
+    const html = renderToStaticMarkup(<DealPageSkeleton />);
+    expect(html).toContain('aria-busy="true"');
+    expect(html).toContain(`aria-label="${ar.common.loading}"`);
+  });
+});
+
 describe("DealView current fee", () => {
   it("shows the standard rate note with the default percent when there is no deal", () => {
     const html = decode(render({ deal: view({ defaultPercent: 12.5, current: { ...DEFAULT_CURRENT, percentage: 12.5 } }) }));
@@ -109,6 +119,14 @@ describe("DealView current fee", () => {
     expect(html).toContain("12.5%");
     expect(html).toContain(en.deals.itemsOnlyNote);
     expect(html).not.toContain(en.deals.fixedFee);
+  });
+
+  it("puts the fee base note before the default note", () => {
+    const html = decode(render());
+    const baseAt = html.indexOf(en.deals.itemsOnlyNote);
+    const defaultAt = html.indexOf(en.deals.defaultNote.replace("{percent}", "10"));
+    expect(baseAt).toBeGreaterThan(-1);
+    expect(defaultAt).toBeGreaterThan(baseAt);
   });
 
   it("shows an account deal with fixed fee and percentage, items only", () => {

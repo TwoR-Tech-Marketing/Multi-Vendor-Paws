@@ -25,14 +25,14 @@ export function DealCurrentCard({ current, defaultPercent, strings }: DealCurren
       </div>
       <DealTermsList terms={current} strings={strings} />
       <div className={styles.notes}>
+        <p className={styles.note}>
+          {current.feeBase === "order_total" ? t.legacyNote : t.itemsOnlyNote}
+        </p>
         {current.source === "default" ? (
           <p className={styles.note}>
             {t.defaultNote.replace("{percent}", formatDealPercent(defaultPercent))}
           </p>
         ) : null}
-        <p className={styles.note}>
-          {current.feeBase === "order_total" ? t.legacyNote : t.itemsOnlyNote}
-        </p>
         <p className={styles.muted}>{t.branch.hint}</p>
       </div>
     </article>

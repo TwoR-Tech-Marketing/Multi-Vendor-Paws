@@ -33,6 +33,12 @@ function toPercent(value: unknown): number {
   return Number.isFinite(n) && n > 0 ? Math.min(n, 100) : 0;
 }
 
+/** The standard rate as sent; 10 only when it is missing or outside 0..100. */
+function toDefaultPercent(value: unknown): number {
+  const n = typeof value === "number" ? value : Number.NaN;
+  return Number.isFinite(n) && n >= 0 && n <= 100 ? n : FALLBACK_DEFAULT_PERCENT;
+}
+
 function toOptionalMs(value: unknown): number | null {
   if (value === null || value === undefined) return null;
   const n = Math.trunc(Number(value));
@@ -106,7 +112,7 @@ function mapBranch(raw: unknown, current: CurrentDeal): BranchDealRow | null {
 /** Maps the deal callable response. Unusable branch rows are dropped. */
 export function mapVendorDealView(raw: unknown): VendorDealView {
   const data = asRecord(raw) ?? {};
-  const defaultPercent = toPercent(data.defaultPercent) || FALLBACK_DEFAULT_PERCENT;
+  const defaultPercent = toDefaultPercent(data.defaultPercent);
   const feeModel: FeeModel = data.feeModel === "items_only" ? "items_only" : "legacy";
   const vendorDeal = mapVendorDeal(data.vendorDeal);
   const current = mapCurrent(data.current, feeModel, defaultPercent);
@@ -122,8 +128,7 @@ export function mapVendorDealView(raw: unknown): VendorDealView {
     itemsOnlyFromMs: toOptionalMs(data.itemsOnlyFromMs),
     vendorDeal,
     effectiveFromMs: vendorDeal ? toOptionalMs(data.effectiveFromMs) : null,
-    // Without a deal there is nothing upcoming; an unreadable flag reads as in force.
-    dealActive: vendorDeal ? data.dealActive !== false : false,
+    dealActive: vendorDeal !== null && data.dealActive === true,
     applyToAllBranches:
       typeof data.applyToAllBranches === "boolean" ? data.applyToAllBranches : null,
     current,

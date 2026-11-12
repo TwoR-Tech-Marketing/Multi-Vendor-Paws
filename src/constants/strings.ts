@@ -697,7 +697,7 @@ export const Strings = {
     upcomingFrom: "Starts on {date}",
     feeType: "Fee type",
     type: {
-      fixed: "Fixed fee per order",
+      fixed: "Fixed fee",
       percentage: "Percentage",
       both: "Fixed fee and percentage",
     },

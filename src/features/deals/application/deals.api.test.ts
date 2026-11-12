@@ -151,6 +151,21 @@ describe("mapVendorDealView", () => {
     expect(view.branches).toEqual([]);
   });
 
+  it("keeps a default percent of 0 and falls back to 10 only outside 0..100", () => {
+    expect(mapVendorDealView({ ...RAW, defaultPercent: 0 }).defaultPercent).toBe(0);
+    expect(mapVendorDealView({ ...RAW, defaultPercent: 12.5 }).defaultPercent).toBe(12.5);
+    expect(mapVendorDealView({ ...RAW, defaultPercent: 150 }).defaultPercent).toBe(10);
+    expect(mapVendorDealView({ ...RAW, defaultPercent: -1 }).defaultPercent).toBe(10);
+    expect(mapVendorDealView({ ...RAW, defaultPercent: null }).defaultPercent).toBe(10);
+  });
+
+  it("treats a deal as active only when the flag is true", () => {
+    expect(mapVendorDealView({ ...RAW, dealActive: undefined }).dealActive).toBe(false);
+    expect(mapVendorDealView({ ...RAW, dealActive: "yes" }).dealActive).toBe(false);
+    expect(mapVendorDealView({ ...RAW, dealActive: true }).dealActive).toBe(true);
+    expect(mapVendorDealView({ ...RAW, vendorDeal: null, dealActive: true }).dealActive).toBe(false);
+  });
+
   it("coerces bad values and drops branch rows without an id", () => {
     const view = mapVendorDealView({
       ...RAW,

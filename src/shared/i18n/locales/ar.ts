@@ -698,7 +698,7 @@ export const arStrings: AppStrings = {
     upcomingFrom: "يبدأ في {date}",
     feeType: "نوع الرسوم",
     type: {
-      fixed: "رسوم ثابتة لكل طلب",
+      fixed: "رسوم ثابتة",
       percentage: "نسبة مئوية",
       both: "رسوم ثابتة ونسبة مئوية",
     },
