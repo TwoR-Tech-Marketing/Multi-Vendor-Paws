@@ -6,7 +6,7 @@ export const TELEHEALTH_STATUS_TONE: Record<TelehealthSessionStatus, StatusTone>
   queued: "warning",
   active: "success",
   ended: "neutral",
-  refund_flagged: "neutral",
+  refund_flagged: "danger",
   unknown: "neutral",
 };
 
