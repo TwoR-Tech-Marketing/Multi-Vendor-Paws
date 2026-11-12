@@ -445,11 +445,11 @@ export const arStrings: AppStrings = {
       },
       orderCancelledByAdmin: {
         title: "تم إلغاء الطلب",
-        body: "تم إلغاء الطلب {orderNumber} من قبل دعم TenderPaws.",
+        body: "ألغى فريق دعم تندر باوز الطلب {orderNumber}.",
       },
       appointmentCancelledByAdmin: {
         title: "تم إلغاء الموعد",
-        body: "تم إلغاء الموعد {appointmentNumber} من قبل دعم TenderPaws.",
+        body: "ألغى فريق دعم تندر باوز الموعد {appointmentNumber}.",
       },
     },
     noShowOutcome: {

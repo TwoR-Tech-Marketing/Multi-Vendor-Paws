@@ -165,11 +165,11 @@ describe("resolveNotificationCopy support cancellations", () => {
   it("renders a cancelled order in English and Arabic", () => {
     expect(resolveNotificationCopy(orderCancelled, en, "en")).toEqual({
       title: "Order cancelled",
-      body: "Order #ORD12345 was cancelled by TenderPaws support.",
+      body: "Order #ORD12345 was cancelled by Tender Paws support.",
     });
     expect(resolveNotificationCopy(orderCancelled, ar, "ar")).toEqual({
       title: "تم إلغاء الطلب",
-      body: "تم إلغاء الطلب #ORD12345 من قبل دعم TenderPaws.",
+      body: "ألغى فريق دعم تندر باوز الطلب #ORD12345.",
     });
   });
 
@@ -181,11 +181,11 @@ describe("resolveNotificationCopy support cancellations", () => {
     };
     expect(resolveNotificationCopy(appt, en, "en")).toEqual({
       title: "Appointment cancelled",
-      body: "Appointment #ABCD1234 was cancelled by TenderPaws support.",
+      body: "Appointment #ABCD1234 was cancelled by Tender Paws support.",
     });
     expect(resolveNotificationCopy(appt, ar, "ar")).toEqual({
       title: "تم إلغاء الموعد",
-      body: "تم إلغاء الموعد #ABCD1234 من قبل دعم TenderPaws.",
+      body: "ألغى فريق دعم تندر باوز الموعد #ABCD1234.",
     });
   });
 

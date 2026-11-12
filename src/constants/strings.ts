@@ -444,11 +444,11 @@ export const Strings = {
       },
       orderCancelledByAdmin: {
         title: "Order cancelled",
-        body: "Order {orderNumber} was cancelled by TenderPaws support.",
+        body: "Order {orderNumber} was cancelled by Tender Paws support.",
       },
       appointmentCancelledByAdmin: {
         title: "Appointment cancelled",
-        body: "Appointment {appointmentNumber} was cancelled by TenderPaws support.",
+        body: "Appointment {appointmentNumber} was cancelled by Tender Paws support.",
       },
     },
     noShowOutcome: {
