@@ -119,10 +119,25 @@ export async function getVendorEarningsPage(vendorId: string): Promise<VendorEar
  * Rows written by the shared functions writer count, and both writers use
  * the entry id `sale_{vendorOrderId}`, so neither path double credits.
  */
+/** A failed or missing vendor read counts as a normal vendor. */
+async function isTestVendor(vendorId: string): Promise<boolean> {
+  try {
+    const snap = await getAdminFirestore().collection("vendors").doc(vendorId).get();
+    return snap.exists && snap.data()?.isTest === true;
+  } catch {
+    return false;
+  }
+}
+
 export async function recordSaleEarningForDeliveredOrder(
   vendorOrder: VendorOrder,
   actorUid: string,
 ): Promise<boolean> {
+  // A test order only reaches the ledger of a test vendor.
+  if (vendorOrder.isTest === true && !(await isTestVendor(vendorOrder.vendorId))) {
+    return false;
+  }
+
   const db = getAdminFirestore();
   const entriesRef = earningsEntriesCollection(vendorOrder.vendorId);
   const summaryRef = db.collection(SUMMARY_COLLECTION).doc(vendorOrder.vendorId);

@@ -77,6 +77,8 @@ export type VendorOrder = {
   deliveryAddress: string | null;
   paymentMethod: string | null;
   paymentStatus: string | null;
+  /** Present and true only on test orders. */
+  isTest?: boolean;
 };
 
 export type OrderDatePreset =

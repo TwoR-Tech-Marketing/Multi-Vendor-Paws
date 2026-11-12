@@ -70,6 +70,7 @@ type VendorOrderDoc = {
   deliveryAddress?: string | null;
   paymentMethod?: string | null;
   paymentStatus?: string | null;
+  isTest?: boolean;
 };
 
 function vendorOrdersCollection() {
@@ -119,6 +120,7 @@ function toVendorOrder(snap: DocumentSnapshot<DocumentData>): VendorOrder {
     deliveryAddress: data.deliveryAddress ?? null,
     paymentMethod: data.paymentMethod ?? null,
     paymentStatus: data.paymentStatus ?? null,
+    ...(data.isTest === true ? { isTest: true } : {}),
   };
 }
 
