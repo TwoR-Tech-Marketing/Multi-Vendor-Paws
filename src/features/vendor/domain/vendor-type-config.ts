@@ -1,5 +1,5 @@
 /**
- * Shared vendor type config (S1.7). Keys only: display text comes from the
+ * Shared vendor type config. Keys only: display text comes from the
  * locale files (`vendorTypes.<type>.*`, `nav.*`). The vendor app holds the same
  * table in Dart; a test in each repo asserts the canonical values.
  */

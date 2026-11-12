@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   callable: vi.fn(),
   httpsCallable: vi.fn(),
   upload: vi.fn(),
+  uploadPhoto: vi.fn(),
 }));
 
 vi.mock("firebase/functions", () => ({
@@ -34,13 +35,18 @@ vi.mock("@/features/vendor/infrastructure/vendor-logo.storage", () => ({
   VENDOR_LOGO_MAX_BYTES: 5 * 1024 * 1024,
   uploadVendorProfileLogo: mocks.upload,
 }));
+vi.mock("@/features/vendor/infrastructure/vendor-photos.storage", () => ({
+  uploadVendorProviderPhoto: mocks.uploadPhoto,
+}));
 
 import {
   fetchVendorProfileFromApi,
   fetchVendorProfileHistoryFromApi,
   isProfileHistoryAvailable,
+  providerPhotoOwner,
   submitVendorProfileChangeFromApi,
   uploadVendorProfileLogoFromApi,
+  uploadVendorProviderPhotoFromApi,
   type VendorProfileSubmitError,
 } from "@/features/vendor/application/vendor-profile.api";
 import { ApiClientError } from "@/lib/auth-client";
@@ -92,6 +98,7 @@ describe("vendor-profile.api", () => {
       mocks.callable,
       mocks.httpsCallable,
       mocks.upload,
+      mocks.uploadPhoto,
     ]) {
       fn.mockReset();
     }
@@ -126,6 +133,13 @@ describe("vendor-profile.api", () => {
       await submitVendorProfileChangeFromApi(payload);
       expect(mocks.vendorApiPatch).toHaveBeenCalledWith("/api/vendor/profile", payload);
       expect(mocks.callable).not.toHaveBeenCalled();
+    });
+
+    it("patches the full provider photo list unchanged", async () => {
+      mocks.vendorApiPatch.mockResolvedValue({ success: true });
+      const withPhotos = { ...payload, providerProfile: { photoUrls: ["https://a/1", "https://a/2"] } };
+      await submitVendorProfileChangeFromApi(withPhotos);
+      expect(mocks.vendorApiPatch).toHaveBeenCalledWith("/api/vendor/profile", withPhotos);
     });
 
     it("maps 409 to pending_exists and 403 to not_allowed", async () => {
@@ -227,6 +241,15 @@ describe("vendor-profile.api", () => {
       expect(mocks.vendorApiPatch).not.toHaveBeenCalled();
     });
 
+    it("sends the provider photo list through the callable, empty list included", async () => {
+      mocks.callable.mockResolvedValue({ data: { ok: true } });
+      await submitVendorProfileChangeFromApi({ ...payload, providerProfile: { photoUrls: [] } });
+      expect(mocks.callable.mock.calls[0][0]).toMatchObject({
+        providerProfile: { photoUrls: [] },
+        source: "portal",
+      });
+    });
+
     it("sends logoUrl null when there is no logo", async () => {
       mocks.callable.mockResolvedValue({ data: { ok: true } });
       await submitVendorProfileChangeFromApi({ ...payload, logoUrl: undefined });
@@ -287,6 +310,45 @@ describe("vendor-profile.api", () => {
         reason: "logo_too_large",
       });
       expect(mocks.upload).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("provider photo upload", () => {
+    it("uploads a webp photo under the vendor photos folder", async () => {
+      mocks.uploadPhoto.mockResolvedValue("https://cdn.example.com/p.webp");
+      const file = new File(["x"], "p.webp", { type: "image/webp" });
+      expect(await uploadVendorProviderPhotoFromApi("v1", file)).toBe(
+        "https://cdn.example.com/p.webp",
+      );
+      expect(mocks.uploadPhoto).toHaveBeenCalledWith("v1", file);
+    });
+
+    it("refuses a photo of another type or over 5 MB without uploading", async () => {
+      const gif = new File(["x"], "p.gif", { type: "image/gif" });
+      await expect(uploadVendorProviderPhotoFromApi("v1", gif)).rejects.toMatchObject({
+        reason: "photo_type_not_allowed",
+      });
+      const big = new File(["x"], "p.jpg", { type: "image/jpeg" });
+      Object.defineProperty(big, "size", { value: 5 * 1024 * 1024 });
+      await expect(uploadVendorProviderPhotoFromApi("v1", big)).rejects.toMatchObject({
+        reason: "photo_too_large",
+      });
+      expect(mocks.uploadPhoto).not.toHaveBeenCalled();
+    });
+
+    it("maps a failed upload to a generic reason", async () => {
+      mocks.uploadPhoto.mockRejectedValue(new Error("storage/unauthorized"));
+      const file = new File(["x"], "p.png", { type: "image/png" });
+      await expect(uploadVendorProviderPhotoFromApi("v1", file)).rejects.toMatchObject({
+        reason: "failed",
+      });
+    });
+
+    it("builds the photo owner rule for the vendor", () => {
+      expect(providerPhotoOwner("v1", ["https://a/1"])).toMatchObject({
+        vendorId: "v1",
+        storedUrls: ["https://a/1"],
+      });
     });
   });
 });

@@ -18,7 +18,7 @@ type VendorScreenGuardProps = {
 
 /**
  * Sends a vendor whose type does not have `screen` visible back to the
- * dashboard (S1.7). UX only: the BFF and callables stay the authorization.
+ * dashboard. UX only: the BFF and callables stay the authorization.
  */
 export function VendorScreenGuard({ screen, children }: VendorScreenGuardProps) {
   const router = useRouter();

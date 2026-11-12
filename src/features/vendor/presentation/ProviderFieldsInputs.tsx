@@ -14,7 +14,7 @@ type ProviderFieldsInputsProps = {
   disabled?: boolean;
 };
 
-/** Per-type provider inputs driven by getProviderConfig (S1.7). */
+/** Per-type provider inputs driven by getProviderConfig. */
 export function ProviderFieldsInputs({
   strings,
   vendorType,

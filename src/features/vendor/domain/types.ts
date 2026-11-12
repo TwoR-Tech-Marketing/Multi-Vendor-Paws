@@ -15,9 +15,9 @@ export type VendorStoreProfile = {
   contactEmail: string;
   contactAddress: string;
   logoUrl: string | null;
-  /** S1.7: normalized, store when missing. */
+  /** Normalized, store when missing. */
   vendorType: string;
-  /** S1.7: empty for store vendors and every pre S1.7 document. */
+  /** Empty for store vendors and every older document. */
   providerProfile: ProviderProfile;
   status: VendorAccountStatus;
   approvalStatus?: string;
@@ -40,7 +40,7 @@ export type VendorProfileChangePayload = {
   contactEmail: string;
   contactAddress: string;
   logoUrl?: string | null;
-  /** S1.7: partial map, keys allowed for the session vendor type only. */
+  /** Partial map, keys allowed for the session vendor type only. */
   providerProfile?: ProviderProfile;
 };
 

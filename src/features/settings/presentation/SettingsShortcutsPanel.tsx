@@ -17,8 +17,8 @@ type SettingsShortcutsPanelProps = {
 };
 
 /**
- * Quick links are for active vendors only (PC-3 settings item 4), and only to
- * screens the vendor type has (S1.7).
+ * Quick links are for active vendors only, and only to
+ * screens the vendor type has.
  */
 export function SettingsShortcutsPanel({
   strings,

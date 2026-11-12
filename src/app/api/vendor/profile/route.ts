@@ -13,6 +13,7 @@ import {
 import { getVendorStoreProfileAdmin } from "@/features/vendor/infrastructure/vendor-store-profile.admin.repository";
 import { apiForbidden, apiGenericError, apiUnauthorized } from "@/lib/api/response";
 import { getVendorApiContext } from "@/lib/auth/require-vendor-api";
+import { getDefaultStorageBucket } from "@/lib/firebase-admin";
 import { Strings } from "@/constants/strings";
 
 function serializeProfile(profile: VendorStoreProfile) {
@@ -29,6 +30,22 @@ function serializeChangeRequest(request: VendorProfileChangeRequest) {
     ...request,
     createdAt: request.createdAt?.toISOString() ?? null,
     reviewedAt: request.reviewedAt?.toISOString() ?? null,
+  };
+}
+
+function sendsProviderPhotos(body: unknown): boolean {
+  if (!body || typeof body !== "object") return false;
+  const provider = (body as { providerProfile?: unknown }).providerProfile;
+  return !!provider && typeof provider === "object" && "photoUrls" in provider;
+}
+
+/** Stored photos stay valid; new ones must sit in the vendor's photos folder. */
+async function loadPhotoOwner(uid: string, email: string) {
+  const stored = await getVendorStoreProfileAdmin(uid, email);
+  return {
+    vendorId: uid,
+    storedUrls: stored?.providerProfile?.photoUrls ?? [],
+    bucket: getDefaultStorageBucket(),
   };
 }
 
@@ -63,16 +80,21 @@ export async function PATCH(request: Request) {
   const context = await getVendorApiContext();
   if (!context) return apiUnauthorized();
 
-  // PC-2a: only active vendors submit change requests (pending, rejected,
+  // Only active vendors submit change requests (pending, rejected,
   // suspended and banned are view only), like the shared callable.
   if (context.session.sessionKind !== "active") {
     return apiForbidden();
   }
 
   try {
-    const parsed = profileChangeSchema(context.session.profile.vendorType).safeParse(
-      await request.json(),
-    );
+    const body: unknown = await request.json();
+    const photoOwner = sendsProviderPhotos(body)
+      ? await loadPhotoOwner(context.uid, context.session.user.email)
+      : undefined;
+    const parsed = profileChangeSchema(
+      context.session.profile.vendorType,
+      photoOwner,
+    ).safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: Strings.errors.generic }, { status: 400 });
     }
