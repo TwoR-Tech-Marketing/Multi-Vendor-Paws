@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import { Routes } from "@/constants/routes";
 import { isScreenVisible } from "@/features/vendor/domain/vendor-type-config";
 import type { AppStrings } from "@/shared/i18n/types";
@@ -15,18 +16,18 @@ type EarningsEmptyStateProps = {
 export function EarningsEmptyState({ strings, vendorType }: EarningsEmptyStateProps) {
   const hasOrders = isScreenVisible(vendorType, "orders");
   return (
-    <div className={styles.emptyState}>
-      <h3>{strings.earnings.emptyTitle}</h3>
-      <p>
-        {hasOrders
-          ? strings.earnings.emptyDescription
-          : strings.earnings.emptyDescriptionProvider}
-      </p>
-      {hasOrders ? (
-        <Link href={Routes.vendor.orders} className={styles.emptyCta}>
-          {strings.earnings.goToOrders}
-        </Link>
-      ) : null}
-    </div>
+    <EmptyState
+      title={strings.earnings.emptyTitle}
+      description={
+        hasOrders ? strings.earnings.emptyDescription : strings.earnings.emptyDescriptionProvider
+      }
+      action={
+        hasOrders ? (
+          <Link href={Routes.vendor.orders} className={styles.emptyCta}>
+            {strings.earnings.goToOrders}
+          </Link>
+        ) : null
+      }
+    />
   );
 }

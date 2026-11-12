@@ -18,7 +18,7 @@
   background: var(--color-sidebar-glass);
   backdrop-filter: blur(15.5px);
   -webkit-backdrop-filter: blur(15.5px);
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-hairline);
 }
 
 .sidebarInner {
@@ -45,7 +45,7 @@
   height: 40px;
   border: none;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--color-sidebar-control);
   color: var(--color-text);
   cursor: pointer;
   place-items: center;

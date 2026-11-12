@@ -1,11 +1,10 @@
-import { ThemedSvgIcon } from "@/components/ui/themed-icon/ThemedIcon";
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import type {
   VendorNotification,
   VendorNotificationFilter,
 } from "@/features/notifications/domain/types";
 import { resolveNotificationCopy } from "@/features/notifications/domain/notification-copy";
 import { formatRelativeTime } from "@/features/notifications/domain/relative-time";
-import { uiAssets } from "@/shared/assets/ui-assets";
 import type { AppStrings } from "@/shared/i18n/types";
 import type { AppLocale } from "@/shared/preferences/domain/types";
 
@@ -124,19 +123,7 @@ export function NotificationsView(props: NotificationsViewProps) {
       ) : null}
 
       {items.length === 0 && !props.loadError ? (
-        <div className={styles.emptyState} role="status" aria-live="polite">
-          <div className={styles.emptyIcon} aria-hidden>
-            <ThemedSvgIcon
-              src={uiAssets.bellRead}
-              className={styles.emptyBell}
-              tone="muted"
-              width={26}
-              height={34}
-            />
-          </div>
-          <p className={styles.emptyTitle}>{emptyTitle}</p>
-          <p className={styles.emptySubtitle}>{t.emptySubtitle}</p>
-        </div>
+        <EmptyState title={emptyTitle} description={t.emptySubtitle} headingLevel={2} live />
       ) : null}
     </section>
   );

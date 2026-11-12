@@ -2,9 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { PortalSelect } from "@/components/ui/select/PortalSelect";
+import { Toast } from "@/components/ui/toast/Toast";
 import { fetchVendorSettingsFromApi } from "@/features/settings/application/settings.api";
+import {
+  changeAppearancePreference,
+  saveVendorPreferences,
+  type VendorPreferencesPatch,
+} from "@/features/settings/application/vendor-preferences.api";
 import type { VendorSettingsSnapshot } from "@/features/settings/domain/types";
+import { SettingsAppearancePanel } from "@/features/settings/presentation/SettingsAppearancePanel";
 import { SettingsAccountOverviewPanel } from "@/features/settings/presentation/SettingsAccountOverviewPanel";
 import { SettingsCommissionPanel } from "@/features/settings/presentation/SettingsCommissionPanel";
 import { SettingsHelpLegalPanel } from "@/features/settings/presentation/SettingsHelpLegalPanel";
@@ -13,19 +19,21 @@ import { SettingsSkeleton } from "@/features/settings/presentation/SettingsSkele
 import { SettingsStoreSnapshotPanel } from "@/features/settings/presentation/SettingsStoreSnapshotPanel";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { usePreferences } from "@/shared/preferences/PreferencesContext";
-import type { AppLocale, ThemeMode } from "@/shared/preferences/domain/types";
 
-import portalStyles from "@/features/vendor/presentation/portal.module.css";
 import styles from "./settings.module.css";
 
+const TOAST_DURATION_MS = 6000;
+
 export function SettingsSection() {
-  const { profile, sessionKind, isActiveVendor } = usePortalSession();
-  const { theme, locale, setTheme, setLocale, strings } = usePreferences();
+  const { profile, sessionKind, isActiveVendor, preferencesScope } = usePortalSession();
+  const { theme, mode, resolvedMode, locale, setTheme, setMode, setLocale, strings } =
+    usePreferences();
   const t = strings.settings;
 
   const [snapshot, setSnapshot] = useState<VendorSettingsSnapshot | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState(false);
 
   const loadSettings = useCallback(async () => {
     setError(null);
@@ -47,12 +55,25 @@ export function SettingsSection() {
     return () => window.clearTimeout(timer);
   }, [loadSettings]);
 
-  function onThemeChange(next: ThemeMode) {
-    setTheme(next);
-  }
+  useEffect(() => {
+    if (!saveError) return;
+    const timer = window.setTimeout(() => setSaveError(false), TOAST_DURATION_MS);
+    return () => window.clearTimeout(timer);
+  }, [saveError]);
 
-  function onLocaleChange(next: AppLocale) {
-    setLocale(next);
+  function onPreferenceChange(patch: VendorPreferencesPatch) {
+    void changeAppearancePreference(patch, {
+      apply: (next) => {
+        if (next.theme) setTheme(next.theme);
+        if (next.mode) setMode(next.mode);
+        if (next.language) setLocale(next.language);
+      },
+      save: saveVendorPreferences,
+      scope: preferencesScope,
+    }).then((result) => {
+      // Only a failure shows the toast; a later success never hides it.
+      if (result === "failed") setSaveError(true);
+    });
   }
 
   if (isLoading) return <SettingsSkeleton />;
@@ -101,64 +122,26 @@ export function SettingsSection() {
         vendorType={profile.vendorType}
       />
 
-      <div className={styles.settingsGrid}>
-        <article className={portalStyles.panel} aria-labelledby="settings-appearance-title">
-          <h2 id="settings-appearance-title" className={styles.panelTitle}>
-            {t.appearanceTitle}
-          </h2>
-
-          <label className={styles.fieldLabel} htmlFor="theme-mode">
-            {t.themeLabel}
-          </label>
-          <div
-            id="theme-mode"
-            className={styles.segmentedControl}
-            role="group"
-            aria-label={t.themeLabel}
-          >
-            <button
-              type="button"
-              className={`${styles.segmentButton} ${theme === "light" ? styles.segmentButtonActive : ""}`}
-              onClick={() => onThemeChange("light")}
-              aria-pressed={theme === "light"}
-            >
-              {t.themeLight}
-            </button>
-            <button
-              type="button"
-              className={`${styles.segmentButton} ${theme === "dark" ? styles.segmentButtonActive : ""}`}
-              onClick={() => onThemeChange("dark")}
-              aria-pressed={theme === "dark"}
-            >
-              {t.themeDark}
-            </button>
-          </div>
-        </article>
-
-        <article className={portalStyles.panel} aria-labelledby="settings-language-title">
-          <h2 id="settings-language-title" className={styles.panelTitle}>
-            {t.languageTitle}
-          </h2>
-
-          <label className={styles.fieldLabel} htmlFor="display-language">
-            {t.languageLabel}
-          </label>
-          <PortalSelect
-            id="display-language"
-            value={locale}
-            ariaLabel={t.languageLabel}
-            options={[
-              { value: "en", label: t.languageEnglish },
-              { value: "ar", label: t.languageArabic },
-            ]}
-            onChange={(next) => onLocaleChange(next as AppLocale)}
-          />
-
-          <p className={styles.hint}>{t.savedHint}</p>
-        </article>
-      </div>
+      <SettingsAppearancePanel
+        strings={strings}
+        theme={theme}
+        mode={mode}
+        resolvedMode={resolvedMode}
+        locale={locale}
+        scope={preferencesScope}
+        onThemeChange={(next) => onPreferenceChange({ theme: next })}
+        onModeChange={(next) => onPreferenceChange({ mode: next })}
+        onLocaleChange={(next) => onPreferenceChange({ language: next })}
+      />
 
       <SettingsHelpLegalPanel strings={strings} />
+
+      <Toast
+        open={saveError}
+        message={t.preferencesSaveError}
+        dismissLabel={t.dismiss}
+        onDismiss={() => setSaveError(false)}
+      />
     </div>
   );
 }

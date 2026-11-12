@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import {
   fetchProductCategoriesFromApi,
   updateProductCategoryStatusFromApi,
@@ -101,10 +102,10 @@ export function CategoriesSection() {
 
       <article className={styles.panel}>
         {categories.length === 0 ? (
-          <div className={styles.emptyState}>
-            <h3>{strings.products.categories.emptyTitle}</h3>
-            <p>{strings.products.categories.emptyDescription}</p>
-          </div>
+          <EmptyState
+            title={strings.products.categories.emptyTitle}
+            description={strings.products.categories.emptyDescription}
+          />
         ) : (
           <div className={styles.tableWrap}>
             <table className={styles.dataTable}>

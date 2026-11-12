@@ -191,28 +191,37 @@
   font-weight: 600;
 }
 
-.field input,
+.field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 .field textarea {
-  padding: 12px 14px;
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  font-size: 14px;
-  font-family: var(--font);
-  background: var(--color-surface);
-  color: var(--color-text);
+  width: 100%;
+  min-height: var(--tp-size-input);
+  padding: 0 var(--tp-space-3);
+  border: 1px solid var(--tp-color-border-input);
+  border-radius: var(--tp-radius-control);
+  background: var(--tp-color-surface-input);
+  color: var(--tp-color-text-primary);
+  font-family: inherit;
+  font-size: var(--tp-font-size-16);
+  box-sizing: border-box;
 }
 
-.field input:focus,
+.field textarea {
+  min-height: calc(var(--tp-size-input) * 2);
+  padding: var(--tp-space-3);
+  resize: vertical;
+}
+
+.field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
 .field textarea:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-soft);
+  border-color: var(--tp-color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tp-color-focus) 30%, transparent);
 }
 
-.field input:disabled,
+.field input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):disabled,
 .field textarea:disabled {
-  background: var(--color-surface-2);
-  color: var(--color-text-muted);
+  background: var(--tp-color-surface-sunken);
+  color: var(--tp-color-text-disabled);
   cursor: not-allowed;
 }
 
@@ -244,21 +253,7 @@
 }
 
 .btnPrimary {
-  background: var(--gradient-primary);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 20px;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  font-family: var(--font);
-  box-shadow: var(--color-primary-shadow);
-}
-
-.btnPrimary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  composes: button primary from "../../../components/ui/button/button.module.css";
 }
 
 .alert {
@@ -294,20 +289,7 @@
 }
 
 .btnSecondary {
-  background: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  padding: 12px 20px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  font-family: var(--font);
-}
-
-.btnSecondary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  composes: button secondary from "../../../components/ui/button/button.module.css";
 }
 
 .uploadBoxDisabled {
@@ -345,62 +327,13 @@
   text-transform: capitalize;
   padding: 4px 10px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.65);
+  background: var(--color-glass-chip);
 }
 
 .panel {
+  composes: card from "../../../components/ui/card/card.module.css";
   margin-block: var(--space-6);
   padding: var(--space-6);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-surface);
-}
-
-.panel h2 {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-lg);
-}
-
-.documentsList {
-  list-style: none;
-  margin: var(--space-4) 0 0;
-  padding: 0;
-  display: grid;
-  gap: var(--space-3);
-}
-
-.documentsItem {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-4);
-  align-items: center;
-  padding: var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-}
-
-.documentsItem div {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.documentsUpload {
-  display: inline-flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  font-size: var(--text-sm);
-}
-
-.errorText {
-  color: var(--color-error);
-}
-
-.panel {
-  margin-block: var(--space-6);
-  padding: var(--space-6);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-bg-surface);
 }
 
 .panel h2 {

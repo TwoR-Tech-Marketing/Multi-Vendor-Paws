@@ -51,25 +51,7 @@
 }
 
 .dateInput {
-  width: 100%;
-  height: var(--control-height);
-  padding: 0 var(--space-3);
-  border: 1px solid var(--color-select-border, var(--color-border));
-  border-radius: var(--radius-control, var(--radius-sm));
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-family: var(--font);
-  font-size: 14px;
-  box-sizing: border-box;
-  transition:
-    border-color var(--duration-base),
-    box-shadow var(--duration-base);
-}
-
-.dateInput:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-soft);
+  composes: input from "../../../components/ui/field/field.module.css";
 }
 
 @media (max-width: 420px) {

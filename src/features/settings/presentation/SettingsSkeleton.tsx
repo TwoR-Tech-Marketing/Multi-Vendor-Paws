@@ -52,18 +52,21 @@ export function SettingsSkeleton() {
         </div>
       </article>
 
-      <div className={styles.settingsGrid}>
-        <article className={styles.panel}>
-          <SkeletonText width="35%" size="md" />
-          <SkeletonText width="20%" size="sm" />
-          <SkeletonBox className={styles.segmentSkeleton} />
-        </article>
-        <article className={styles.panel}>
-          <SkeletonText width="30%" size="md" />
-          <SkeletonText width="35%" size="sm" />
-          <SkeletonField />
-        </article>
-      </div>
+      <article className={styles.panel} data-skeleton="appearance">
+        <SkeletonText width="30%" size="md" />
+        <SkeletonText width="15%" size="sm" />
+        <div className={styles.themeGrid}>
+          <SkeletonBox className={styles.themeSkeleton} />
+          <SkeletonBox className={styles.themeSkeleton} />
+          <SkeletonBox className={styles.themeSkeleton} />
+          <SkeletonBox className={styles.themeSkeleton} />
+        </div>
+        <SkeletonText width="15%" size="sm" />
+        <SkeletonBox className={styles.segmentSkeleton} />
+        <SkeletonText width="15%" size="sm" />
+        <SkeletonField />
+        <SkeletonText width="45%" size="sm" />
+      </article>
 
       <article className={styles.panel}>
         <div className={styles.helpGrid}>

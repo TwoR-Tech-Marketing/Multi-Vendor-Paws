@@ -5,9 +5,7 @@
 }
 
 .panel {
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  composes: card from "../../../components/ui/card/card.module.css";
   padding: var(--space-6);
 }
 
@@ -46,14 +44,7 @@
 }
 
 .input {
-  width: 100%;
-  height: var(--control-height, 40px);
-  padding: 0 var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg-surface);
-  color: var(--color-text-primary);
-  font-size: var(--text-sm);
+  composes: input from "../../../components/ui/field/field.module.css";
 }
 
 .mapFrame {
@@ -98,19 +89,7 @@
 }
 
 .primaryButton {
-  height: var(--control-height, 40px);
-  padding: 0 var(--space-4);
-  border: none;
-  border-radius: var(--radius-md);
-  background: var(--color-primary);
-  color: var(--color-on-primary, #fff);
-  font-weight: var(--font-medium);
-  cursor: pointer;
-}
-
-.primaryButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  composes: button primary from "../../../components/ui/button/button.module.css";
 }
 
 .alertError {

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import { Routes } from "@/constants/routes";
 import { fetchVendorOrdersFromApi } from "@/features/orders/application/orders.api";
 import type { VendorOrder } from "@/features/orders/domain/types";
@@ -106,21 +107,21 @@ export function OrdersSection() {
 
       <article className={styles.panel}>
         {orders.length === 0 ? (
-          <div className={styles.emptyState}>
-            <h3>
-              {isFiltered ? strings.orders.emptyFilteredTitle : strings.orders.emptyTitle}
-            </h3>
-            <p>
-              {isFiltered
+          <EmptyState
+            title={isFiltered ? strings.orders.emptyFilteredTitle : strings.orders.emptyTitle}
+            description={
+              isFiltered
                 ? strings.orders.emptyFilteredDescription
-                : strings.orders.emptyDescription}
-            </p>
-            {isFiltered ? (
-              <button type="button" className={styles.btnSecondary} onClick={clearFilters}>
-                {strings.orders.clearFilters}
-              </button>
-            ) : null}
-          </div>
+                : strings.orders.emptyDescription
+            }
+            action={
+              isFiltered ? (
+                <button type="button" className={styles.btnSecondary} onClick={clearFilters}>
+                  {strings.orders.clearFilters}
+                </button>
+              ) : null
+            }
+          />
         ) : (
           <div className={styles.tableWrap}>
             <table className={styles.dataTable}>
@@ -129,7 +130,7 @@ export function OrdersSection() {
                   <th>{strings.orders.tableOrder}</th>
                   <th>{strings.orders.tableCustomer}</th>
                   <th>{strings.orders.tableItems}</th>
-                  <th>{strings.orders.tableTotal}</th>
+                  <th className={styles.money}>{strings.orders.tableTotal}</th>
                   <th>{strings.orders.tableStatus}</th>
                   <th>{strings.orders.tableDate}</th>
                   <th>{strings.orders.tableActions}</th>
@@ -141,7 +142,7 @@ export function OrdersSection() {
                     <td>{formatOrderRef(order.orderId)}</td>
                     <td>{order.buyerDisplayName ?? "—"}</td>
                     <td>{order.itemCount}</td>
-                    <td>{formatEgp(order.totalPiastres)}</td>
+                    <td className={styles.money}>{formatEgp(order.totalPiastres)}</td>
                     <td>
                       <OrderStatusBadge status={order.status} strings={strings} />
                     </td>

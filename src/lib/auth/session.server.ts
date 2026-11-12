@@ -8,6 +8,7 @@ import { resolveVendorSessionViaCallableForUid } from "@/features/auth/infrastru
 import { getVendorStoreProfileAdmin } from "@/features/vendor/infrastructure/vendor-store-profile.admin.repository";
 import { SESSION_COOKIE_NAME } from "@/lib/auth-cookies";
 import { getAdminAuth } from "@/lib/firebase-admin";
+import { mapSessionPreferences } from "@/shared/preferences/domain/session-preferences";
 
 export type VerifiedSession = {
   uid: string;
@@ -79,6 +80,8 @@ export async function buildVendorSessionDto(
       storeName: storeProfile?.storeName ?? resolution.profile.storeName,
       logoUrl: storeProfile?.logoUrl ?? resolution.profile.logoUrl ?? null,
     },
+    // Preferences come from the session callable; absent fields mean local only.
+    ...(resolution.sessionPreferences ?? mapSessionPreferences(null)),
   };
 }
 

@@ -1,0 +1,102 @@
+/*
+ * Shared button look. Reads theme tokens only. Feature modules compose these
+ * classes (composes: button primary from ".../button.module.css").
+ * Motion: press scale on :active, theme press duration, ease out. Hover is
+ * only applied on devices with a fine pointer.
+ */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tp-space-2);
+  min-height: var(--tp-size-control);
+  padding: 0 var(--tp-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--tp-radius-button);
+  font-family: inherit;
+  font-size: var(--tp-font-size-14);
+  font-weight: var(--tp-font-weight-semibold);
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--tp-motion-duration-press) var(--tp-motion-ease-out),
+    background-color var(--tp-motion-duration-press) var(--tp-motion-ease-out);
+}
+
+.button:active:not(:disabled):not([aria-disabled="true"]) {
+  transform: scale(0.97);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--tp-color-focus);
+  outline-offset: 2px;
+}
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  background: color-mix(in srgb, var(--tp-color-text-primary) 7%, transparent);
+  color: var(--tp-color-text-disabled);
+  border-color: var(--tp-color-border-default);
+  cursor: not-allowed;
+}
+
+.primary {
+  background: var(--tp-color-action-primary);
+  color: var(--tp-color-action-on-primary);
+}
+
+.secondary {
+  background: var(--tp-color-surface-raised);
+  color: var(--tp-color-text-primary);
+  border-color: var(--tp-color-border-strong);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--tp-color-link);
+}
+
+.danger {
+  background: var(--tp-color-status-danger-fg);
+  color: var(--tp-color-status-danger-on);
+}
+
+.small {
+  min-height: calc(var(--tp-size-control) - var(--tp-space-2));
+  padding: 0 var(--tp-space-3);
+  font-size: var(--tp-font-size-13);
+}
+
+.block {
+  width: 100%;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover:not(:disabled):not([aria-disabled="true"]) {
+    background: var(--tp-color-action-primary-hover);
+  }
+
+  .secondary:hover:not(:disabled):not([aria-disabled="true"]),
+  .ghost:hover:not(:disabled):not([aria-disabled="true"]) {
+    background: var(--tp-color-surface-sunken);
+  }
+
+  .danger:hover:not(:disabled):not([aria-disabled="true"]) {
+    background: color-mix(in srgb, var(--tp-color-status-danger-fg) 88%, var(--tp-color-text-primary));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: background-color var(--tp-motion-duration-press) var(--tp-motion-ease-out);
+  }
+
+  .button:active:not(:disabled):not([aria-disabled="true"]) {
+    transform: none;
+  }
+}

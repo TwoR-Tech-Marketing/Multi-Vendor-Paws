@@ -1,0 +1,28 @@
+/*
+ * Shared card look: raised surface, default border, card radius. In dark mode
+ * the theme gives a faint top edge highlight; light mode has none. No resting
+ * shadow: shadows are for floating layers only.
+ */
+.card {
+  background: var(--tp-color-surface-raised);
+  border: 1px solid var(--tp-color-border-default);
+  border-radius: var(--tp-radius-card);
+  box-shadow: inset 0 1px 0 var(--tp-effect-edge-highlight);
+  color: var(--tp-color-text-primary);
+  min-width: 0;
+}
+
+.padded {
+  padding: var(--tp-space-4);
+}
+
+.roomy {
+  padding: var(--tp-space-6);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--tp-font-size-16);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
+}

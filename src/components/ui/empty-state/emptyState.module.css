@@ -1,0 +1,50 @@
+/*
+ * Empty state: theme accent art, one title and one line of guidance.
+ */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tp-space-3);
+  padding: var(--tp-space-8) var(--tp-space-4);
+  text-align: center;
+  color: var(--tp-color-text-secondary);
+}
+
+.art {
+  width: calc(var(--tp-space-16) + var(--tp-space-8));
+  height: calc(var(--tp-space-16) + var(--tp-space-8));
+}
+
+.artHeart {
+  fill: var(--tp-color-selected-bg);
+  stroke: var(--tp-color-line);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.artPaw {
+  fill: var(--tp-color-line);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--tp-font-size-16);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
+}
+
+.description {
+  margin: 0;
+  max-width: 36ch;
+  font-size: var(--tp-font-size-14);
+  color: var(--tp-color-text-secondary);
+}
+
+.action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tp-space-2);
+  justify-content: center;
+  margin-top: var(--tp-space-1);
+}

@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 
+import "@/shared/theme/tokens.generated.css";
 import "@/shared/theme/colors.css";
+import "@/shared/theme/brand-art.css";
 import "./globals.css";
 
 import { PreferencesBootstrap } from "@/shared/preferences/PreferencesBootstrap";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font",
-});
-
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-display",
-});
+import { plexSans, plexSansArabic } from "@/shared/theme/fonts";
 
 export const metadata: Metadata = {
   title: "Pawlio — Vendor Portal",
@@ -35,7 +27,7 @@ export default function RootLayout({
       <head>
         <PreferencesBootstrap />
       </head>
-      <body className={`${inter.variable} ${plusJakarta.variable}`} suppressHydrationWarning>
+      <body className={`${plexSans.variable} ${plexSansArabic.variable}`} suppressHydrationWarning>
         {children}
       </body>
     </html>

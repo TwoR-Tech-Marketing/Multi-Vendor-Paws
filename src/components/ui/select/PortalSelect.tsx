@@ -15,13 +15,14 @@ import type { PortalSelectProps } from "@/components/ui/select/PortalSelect.type
 import styles from "./PortalSelect.module.css";
 
 const POPUP_GAP_PX = 6;
-const OPTION_HEIGHT_PX = 44;
-const POPUP_PADDING_PX = 24;
+const OPTION_HEIGHT_PX = 40;
+const POPUP_PADDING_PX = 10;
 
 type PopupPosition = {
   top: number;
   left: number;
   width: number;
+  upward: boolean;
 };
 
 function measurePopupPosition(
@@ -37,6 +38,7 @@ function measurePopupPosition(
   return {
     left: rect.left,
     width: rect.width,
+    upward: openUpward,
     top: openUpward
       ? Math.max(POPUP_GAP_PX, rect.top - estimatedHeight - POPUP_GAP_PX)
       : rect.bottom + POPUP_GAP_PX,
@@ -127,7 +129,14 @@ export function PortalSelect({
       id={listboxId}
       role="listbox"
       aria-label={ariaLabel}
-      className={`${styles.popup} ${styles.popupFixed} ${styles.popupOpen}`}
+      className={[
+        styles.popup,
+        styles.popupFixed,
+        styles.popupOpen,
+        popupPosition.upward ? styles.popupUp : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
       style={{
         top: popupPosition.top,
         left: popupPosition.left,
@@ -148,11 +157,7 @@ export function PortalSelect({
             <span
               className={`${styles.radio} ${isSelected ? styles.radioSelected : ""}`}
               aria-hidden
-            >
-              <span
-                className={`${styles.radioDot} ${isSelected ? styles.radioDotSelected : ""}`}
-              />
-            </span>
+            />
             <span className={styles.optionLabel}>{option.label}</span>
           </button>
         );

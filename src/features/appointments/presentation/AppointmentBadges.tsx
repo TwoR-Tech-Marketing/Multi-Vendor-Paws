@@ -1,20 +1,21 @@
+import { StatusBadge, type StatusTone } from "@/components/ui/badge/StatusBadge";
 import type { AppointmentStatus, NoShowState } from "@/features/appointments/domain/types";
 import type { AppStrings } from "@/shared/i18n/types";
 
 import styles from "./appointments.module.css";
 
-const STATUS_TONE: Record<AppointmentStatus, string> = {
-  paid: styles.toneBooked,
-  rescheduled: styles.toneBooked,
-  completed: styles.toneDone,
-  cancelled_by_user: styles.toneMuted,
-  cancelled_by_clinic: styles.toneMuted,
-  no_show: styles.toneError,
-  refund_pending: styles.toneWarning,
-  refunded: styles.toneMuted,
+export const APPOINTMENT_STATUS_TONE: Record<AppointmentStatus, StatusTone> = {
+  paid: "confirmed",
+  rescheduled: "confirmed",
+  completed: "success",
+  cancelled_by_user: "cancelled",
+  cancelled_by_clinic: "cancelled",
+  no_show: "danger",
+  refund_pending: "warning",
+  refunded: "neutral",
 };
 
-/** Status, held and no-show state badges. Text always, color only adds. */
+/** Status, held and no-show state badges. Text and shape always, color only adds. */
 export function AppointmentBadges({
   status,
   held,
@@ -29,10 +30,10 @@ export function AppointmentBadges({
   const t = strings.appointments;
   return (
     <span className={styles.badges}>
-      <span className={`${styles.badge} ${STATUS_TONE[status]}`}>{t.status[status]}</span>
-      {held ? <span className={`${styles.badge} ${styles.toneWarning}`}>{t.held}</span> : null}
+      <StatusBadge tone={APPOINTMENT_STATUS_TONE[status]} label={t.status[status]} status={status} />
+      {held ? <StatusBadge tone="hold" label={t.held} status="held" /> : null}
       {noShowState ? (
-        <span className={`${styles.badge} ${styles.toneMuted}`}>{t.noShow.state[noShowState]}</span>
+        <StatusBadge tone="neutral" label={t.noShow.state[noShowState]} status={noShowState} />
       ) : null}
     </span>
   );

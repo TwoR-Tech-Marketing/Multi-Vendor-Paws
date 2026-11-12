@@ -11,16 +11,13 @@
 }
 
 .statCard {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  composes: card from "../../../components/ui/card/card.module.css";
   padding: var(--space-4);
 }
 
 .statCardHighlight {
-  background: var(--color-primary-soft);
-  border-color: var(--color-primary);
+  background: var(--tp-color-selected-bg);
+  border-color: var(--tp-color-line);
 }
 
 .statLabel {
@@ -39,10 +36,7 @@
 }
 
 .panel {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  composes: card from "../../../components/ui/card/card.module.css";
   overflow: hidden;
 }
 
@@ -73,51 +67,11 @@
 }
 
 .tableWrap {
-  overflow-x: auto;
+  composes: tableWrap from "../../../components/ui/table/table.module.css";
 }
 
 .dataTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.dataTable th {
-  text-align: start;
-  padding: var(--space-3) var(--space-4);
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-muted);
-  background: var(--color-surface-2);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.dataTable td {
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.dataTable tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.emptyState {
-  padding: var(--space-12) var(--space-6);
-  text-align: center;
-}
-
-.emptyState h3 {
-  margin: 0 0 var(--space-2);
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.emptyState p {
-  margin: 0;
-  color: var(--color-text-muted);
-  line-height: 1.6;
+  composes: table from "../../../components/ui/table/table.module.css";
 }
 
 .alertError {
@@ -139,18 +93,7 @@
 }
 
 .retryButton {
-  border: 1px solid var(--color-error-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  color: var(--color-error);
-  font-size: 13px;
-  font-weight: 600;
-  padding: var(--space-1) var(--space-3);
-  cursor: pointer;
-}
-
-.retryButton:hover {
-  background: var(--color-error-bg);
+  composes: button secondary small from "../../../components/ui/button/button.module.css";
 }
 
 .orderLink {
@@ -164,19 +107,8 @@
 }
 
 .emptyCta {
-  display: inline-flex;
+  composes: button primary from "../../../components/ui/button/button.module.css";
   margin-top: var(--space-4);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.emptyCta:hover {
-  background: var(--color-primary-hover);
 }
 
 @media (max-width: 900px) {
@@ -192,29 +124,16 @@
 }
 
 .tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-6);
-  border-bottom: 1px solid var(--color-border);
+  composes: tabs from "../../../components/ui/tabs/tabs.module.css";
+  padding-inline: var(--tp-space-4);
 }
 
 .tab {
-  height: var(--control-height);
-  padding: 0 var(--space-4);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-tab-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-  cursor: pointer;
-  font-family: var(--font);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  transition: border-color var(--duration-base);
+  composes: tab from "../../../components/ui/tabs/tabs.module.css";
 }
 
 .tabActive {
-  border: 2px solid var(--color-primary);
+  composes: tabActive from "../../../components/ui/tabs/tabs.module.css";
 }
 
 .filteredEmpty {
@@ -231,19 +150,10 @@
 }
 
 .loadMoreBtn {
-  height: var(--control-height);
-  padding: 0 var(--space-6);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-tab-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-family: var(--font);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  cursor: pointer;
+  composes: button secondary from "../../../components/ui/button/button.module.css";
 }
 
-.loadMoreBtn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+
+.money {
+  composes: numeric from "../../../components/ui/table/table.module.css";
 }

@@ -78,20 +78,8 @@
 }
 
 .panelAction {
-  display: inline-flex;
+  composes: button primary from "../../../components/ui/button/button.module.css";
   margin-top: var(--space-4);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: background-color var(--duration-base);
-}
-
-.panelAction:hover {
-  background: var(--color-primary-2);
 }
 
 .commissionHighlight {
@@ -254,19 +242,7 @@ a.snapshotCard:hover {
 }
 
 .retryButton {
-  border: 1px solid var(--color-error-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  color: var(--color-error);
-  font-size: 13px;
-  font-weight: 600;
-  padding: var(--space-1) var(--space-3);
-  cursor: pointer;
-  font-family: var(--font);
-}
-
-.retryButton:hover {
-  background: var(--color-error-bg);
+  composes: button secondary small from "../../../components/ui/button/button.module.css";
 }
 
 .segmentedControl {
@@ -345,5 +321,92 @@ a.snapshotCard:hover {
 
   .shortcutsGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+.appearanceStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.themeGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.themeOption {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-base),
+    box-shadow var(--duration-base);
+}
+
+.themeOption:hover {
+  border-color: var(--color-border-strong);
+}
+
+.themeOption:has(.themeRadio:focus-visible) {
+  outline: var(--focus-ring-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Native radio kept for keyboard and screen readers; the card shows the state. */
+.themeRadio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.themeOptionSelected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.themeSwatch {
+  display: flex;
+  width: 100%;
+  height: var(--space-6);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.themeSwatch span {
+  flex: 1;
+}
+
+.themeName {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+}
+
+.themeDefault {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 900px) {
+  .themeGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

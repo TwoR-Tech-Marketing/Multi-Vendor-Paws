@@ -1,161 +1,163 @@
+/*
+ * Portal variable names kept as aliases of the generated --tp-* tokens
+ * (tokens.generated.css). Every colour here resolves to a theme token, so
+ * screens follow the selected theme and mode. Do not add colour literals.
+ * Dark mode values come from the generated [data-theme="dark"] blocks.
+ */
 :root {
-  --font: "Inter", system-ui, sans-serif;
-  --color-bg: #f4f6f9;
-  --color-surface: #ffffff;
-  --color-surface-2: #f8fafc;
-  --color-text: #1e293b;
-  --color-text-muted: #64748b;
-  --color-border: #e2e8f0;
-  --color-select-border: #6b7283;
-  --radius: 12px;
-  --radius-lg: 16px;
-  --shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --font: var(--tp-font-latin);
+  --color-bg: var(--tp-color-bg);
+  --color-surface: var(--tp-color-surface-raised);
+  --color-surface-2: var(--tp-color-surface-sunken);
+  --color-bg-surface: var(--tp-color-surface-raised);
+  --color-bg-muted: var(--tp-color-surface-sunken);
+  --color-text: var(--tp-color-text-primary);
+  --color-text-secondary: var(--tp-color-text-secondary);
+  --color-text-muted: var(--tp-color-text-muted);
+  --color-border: var(--tp-color-border-default);
+  --color-border-strong: var(--tp-color-border-strong);
+  --color-select-border: var(--tp-color-border-input);
+  --color-focus: var(--tp-color-focus);
+  --color-link: var(--tp-color-link);
+  --radius: var(--tp-radius-card);
+  --radius-lg: var(--tp-radius-card);
+  --shadow: 0 4px 24px color-mix(in srgb, var(--tp-color-scrim) 15%, transparent);
+  --shadow-sm: 0 1px 2px color-mix(in srgb, var(--tp-color-scrim) 15%, transparent);
+  --shadow-lg: var(--tp-effect-shadow-float);
+  --shadow-hairline: 0 0 0 1px color-mix(in srgb, var(--tp-color-scrim) 15%, transparent);
 
-  --color-sidebar-glass: rgba(255, 255, 255, 0.7);
+  --color-sidebar-glass: color-mix(in srgb, var(--tp-color-surface-raised) 80%, transparent);
+  --color-sidebar-control: color-mix(in srgb, var(--tp-color-surface-raised) 92%, transparent);
+  --color-glass-chip: color-mix(in srgb, var(--tp-color-surface-raised) 65%, transparent);
 
   /* Theme-aware icons (SVG masks + PNG filters) */
-  --color-icon: var(--color-text);
-  --color-icon-muted: var(--color-text-muted);
-  --color-icon-accent: var(--color-primary);
-  --color-icon-on-primary: #ffffff;
-  --color-tab-border: rgba(99, 102, 241, 0.3);
+  --color-icon: var(--tp-color-text-primary);
+  --color-icon-muted: var(--tp-color-text-muted);
+  --color-icon-accent: var(--tp-color-action-primary);
+  --color-icon-on-primary: var(--tp-color-action-on-primary);
+  --color-tab-border: color-mix(in srgb, var(--tp-color-action-primary) 30%, transparent);
   --image-filter: none;
   --logo-image-filter: none;
 
-  /* Purple — admin / vendor portal brand */
-  --color-primary: #6366f1;
-  --color-logout: #952424;
-  --color-primary-2: #8b5cf6;
-  --gradient-primary: linear-gradient(135deg, #667eea, #764ba2, #8b5cf6);
-  --color-primary-soft: rgba(99, 102, 241, 0.12);
-  --color-primary-shadow: 0 8px 24px rgba(99, 102, 241, 0.28);
-  --color-store-avatar-surface: #eee9ff;
+  /* Brand actions */
+  --color-primary: var(--tp-color-action-primary);
+  --color-primary-2: var(--tp-color-action-primary-hover);
+  --color-primary-hover: var(--tp-color-action-primary-hover);
+  --color-on-primary: var(--tp-color-action-on-primary);
+  --gradient-primary: linear-gradient(
+    135deg,
+    var(--tp-color-action-primary),
+    var(--tp-color-action-primary-hover)
+  );
+  --gradient-brand-text: linear-gradient(
+    135deg,
+    var(--tp-color-accent-600),
+    var(--tp-color-accent-500)
+  );
+  --color-primary-soft: var(--tp-color-selected-bg);
+  --color-primary-shadow: 0 8px 24px
+    color-mix(in srgb, var(--tp-color-action-primary) 28%, transparent);
+  --color-primary-hairline: color-mix(in srgb, var(--tp-color-action-primary) 14%, transparent);
+  --color-store-avatar-surface: var(--tp-color-selected-bg);
+  --color-logo-surface: var(--tp-color-surface-raised);
+  --color-logout: var(--tp-color-status-danger-fg);
 
-  --color-success: #166534;
-  --color-warning: #b45309;
-  --color-error: #b91c1c;
-  --color-error-bg: #fee2e2;
-  --color-error-border: #fecaca;
+  /* Status */
+  --color-success: var(--tp-color-status-success-fg);
+  --color-warning: var(--tp-color-status-warning-fg);
+  --color-error: var(--tp-color-status-danger-fg);
+  --color-info: var(--tp-color-status-info-fg);
+  --color-error-bg: var(--tp-color-status-danger-surface);
+  --color-error-surface: var(--tp-color-status-danger-surface);
+  --color-error-border: color-mix(
+    in srgb,
+    var(--tp-color-status-danger-fg) 30%,
+    var(--tp-color-status-danger-surface)
+  );
+  --color-on-danger: var(--tp-color-status-danger-on);
 
-  --color-success-surface: #dcfce7;
-  --color-success-border: #bbf7d0;
+  --color-success-surface: var(--tp-color-status-success-surface);
+  --color-success-border: color-mix(
+    in srgb,
+    var(--tp-color-status-success-fg) 30%,
+    var(--tp-color-status-success-surface)
+  );
 
-  --color-overlay: rgba(15, 23, 42, 0.35);
-  --color-dialog-cancel-bg: #f2f2f2;
-  --color-dialog-danger: #c50a00;
-  --color-signout-surface: #ffe8e8;
-  --color-signout-border: #ffd0d0;
+  --color-overlay: var(--tp-color-scrim);
+  --color-dialog-cancel-bg: var(--tp-color-surface-sunken);
+  --color-dialog-danger: var(--tp-color-status-danger-fg);
+  --color-signout-surface: var(--tp-color-status-danger-surface);
+  --color-signout-border: var(--color-error-border);
   --color-signout-text: var(--color-logout);
 
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.18);
-  --color-warning-surface: #fef3c7;
-  --color-pending-surface: #fffbeb;
-  --color-pending-border: #fde68a;
-  --color-test-badge-surface: #fef3c7;
-  --color-test-badge-border: #fcd34d;
-  --color-test-badge-text: #92400e;
+  --color-warning-surface: var(--tp-color-status-warning-surface);
+  --color-pending-surface: var(--tp-color-status-warning-surface);
+  --color-pending-border: color-mix(
+    in srgb,
+    var(--tp-color-status-warning-fg) 30%,
+    var(--tp-color-status-warning-surface)
+  );
+  --color-pending-text: var(--tp-color-status-warning-fg);
+  --color-test-badge-surface: var(--tp-color-status-warning-surface);
+  --color-test-badge-border: var(--color-pending-border);
+  --color-test-badge-text: var(--tp-color-status-warning-fg);
 
   --sidebar-width: 157px;
   --topbar-height: 64px;
   --nav-mobile-max: 767px;
 
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-12: 48px;
-  --space-16: 64px;
+  --space-1: var(--tp-space-1);
+  --space-2: var(--tp-space-2);
+  --space-3: var(--tp-space-3);
+  --space-4: var(--tp-space-4);
+  --space-6: var(--tp-space-6);
+  --space-8: var(--tp-space-8);
+  --space-12: var(--tp-space-12);
+  --space-16: var(--tp-space-16);
 
-  --radius-sm: 8px;
-  --radius-control: 10px;
-  --radius-full: 9999px;
+  --radius-sm: var(--tp-radius-control);
+  --radius-control: var(--tp-radius-control);
+  --radius-full: var(--tp-radius-full);
 
-  --control-height: 48px;
+  --control-height: var(--tp-size-input);
 
-  --text-xs: 12px;
-  --text-sm: 14px;
-  --text-base: 16px;
-  --text-lg: 18px;
-  --text-2xl: 24px;
+  --text-xs: var(--tp-font-size-12);
+  --text-sm: var(--tp-font-size-14);
+  --text-base: var(--tp-font-size-16);
+  --text-lg: var(--tp-font-size-18);
+  --text-2xl: var(--tp-font-size-24);
 
-  --font-light: 300;
-  --font-normal: 400;
-  --font-medium: 500;
-  --font-semibold: 600;
-  --font-bold: 700;
+  /* The theme ships 400, 500 and 600 only; bold and light map onto them. */
+  --font-light: var(--tp-font-weight-regular);
+  --font-normal: var(--tp-font-weight-regular);
+  --font-medium: var(--tp-font-weight-medium);
+  --font-semibold: var(--tp-font-weight-semibold);
+  --font-bold: var(--tp-font-weight-semibold);
 
   --leading-tight: 1.2;
-  --focus-ring-width: 3px;
+  --focus-ring-width: 2px;
   --vendor-type-option-min: 160px;
 
-  --duration-base: 200ms;
+  --duration-base: var(--tp-motion-duration-base);
+  --duration-press: var(--tp-motion-duration-press);
+  --duration-exit: var(--tp-motion-duration-exit);
+  --ease-out: var(--tp-motion-ease-out);
 
-  /* Landing — Sign-Painter's Street */
-  --color-landing-wall: #d9dcbd;
-  --color-landing-ink: #141414;
-  --color-landing-lead: #32372b;
-  --color-landing-store: #203f29;
-  --color-landing-clinic: #dab044;
-  --color-landing-groomer: #5b1e1a;
-  --color-landing-enamel: #f7f5ef;
-  --color-landing-plinth: #8c9476;
-  --font-landing-display: "Maiden Orange", serif;
-  --font-landing-arabic: "Reem Kufi", sans-serif;
-  --font-landing-body: "Reddit Sans Condensed", sans-serif;
-
-  /* Shimmer skeleton — light base, white sweep */
-  --color-skeleton-base: #eef1f5;
-  --color-skeleton-border: rgba(255, 255, 255, 0.85);
-  --color-shimmer-mid: rgba(255, 255, 255, 0.92);
-  --color-shimmer-peak: #ffffff;
+  /* Shimmer skeleton: base fill with a light sweep */
+  --color-skeleton-base: var(--tp-color-skeleton-base);
+  --color-skeleton-border: var(--tp-effect-edge-highlight);
+  --color-shimmer-mid: color-mix(in srgb, var(--tp-color-skeleton-shimmer) 70%, transparent);
+  --color-shimmer-peak: var(--tp-color-skeleton-shimmer);
 }
 
-[data-theme="dark"] {
-  --color-bg: #0f172a;
-  --color-surface: #1e293b;
-  --color-surface-2: #334155;
-  --color-text: #f1f5f9;
-  --color-text-muted: #94a3b8;
-  --color-border: #475569;
-  --color-select-border: #64748b;
-  --shadow: 0 4px 24px rgba(0, 0, 0, 0.28);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.42);
+/*
+ * Font families: next/font declares --tp-font-latin and --tp-font-arabic on
+ * <body>, so the alias is resolved there. Arabic pages use the Arabic family.
+ */
+body {
+  --font: var(--tp-font-latin);
+}
 
-  --color-primary-soft: rgba(99, 102, 241, 0.22);
-  --color-primary-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
-  --color-store-avatar-surface: #312e81;
-
-  --color-success-surface: #14532d;
-  --color-success-border: #166534;
-  --color-error-bg: #450a0a;
-  --color-error-border: #7f1d1d;
-
-  --color-overlay: rgba(0, 0, 0, 0.55);
-  --color-dialog-cancel-bg: #334155;
-  --color-signout-surface: #3f1d1d;
-  --color-signout-border: #7f1d1d;
-
-  --color-warning-surface: #422006;
-  --color-pending-surface: #422006;
-  --color-pending-border: #78350f;
-  --color-test-badge-surface: #422006;
-  --color-test-badge-border: #b45309;
-  --color-test-badge-text: #fcd34d;
-
-  --color-sidebar-glass: rgba(30, 41, 59, 0.88);
-
-  --color-icon: #e2e8f0;
-  --color-icon-muted: #94a3b8;
-  --color-tab-border: rgba(99, 102, 241, 0.35);
-  --image-filter: none;
-  --logo-image-filter: none;
-
-  --color-skeleton-base: #3a4a61;
-  --color-skeleton-border: rgba(255, 255, 255, 0.08);
-  --color-shimmer-mid: rgba(255, 255, 255, 0.14);
-  --color-shimmer-peak: rgba(255, 255, 255, 0.32);
+html[lang="ar"] body {
+  --font: var(--tp-font-arabic);
 }

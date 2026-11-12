@@ -1,19 +1,20 @@
+import { StatusBadge, type StatusTone } from "@/components/ui/badge/StatusBadge";
 import type { CouponStatus } from "@/features/coupons/domain/types";
 import type { AppStrings } from "@/shared/i18n/types";
 
-import styles from "./coupons.module.css";
-
-const TONE: Record<CouponStatus, string> = {
-  active: styles.badgeActive,
-  paused: styles.badgePaused,
-  expired: styles.badgeEnded,
-  exhausted: styles.badgeEnded,
+export const COUPON_STATUS_TONE: Record<CouponStatus, StatusTone> = {
+  active: "success",
+  paused: "warning",
+  expired: "neutral",
+  exhausted: "neutral",
 };
 
 export function CouponStatusBadge({ status, strings }: { status: CouponStatus; strings: AppStrings }) {
   return (
-    <span className={`${styles.badge} ${TONE[status]}`} data-status={status}>
-      {strings.coupons.status[status]}
-    </span>
+    <StatusBadge
+      tone={COUPON_STATUS_TONE[status]}
+      label={strings.coupons.status[status]}
+      status={status}
+    />
   );
 }

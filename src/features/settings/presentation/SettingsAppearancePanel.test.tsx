@@ -1,0 +1,100 @@
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
+
+import { getStrings } from "@/shared/i18n/get-strings";
+
+import { SettingsAppearancePanel } from "./SettingsAppearancePanel";
+import { SettingsSkeleton } from "./SettingsSkeleton";
+
+const noop = () => undefined;
+
+function render(locale: "en" | "ar" = "en", overrides: Partial<Parameters<typeof SettingsAppearancePanel>[0]> = {}) {
+  return renderToStaticMarkup(
+    <SettingsAppearancePanel
+      strings={getStrings(locale)}
+      theme="tenderpaws"
+      mode="system"
+      resolvedMode="light"
+      locale={locale}
+      scope="account"
+      onThemeChange={noop}
+      onModeChange={noop}
+      onLocaleChange={noop}
+      {...overrides}
+    />,
+  );
+}
+
+describe("SettingsAppearancePanel", () => {
+  const en = getStrings("en");
+
+  it("shows one section with Theme, Mode and Language in that order", () => {
+    const html = render();
+    expect(html).toContain(en.settings.appearanceTitle);
+    const theme = html.indexOf(en.settings.themeLabel);
+    const mode = html.indexOf(en.settings.modeLabel);
+    const language = html.indexOf(`>${en.settings.languageLabel}<`);
+    expect(theme).toBeGreaterThan(-1);
+    expect(mode).toBeGreaterThan(theme);
+    expect(language).toBeGreaterThan(mode);
+  });
+
+  it("lists four themes with TenderPaws first and marked as the default", () => {
+    const html = render();
+    const ids = [...html.matchAll(/data-theme-id="([a-z]+)"/g)].map((m) => m[1]);
+    expect(ids).toEqual(["tenderpaws", "nile", "cobalt", "signal"]);
+    const marker = `>${en.settings.themeDefault}<`;
+    expect(html.split(marker)).toHaveLength(2);
+    expect(html.indexOf(marker)).toBeGreaterThan(html.indexOf(`>${en.settings.themeNames.tenderpaws}<`));
+    expect(html.indexOf(marker)).toBeLessThan(html.indexOf(`>${en.settings.themeNames.nile}<`));
+  });
+
+  it("marks the selected theme and mode", () => {
+    const html = render("en", { theme: "cobalt", mode: "dark" });
+    const inputs = html.match(/<input[^>]*>/g) ?? [];
+    const checked = inputs.filter((tag) => tag.includes('checked=""'));
+    expect(checked).toHaveLength(1);
+    expect(checked[0]).toContain('value="cobalt"');
+    expect(html.match(/name="settings-theme"/g)).toHaveLength(4);
+    expect(html.match(/checked=""/g)).toHaveLength(1);
+    expect(html).toMatch(/data-mode="dark"[^>]*aria-pressed="true"/);
+    expect(html).toMatch(/data-mode="system"[^>]*aria-pressed="false"/);
+  });
+
+  it("offers Light, Dark and System modes", () => {
+    const html = render();
+    const modes = [...html.matchAll(/data-mode="([a-z]+)"/g)].map((m) => m[1]);
+    expect(modes).toEqual(["light", "dark", "system"]);
+  });
+
+  it("explains where choices are saved", () => {
+    expect(render("en", { scope: "account" })).toContain(en.settings.savedHintAccount);
+    expect(render("en", { scope: "local" })).toContain(en.settings.savedHint);
+  });
+
+  it("keeps the TenderPaws name in Latin letters and the Arabic default label", () => {
+    const ar = getStrings("ar");
+    expect(ar.settings.themeNames.tenderpaws).toBe("TenderPaws");
+    expect(ar.settings.themeDefault).toBe("الافتراضية");
+    const html = render("ar", { scope: "local" });
+    expect(html).toContain(">TenderPaws<");
+    expect(html).toContain(ar.settings.savedHint);
+    expect(render("ar", { scope: "account" })).toContain(ar.settings.savedHintAccount);
+  });
+
+  it("renders in Arabic", () => {
+    const ar = getStrings("ar");
+    const html = render("ar");
+    expect(html).toContain(ar.settings.appearanceTitle);
+    expect(html).toContain(ar.settings.modeSystem);
+    expect(html).toContain(ar.settings.themeNames.nile);
+  });
+});
+
+describe("SettingsSkeleton", () => {
+  it("has a shimmer placeholder for the appearance section", () => {
+    const html = renderToStaticMarkup(<SettingsSkeleton />);
+    expect(html).toContain('role="status"');
+    expect(html).toContain('data-skeleton="appearance"');
+  });
+});

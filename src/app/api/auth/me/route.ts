@@ -25,7 +25,8 @@ export async function GET() {
       return response;
     }
 
-    return NextResponse.json({ session });
+    // preferences is also top level, the same shape the session callable returns.
+    return NextResponse.json({ session, preferences: session.preferences });
   } catch (error) {
     logger.error("GET /api/auth/me failed", {
       message: error instanceof Error ? error.message : String(error),

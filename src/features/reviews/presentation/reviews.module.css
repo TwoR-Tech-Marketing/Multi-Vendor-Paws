@@ -196,19 +196,7 @@
 }
 
 .textarea {
-  width: 100%;
-  min-height: calc(var(--control-height) * 3);
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-select-border);
-  border-radius: var(--radius-control);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-family: var(--font);
-  font-size: var(--text-sm);
-  resize: vertical;
+  composes: textarea from "../../../components/ui/field/field.module.css";
+  min-height: calc(var(--tp-size-input) * 3);
 }
 
-.textarea:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
