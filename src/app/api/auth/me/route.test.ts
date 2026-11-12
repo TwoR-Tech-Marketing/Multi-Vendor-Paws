@@ -36,4 +36,20 @@ describe("GET /api/auth/me", () => {
     expect(res.cookies.get("__session")).toBeUndefined();
     await expect(res.json()).resolves.toEqual({ session: mocks.session });
   });
+
+  it("adds the account preferences to the response", async () => {
+    const preferences = { theme: "nile", mode: "system", language: "ar" };
+    mocks.session = {
+      uid: "vendor_1",
+      sessionKind: "active",
+      preferences,
+      preferencesScope: "account",
+    };
+    const res = await GET();
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.preferences).toEqual(preferences);
+    expect(body.session.preferences).toEqual(preferences);
+    expect(body.session.preferencesScope).toBe("account");
+  });
 });
