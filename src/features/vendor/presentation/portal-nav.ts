@@ -1,5 +1,9 @@
 import { Routes } from "@/constants/routes";
 import { portalNavAssets } from "@/features/vendor/presentation/portal-assets";
+import {
+  getProviderConfig,
+  type VendorScreenKey,
+} from "@/features/vendor/domain/vendor-type-config";
 import type { AppStrings } from "@/shared/i18n/types";
 
 export type PortalNavId =
@@ -12,51 +16,70 @@ export type PortalNavId =
   | "notifications";
 
 export type PortalNavItem = {
-  id: PortalNavId;
-  href: string;
+  id: VendorScreenKey;
+  /** null for comingSoon items: no route exists yet. */
+  href: string | null;
   label: string;
   icon: string;
   requiresActiveAccount: boolean;
+  comingSoon: boolean;
 };
 
-export function getPortalSidebarNavItems(strings: AppStrings): PortalNavItem[] {
-  return [
-    {
-      id: "dashboard",
-      href: Routes.vendor.dashboard,
-      label: strings.nav.dashboard,
-      icon: portalNavAssets.navDashboard,
-      requiresActiveAccount: false,
-    },
-    {
-      id: "products",
-      href: Routes.vendor.products,
-      label: strings.nav.products,
-      icon: portalNavAssets.navProducts,
-      requiresActiveAccount: true,
-    },
-    {
-      id: "orders",
-      href: Routes.vendor.orders,
-      label: strings.nav.orders,
-      icon: portalNavAssets.navOrders,
-      requiresActiveAccount: true,
-    },
-    {
-      id: "earnings",
-      href: Routes.vendor.earnings,
-      label: strings.nav.earnings,
-      icon: portalNavAssets.navEarnings,
-      requiresActiveAccount: true,
-    },
-    {
-      id: "settings",
-      href: Routes.vendor.settings,
-      label: strings.nav.settings,
-      icon: portalNavAssets.navSettings,
-      requiresActiveAccount: false,
-    },
-  ];
+type NavTarget = { href: string | null; icon: string; label: (strings: AppStrings) => string };
+
+const NAV_TARGETS: Partial<Record<VendorScreenKey, NavTarget>> = {
+  dashboard: {
+    href: Routes.vendor.dashboard,
+    icon: portalNavAssets.navDashboard,
+    label: (s) => s.nav.dashboard,
+  },
+  products: {
+    href: Routes.vendor.products,
+    icon: portalNavAssets.navProducts,
+    label: (s) => s.nav.products,
+  },
+  orders: { href: Routes.vendor.orders, icon: portalNavAssets.navOrders, label: (s) => s.nav.orders },
+  earnings: {
+    href: Routes.vendor.earnings,
+    icon: portalNavAssets.navEarnings,
+    label: (s) => s.nav.earnings,
+  },
+  settings: {
+    href: Routes.vendor.settings,
+    icon: portalNavAssets.navSettings,
+    label: (s) => s.nav.settings,
+  },
+  branches: { href: null, icon: portalNavAssets.navBranches, label: (s) => s.nav.branches },
+  appointments: {
+    href: null,
+    icon: portalNavAssets.navAppointments,
+    label: (s) => s.nav.appointments,
+  },
+  telehealth: { href: null, icon: portalNavAssets.navTelehealth, label: (s) => s.nav.telehealth },
+};
+
+/** Sidebar items from the vendor type config (missing type reads as store). */
+export function getPortalSidebarNavItems(
+  strings: AppStrings,
+  vendorType?: string | null,
+): PortalNavItem[] {
+  const config = getProviderConfig(vendorType);
+  return config.nav.flatMap((id) => {
+    const target = NAV_TARGETS[id];
+    const state = config.screens[id];
+    if (!target || state === "hidden") return [];
+    const comingSoon = state === "comingSoon";
+    return [
+      {
+        id,
+        href: comingSoon ? null : target.href,
+        label: target.label(strings),
+        icon: target.icon,
+        requiresActiveAccount: config.requiresActive.includes(id),
+        comingSoon,
+      },
+    ];
+  });
 }
 
 export type PortalPageMeta = {

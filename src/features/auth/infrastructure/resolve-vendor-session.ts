@@ -12,6 +12,7 @@ import type { User } from "firebase/auth";
 
 import { firestore } from "@/lib/firebase";
 import type { VendorAccountStatus, VendorProfile } from "@/features/auth/domain/types";
+import { normalizeVendorType } from "@/features/vendor/domain/vendor-type-config";
 import { syncVendorAccess } from "@/features/auth/infrastructure/sync-vendor-access.service";
 
 type UserDoc = {
@@ -28,6 +29,7 @@ type UserDoc = {
 };
 
 type VendorDoc = {
+  vendorType?: string;
   storeName?: string;
   status?: VendorAccountStatus;
   approvalStatus?: string;
@@ -41,6 +43,7 @@ type VendorDoc = {
 };
 
 type SignupRequestDoc = {
+  vendorType?: string;
   email?: string;
   contactEmail?: string;
   storeName?: string;
@@ -147,6 +150,7 @@ function buildProfile(
       "Your store",
     status,
     approvalStatus: vendorData?.approvalStatus,
+    vendorType: normalizeVendorType(vendorData?.vendorType || signupData?.vendorType),
     ...resolveRestriction(userData, vendorData),
   };
 }

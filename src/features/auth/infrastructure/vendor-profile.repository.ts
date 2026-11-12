@@ -1,6 +1,7 @@
 import { doc, getDoc } from "firebase/firestore";
 
 import { firestore } from "@/lib/firebase";
+import { normalizeVendorType } from "@/features/vendor/domain/vendor-type-config";
 import type { VendorAccountStatus, VendorProfile } from "@/features/auth/domain/types";
 
 type UserDoc = {
@@ -12,6 +13,7 @@ type UserDoc = {
 };
 
 type VendorDoc = {
+  vendorType?: string;
   storeName?: string;
   status?: VendorAccountStatus;
   approvalStatus?: string;
@@ -42,5 +44,6 @@ export async function getVendorProfile(uid: string): Promise<VendorProfile | nul
     storeName: vendorData?.storeName ?? "Your store",
     status,
     approvalStatus: vendorData?.approvalStatus,
+    vendorType: normalizeVendorType(vendorData?.vendorType),
   };
 }

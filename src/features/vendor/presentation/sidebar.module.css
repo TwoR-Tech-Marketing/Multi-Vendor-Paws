@@ -144,6 +144,12 @@
   opacity: 0.55;
 }
 
+.navBadge {
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: center;
+}
+
 .navLabel {
   font-size: 16px;
   font-weight: 400;

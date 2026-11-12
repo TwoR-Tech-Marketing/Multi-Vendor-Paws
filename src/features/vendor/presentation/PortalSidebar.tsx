@@ -21,8 +21,8 @@ type PortalSidebarProps = {
 export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
   const pathname = usePathname();
   const strings = useStrings();
-  const navItems = getPortalSidebarNavItems(strings);
-  const { isActiveVendor, isLoggingOut } = usePortalSession();
+  const { isActiveVendor, isLoggingOut, profile } = usePortalSession();
+  const navItems = getPortalSidebarNavItems(strings, profile.vendorType);
   const { requestSignOut } = usePortalSignOut();
 
   function onSignOutClick() {
@@ -60,8 +60,10 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
         <nav className={styles.navScroll}>
           {navItems.map((item, index) => {
             const isActive =
-              pathname === item.href || pathname.startsWith(`${item.href}/`);
-            const isLocked = item.requiresActiveAccount && !isActiveVendor;
+              item.href !== null &&
+              (pathname === item.href || pathname.startsWith(`${item.href}/`));
+            const isLocked =
+              item.comingSoon || (item.requiresActiveAccount && !isActiveVendor);
             const isLast = index === navItems.length - 1;
             const iconTone = isActive ? "on-primary" : "default";
 
@@ -83,15 +85,18 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
                   height={22}
                 />
                 <span className={styles.navLabel}>{item.label}</span>
+                {item.comingSoon ? (
+                  <span className={styles.navBadge}>{strings.nav.comingSoon}</span>
+                ) : null}
               </>
             );
 
             return (
               <div key={item.id} className={styles.navGroup}>
-                {isLocked ? (
+                {isLocked || item.href === null ? (
                   <span
                     className={itemClassName}
-                    title={strings.nav.lockedHint}
+                    title={item.comingSoon ? strings.nav.comingSoon : strings.nav.lockedHint}
                     aria-disabled="true"
                   >
                     {itemContent}

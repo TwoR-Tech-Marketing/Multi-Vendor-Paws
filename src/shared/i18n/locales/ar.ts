@@ -31,6 +31,61 @@ export const arStrings: AppStrings = {
     settings: "الإعدادات",
     logOut: "تسجيل الخروج",
     lockedHint: "متاح بعد موافقة الإدارة",
+    branches: "الفروع",
+    appointments: "المواعيد",
+    telehealth: "الاستشارات عن بُعد",
+    comingSoon: "قريبًا",
+  },
+  vendorTypes: {
+    title: "نوع الحساب",
+    hint: "اختر ما تقدّمه. لا يمكن تغيير نوع الحساب بعد الموافقة.",
+    profileRow: "نوع الحساب",
+    store: {
+      label: "متجر مستلزمات حيوانات أليفة",
+      description: "بيع منتجات الحيوانات الأليفة مع التوصيل",
+      fields: { storeName: "اسم المتجر", storeDescription: "وصف المتجر", logoUrl: "شعار المتجر" },
+    },
+    clinic: {
+      label: "عيادة بيطرية",
+      description: "قدّم الزيارات والخدمات البيطرية",
+      fields: { storeName: "اسم العيادة", storeDescription: "نبذة عن العيادة", logoUrl: "شعار العيادة" },
+    },
+    groomer: {
+      label: "خدمات العناية والتجميل",
+      description: "قدّم خدمات العناية بالحيوانات الأليفة",
+      fields: {
+        storeName: "اسم النشاط",
+        storeDescription: "نبذة عن النشاط",
+        logoUrl: "شعار النشاط",
+      },
+    },
+    doctor: {
+      label: "طبيب",
+      description: "قدّم استشارات عبر الإنترنت",
+      fields: { storeName: "اسم الطبيب", storeDescription: "نبذة قصيرة", logoUrl: "الصورة" },
+    },
+    unknown: {
+      label: "شريك",
+      description: "حساب شريك",
+      fields: { storeName: "اسم النشاط", storeDescription: "الوصف", logoUrl: "الشعار" },
+    },
+    providerFields: {
+      specialty: "التخصص",
+      specialtyPlaceholder: "مثال: الجراحة، الأمراض الجلدية",
+      education: "المؤهلات العلمية",
+      experience: "الخبرة",
+      optional: "اختياري",
+    },
+    errors: {
+      nameRequired: "يرجى إدخال الاسم.",
+      descriptionRequired: "يرجى إدخال الوصف.",
+      descriptionTooLong: "يمكن أن تصل النبذة القصيرة إلى 500 حرف.",
+      specialtyRequired: "يرجى إدخال التخصص.",
+      specialtyLength: "يجب أن يكون التخصص من 2 إلى 80 حرفًا.",
+      textTooLong: "يمكن أن يصل هذا النص إلى 1000 حرف.",
+      photoUrlsInvalid: "يرجى مراجعة الصور والمحاولة مرة أخرى.",
+      fieldNotAllowed: "بعض البيانات لا تنطبق على نوع الحساب هذا.",
+    },
   },
   pages: {
     dashboard: {

@@ -29,6 +29,61 @@ export const Strings = {
     settings: "Settings",
     logOut: "Log out",
     lockedHint: "Available after admin approval",
+    branches: "Branches",
+    appointments: "Appointments",
+    telehealth: "Telehealth",
+    comingSoon: "Coming soon",
+  },
+  vendorTypes: {
+    title: "Account type",
+    hint: "Choose what you offer. The account type cannot be changed after approval.",
+    profileRow: "Account type",
+    store: {
+      label: "Pet store",
+      description: "Sell pet products with delivery",
+      fields: { storeName: "Store name", storeDescription: "Store description", logoUrl: "Store logo" },
+    },
+    clinic: {
+      label: "Veterinary clinic",
+      description: "Offer vet visits and services",
+      fields: { storeName: "Clinic name", storeDescription: "About the clinic", logoUrl: "Clinic logo" },
+    },
+    groomer: {
+      label: "Groomer",
+      description: "Offer grooming services",
+      fields: {
+        storeName: "Business name",
+        storeDescription: "About the business",
+        logoUrl: "Business logo",
+      },
+    },
+    doctor: {
+      label: "Doctor",
+      description: "Offer online consultations",
+      fields: { storeName: "Doctor name", storeDescription: "Short bio", logoUrl: "Photo" },
+    },
+    unknown: {
+      label: "Partner",
+      description: "Partner account",
+      fields: { storeName: "Business name", storeDescription: "Description", logoUrl: "Logo" },
+    },
+    providerFields: {
+      specialty: "Specialty",
+      specialtyPlaceholder: "For example: surgery, dermatology",
+      education: "Education",
+      experience: "Experience",
+      optional: "Optional",
+    },
+    errors: {
+      nameRequired: "Please enter a name.",
+      descriptionRequired: "Please enter a description.",
+      descriptionTooLong: "The short bio can be up to 500 characters.",
+      specialtyRequired: "Please enter your specialty.",
+      specialtyLength: "Specialty must be 2 to 80 characters.",
+      textTooLong: "This text can be up to 1000 characters.",
+      photoUrlsInvalid: "Please check the photos and try again.",
+      fieldNotAllowed: "Some details do not apply to this account type.",
+    },
   },
   pages: {
     dashboard: {
