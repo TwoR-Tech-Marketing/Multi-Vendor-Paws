@@ -56,6 +56,9 @@ describe("provider photos", () => {
     expect(isOwnProviderPhotoUrl(downloadUrl("b1", "vendors/v1/logo/1_a.png"), owner)).toBe(false);
     expect(isOwnProviderPhotoUrl(downloadUrl("b2", "vendors/v1/photos/1_a.png"), owner)).toBe(false);
     expect(isOwnProviderPhotoUrl("https://example.com/new.png", owner)).toBe(false);
+    expect(
+      isOwnProviderPhotoUrl(downloadUrl("b1", "vendors/v1/photos/../../v2/photos/a.png"), owner),
+    ).toBe(false);
   });
 
   it("compares lists by order", () => {

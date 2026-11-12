@@ -55,8 +55,8 @@ function patch(extra: Record<string, unknown> = {}) {
   );
 }
 
-function photoUrl(path: string): string {
-  return `https://firebasestorage.googleapis.com/v0/b/b1/o/${encodeURIComponent(path)}?alt=media`;
+function photoUrl(path: string, bucket = "b1"): string {
+  return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(path)}?alt=media`;
 }
 
 describe("PATCH /api/vendor/profile", () => {
@@ -120,6 +120,8 @@ describe("PATCH /api/vendor/profile", () => {
     it.each([
       ["another vendor folder", [photoUrl("vendors/v2/photos/1_a.jpg")]],
       ["an outside URL", ["https://example.com/new.jpg"]],
+      ["another bucket", [photoUrl("vendors/v1/photos/1_a.jpg", "b2")]],
+      ["a path that climbs out of the folder", [photoUrl("vendors/v1/photos/../../v2/photos/a.jpg")]],
       ["duplicates", [photoUrl("vendors/v1/photos/1_a.jpg"), photoUrl("vendors/v1/photos/1_a.jpg")]],
       ["more than six", Array.from({ length: 7 }, (_, i) => photoUrl(`vendors/v1/photos/${i}.jpg`))],
     ])("refuses %s with 400 and writes nothing", async (_label, photoUrls) => {

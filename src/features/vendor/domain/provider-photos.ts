@@ -60,7 +60,8 @@ export type ProviderPhotoOwner = {
 export function isOwnProviderPhotoUrl(url: string, owner: ProviderPhotoOwner): boolean {
   if (owner.storedUrls.includes(url)) return true;
   const object = parseStorageObject(url);
-  if (!object || !object.path.startsWith(`vendors/${owner.vendorId}/photos/`)) return false;
+  if (!object || object.path.includes("..")) return false;
+  if (!object.path.startsWith(`vendors/${owner.vendorId}/photos/`)) return false;
   return !owner.bucket || object.bucket === owner.bucket;
 }
 
