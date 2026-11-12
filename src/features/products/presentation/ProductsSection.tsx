@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
 import { Routes } from "@/constants/routes";
 import {
@@ -22,7 +23,6 @@ import {
 import { ProductsListActions } from "@/features/products/presentation/ProductsListActions";
 import { ProductStatusBadge } from "@/features/products/presentation/ProductStatusBadge";
 import { ProductsSkeleton } from "@/features/products/presentation/ProductsSkeleton";
-import { IconProducts } from "@/features/vendor/presentation/PortalNavIcons";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./products.module.css";
@@ -159,28 +159,23 @@ export function ProductsSection() {
 
       <article className={styles.panel}>
         {products.length === 0 ? (
-          <div className={styles.emptyState}>
-            <div className={styles.emptyIcon} aria-hidden>
-              <IconProducts width={26} height={26} />
-            </div>
-            <h3>
-              {isFiltered
-                ? strings.products.emptyFilteredTitle
-                : strings.products.emptyTitle}
-            </h3>
-            <p>
-              {isFiltered
+          <EmptyState
+            title={
+              isFiltered ? strings.products.emptyFilteredTitle : strings.products.emptyTitle
+            }
+            description={
+              isFiltered
                 ? strings.products.emptyFilteredDescription
-                : strings.products.emptyDescription}
-            </p>
-            {isFiltered ? (
-              <div className={styles.emptyStateAction}>
+                : strings.products.emptyDescription
+            }
+            action={
+              isFiltered ? (
                 <button type="button" className={styles.btnSecondary} onClick={clearFilters}>
                   {strings.products.clearFilters}
                 </button>
-              </div>
-            ) : null}
-          </div>
+              ) : null
+            }
+          />
         ) : (
           <div className={styles.tableWrap}>
             <table className={styles.dataTable}>
@@ -188,7 +183,7 @@ export function ProductsSection() {
                 <tr>
                   <th>{strings.products.tableProduct}</th>
                   <th>{strings.products.tableCategory}</th>
-                  <th>{strings.products.tablePrice}</th>
+                  <th className={styles.money}>{strings.products.tablePrice}</th>
                   <th>{strings.products.tableStock}</th>
                   <th>{strings.products.tableStatus}</th>
                   <th>{strings.products.tableActions}</th>
@@ -223,7 +218,7 @@ export function ProductsSection() {
                         </div>
                       </td>
                       <td>{product.categoryNames[0] ?? "—"}</td>
-                      <td>{formatEgp(product.pricePiastres)}</td>
+                      <td className={styles.money}>{formatEgp(product.pricePiastres)}</td>
                       <td>
                         <span className={isLowStock ? styles.stockLow : undefined}>
                           {isLowStock
