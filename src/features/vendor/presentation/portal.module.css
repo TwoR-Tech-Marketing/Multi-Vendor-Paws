@@ -8,7 +8,7 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--color-overlay);
   z-index: 90;
   opacity: 0;
   pointer-events: none;
@@ -125,7 +125,7 @@
   overflow: hidden;
   background: var(--color-store-avatar-surface);
   flex-shrink: 0;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-hairline);
   border: none;
   padding: 0;
   cursor: pointer;
@@ -149,7 +149,7 @@
   display: grid;
   place-items: center;
   background: var(--gradient-primary);
-  color: #fff;
+  color: var(--color-on-primary);
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -305,7 +305,7 @@
   height: 36px;
   border-radius: 50%;
   background: var(--gradient-primary);
-  color: #fff;
+  color: var(--color-on-primary);
   font-size: 12px;
   font-weight: 800;
   display: grid;
@@ -455,7 +455,7 @@
 .statusBannerPending {
   background: var(--color-pending-surface);
   border: 1px solid var(--color-pending-border);
-  color: #92400e;
+  color: var(--color-pending-text);
 }
 
 .statusBannerSuspended {
@@ -530,7 +530,7 @@
 
 .skeletonSidebar {
   width: var(--sidebar-width);
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--color-sidebar-glass);
   border-right: 1px solid var(--color-border);
   padding: 28px var(--space-3) var(--space-6);
   display: flex;

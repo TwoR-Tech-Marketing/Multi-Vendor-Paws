@@ -90,7 +90,7 @@
 .btnDanger {
   border: none;
   background: var(--color-dialog-danger);
-  color: #fff;
+  color: var(--color-on-danger);
 }
 
 .btnDanger:disabled,

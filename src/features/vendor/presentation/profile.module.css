@@ -245,7 +245,7 @@
 
 .btnPrimary {
   background: var(--gradient-primary);
-  color: #fff;
+  color: var(--color-on-primary);
   border: none;
   border-radius: 10px;
   padding: 12px 20px;
@@ -345,7 +345,7 @@
   text-transform: capitalize;
   padding: 4px 10px;
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.65);
+  background: var(--color-glass-chip);
 }
 
 .panel {
