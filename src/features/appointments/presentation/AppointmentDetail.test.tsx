@@ -24,7 +24,10 @@ import { AppointmentActionBar } from "@/features/appointments/presentation/Appoi
 import { AppointmentDetailSection } from "@/features/appointments/presentation/AppointmentDetailSection";
 import { AppointmentDetailView } from "@/features/appointments/presentation/AppointmentDetailView";
 import { CancelAppointmentDialog } from "@/features/appointments/presentation/CancelAppointmentDialog";
-import { RescheduleDialog } from "@/features/appointments/presentation/RescheduleDialog";
+import {
+  RescheduleDialog,
+  rescheduleSlotRequest,
+} from "@/features/appointments/presentation/RescheduleDialog";
 
 const en = getStrings("en");
 const ar = getStrings("ar");
@@ -139,5 +142,22 @@ describe("RescheduleDialog", () => {
     expect(html).toContain(en.appointments.rescheduleReason);
     expect(html).toMatch(/<button[^>]*disabled[^>]*>Previous week</);
     expect(html).toMatch(/<button[^>]*disabled[^>]*>Move appointment</);
+  });
+});
+
+describe("rescheduleSlotRequest", () => {
+  it("asks for slots with every service of the appointment, week by week in Cairo days", () => {
+    const appointment = makeAppointment({ serviceIds: ["s1", "s2"], mode: "home" });
+    const lateUtc = Date.UTC(2026, 10, 12, 22, 30);
+    expect(rescheduleSlotRequest(appointment, 0, lateUtc)).toEqual({
+      branchId: "b1",
+      serviceIds: ["s1", "s2"],
+      mode: "home",
+      fromDate: "2026-11-13",
+      toDate: "2026-11-19",
+    });
+    const next = rescheduleSlotRequest(appointment, 1, lateUtc);
+    expect(next.fromDate).toBe("2026-11-20");
+    expect(next).not.toHaveProperty("serviceId");
   });
 });

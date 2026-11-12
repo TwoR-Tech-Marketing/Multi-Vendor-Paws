@@ -28,6 +28,25 @@ type RescheduleDialogProps = {
   onClose: () => void;
 };
 
+/**
+ * Slots for one week of the picker. Sends every service of the appointment so
+ * the slot length is their summed duration, the same rule the server applies.
+ */
+export function rescheduleSlotRequest(
+  appointment: Pick<Appointment, "branchId" | "mode" | "serviceIds">,
+  week: number,
+  nowMs: number,
+) {
+  const fromDate = addDays(cairoTodayIso(nowMs), week * APPOINTMENT_LIMITS.slotWindowDays);
+  return {
+    branchId: appointment.branchId,
+    serviceIds: [...appointment.serviceIds],
+    mode: appointment.mode,
+    fromDate,
+    toDate: addDays(fromDate, APPOINTMENT_LIMITS.slotWindowDays - 1),
+  };
+}
+
 function SlotsSkeleton({ label }: { label: string }) {
   return (
     <div role="status" aria-busy="true" aria-label={label}>
@@ -65,18 +84,17 @@ export function RescheduleDialog({
   const [startMs, setStartMs] = useState<number | null>(null);
   const [reason, setReason] = useState("");
   const [touched, setTouched] = useState(false);
-  const serviceId = appointment.serviceIds[0] ?? appointment.services[0]?.serviceId ?? "";
+  const serviceKey = appointment.serviceIds.join(",");
 
   useEffect(() => {
     let cancelled = false;
-    const fromDate = addDays(cairoTodayIso(Date.now()), week * APPOINTMENT_LIMITS.slotWindowDays);
-    listBranchSlots({
-      branchId: appointment.branchId,
-      serviceId,
-      mode: appointment.mode,
-      fromDate,
-      toDate: addDays(fromDate, APPOINTMENT_LIMITS.slotWindowDays - 1),
-    })
+    listBranchSlots(
+      rescheduleSlotRequest(
+        { branchId: appointment.branchId, mode: appointment.mode, serviceIds: serviceKey.split(",") },
+        week,
+        Date.now(),
+      ),
+    )
       .then((next) => {
         if (!cancelled) setPreview(next);
       })
@@ -86,7 +104,7 @@ export function RescheduleDialog({
     return () => {
       cancelled = true;
     };
-  }, [appointment.branchId, appointment.mode, serviceId, week]);
+  }, [appointment.branchId, appointment.mode, serviceKey, week]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {

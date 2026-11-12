@@ -225,13 +225,15 @@ export async function setBranchAvailabilityException(input: {
   return mapAvailability(data.availability);
 }
 
-export async function listBranchSlots(input: {
-  branchId: string;
-  serviceId: string;
-  mode: AvailabilityMode;
-  fromDate: string;
-  toDate: string;
-}): Promise<SlotPreview> {
+/** One service, or several (slot length is the sum of their durations). */
+export async function listBranchSlots(
+  input: {
+    branchId: string;
+    mode: AvailabilityMode;
+    fromDate: string;
+    toDate: string;
+  } & ({ serviceId: string; serviceIds?: never } | { serviceIds: string[]; serviceId?: never }),
+): Promise<SlotPreview> {
   return mapSlotPreview(
     await invokeAvailabilityCallable(AVAILABILITY_CALLABLES.listSlots, { ...input }),
   );
