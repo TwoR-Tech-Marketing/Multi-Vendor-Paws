@@ -25,6 +25,8 @@ export type SaleEarningEntryDoc = {
   discountPiastres?: number | null;
   couponFunding?: string | null;
   dealType?: string | null;
+  /** Present only on test rows. */
+  isTest?: true;
 };
 
 function optionalPiastres(value: number | null | undefined): number | null {
@@ -79,9 +81,15 @@ export function saleEarningDl1Fields(
   };
 }
 
+/** A sale row is test when the order or the vendor is a test account. */
+export function isTestSaleEntry(vendorOrder: VendorOrder, vendorIsTest: boolean): boolean {
+  return vendorOrder.isTest === true || vendorIsTest;
+}
+
 export function buildSaleEarningEntry(
   vendorOrder: VendorOrder,
   actorUid: string,
+  vendorIsTest = false,
 ): SaleEarningEntryDoc {
   const orderId = vendorOrder.orderId ? vendorOrder.orderId : null;
   const label = (orderId ?? vendorOrder.vendorOrderId).slice(0, 8).toUpperCase();
@@ -95,5 +103,6 @@ export function buildSaleEarningEntry(
     currency: "EGP",
     createdBy: actorUid || "system",
     ...saleEarningDl1Fields(vendorOrder),
+    ...(isTestSaleEntry(vendorOrder, vendorIsTest) ? { isTest: true as const } : {}),
   };
 }

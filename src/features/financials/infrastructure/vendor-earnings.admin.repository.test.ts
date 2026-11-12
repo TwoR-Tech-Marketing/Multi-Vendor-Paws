@@ -132,24 +132,46 @@ describe("recordSaleEarningForDeliveredOrder", () => {
     expect(store.docs.has(SUMMARY)).toBe(false);
   });
 
-  it("records a test order for a test vendor", async () => {
+  it("stamps the row and the summary for a test order to a test vendor", async () => {
     store.docs.set("vendors/vendor_a", { isTest: true });
 
     await expect(recordSaleEarningForDeliveredOrder(order({ isTest: true }), "u1")).resolves.toBe(
       true,
     );
-    expect(store.docs.get(ENTRY)).toMatchObject({ type: "sale", vendorOrderId: "vo_1" });
-    expect(store.docs.get(SUMMARY)).toMatchObject({ vendorId: "vendor_a" });
+    expect(store.docs.get(ENTRY)).toMatchObject({
+      type: "sale",
+      vendorOrderId: "vo_1",
+      isTest: true,
+    });
+    expect(store.docs.get(SUMMARY)).toMatchObject({ vendorId: "vendor_a", isTest: true });
   });
 
-  it("records a normal order as before without reading the vendor", async () => {
+  it("stamps the row and the summary for a normal order to a test vendor", async () => {
+    store.docs.set("vendors/vendor_a", { isTest: true });
+
+    await expect(recordSaleEarningForDeliveredOrder(order(), "u1")).resolves.toBe(true);
+    expect(store.docs.get(ENTRY)).toMatchObject({ isTest: true });
+    expect(store.docs.get(SUMMARY)).toMatchObject({ isTest: true });
+  });
+
+  it("records a normal order to a normal vendor without any test flag", async () => {
+    store.docs.set("vendors/vendor_a", { storeName: "A" });
+
+    await expect(recordSaleEarningForDeliveredOrder(order(), "u1")).resolves.toBe(true);
+    const entry = store.docs.get(ENTRY) as Doc;
+    expect(entry).toMatchObject({ type: "sale", vendorOrderId: "vo_1" });
+    expect("isTest" in entry).toBe(false);
+    const summary = store.docs.get(SUMMARY) as Doc;
+    expect("isTest" in summary).toBe(false);
+    expect(summary.totalSalesPiastres).toBe(entry.amountPiastres);
+    expect(summary.pendingPayoutPiastres).toBe(entry.netPiastres);
+  });
+
+  it("records a normal order unstamped when the vendor read fails", async () => {
     store.failVendorRead = true;
 
     await expect(recordSaleEarningForDeliveredOrder(order(), "u1")).resolves.toBe(true);
-    const entry = store.docs.get(ENTRY);
-    expect(entry).toMatchObject({ type: "sale", vendorOrderId: "vo_1" });
-    const summary = store.docs.get(SUMMARY) as Doc;
-    expect(summary.totalSalesPiastres).toBe(entry?.amountPiastres);
-    expect(summary.pendingPayoutPiastres).toBe(entry?.netPiastres);
+    expect("isTest" in (store.docs.get(ENTRY) as Doc)).toBe(false);
+    expect("isTest" in (store.docs.get(SUMMARY) as Doc)).toBe(false);
   });
 });
