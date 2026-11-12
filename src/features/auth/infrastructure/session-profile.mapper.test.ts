@@ -40,4 +40,11 @@ describe("mapProfile", () => {
     expect(mapped?.suspensionMode).toBe("view_only");
     expect(mapped?.logoUrl).toBe(null);
   });
+
+  it("reads isTest as true only when the session says true", () => {
+    expect(mapProfile({ ...legacy, isTest: true })?.isTest).toBe(true);
+    expect(mapProfile({ ...legacy, isTest: false })?.isTest).toBe(false);
+    expect(mapProfile(legacy)?.isTest).toBe(false);
+    expect(mapProfile({ ...legacy, isTest: null })?.isTest).toBe(false);
+  });
 });

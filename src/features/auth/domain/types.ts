@@ -42,6 +42,8 @@ export type VendorProfile = {
   signupRequestId?: string | null;
   /** Normalized; "store" when the vendor and signup docs have none. */
   vendorType: string;
+  /** True only for a test account; false when the session omits it. */
+  isTest?: boolean;
 };
 
 export type VendorSignupRequestStatus = "pending" | "approved" | "rejected";
