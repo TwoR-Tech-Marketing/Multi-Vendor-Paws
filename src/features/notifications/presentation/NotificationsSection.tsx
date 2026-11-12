@@ -11,8 +11,8 @@ import {
 import {
   appendPage,
   applyItemOpened,
+  applyMarkAll,
   createRequestTracker,
-  markAllItemsRead,
 } from "@/features/notifications/domain/notification-state";
 import type {
   VendorNotification,
@@ -105,7 +105,7 @@ export function NotificationsSection() {
     setActionError(null);
     try {
       const result = await markVendorNotificationsRead({ all: true });
-      setItems((current) => markAllItemsRead(current, new Date()));
+      setItems((current) => applyMarkAll(current, tab, new Date()));
       setUnreadCount(result.unreadCount);
       notifyChanged();
     } catch {

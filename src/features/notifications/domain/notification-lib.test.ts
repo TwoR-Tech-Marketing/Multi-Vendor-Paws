@@ -4,6 +4,7 @@ import { Routes } from "@/constants/routes";
 import {
   appendPage,
   applyItemOpened,
+  applyMarkAll,
   createRequestTracker,
   formatUnreadBadge,
   markAllItemsRead,
@@ -98,6 +99,14 @@ describe("notification list state", () => {
     const all = applyItemOpened(items, "a", "all", now);
     expect(all).toHaveLength(2);
     expect(all[0]).toMatchObject({ isRead: true, readAt: now });
+  });
+
+  it("empties the Unread tab on mark all and keeps items on All", () => {
+    const items = [item("a"), item("b")];
+    expect(applyMarkAll(items, "unread", now)).toEqual([]);
+    const all = applyMarkAll(items, "all", now);
+    expect(all).toHaveLength(2);
+    expect(all.every((n) => n.isRead)).toBe(true);
   });
 
   it("ignores a slow older request after a newer one starts", () => {

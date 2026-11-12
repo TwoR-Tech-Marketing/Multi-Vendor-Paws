@@ -35,6 +35,15 @@ export function markAllItemsRead(
   return items.map((item) => (item.isRead ? item : { ...item, isRead: true, readAt: now }));
 }
 
+/** Local update after mark all: the Unread tab empties (same as the vendor app). */
+export function applyMarkAll(
+  items: VendorNotification[],
+  tab: VendorNotificationFilter,
+  now: Date,
+): VendorNotification[] {
+  return tab === "unread" ? [] : markAllItemsRead(items, now);
+}
+
 /** Appends a next page without duplicating ids already shown. */
 export function appendPage(
   current: VendorNotification[],
