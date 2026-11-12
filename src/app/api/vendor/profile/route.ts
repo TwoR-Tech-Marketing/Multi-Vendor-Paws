@@ -63,7 +63,9 @@ export async function PATCH(request: Request) {
   const context = await getVendorApiContext();
   if (!context) return apiUnauthorized();
 
-  if (context.session.sessionKind === "suspended") {
+  // PC-2a: only active vendors submit change requests (pending, rejected,
+  // suspended and banned are view only), like the shared callable.
+  if (context.session.sessionKind !== "active") {
     return apiForbidden();
   }
 
