@@ -201,3 +201,63 @@ describe("resolveNotificationCopy support cancellations", () => {
     });
   });
 });
+
+describe("resolveNotificationCopy refund_recorded", () => {
+  function refund(params: VendorNotification["params"]): VendorNotification {
+    return {
+      notificationId: "refund_recorded_r1",
+      type: "refund_recorded",
+      params,
+      titleFallback: "Fallback title",
+      bodyFallback: "Fallback body",
+      link: null,
+      isRead: false,
+      readAt: null,
+      createdAt: new Date(0),
+    };
+  }
+
+  it("renders an order refund in English and Arabic", () => {
+    const n = refund({ orderNumber: "#ORD12345", amountPiastres: 15000 });
+    expect(resolveNotificationCopy(n, en, "en")).toEqual({
+      title: "Refund recorded",
+      body: "Refund recorded for order #ORD12345.",
+    });
+    expect(resolveNotificationCopy(n, ar, "ar")).toEqual({
+      title: "تم تسجيل الاسترداد",
+      body: "تم تسجيل استرداد للطلب #ORD12345.",
+    });
+  });
+
+  it("renders an appointment refund in English and Arabic", () => {
+    const n = refund({ appointmentNumber: "#ABCD1234", amountPiastres: 15000 });
+    expect(resolveNotificationCopy(n, en, "en")).toEqual({
+      title: "Refund recorded",
+      body: "Refund recorded for appointment #ABCD1234.",
+    });
+    expect(resolveNotificationCopy(n, ar, "ar")).toEqual({
+      title: "تم تسجيل الاسترداد",
+      body: "تم تسجيل استرداد للموعد #ABCD1234.",
+    });
+  });
+
+  it("treats an empty order number as an appointment refund", () => {
+    const n = refund({ orderNumber: "  ", appointmentNumber: "#ABCD1234", amountPiastres: 100 });
+    expect(resolveNotificationCopy(n, en, "en").body).toBe(
+      "Refund recorded for appointment #ABCD1234.",
+    );
+    expect(resolveNotificationCopy(n, ar, "ar").body).toBe("تم تسجيل استرداد للموعد #ABCD1234.");
+  });
+
+  it("leaves the unknown type fallback unchanged", () => {
+    const n = { ...refund({ orderNumber: "#ORD12345" }), type: "refund_other" };
+    expect(resolveNotificationCopy(n, en, "en")).toEqual({
+      title: "Fallback title",
+      body: "Fallback body",
+    });
+    expect(resolveNotificationCopy(n, ar, "ar")).toEqual({
+      title: "Fallback title",
+      body: "Fallback body",
+    });
+  });
+});

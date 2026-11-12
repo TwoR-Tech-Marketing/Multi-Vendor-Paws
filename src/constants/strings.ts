@@ -450,6 +450,14 @@ export const Strings = {
         title: "Appointment cancelled",
         body: "Appointment {appointmentNumber} was cancelled by Tender Paws support.",
       },
+      refundRecordedOrder: {
+        title: "Refund recorded",
+        body: "Refund recorded for order {orderNumber}.",
+      },
+      refundRecordedAppointment: {
+        title: "Refund recorded",
+        body: "Refund recorded for appointment {appointmentNumber}.",
+      },
     },
     noShowOutcome: {
       confirmed: "confirmed",
