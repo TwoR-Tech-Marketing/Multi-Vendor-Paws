@@ -97,6 +97,16 @@ describe("ServiceShareChart", () => {
     expect(html).not.toContain("width:");
   });
 
+  it("shows each server share as given, even when the shares do not sum to 100", () => {
+    const services = [
+      { serviceId: "a", branchId: "b1", nameEn: "A", nameAr: "أ", count: 1, sharePercent: 34 },
+      { serviceId: "b", branchId: "b1", nameEn: "B", nameAr: "ب", count: 1, sharePercent: 34 },
+      { serviceId: "c", branchId: "b1", nameEn: "C", nameAr: "ج", count: 1, sharePercent: 34 },
+    ];
+    const html = renderToStaticMarkup(<ServiceShareChart services={services} strings={en} locale="en" />);
+    expect(html.split("inline-size:34%")).toHaveLength(4);
+  });
+
   it("uses Arabic names in Arabic and shows the empty state", () => {
     expect(renderToStaticMarkup(<ServiceShareChart services={DATA.services} strings={ar} locale="ar" />)).toContain(
       "استحمام",

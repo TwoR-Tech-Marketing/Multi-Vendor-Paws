@@ -53,6 +53,8 @@ describe("reviews rules and index repo copies", () => {
       `appointmentReviews|status:${A},createdAt:${D}`,
       `appointmentReviews|categorySet:${A},status:${A},createdAt:${D}`,
       `appointmentReviews|status:${A},lowRating:${A},createdAt:${D}`,
+      `appointmentReviews|vendorId:${A},branchId:${A},status:${A},hasReply:${A},createdAt:${D}`,
+      `appointmentReviews|vendorId:${A},branchId:${A},status:${A},lowRating:${A},createdAt:${D}`,
       `appointments|vendorId:${A},status:${A},startAt:${A}`,
     ]) {
       expect(keys.has(key), key).toBe(true);
