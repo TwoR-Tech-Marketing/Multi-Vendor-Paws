@@ -86,9 +86,33 @@ function buildListQuery(filter: ProductListFilter): string {
   return query ? `?${query}` : "";
 }
 
+function callableCategoryToOption(raw: Record<string, unknown>): ProductCategoryOption {
+  const categoryId = String(raw.categoryId || "");
+  const order = Number(raw.order);
+  return {
+    categoryId,
+    name: String(raw.name || categoryId),
+    nameAr: typeof raw.nameAr === "string" && raw.nameAr ? raw.nameAr : null,
+    order: Number.isFinite(order) ? order : 0,
+    isActive: true,
+  };
+}
+
 export async function fetchProductCategoriesFromApi(options?: {
   includeInactive?: boolean;
 }): Promise<ProductCategoryOption[]> {
+  // The callable returns active categories only; the category admin screen
+  // (includeInactive) stays on the BFF.
+  if (getProductsDataSource() === "callable" && !options?.includeInactive) {
+    const callable = httpsCallable(
+      firebaseFunctions,
+      "vendor_products-listVendorProductCategories",
+    );
+    const result = await callable({});
+    const data = result.data as { items?: Record<string, unknown>[] };
+    return (data.items ?? []).map(callableCategoryToOption);
+  }
+
   const params = new URLSearchParams();
   if (options?.includeInactive) {
     params.set("includeInactive", "true");
@@ -144,6 +168,7 @@ export async function fetchVendorProductsFromApi(
     const result = await callable({
       status: filter.status,
       pageSize: filter.pageSize,
+      categoryId: filter.categoryId || undefined,
     });
     const data = result.data as {
       items: Record<string, unknown>[];
