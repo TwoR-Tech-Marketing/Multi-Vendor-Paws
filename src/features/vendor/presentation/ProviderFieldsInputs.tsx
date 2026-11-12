@@ -1,5 +1,8 @@
 import type { ProviderTextFields } from "@/features/vendor/domain/provider-profile-schema";
-import { getProviderConfig } from "@/features/vendor/domain/vendor-type-config";
+import {
+  PROVIDER_FIELD_LIMITS,
+  getProviderConfig,
+} from "@/features/vendor/domain/vendor-type-config";
 import type { AppStrings } from "@/shared/i18n/types";
 
 type ProviderFieldsInputsProps = {
@@ -34,7 +37,7 @@ export function ProviderFieldsInputs({
           {t.specialty} *
           <input
             required
-            maxLength={80}
+            maxLength={PROVIDER_FIELD_LIMITS.specialtyMax}
             value={value.specialty}
             disabled={disabled}
             onChange={(event) => update("specialty", event.target.value)}
@@ -49,7 +52,7 @@ export function ProviderFieldsInputs({
             {`${t[key]} (${t.optional})`}
             <textarea
               rows={3}
-              maxLength={1000}
+              maxLength={PROVIDER_FIELD_LIMITS.freeTextMax}
               value={value[key]}
               disabled={disabled}
               onChange={(event) => update(key, event.target.value)}

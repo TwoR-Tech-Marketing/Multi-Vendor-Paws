@@ -6,7 +6,7 @@
 }
 
 .legend {
-  font-weight: 600;
+  font-weight: var(--font-semibold);
   color: var(--color-text);
   margin-bottom: var(--space-1);
 }
@@ -14,12 +14,12 @@
 .hint {
   margin: 0 0 var(--space-3);
   color: var(--color-text-muted);
-  font-size: 13px;
+  font-size: var(--text-xs);
 }
 
 .options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(var(--vendor-type-option-min), 1fr));
   gap: var(--space-3);
 }
 
@@ -43,7 +43,7 @@
 
 .option:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-soft);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--color-primary-soft);
 }
 
 .optionSelected {
@@ -52,11 +52,11 @@
 }
 
 .label {
-  font-weight: 600;
+  font-weight: var(--font-semibold);
   color: var(--color-text);
 }
 
 .description {
-  font-size: 13px;
+  font-size: var(--text-xs);
   color: var(--color-text-muted);
 }

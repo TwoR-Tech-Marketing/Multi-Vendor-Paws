@@ -82,6 +82,10 @@
   --font-semibold: 600;
   --font-bold: 700;
 
+  --leading-tight: 1.2;
+  --focus-ring-width: 3px;
+  --vendor-type-option-min: 160px;
+
   --duration-base: 200ms;
 
   /* Landing — Sign-Painter's Street */
