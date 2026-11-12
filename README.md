@@ -48,6 +48,22 @@ npm run dev:demo
 - It refuses to start if the final environment could reach a real project: a non `demo-` project id, a missing emulator host, or any service account credential. Problems are listed by variable name only.
 - Service account variables are blanked for the demo, so a `.env.local` cannot supply credentials. Other `.env.local` values still load; move `.env.local` aside if the check complains.
 
+### Local `.env.local` against the emulators
+
+To use plain `npm run dev` (or `npm run dev:local`) against the emulators, copy the demo template:
+
+```bash
+cp emulator.env.example .env.local
+```
+
+```bash
+npm run dev:local
+```
+
+- `.env.local` is git-ignored and the pre-commit scan refuses any `.env*` file. Never put production values in it.
+- `dev:local` refuses to start, listing variable names only, when `.env.local` is missing, any value names the production project, a project id is not `demo-`, an emulator host is missing, or a service account credential or `FIREBASE_TOKEN` is set.
+- It then starts the emulators from `../tinderpaws_panel/functions` (or `PANEL_FUNCTIONS_DIR`), reusing a suite that is already running, seeds the demo data (`npm run seed:demo`), and starts `next dev` on port 3000 (or `PORT`). Emulator log: `$TMPDIR/tenderpaws-dev-local/emulators.log`. Ctrl-C stops both.
+
 When the public Firebase variables are missing, the auth and portal screens show a configuration screen instead of crashing. In development it names the missing variables.
 
 ## Project Structure

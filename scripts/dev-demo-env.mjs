@@ -94,3 +94,31 @@ export function checkDemoEnv(env) {
 
   return problems;
 }
+
+/** Extra variables `npm run dev:local` refuses when set: a CLI login token. */
+export const LOCAL_FORBIDDEN_KEYS = ["FIREBASE_TOKEN"];
+
+/** Problems that must stop `npm run dev:local`: the demo checks plus a CLI token. */
+export function checkLocalEnv(env) {
+  const problems = checkDemoEnv(env);
+  for (const key of LOCAL_FORBIDDEN_KEYS) {
+    if (value(env, key)) problems.push(`${key} must be empty for a local run`);
+  }
+  return problems;
+}
+
+/** Ports of the server-side emulator hosts (Firestore, Auth, Storage, Functions). */
+export function emulatorPortsFromEnv(env) {
+  return [
+    "FIRESTORE_EMULATOR_HOST",
+    "FIREBASE_AUTH_EMULATOR_HOST",
+    "FIREBASE_STORAGE_EMULATOR_HOST",
+    "FIREBASE_FUNCTIONS_EMULATOR_HOST",
+  ].map((key) => {
+    const port = Number(value(env, key).split(":").pop());
+    if (!Number.isInteger(port) || port <= 0 || port > 65535) {
+      throw new Error(`${key} must look like host:port`);
+    }
+    return port;
+  });
+}

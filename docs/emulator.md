@@ -42,6 +42,8 @@ How the code uses them:
 - Admin SDK (`src/lib/firebase-admin.ts`): when `FIRESTORE_EMULATOR_HOST` and `FIREBASE_AUTH_EMULATOR_HOST` are set and the project id starts with `demo-`, it initializes with only the project id and bucket, no credential. Without those hosts it still requires a service account.
 - Server callables use `FIREBASE_FUNCTIONS_EMULATOR_HOST` and the project id from `GCLOUD_PROJECT` or `NEXT_PUBLIC_FIREBASE_PROJECT_ID`.
 
+With `.env.local` copied from `emulator.env.example`, `npm run dev:local` (`scripts/dev-local.mjs`) runs the same check on the shell plus `.env*` files (and also refuses `FIREBASE_TOKEN`), starts or reuses the emulators from `../tinderpaws_panel/functions` (`PANEL_FUNCTIONS_DIR`), seeds them with `npm run seed:demo`, then starts `next dev` with `.env.local`.
+
 Callable base for browser clients: `http://127.0.0.1:5001/demo-tenderpaws/us-central1`.
 
 The Google Maps key is not part of the demo, so the coverage map shows its own missing key state.
