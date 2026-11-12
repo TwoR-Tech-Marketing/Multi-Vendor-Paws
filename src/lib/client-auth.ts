@@ -16,9 +16,15 @@ type FirebaseTokenResponse = {
   uid: string;
 };
 
-/** Uid confirmed to match the server session in this page load. */
+/** How long a confirmed client uid is trusted before asking the session again. */
+export const CLIENT_AUTH_RECHECK_MS = 5 * 60 * 1000;
+
+/** Uid confirmed to match the server session, and when. */
 let verifiedUid: string | null = null;
+let verifiedAt = 0;
 let inFlight: Promise<void> | null = null;
+/** Bumped by every sign out so a sync that started before it never signs in. */
+let generation = 0;
 
 function unauthenticated(): FirebaseError {
   return new FirebaseError("functions/unauthenticated", "Session is missing or expired.");
@@ -57,6 +63,7 @@ async function fetchSessionToken(): Promise<FirebaseTokenResponse> {
 }
 
 async function syncWithSession(): Promise<void> {
+  const startedAt = generation;
   await firebaseAuth.authStateReady();
 
   let session: FirebaseTokenResponse;
@@ -70,11 +77,19 @@ async function syncWithSession(): Promise<void> {
     throw error;
   }
 
+  // A sign out happened while the token was on its way: do not sign back in.
+  if (generation !== startedAt) throw unauthenticated();
+
   if (firebaseAuth.currentUser?.uid !== session.uid) {
     await setPersistence(firebaseAuth, browserSessionPersistence);
     await signInWithCustomToken(firebaseAuth, session.token);
+    if (generation !== startedAt) {
+      await signOut(firebaseAuth);
+      throw unauthenticated();
+    }
   }
   verifiedUid = session.uid;
+  verifiedAt = Date.now();
 }
 
 /**
@@ -85,24 +100,31 @@ async function syncWithSession(): Promise<void> {
  */
 export async function ensureClientAuth(): Promise<void> {
   const current = firebaseAuth.currentUser;
-  if (current && verifiedUid && current.uid === verifiedUid) return;
+  const fresh = Date.now() - verifiedAt < CLIENT_AUTH_RECHECK_MS;
+  if (current && verifiedUid && current.uid === verifiedUid && fresh) return;
 
   if (!inFlight) {
-    inFlight = syncWithSession().finally(() => {
-      inFlight = null;
+    const request: Promise<void> = syncWithSession().finally(() => {
+      if (inFlight === request) inFlight = null;
     });
+    inFlight = request;
   }
   return inFlight;
 }
 
 /** Signs the browser Firebase user out and forgets the verified session uid. */
 export async function clearClientAuth(): Promise<void> {
+  generation += 1;
   verifiedUid = null;
+  verifiedAt = 0;
+  inFlight = null;
   await signOut(firebaseAuth);
 }
 
 /** Test helper: resets module state between cases. */
 export function resetClientAuthStateForTests(): void {
   verifiedUid = null;
+  verifiedAt = 0;
   inFlight = null;
+  generation = 0;
 }

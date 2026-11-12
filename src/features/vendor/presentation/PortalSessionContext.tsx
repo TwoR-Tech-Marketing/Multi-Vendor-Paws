@@ -67,6 +67,27 @@ function mapSessionDto(dto: VendorSessionDto): PortalSessionContextValue {
   };
 }
 
+/**
+ * Reads the server session. Without one, also signs out any client Firebase
+ * user left from an earlier account.
+ */
+export async function loadPortalSession(): Promise<VendorSessionDto | null> {
+  const dto = await fetchCurrentSession();
+  if (!dto) await signOutVendor().catch(() => undefined);
+  return dto;
+}
+
+/** Ends the server session, then always signs the client Firebase user out. */
+export async function endPortalSession(isDoctor: boolean): Promise<void> {
+  try {
+    // Doctors leave the telehealth queue before the session ends.
+    if (isDoctor) await goOfflineQuietly();
+    await logoutServerSession();
+  } finally {
+    await signOutVendor().catch(() => undefined);
+  }
+}
+
 export function PortalSessionProvider({ children }: PortalSessionProviderProps) {
   const router = useRouter();
   const [session, setSession] = useState<PortalSessionContextValue | null>(null);
@@ -74,11 +95,9 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const bootstrap = useCallback(async () => {
-    const dto = await fetchCurrentSession();
+    const dto = await loadPortalSession();
 
     if (!dto) {
-      // No server session: drop any client user left from an earlier account.
-      await signOutVendor().catch(() => undefined);
       router.replace(Routes.auth.login);
       return null;
     }
@@ -126,11 +145,8 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
   const signOut = useCallback(async () => {
     setIsLoggingOut(true);
     try {
-      // Doctors leave the telehealth queue before the session ends.
-      if (isDoctor) await goOfflineQuietly();
-      await logoutServerSession();
+      await endPortalSession(isDoctor);
     } finally {
-      await signOutVendor().catch(() => undefined);
       router.replace(Routes.auth.login);
     }
   }, [router, isDoctor]);

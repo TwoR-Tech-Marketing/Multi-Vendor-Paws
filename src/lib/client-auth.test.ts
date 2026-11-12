@@ -27,6 +27,7 @@ vi.mock("firebase/auth", () => ({
 vi.mock("@/lib/firebase", () => ({ firebaseAuth: mocks.auth }));
 
 import {
+  CLIENT_AUTH_RECHECK_MS,
   clearClientAuth,
   ensureClientAuth,
   FIREBASE_TOKEN_PATH,
@@ -51,6 +52,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 describe("ensureClientAuth", () => {
@@ -139,5 +141,44 @@ describe("ensureClientAuth", () => {
     await ensureClientAuth();
 
     expect(mocks.auth.currentUser?.uid).toBe("v1");
+  });
+
+  it("asks the session again once the confirmation is older than the recheck window", async () => {
+    const now = vi.spyOn(Date, "now").mockReturnValue(1_000_000);
+    fetchMock.mockResolvedValueOnce(sessionResponse("v1"));
+    await ensureClientAuth();
+
+    now.mockReturnValue(1_000_000 + CLIENT_AUTH_RECHECK_MS - 1);
+    await ensureClientAuth();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    now.mockReturnValue(1_000_000 + CLIENT_AUTH_RECHECK_MS);
+    fetchMock.mockResolvedValueOnce(sessionResponse("v1"));
+    await ensureClientAuth();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(mocks.signInWithCustomToken).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not sign in when a sign out happens while the token is on its way", async () => {
+    let release: (response: Response) => void = () => undefined;
+    fetchMock.mockReturnValueOnce(
+      new Promise<Response>((resolve) => {
+        release = resolve;
+      }),
+    );
+
+    const pending = ensureClientAuth().catch((caught: unknown) => caught);
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    await clearClientAuth();
+    release(sessionResponse("store1"));
+
+    const error = await pending;
+    expect((error as FirebaseError).code).toBe("functions/unauthenticated");
+    expect(mocks.signInWithCustomToken).not.toHaveBeenCalled();
+    expect(mocks.auth.currentUser).toBeNull();
+
+    fetchMock.mockResolvedValueOnce(sessionResponse("clinic1"));
+    await ensureClientAuth();
+    expect(mocks.auth.currentUser?.uid).toBe("clinic1");
   });
 });
