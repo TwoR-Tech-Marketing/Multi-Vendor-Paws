@@ -514,6 +514,7 @@ export const arStrings: AppStrings = {
       notFound: "تعذر العثور على هذه الاستشارة.",
       notAllowed: "لا يمكن لحسابك استخدام الاستشارات عن بُعد الآن.",
       invalidField: "يرجى مراجعة رسالتك والمحاولة مرة أخرى.",
+      photoUpload: "تعذر إرسال الصورة. يرجى المحاولة مرة أخرى.",
     },
   },
   branches: {
@@ -676,6 +677,7 @@ export const arStrings: AppStrings = {
     tabs: { queue: "قائمة الانتظار", active: "النشطة", ended: "المنتهية" },
     queueCount: "{count} في الانتظار",
     activeCount: "{count} نشطة",
+    price: "سعر الاستشارة: {amount}",
     queueEmpty: "لا توجد استشارات في الانتظار الآن.",
     queueOffline: "كن متاحًا لرؤية الاستشارات المنتظرة.",
     activeEmpty: "ليس لديك استشارات نشطة.",

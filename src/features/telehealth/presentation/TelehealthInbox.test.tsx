@@ -179,7 +179,14 @@ describe("TelehealthInboxView", () => {
     expect(html).toContain(en.telehealth.onlineHint);
     expect(html).toContain("2 waiting");
     expect(html).toContain("1 active");
+    expect(html).toMatch(/Consultation price: EGP\s?200/);
     expect(html).toContain(en.telehealth.accept);
+  });
+
+  it("hides the price when none is set and shows it in Arabic", () => {
+    expect(renderView({ status: makeStatus({ pricePiastres: null }) })).not.toContain("Consultation price");
+    const html = renderView({ strings: ar, locale: "ar" });
+    expect(html).toContain("سعر الاستشارة: ");
   });
 
   it("asks an offline doctor to go online instead of showing the queue", () => {

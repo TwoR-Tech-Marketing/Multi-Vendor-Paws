@@ -5,6 +5,7 @@ import {
   type TelehealthSession,
   type TelehealthStatusSummary,
 } from "@/features/telehealth/domain/types";
+import { formatEgp } from "@/features/products/domain/currency";
 import { TelehealthQueueList } from "@/features/telehealth/presentation/TelehealthQueueList";
 import { TelehealthSessionList } from "@/features/telehealth/presentation/TelehealthSessionList";
 import { TelehealthListSkeleton } from "@/features/telehealth/presentation/TelehealthSkeletons";
@@ -93,6 +94,9 @@ export function TelehealthInboxView({
             <span>{t.queueCount.replace("{count}", String(status.queuedCount))}</span>
           ) : null}
           <span>{t.activeCount.replace("{count}", String(status.activeCount))}</span>
+          {status.pricePiastres !== null ? (
+            <span>{t.price.replace("{amount}", formatEgp(status.pricePiastres))}</span>
+          ) : null}
         </div>
       </div>
       {tabs.length > 0 ? (

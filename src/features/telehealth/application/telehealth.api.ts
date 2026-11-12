@@ -137,12 +137,29 @@ export async function setMyTelehealthAvailability(online: boolean): Promise<bool
   return (await call(TELEHEALTH_CALLABLES.setAvailability, { online })).online === true;
 }
 
-/** Best effort offline on sign out. Never throws, never blocks sign out. */
-export async function goOfflineQuietly(): Promise<void> {
-  try {
-    await setMyTelehealthAvailability(false);
-  } catch {
+/** Longest wait for going offline before sign out continues anyway. */
+export const SIGN_OUT_OFFLINE_TIMEOUT_MS = 5000;
+
+/**
+ * Best effort offline on sign out. Never throws and never holds sign out
+ * longer than `timeoutMs`.
+ */
+export async function goOfflineQuietly(
+  timeoutMs: number = SIGN_OUT_OFFLINE_TIMEOUT_MS,
+): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<void>((resolve) => {
+    timer = setTimeout(resolve, timeoutMs);
+  });
+  const offline = setMyTelehealthAvailability(false).then(
+    () => undefined,
     // Not a doctor, already signed out or offline: nothing to do.
+    () => undefined,
+  );
+  try {
+    await Promise.race([offline, timeout]);
+  } finally {
+    clearTimeout(timer);
   }
 }
 

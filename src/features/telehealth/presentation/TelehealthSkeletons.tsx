@@ -7,6 +7,7 @@ import {
   SkeletonField,
   SkeletonText,
 } from "@/components/ui/skeleton";
+import { TELEHEALTH_PHOTO_THUMB_PX } from "@/features/telehealth/domain/types";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./telehealth.module.css";
@@ -90,7 +91,7 @@ export function TelehealthChatSkeleton() {
           <BubbleSkeleton own />
           <BubbleSkeleton />
           <div className={styles.bubbleRow}>
-            <SkeletonBox width={220} height={220} />
+            <SkeletonBox width={TELEHEALTH_PHOTO_THUMB_PX} height={TELEHEALTH_PHOTO_THUMB_PX} />
           </div>
         </div>
         <div className={styles.composer}>

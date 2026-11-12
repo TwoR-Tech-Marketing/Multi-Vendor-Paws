@@ -1,7 +1,10 @@
 import Image from "next/image";
 import type { Ref } from "react";
 
-import type { TelehealthMessage } from "@/features/telehealth/domain/types";
+import {
+  TELEHEALTH_PHOTO_THUMB_PX,
+  type TelehealthMessage,
+} from "@/features/telehealth/domain/types";
 import { formatTelehealthClock } from "@/features/telehealth/presentation/telehealth-copy";
 import type { AppStrings } from "@/shared/i18n/types";
 
@@ -68,8 +71,8 @@ export function TelehealthMessageList({
                     className={styles.photo}
                     src={message.photoUrl}
                     alt={t.photoAlt}
-                    width={220}
-                    height={220}
+                    width={TELEHEALTH_PHOTO_THUMB_PX}
+                    height={TELEHEALTH_PHOTO_THUMB_PX}
                     unoptimized
                   />
                 </a>

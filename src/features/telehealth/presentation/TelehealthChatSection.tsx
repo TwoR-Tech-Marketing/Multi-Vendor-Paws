@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
+import { ConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
 import {
   endTelehealthSession,
   getTelehealthSession,
@@ -159,7 +159,13 @@ export function TelehealthChatSection({ sessionId }: { sessionId: string }) {
     setActionError(null);
     setSuccess(null);
     try {
-      const upload = await uploadTelehealthPhoto(sessionId, user.uid, file);
+      let upload: Awaited<ReturnType<typeof uploadTelehealthPhoto>>;
+      try {
+        upload = await uploadTelehealthPhoto(sessionId, user.uid, file);
+      } catch {
+        setActionError(strings.errors.telehealth.photoUpload);
+        return;
+      }
       if (!upload.ok) {
         setActionError(upload.reason === "type" ? t.photoType : t.photoSize);
         return;
@@ -245,7 +251,7 @@ export function TelehealthChatSection({ sessionId }: { sessionId: string }) {
           />
         }
       />
-      <LogoutConfirmDialog
+      <ConfirmDialog
         open={confirmEnd}
         title={t.endConfirmTitle}
         message={t.endConfirm}

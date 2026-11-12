@@ -262,7 +262,7 @@
 }
 
 .bubble {
-  max-width: min(75%, 520px);
+  max-width: 75%;
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
@@ -293,10 +293,10 @@
   line-height: 0;
 }
 
+/* Rendered size comes from TELEHEALTH_PHOTO_THUMB_PX on the image. */
 .photo {
-  width: 220px;
-  height: 220px;
   max-width: 100%;
+  height: auto;
   object-fit: cover;
   border-radius: var(--radius);
 }
@@ -310,7 +310,7 @@
 .composerInput {
   flex: 1;
   min-height: var(--control-height);
-  max-height: 160px;
+  max-height: 10em;
   resize: vertical;
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-select-border);

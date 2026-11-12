@@ -108,6 +108,25 @@ describe("telehealth api", () => {
     expect(lastCall().payload).toEqual({ online: false });
   });
 
+  it("never holds sign out longer than five seconds", async () => {
+    vi.useFakeTimers();
+    try {
+      mocks.callableFn.mockReturnValue(new Promise(() => {}));
+      let done = false;
+      void goOfflineQuietly().then(() => (done = true));
+      await vi.advanceTimersByTimeAsync(4999);
+      expect(done).toBe(false);
+      await vi.advanceTimersByTimeAsync(1);
+      expect(done).toBe(true);
+      expect(lastCall()).toEqual({
+        name: "vendor_telehealth-setMyTelehealthAvailability",
+        payload: { online: false },
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("lists the queue with the page size and maps items", async () => {
     mocks.callableFn.mockResolvedValue({
       data: {
@@ -274,6 +293,8 @@ describe("mapTelehealthError", () => {
       expect(telehealthErrorMessage(precondition(reason), ar)).toBe(ar.errors.telehealth[reason]);
       expect(ar.errors.telehealth[reason]).not.toBe(en.errors.telehealth[reason]);
     }
+    expect(ar.errors.telehealth.photoUpload).not.toBe(en.errors.telehealth.photoUpload);
+    expect(en.errors.telehealth.photoUpload).toBe("We couldn't send the photo. Please try again.");
     expect(telehealthErrorMessage({ code: "functions/internal", message: "stack" }, en)).toBe(
       en.errors.generic,
     );

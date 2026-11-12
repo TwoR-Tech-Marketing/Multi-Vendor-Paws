@@ -25,6 +25,9 @@ export const TELEHEALTH_LIMITS = {
   messagePageSize: 50,
 } as const;
 
+/** Chat photo thumbnail size in CSS pixels (image and its skeleton). */
+export const TELEHEALTH_PHOTO_THUMB_PX = 220;
+
 export const TELEHEALTH_PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic"] as const;
 
 /** Polling while the page is visible. Paused when the tab is hidden. */

@@ -91,3 +91,6 @@ export function LogoutConfirmDialog({
     </div>
   );
 }
+
+/** Generic name for the same confirm dialog, for confirmations other than sign out. */
+export { LogoutConfirmDialog as ConfirmDialog };

@@ -513,6 +513,7 @@ export const Strings = {
       notFound: "This consultation could not be found.",
       notAllowed: "Your account can't use telehealth right now.",
       invalidField: "Please check your message and try again.",
+      photoUpload: "We couldn't send the photo. Please try again.",
     },
   },
   branches: {
@@ -675,6 +676,7 @@ export const Strings = {
     tabs: { queue: "Queue", active: "Active", ended: "Ended" },
     queueCount: "{count} waiting",
     activeCount: "{count} active",
+    price: "Consultation price: {amount}",
     queueEmpty: "No consultations are waiting right now.",
     queueOffline: "Go online to see waiting consultations.",
     activeEmpty: "You have no active consultations.",
