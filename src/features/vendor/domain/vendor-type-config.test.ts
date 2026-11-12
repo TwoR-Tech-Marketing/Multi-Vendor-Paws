@@ -19,7 +19,7 @@ const ALWAYS: VendorScreenKey[] = [
   "earnings",
 ];
 
-/** Contract vendor-types.md section 3.3, transcribed row by row. */
+/** Canonical vendor type table, shared with the vendor app, row by row. */
 const CANONICAL = {
   nav: {
     store: ["dashboard", "products", "orders", "earnings", "settings"],

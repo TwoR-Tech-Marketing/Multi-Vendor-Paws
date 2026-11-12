@@ -49,7 +49,7 @@ export type ProviderConfig = {
   providerFields: ProviderField[];
 };
 
-/** Limits for provider fields (contract section 2.2 and 4.1). */
+/** Limits for provider fields, the same as the signup callable. */
 export const PROVIDER_FIELD_LIMITS = {
   specialtyMin: 2,
   specialtyMax: 80,

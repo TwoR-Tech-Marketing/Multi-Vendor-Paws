@@ -52,7 +52,7 @@ const fieldSchemas = {
 } as const;
 
 /**
- * Strict map of the provider fields allowed for `vendorType` (contract 2.2).
+ * Strict map of the provider fields allowed for `vendorType`.
  * - signup: photoUrls refused (no upload path before approval), doctor specialty required.
  * - change: partial map, every allowed key optional.
  * Unknown and store types accept only an empty map.
@@ -108,7 +108,7 @@ export function buildProviderProfilePayload(
 
 /**
  * Reapply (rejected applicant): send provider fields only when the type changed
- * or the applicant typed something; omitted keeps the stored map (contract 4.2).
+ * or the applicant typed something; omitted keeps the stored map.
  */
 export function buildReapplyProviderProfile(
   storedType: string,
