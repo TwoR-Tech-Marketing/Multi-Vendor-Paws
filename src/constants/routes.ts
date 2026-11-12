@@ -29,6 +29,7 @@ export const Routes = {
     appointments: "/appointments",
     appointmentDetail: (appointmentId: string) =>
       `/appointments/${encodeURIComponent(appointmentId)}`,
+    reviews: "/reviews",
     telehealth: "/telehealth",
     telehealthChat: (sessionId: string) => `/telehealth/${encodeURIComponent(sessionId)}`,
   },

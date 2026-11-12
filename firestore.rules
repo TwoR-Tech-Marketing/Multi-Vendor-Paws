@@ -95,7 +95,17 @@ service cloud.firestore {
         allow read: if isOwner(vendorId) || isAdmin();
         allow write: if false;
       }
+      // Branch rating aggregates, written by the review Cloud Functions.
+      match /stats/{docId} {
+        allow read: if isOwner(vendorId) || isAdmin();
+        allow write: if false;
+      }
     }
+
+    // Provider rating aggregates and dashboard counters. Cloud Functions only.
+    match /vendors/{vendorId}/stats/{docId}      { allow read: if isOwner(vendorId) || isAdmin(); allow write: if false; }
+    match /vendors/{vendorId}/dailyStats/{docId} { allow read: if isAdmin(); allow write: if false; }
+    match /vendors/{vendorId}/patients/{buyerUid} { allow read: if isAdmin(); allow write: if false; }
 
     match /vendor_signup_requests/{requestId} {
       allow create: if isSignedIn();
@@ -319,6 +329,13 @@ service cloud.firestore {
     }
     match /supportCases/{id} { allow read: if isAdmin(); allow write: if false; }
     match /appointmentsConfig/{id} { allow read: if isAdmin(); allow write: if false; }
+
+    // Appointment reviews. The buyer reads their own; providers read through
+    // the review callables, which strip buyer data. Cloud Functions write.
+    match /appointmentReviews/{id} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.buyerUid == request.auth.uid);
+      allow write: if false;
+    }
 
     // -----------------------------------------------------------------
     // Admin governance + audit

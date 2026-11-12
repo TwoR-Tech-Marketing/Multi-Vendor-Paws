@@ -68,6 +68,30 @@ describe("resolveNotificationCopy appointments", () => {
   });
 });
 
+describe("resolveNotificationCopy review_new", () => {
+  const review: VendorNotification = {
+    notificationId: "review_new_a1",
+    type: "review_new",
+    params: { rating: "4.3" },
+    titleFallback: null,
+    bodyFallback: null,
+    link: { target: "review", id: "a1" },
+    isRead: false,
+    readAt: null,
+    createdAt: new Date(0),
+  };
+
+  it("renders the rating with Western digits in English and Arabic", () => {
+    const copyEn = resolveNotificationCopy(review, en, "en");
+    expect(copyEn.title).toBe(en.notifications.types.reviewNew.title);
+    expect(copyEn.body).toBe("A customer rated their visit 4.3 out of 5.");
+    const copyAr = resolveNotificationCopy(review, ar, "ar");
+    expect(copyAr.title).toBe(ar.notifications.types.reviewNew.title);
+    expect(copyAr.body).toContain("4.3");
+    expect(copyAr.body).not.toContain("{");
+  });
+});
+
 describe("resolveNotificationCopy no-show types", () => {
   it.each([
     ["appointment_no_show_late", "appointmentNoShowLate"],

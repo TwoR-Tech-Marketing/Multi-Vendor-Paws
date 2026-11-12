@@ -8,6 +8,7 @@ export const VENDOR_NOTIFICATION_LINK_TARGETS = [
   "documents",
   "accountStatus",
   "appointment",
+  "review",
 ] as const;
 
 export type VendorNotificationLinkTarget = (typeof VENDOR_NOTIFICATION_LINK_TARGETS)[number];

@@ -19,6 +19,7 @@ const TYPE_TO_KEY: Record<string, TypeKey> = {
   appointment_new: "appointmentNew",
   appointment_cancelled: "appointmentCancelled",
   appointment_rescheduled: "appointmentRescheduled",
+  review_new: "reviewNew",
   appointment_no_show_late: "appointmentNoShowLate",
   appointment_no_show_review: "appointmentNoShowReview",
   appointment_no_show_resolved: "appointmentNoShowResolved",

@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { ProviderDashboardSection } from "@/features/provider-dashboard/presentation/ProviderDashboardSection";
 import { MissingCoverageBanner } from "@/features/coverage/presentation/MissingCoverageBanner";
 import { fetchDashboardStatsFromApi } from "@/features/financials/application/earnings.api";
 import { DashboardSkeleton } from "@/features/vendor/presentation/DashboardSkeleton";
 import { DashboardStatsGrid } from "@/features/vendor/presentation/DashboardStatsGrid";
+import { getProviderConfig } from "@/features/vendor/domain/vendor-type-config";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
@@ -56,6 +58,7 @@ export function DashboardSection() {
         netEarnings={netEarnings}
         totalSales={totalSales}
       />
+      {getProviderConfig(profile.vendorType).reviewCategorySet ? <ProviderDashboardSection /> : null}
     </section>
   );
 }

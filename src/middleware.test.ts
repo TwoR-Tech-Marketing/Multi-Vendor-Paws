@@ -34,8 +34,15 @@ describe("middleware", () => {
     }
   });
 
+  it("sends signed out visitors of the reviews page to login and lets providers in", () => {
+    const res = middleware(request(Routes.vendor.reviews, false));
+    expect(res.headers.get("location")).toBe(`https://portal.example${Routes.auth.login}`);
+    expect(middleware(request(Routes.vendor.reviews, true)).headers.get("location")).toBeNull();
+  });
+
   it("protects every portal matcher", () => {
     expect(config.matcher).toContain("/telehealth/:path*");
+    expect(config.matcher).toContain("/reviews/:path*");
     expect(config.matcher).toContain("/appointments/:path*");
     for (const matcher of config.matcher.filter((m) => !AUTH_MATCHERS.includes(m))) {
       const path = matcher.replace("/:path*", "");

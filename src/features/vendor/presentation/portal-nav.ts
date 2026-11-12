@@ -232,6 +232,10 @@ export function resolvePortalPageMeta(pathname: string, strings: AppStrings): Po
     };
   }
 
+  if (normalizedPath === Routes.vendor.reviews) {
+    return { title: strings.reviews.title, subtitle: strings.reviews.subtitle };
+  }
+
   if (APPOINTMENT_DETAIL_PATH.test(normalizedPath)) {
     return {
       title: strings.pages.appointments.detailTitle,
