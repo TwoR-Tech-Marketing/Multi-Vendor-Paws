@@ -1,50 +1,62 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-import { Routes } from "@/constants/routes";
-import { fetchVendorEarningsFromApi } from "@/features/financials/application/earnings.api";
+import {
+  fetchVendorEarningsEntries,
+  fetchVendorEarningsOverview,
+  isEarningsLedgerPaged,
+} from "@/features/financials/application/earnings.api";
 import type {
+  EarningsEntryFilter,
   VendorEarningsEntry,
   VendorEarningsSummary,
 } from "@/features/financials/domain/types";
-import { EarningsEmptyState } from "@/features/financials/presentation/EarningsEmptyState";
-import { EarningsSkeleton } from "@/features/financials/presentation/EarningsSkeleton";
-import { formatEgp } from "@/features/products/domain/currency";
+import { EarningsView } from "@/features/financials/presentation/EarningsView";
+import { createRequestTracker } from "@/features/notifications/domain/notification-state";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
-import styles from "./earnings.module.css";
-
-function formatDate(date: Date): string {
-  return date.toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+function appendEntries(
+  current: VendorEarningsEntry[],
+  next: VendorEarningsEntry[],
+): VendorEarningsEntry[] {
+  const seen = new Set(current.map((entry) => entry.entryId));
+  return [...current, ...next.filter((entry) => !seen.has(entry.entryId))];
 }
 
 export function EarningsSection() {
   const strings = useStrings();
   const { profile } = usePortalSession();
+  const [paged] = useState(isEarningsLedgerPaged);
   const [summary, setSummary] = useState<VendorEarningsSummary | null>(null);
   const [entries, setEntries] = useState<VendorEarningsEntry[]>([]);
+  const [tab, setTab] = useState<EarningsEntryFilter>("all");
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingEntries, setIsLoadingEntries] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [requests] = useState(createRequestTracker);
+  const loadError = strings.earnings.loadError;
 
   const loadEarnings = useCallback(async () => {
+    const requestId = requests.next();
     setError(null);
     setIsLoading(true);
+    setTab("all");
     try {
-      const page = await fetchVendorEarningsFromApi();
+      const page = await fetchVendorEarningsOverview("all");
+      if (!requests.isLatest(requestId)) return;
       setSummary(page.summary);
       setEntries(page.entries);
+      setNextCursor(page.nextCursor);
     } catch {
-      setError(strings.earnings.loadError);
+      if (requests.isLatest(requestId)) setError(loadError);
     } finally {
-      setIsLoading(false);
+      if (requests.isLatest(requestId)) setIsLoading(false);
     }
-  }, [strings.earnings.loadError]);
+  }, [requests, loadError]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -53,93 +65,60 @@ export function EarningsSection() {
     return () => window.clearTimeout(timer);
   }, [loadEarnings]);
 
-  if (isLoading) return <EarningsSkeleton />;
+  async function onTabChange(next: EarningsEntryFilter) {
+    if (next === tab) return;
+    const requestId = requests.next();
+    setTab(next);
+    setError(null);
+    setEntries([]);
+    setNextCursor(null);
+    setIsLoadingMore(false);
+    setIsLoadingEntries(true);
+    try {
+      const page = await fetchVendorEarningsEntries(next);
+      if (!requests.isLatest(requestId)) return;
+      setEntries(page.entries);
+      setNextCursor(page.nextCursor);
+    } catch {
+      if (requests.isLatest(requestId)) setError(loadError);
+    } finally {
+      if (requests.isLatest(requestId)) setIsLoadingEntries(false);
+    }
+  }
+
+  async function onLoadMore() {
+    if (!nextCursor || isLoadingMore) return;
+    const requestId = requests.next();
+    setIsLoadingMore(true);
+    setError(null);
+    try {
+      const page = await fetchVendorEarningsEntries(tab, nextCursor);
+      if (!requests.isLatest(requestId)) return;
+      setEntries((current) => appendEntries(current, page.entries));
+      setNextCursor(page.nextCursor);
+    } catch {
+      if (requests.isLatest(requestId)) setError(loadError);
+    } finally {
+      if (requests.isLatest(requestId)) setIsLoadingMore(false);
+    }
+  }
 
   return (
-    <section className={styles.sectionStack}>
-      {error ? (
-        <div className={styles.alertError}>
-          <p>{error}</p>
-          <button type="button" className={styles.retryButton} onClick={() => void loadEarnings()}>
-            {strings.common.retry}
-          </button>
-        </div>
-      ) : null}
-
-      <div className={styles.statsGrid}>
-        <article className={styles.statCard}>
-          <span className={styles.statLabel}>{strings.earnings.summarySales}</span>
-          <p className={styles.statValue}>
-            {formatEgp(summary?.totalSalesPiastres ?? 0)}
-          </p>
-        </article>
-        <article className={styles.statCard}>
-          <span className={styles.statLabel}>{strings.earnings.summaryCommission}</span>
-          <p className={styles.statValue}>
-            {formatEgp(summary?.totalCommissionPiastres ?? 0)}
-          </p>
-        </article>
-        <article className={`${styles.statCard} ${styles.statCardHighlight}`}>
-          <span className={styles.statLabel}>{strings.earnings.summaryNet}</span>
-          <p className={styles.statValue}>
-            {formatEgp(summary?.netEarningsPiastres ?? 0)}
-          </p>
-        </article>
-        <article className={styles.statCard}>
-          <span className={styles.statLabel}>{strings.earnings.summaryPending}</span>
-          <p className={styles.statValue}>
-            {formatEgp(summary?.pendingPayoutPiastres ?? 0)}
-          </p>
-        </article>
-      </div>
-
-      <article className={styles.panel}>
-        <div className={styles.panelHeader}>
-          <h2>{strings.earnings.ledgerTitle}</h2>
-        </div>
-        {entries.length === 0 ? (
-          <EarningsEmptyState strings={strings} vendorType={profile.vendorType} />
-        ) : (
-          <div className={styles.tableWrap}>
-            <table className={styles.dataTable}>
-              <thead>
-                <tr>
-                  <th>{strings.earnings.tableDate}</th>
-                  <th>{strings.earnings.tableType}</th>
-                  <th>{strings.earnings.tableDescription}</th>
-                  <th>{strings.earnings.tableAmount}</th>
-                  <th>{strings.earnings.tableCommission}</th>
-                  <th>{strings.earnings.tableNet}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entries.map((entry) => (
-                  <tr key={entry.entryId}>
-                    <td>{formatDate(entry.createdAt)}</td>
-                    <td>{strings.earnings.typeLabels[entry.type]}</td>
-                    <td>
-                      {entry.vendorOrderId ? (
-                        <Link
-                          href={Routes.vendor.orderDetail(entry.vendorOrderId)}
-                          className={styles.orderLink}
-                          aria-label={strings.earnings.viewOrder}
-                        >
-                          {entry.description ?? "—"}
-                        </Link>
-                      ) : (
-                        (entry.description ?? "—")
-                      )}
-                    </td>
-                    <td>{formatEgp(entry.amountPiastres)}</td>
-                    <td>{formatEgp(entry.commissionPiastres)}</td>
-                    <td>{formatEgp(entry.netPiastres)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </article>
-    </section>
+    <EarningsView
+      strings={strings}
+      vendorType={profile.vendorType}
+      summary={summary}
+      entries={entries}
+      isLoading={isLoading}
+      error={error}
+      paged={paged}
+      tab={tab}
+      isLoadingEntries={isLoadingEntries}
+      hasMore={nextCursor !== null}
+      isLoadingMore={isLoadingMore}
+      onTabChange={(next) => void onTabChange(next)}
+      onLoadMore={() => void onLoadMore()}
+      onRetry={() => void loadEarnings()}
+    />
   );
 }
