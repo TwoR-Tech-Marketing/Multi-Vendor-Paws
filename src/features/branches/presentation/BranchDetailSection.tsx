@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 
 import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
+import { Routes } from "@/constants/routes";
 import {
   attachServicePhoto,
   createService,
@@ -31,6 +33,7 @@ import { DuplicateServicesDialog } from "@/features/branches/presentation/Duplic
 import { PendingBranchesHint } from "@/features/branches/presentation/PendingBranchesHint";
 import { ServiceForm } from "@/features/branches/presentation/ServiceForm";
 import { ServicesTable } from "@/features/branches/presentation/ServicesTable";
+import { isScreenVisible } from "@/features/vendor/domain/vendor-type-config";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
@@ -50,7 +53,7 @@ type Confirm =
 export function BranchDetailSection({ branchId }: { branchId: string }) {
   const strings = useStrings();
   const { locale } = usePreferences();
-  const { sessionKind, user } = usePortalSession();
+  const { sessionKind, user, profile } = usePortalSession();
   const t = strings.branches;
 
   const [isLoading, setIsLoading] = useState(true);
@@ -266,6 +269,13 @@ export function BranchDetailSection({ branchId }: { branchId: string }) {
           {branch.homeVisit.enabled ? (
             <div className={styles.badgeRow}>
               <span className={`${styles.badge} ${styles.badgeAccent}`}>{t.homeVisitBadge}</span>
+            </div>
+          ) : null}
+          {isScreenVisible(profile.vendorType, "availability") ? (
+            <div className={styles.actions}>
+              <Link className={styles.linkButton} href={Routes.vendor.branchAvailability(branchId)}>
+                {strings.availability.open}
+              </Link>
             </div>
           ) : null}
           {!readOnly ? (
