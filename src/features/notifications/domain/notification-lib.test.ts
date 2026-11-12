@@ -16,6 +16,7 @@ import { resolveNotificationHref } from "@/features/notifications/domain/notific
 import { getStrings } from "@/shared/i18n/get-strings";
 
 const en = getStrings("en");
+const ar = getStrings("ar");
 
 function item(id: string, overrides: Partial<VendorNotification> = {}): VendorNotification {
   return {
@@ -46,6 +47,29 @@ describe("resolveNotificationCopy", () => {
       en,
     );
     expect(copy.body).toContain("125.5");
+  });
+
+  it("localizes the document status and uses the Arabic document name in Arabic", () => {
+    const reviewed = item("a", {
+      type: "document_reviewed",
+      params: { documentName: "Tax card", documentNameAr: "البطاقة الضريبية", status: "approved" },
+    });
+    expect(resolveNotificationCopy(reviewed, en, "en").body).toBe(
+      "Your document Tax card was reviewed: approved.",
+    );
+    const arBody = resolveNotificationCopy(reviewed, ar, "ar").body;
+    expect(arBody).toContain("البطاقة الضريبية");
+    expect(arBody).toContain("مقبول");
+    expect(arBody).not.toContain("approved");
+    expect(arBody).not.toContain("Tax card");
+
+    const rejected = item("b", {
+      type: "document_reviewed",
+      params: { documentName: "Tax card", status: "rejected" },
+    });
+    const oldArBody = resolveNotificationCopy(rejected, ar, "ar").body;
+    expect(oldArBody).toContain("Tax card");
+    expect(oldArBody).toContain("مرفوض");
   });
 
   it("uses fallback text for unknown types, then the generic copy", () => {

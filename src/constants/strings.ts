@@ -285,6 +285,10 @@ export const Strings = {
         body: "A payout of {amount} was recorded to your account.",
       },
     },
+    documentStatus: {
+      approved: "approved",
+      rejected: "rejected",
+    },
   },
   settings: {
     appearanceTitle: "Appearance",
@@ -664,6 +668,32 @@ export const Strings = {
       adjustment: "Adjustment",
       payout: "Payout",
     },
+    title: "Earnings",
+    summary: {
+      totalSales: "Total sales",
+      platformFee: "Platform fee",
+      net: "Net earnings",
+      pendingPayout: "Pending payout",
+    },
+    entries: {
+      title: "Recent activity",
+      empty: "No entries of this type yet.",
+    },
+    types: {
+      all: "All",
+      sale: "Sales",
+      refund: "Refunds",
+      adjustment: "Adjustments",
+      payout: "Payouts",
+    },
+    entry: {
+      order: "Order {orderNumber}",
+      fee: "Fee",
+      net: "Net",
+    },
+    filterLabel: "Filter activity by type",
+    loadMore: "Load more",
+    loadingMore: "Loading more…",
   },
   dashboard: {
     openOrders: "Open orders",

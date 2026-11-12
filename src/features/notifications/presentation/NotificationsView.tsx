@@ -94,7 +94,7 @@ export function NotificationsView(props: NotificationsViewProps) {
       {items.length > 0 ? (
         <ul className={styles.list}>
           {items.map((notification) => {
-            const copy = resolveNotificationCopy(notification, strings);
+            const copy = resolveNotificationCopy(notification, strings, locale);
             return (
               <NotificationItem
                 key={notification.notificationId}
