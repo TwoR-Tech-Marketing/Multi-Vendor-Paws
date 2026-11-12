@@ -496,7 +496,7 @@ export const arStrings: AppStrings = {
     languageEnglish: "English",
     languageArabic: "العربية",
     savedHint: "يتم حفظ اختياراتك على هذا الجهاز.",
-    savedHintAccount: "يتم حفظ اختياراتك في حسابك وتُطبَّق على كل أجهزتك.",
+    savedHintAccount: "يتم حفظ اختياراتك في حسابك.",
     preferencesSaveError:
       "تعذر حفظ هذا الاختيار في حسابك. سيظل مطبقًا على هذا الجهاز.",
     dismiss: "إغلاق",

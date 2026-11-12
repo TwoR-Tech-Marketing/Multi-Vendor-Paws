@@ -72,6 +72,16 @@ describe("SettingsAppearancePanel", () => {
     expect(render("en", { scope: "local" })).toContain(en.settings.savedHint);
   });
 
+  it("keeps the TenderPaws name in Latin letters and the Arabic default label", () => {
+    const ar = getStrings("ar");
+    expect(ar.settings.themeNames.tenderpaws).toBe("TenderPaws");
+    expect(ar.settings.themeDefault).toBe("الافتراضية");
+    const html = render("ar", { scope: "local" });
+    expect(html).toContain(">TenderPaws<");
+    expect(html).toContain(ar.settings.savedHint);
+    expect(render("ar", { scope: "account" })).toContain(ar.settings.savedHintAccount);
+  });
+
   it("renders in Arabic", () => {
     const ar = getStrings("ar");
     const html = render("ar");

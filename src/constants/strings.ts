@@ -495,7 +495,7 @@ export const Strings = {
     languageEnglish: "English",
     languageArabic: "Arabic",
     savedHint: "Your choices are saved on this device.",
-    savedHintAccount: "Your choices are saved to your account and apply on every device.",
+    savedHintAccount: "Your choices are saved to your account.",
     preferencesSaveError:
       "We couldn't save this to your account. It still applies on this device.",
     dismiss: "Dismiss",
