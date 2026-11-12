@@ -15,6 +15,8 @@ import { Routes } from "@/constants/routes";
 import type { PortalUserDto, VendorSessionDto } from "@/features/auth/domain/session-dto";
 import type { VendorProfile } from "@/features/auth/domain/types";
 import type { VendorSessionKind } from "@/features/auth/infrastructure/resolve-vendor-session";
+import { goOfflineQuietly } from "@/features/telehealth/application/telehealth.api";
+import { normalizeVendorType } from "@/features/vendor/domain/vendor-type-config";
 import { PortalShellSkeleton } from "@/features/vendor/presentation/PortalShellSkeleton";
 import { fetchCurrentSession, logoutServerSession } from "@/lib/auth-client";
 
@@ -112,14 +114,18 @@ export function PortalSessionProvider({ children }: PortalSessionProviderProps) 
     );
   }, []);
 
+  const isDoctor = normalizeVendorType(session?.profile.vendorType) === "doctor";
+
   const signOut = useCallback(async () => {
     setIsLoggingOut(true);
     try {
+      // Doctors leave the telehealth queue before the session ends.
+      if (isDoctor) await goOfflineQuietly();
       await logoutServerSession();
     } finally {
       router.replace(Routes.auth.login);
     }
-  }, [router]);
+  }, [router, isDoctor]);
 
   const value = useMemo(() => {
     if (!session) return null;
