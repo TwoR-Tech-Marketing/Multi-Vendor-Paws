@@ -5,11 +5,10 @@ import type { VendorStoreProfile } from "@/features/vendor/domain/types";
 import { ProfileStoreForm } from "@/features/vendor/presentation/ProfileStoreForm";
 import { getStrings } from "@/shared/i18n/get-strings";
 
-vi.mock("@/features/auth/infrastructure/vendor-signup.service", () => ({
-  uploadVendorLogo: vi.fn(),
-}));
 vi.mock("@/features/vendor/application/vendor-profile.api", () => ({
   submitVendorProfileChangeFromApi: vi.fn(),
+  uploadVendorProfileLogoFromApi: vi.fn(),
+  VendorProfileSubmitError: class extends Error {},
 }));
 
 const en = getStrings("en");
@@ -30,14 +29,21 @@ const store: VendorStoreProfile = {
   status: "active",
 };
 
-function render(profile: VendorStoreProfile) {
+function render(
+  profile: VendorStoreProfile,
+  lock: { disabled: boolean; lockedReason: "notApproved" | "suspended" | null } = {
+    disabled: false,
+    lockedReason: null,
+  },
+) {
   return renderToStaticMarkup(
     <ProfileStoreForm
       strings={en}
       profile={profile}
       pendingChange={null}
       lastRejectedChange={null}
-      disabled={false}
+      disabled={lock.disabled}
+      lockedReason={lock.lockedReason}
       onSubmitted={async () => {}}
     />,
   );
@@ -70,5 +76,23 @@ describe("ProfileStoreForm", () => {
     const html = render({ ...store, vendorType: "doctor", providerProfile: { specialty: "Surgery" } });
     expect(html).toContain(en.vendorTypes.doctor.fields.storeDescription);
     expect(html).toContain('value="Surgery"');
+  });
+
+  it("lets an active vendor request changes with no lock note", () => {
+    const html = render(store);
+    expect(html).toContain(en.profile.requestChangesCta);
+    expect(html).not.toContain(en.profile.changeAfterApproval);
+  });
+
+  it("is view only for a pending vendor, with the after approval note", () => {
+    const html = render({ ...store, status: "pending" }, { disabled: true, lockedReason: "notApproved" });
+    expect(html).toContain(en.profile.changeAfterApproval);
+    expect(html).not.toContain(en.profile.requestChangesCta);
+  });
+
+  it("is view only for a suspended vendor, with the suspended note", () => {
+    const html = render({ ...store, status: "suspended" }, { disabled: true, lockedReason: "suspended" });
+    expect(html).toContain(en.profile.changeSuspended);
+    expect(html).not.toContain(en.profile.requestChangesCta);
   });
 });
