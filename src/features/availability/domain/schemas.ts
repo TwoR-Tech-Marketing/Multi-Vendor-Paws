@@ -124,3 +124,12 @@ export function wouldExceedExceptionLimit(
 export function exceptionHorizon(todayDate: string): string {
   return addDays(todayDate, L.exceptionHorizonDays);
 }
+
+/** Copies one day's intervals onto the target days; other days are untouched. */
+export function copyDayTo(weekly: WeeklyHours, from: Weekday, targets: Weekday[]): WeeklyHours {
+  const next = { ...weekly };
+  for (const day of targets) {
+    if (day !== from) next[day] = weekly[from].map((i) => ({ ...i }));
+  }
+  return next;
+}

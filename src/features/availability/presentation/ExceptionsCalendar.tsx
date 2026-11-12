@@ -5,6 +5,7 @@ import { exceptionHorizon } from "@/features/availability/domain/schemas";
 import {
   addMonths,
   daysBetween,
+  formatDayLabel,
   formatMonthTitle,
   monthGrid,
   monthOf,
@@ -96,7 +97,11 @@ export function ExceptionsCalendar({
               className={className}
               disabled={outOfRange}
               aria-pressed={date === selectedDate}
-              aria-label={marked ? `${date} ${t.exceptions.marked}` : date}
+              aria-label={
+                marked
+                  ? `${formatDayLabel(date, locale)}, ${t.exceptions.marked}`
+                  : formatDayLabel(date, locale)
+              }
               data-date={date}
               onClick={() => onSelect(date)}
             >

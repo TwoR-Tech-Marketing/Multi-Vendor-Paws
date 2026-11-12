@@ -11,7 +11,6 @@ vi.mock("@/lib/firebase", () => ({ firebaseFunctions: {} }));
 import {
   getBranchAvailability,
   listBranchSlots,
-  previewAvailabilityConflicts,
   saveBranchAvailability,
   setBranchAvailabilityException,
 } from "@/features/availability/application/availability.api";
@@ -165,39 +164,6 @@ describe("availability.api callables", () => {
     expect(lastCall().payload).toMatchObject({ exception: null, keepAppointmentIds: ["a1"] });
   });
 
-  it("previews conflicts for weekly and exception changes", async () => {
-    respond({ ok: true, conflicts: [RAW_CONFLICT, { appointmentId: "" }] });
-    const conflicts = await previewAvailabilityConflicts({
-      kind: "weekly",
-      branchId: "b1",
-      expectedVersion: 3,
-      payload: PAYLOAD,
-    });
-    expect(lastCall()).toEqual({
-      name: "vendor_availability-previewBranchAvailabilityConflicts",
-      payload: { kind: "weekly", branchId: "b1", expectedVersion: 3, ...PAYLOAD },
-    });
-    expect(conflicts).toEqual([RAW_CONFLICT]);
-
-    respond({ ok: true, conflicts: [{ ...RAW_CONFLICT, reason: "weird", mode: "x" }] });
-    const [mapped] = await previewAvailabilityConflicts({
-      kind: "exception",
-      branchId: "b1",
-      expectedVersion: 3,
-      date: "2026-11-20",
-      exception: null,
-    });
-    expect(lastCall().payload).toEqual({
-      kind: "exception",
-      branchId: "b1",
-      expectedVersion: 3,
-      date: "2026-11-20",
-      exception: null,
-    });
-    expect(mapped.reason).toBe("outside_hours");
-    expect(mapped.mode).toBe("branch");
-  });
-
   it("lists slots and maps days", async () => {
     respond({
       ok: true,
@@ -263,6 +229,17 @@ describe("mapAvailabilityError", () => {
     [{ code: "functions/unauthenticated", message: "x" }, "notAllowed"],
     [{ code: "functions/internal", message: "x" }, "generic"],
     [new Error("boom"), "generic"],
+    [{ code: "functions/invalid-argument", message: "Overlapping", details: { reason: "grid" } }, "invalidInterval"],
+    [{ code: "functions/invalid-argument", message: "x", details: { reason: "interval_limit" } }, "limit"],
+    [{ code: "functions/invalid-argument", message: "x", details: { reason: "overlap" } }, "overlap"],
+    [{ code: "functions/failed-precondition", message: "x", details: { reason: "exception_limit" } }, "limit"],
+    [{ code: "functions/failed-precondition", message: "x", details: { reason: "archived" } }, "archived"],
+    [{ code: "functions/invalid-argument", message: "x", details: { reason: "invalid_date" } }, "date"],
+    [{ code: "functions/invalid-argument", message: "x", details: { reason: "note_too_long" } }, "note"],
+    [{ code: "functions/aborted", message: "x", details: { reason: "version_changed" } }, "versionChanged"],
+    [{ code: "functions/failed-precondition", message: "x", details: { reason: "conflicts" } }, "conflicts"],
+    [{ code: "functions/not-found", message: "x", details: { reason: "unknown_code" } }, "notFound"],
+    [{ code: "functions/internal", message: "x", details: { reason: "constructor" } }, "generic"],
     [null, "generic"],
   ])("maps %o to %s", (error, key) => {
     expect(mapAvailabilityError(error)).toBe(key);

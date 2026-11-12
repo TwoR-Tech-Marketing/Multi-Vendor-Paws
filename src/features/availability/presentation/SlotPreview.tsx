@@ -21,10 +21,14 @@ type SlotPreviewProps = {
   isLoading: boolean;
   error: string | null;
   hasUnsavedChanges: boolean;
+  canPrevWeek: boolean;
+  canNextWeek: boolean;
   strings: AppStrings;
   locale: string;
   onServiceChange: (serviceId: string) => void;
   onModeChange: (mode: AvailabilityMode) => void;
+  onPrevWeek: () => void;
+  onNextWeek: () => void;
 };
 
 function PreviewSkeleton({ label }: { label: string }) {
@@ -54,10 +58,14 @@ export function SlotPreview({
   isLoading,
   error,
   hasUnsavedChanges,
+  canPrevWeek,
+  canNextWeek,
   strings,
   locale,
   onServiceChange,
   onModeChange,
+  onPrevWeek,
+  onNextWeek,
 }: SlotPreviewProps) {
   const t = strings.availability.preview;
 
@@ -89,6 +97,25 @@ export function SlotPreview({
             onChange={(value) => onModeChange(value === "home" ? "home" : "branch")}
           />
         </div>
+      </div>
+
+      <div className={branchStyles.actions}>
+        <button
+          type="button"
+          className={branchStyles.secondaryButton}
+          disabled={!canPrevWeek || isLoading}
+          onClick={onPrevWeek}
+        >
+          {t.previousWeek}
+        </button>
+        <button
+          type="button"
+          className={branchStyles.secondaryButton}
+          disabled={!canNextWeek || isLoading}
+          onClick={onNextWeek}
+        >
+          {t.nextWeek}
+        </button>
       </div>
 
       {error ? (

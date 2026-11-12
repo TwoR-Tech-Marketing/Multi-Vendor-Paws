@@ -64,7 +64,9 @@ describe("ExceptionsCalendar", () => {
     expect(html).toMatch(/<button[^>]*disabled=""[^>]*data-date="2026-11-11"/);
     expect(html).not.toMatch(/<button[^>]*disabled=""[^>]*data-date="2026-11-12"/);
     expect(html).toMatch(new RegExp(`aria-label="${en.availability.exceptions.prevMonth}"[^>]*disabled=""`));
-    expect(html).toContain(`aria-label="2026-11-20 ${en.availability.exceptions.marked}"`);
+    expect(html).toContain(`aria-label="Fri 20 Nov, ${en.availability.exceptions.marked}"`);
+    expect(html).toContain('aria-label="Sat 14 Nov"');
+    expect(html).not.toContain('aria-label="2026-11-14"');
   });
 
   it("stops at one year ahead", () => {
@@ -229,10 +231,14 @@ describe("SlotPreview", () => {
         isLoading={false}
         error={null}
         hasUnsavedChanges={false}
+        canPrevWeek={false}
+        canNextWeek
         strings={en}
         locale="en"
         onServiceChange={noop}
         onModeChange={noop}
+        onPrevWeek={noop}
+        onNextWeek={noop}
         {...props}
       />,
     );
@@ -250,6 +256,15 @@ describe("SlotPreview", () => {
   it("shows a skeleton while loading and an error when it fails", () => {
     expect(render({ isLoading: true })).toContain('aria-busy="true"');
     expect(render({ error: "Oops" })).toContain("Oops");
+  });
+
+  it("pages by week within the booking window", () => {
+    const first = render();
+    expect(first).toMatch(new RegExp(`<button[^>]*disabled=""[^>]*>${en.availability.preview.previousWeek}<`));
+    expect(first).not.toMatch(new RegExp(`<button[^>]*disabled=""[^>]*>${en.availability.preview.nextWeek}<`));
+    const last = render({ canPrevWeek: true, canNextWeek: false });
+    expect(last).toMatch(new RegExp(`<button[^>]*disabled=""[^>]*>${en.availability.preview.nextWeek}<`));
+    expect(render({ strings: ar, locale: "ar" })).toContain(ar.availability.preview.previousWeek);
   });
 
   it("asks for a service first and notes unsaved changes", () => {

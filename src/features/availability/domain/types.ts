@@ -111,6 +111,8 @@ export const AVAILABILITY_LIMITS = {
   maxKeepIds: 200,
   maxSlotRangeDays: 31,
   previewDays: 7,
+  /** Buyers can book up to this many days ahead. */
+  bookingWindowDays: 30,
 } as const;
 
 export function emptyWeekly(): WeeklyHours {

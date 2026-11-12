@@ -13,7 +13,22 @@ export type AvailabilityErrorKey =
   | "notAllowed"
   | "notFound"
   | "archived"
+  | "date"
+  | "note"
   | "generic";
+
+/** Backend `details.reason` codes, preferred over message matching. */
+const REASON_KEYS: Record<string, AvailabilityErrorKey> = {
+  interval_limit: "limit",
+  overlap: "overlap",
+  grid: "invalidInterval",
+  exception_limit: "limit",
+  archived: "archived",
+  invalid_date: "date",
+  note_too_long: "note",
+  version_changed: "versionChanged",
+  conflicts: "conflicts",
+};
 
 function read(error: unknown, key: string): unknown {
   if (!error || typeof error !== "object") return undefined;
@@ -25,6 +40,13 @@ function readString(error: unknown, key: string): string {
   return typeof value === "string" ? value : "";
 }
 
+function detailsReason(error: unknown): string {
+  const details = read(error, "details");
+  if (!details || typeof details !== "object") return "";
+  const reason = (details as Record<string, unknown>).reason;
+  return typeof reason === "string" ? reason : "";
+}
+
 /** `details.conflicts` of a conflicts refusal, unmapped; null otherwise. */
 export function conflictDetails(error: unknown): unknown[] | null {
   const details = read(error, "details");
@@ -34,6 +56,8 @@ export function conflictDetails(error: unknown): unknown[] | null {
 }
 
 export function mapAvailabilityError(error: unknown): AvailabilityErrorKey {
+  const reason = detailsReason(error);
+  if (Object.hasOwn(REASON_KEYS, reason)) return REASON_KEYS[reason];
   const code = readString(error, "code").replace(/^functions\//, "");
   const message = readString(error, "message").toLowerCase();
 

@@ -1,8 +1,14 @@
 "use client";
 
-import type { AvailabilityValidationError } from "@/features/availability/domain/schemas";
+import { useState } from "react";
+
+import {
+  copyDayTo,
+  type AvailabilityValidationError,
+} from "@/features/availability/domain/schemas";
 import { WEEKDAYS, type Weekday, type WeeklyHours } from "@/features/availability/domain/types";
 import { validationMessage } from "@/features/availability/presentation/availability-copy";
+import { CopyDayDialog } from "@/features/availability/presentation/CopyDayDialog";
 import {
   canAddInterval,
   IntervalList,
@@ -24,15 +30,10 @@ type WeeklyEditorProps = {
 /** One row per weekday, Saturday first; days start at the inline start in RTL. */
 export function WeeklyEditor({ weekly, errors, strings, readOnly, onChange }: WeeklyEditorProps) {
   const t = strings.availability;
+  const [copyFrom, setCopyFrom] = useState<Weekday | null>(null);
 
   function setDay(day: Weekday, intervals: WeeklyHours[Weekday]) {
     onChange({ ...weekly, [day]: intervals });
-  }
-
-  function copyToAll(day: Weekday) {
-    const next = { ...weekly };
-    for (const other of WEEKDAYS) next[other] = weekly[day].map((i) => ({ ...i }));
-    onChange(next);
   }
 
   return (
@@ -73,7 +74,7 @@ export function WeeklyEditor({ weekly, errors, strings, readOnly, onChange }: We
                 <button
                   type="button"
                   className={styles.smallButton}
-                  onClick={() => copyToAll(day)}
+                  onClick={() => setCopyFrom(day)}
                 >
                   {t.copyDay}
                 </button>
@@ -82,6 +83,17 @@ export function WeeklyEditor({ weekly, errors, strings, readOnly, onChange }: We
           </div>
         );
       })}
+      {copyFrom && !readOnly ? (
+        <CopyDayDialog
+          from={copyFrom}
+          strings={strings}
+          onApply={(targets) => {
+            onChange(copyDayTo(weekly, copyFrom, targets));
+            setCopyFrom(null);
+          }}
+          onClose={() => setCopyFrom(null)}
+        />
+      ) : null}
     </div>
   );
 }

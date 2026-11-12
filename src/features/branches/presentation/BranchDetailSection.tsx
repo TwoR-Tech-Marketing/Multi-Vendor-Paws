@@ -25,7 +25,10 @@ import type {
   ServicePayload,
 } from "@/features/branches/domain/types";
 import { BRANCH_LIMITS } from "@/features/branches/domain/types";
-import { branchesErrorMessage } from "@/features/branches/presentation/branch-copy";
+import {
+  branchesErrorMessage,
+  canOpenAvailability,
+} from "@/features/branches/presentation/branch-copy";
 import { BranchDealCard } from "@/features/branches/presentation/BranchDealCard";
 import { BranchDetailSkeleton } from "@/features/branches/presentation/BranchDetailSkeleton";
 import { BranchForm } from "@/features/branches/presentation/BranchForm";
@@ -33,7 +36,6 @@ import { DuplicateServicesDialog } from "@/features/branches/presentation/Duplic
 import { PendingBranchesHint } from "@/features/branches/presentation/PendingBranchesHint";
 import { ServiceForm } from "@/features/branches/presentation/ServiceForm";
 import { ServicesTable } from "@/features/branches/presentation/ServicesTable";
-import { isScreenVisible } from "@/features/vendor/domain/vendor-type-config";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
@@ -271,7 +273,7 @@ export function BranchDetailSection({ branchId }: { branchId: string }) {
               <span className={`${styles.badge} ${styles.badgeAccent}`}>{t.homeVisitBadge}</span>
             </div>
           ) : null}
-          {isScreenVisible(profile.vendorType, "availability") ? (
+          {canOpenAvailability(branch, profile.vendorType) ? (
             <div className={styles.actions}>
               <Link className={styles.linkButton} href={Routes.vendor.branchAvailability(branchId)}>
                 {strings.availability.open}

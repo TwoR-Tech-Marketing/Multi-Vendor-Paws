@@ -225,39 +225,6 @@ export async function setBranchAvailabilityException(input: {
   return mapAvailability(data.availability);
 }
 
-/** Dry run of a save or exception change; no write, no version check. */
-export async function previewAvailabilityConflicts(
-  input:
-    | { kind: "weekly"; branchId: string; expectedVersion: number; payload: WeeklyPayload }
-    | {
-        kind: "exception";
-        branchId: string;
-        expectedVersion: number;
-        date: string;
-        exception: AvailabilityException | null;
-      },
-): Promise<AvailabilityConflict[]> {
-  const body: Raw =
-    input.kind === "weekly"
-      ? {
-          kind: "weekly",
-          branchId: input.branchId,
-          expectedVersion: input.expectedVersion,
-          ...input.payload,
-        }
-      : {
-          kind: "exception",
-          branchId: input.branchId,
-          expectedVersion: input.expectedVersion,
-          date: input.date,
-          exception: input.exception,
-        };
-  const data = asObject(
-    await invokeAvailabilityCallable(AVAILABILITY_CALLABLES.previewConflicts, body),
-  );
-  return mapConflicts(data.conflicts);
-}
-
 export async function listBranchSlots(input: {
   branchId: string;
   serviceId: string;

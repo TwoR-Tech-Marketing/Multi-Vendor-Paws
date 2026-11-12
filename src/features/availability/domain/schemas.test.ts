@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   clampCapacity,
+  copyDayTo,
   countFutureExceptions,
   isValidCapacity,
   normalizeIntervals,
@@ -68,6 +69,18 @@ describe("validateWeekly", () => {
     const weekly = { ...emptyWeekly(), sat: [iv("12:00", "14:00"), iv("09:00", "12:00")] };
     const result = validateWeekly(weekly);
     expect(result.ok && result.weekly.sat).toEqual([iv("09:00", "14:00")]);
+  });
+});
+
+describe("copyDayTo", () => {
+  it("copies only to the picked days", () => {
+    const weekly = { ...emptyWeekly(), sat: [iv("09:00", "17:00")], sun: [iv("10:00", "11:00")] };
+    const next = copyDayTo(weekly, "sat", ["mon", "wed", "sat"]);
+    expect(next.mon).toEqual([iv("09:00", "17:00")]);
+    expect(next.wed).toEqual([iv("09:00", "17:00")]);
+    expect(next.sun).toEqual([iv("10:00", "11:00")]);
+    expect(next.tue).toEqual([]);
+    expect(next.mon).not.toBe(weekly.sat);
   });
 });
 

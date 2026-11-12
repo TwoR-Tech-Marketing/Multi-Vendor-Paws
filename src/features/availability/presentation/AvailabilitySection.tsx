@@ -5,11 +5,17 @@ import { useCallback, useEffect, useState } from "react";
 import {
   getBranchAvailability,
   listBranchSlots,
-  mapConflicts,
   saveBranchAvailability,
   setBranchAvailabilityException,
 } from "@/features/availability/application/availability.api";
-import { conflictDetails, mapAvailabilityError } from "@/features/availability/domain/errors";
+import {
+  applyReload,
+  applySaved,
+  classifyWriteError,
+  isDirty,
+  type EditorData,
+  type WriteKind,
+} from "@/features/availability/application/availability-write";
 import { validateWeekly, wouldExceedExceptionLimit } from "@/features/availability/domain/schemas";
 import { addDays, monthOf } from "@/features/availability/domain/time";
 import {
@@ -18,7 +24,6 @@ import {
   type AvailabilityConflict,
   type AvailabilityException,
   type AvailabilityMode,
-  type AvailabilityState,
   type SlotPreview as SlotPreviewData,
   type WeeklyPayload,
 } from "@/features/availability/domain/types";
@@ -41,20 +46,16 @@ import { usePreferences, useStrings } from "@/shared/preferences/PreferencesCont
 import branchStyles from "@/features/branches/presentation/branches.module.css";
 import styles from "./availability.module.css";
 
-function payloadOf(a: Availability): WeeklyPayload {
-  return {
-    weekly: a.weekly,
-    capacity: a.capacity,
-    homeVisitWeekly: a.homeVisitWeekly,
-    homeVisitCapacity: a.homeVisitCapacity,
-  };
-}
-
 type PendingWrite = {
+  kind: WriteKind;
   conflicts: AvailabilityConflict[];
   kept: string[];
   retry: (keep: string[]) => Promise<Availability>;
 };
+
+const MAX_PREVIEW_WEEK = Math.floor(
+  AVAILABILITY_LIMITS.bookingWindowDays / AVAILABILITY_LIMITS.previewDays,
+);
 
 export function AvailabilitySection({ branchId }: { branchId: string }) {
   const strings = useStrings();
@@ -64,10 +65,9 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
 
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [state, setState] = useState<AvailabilityState | null>(null);
+  const [data, setData] = useState<EditorData | null>(null);
   const [branch, setBranch] = useState<Branch | null>(null);
   const [services, setServices] = useState<BranchService[]>([]);
-  const [draft, setDraft] = useState<WeeklyPayload | null>(null);
   const [tab, setTab] = useState<AvailabilityTab>("weekly");
   const [isSaving, setIsSaving] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -80,6 +80,7 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
 
   const [serviceId, setServiceId] = useState("");
   const [mode, setMode] = useState<AvailabilityMode>("branch");
+  const [week, setWeek] = useState(0);
   const [preview, setPreview] = useState<SlotPreviewData | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState<string | null>(null);
@@ -91,8 +92,7 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
         getBranchAvailability(branchId),
         getBranch(branchId, { includeArchived: true }),
       ]);
-      setState(loaded);
-      setDraft(payloadOf(loaded.availability));
+      setData((previous) => applyReload(previous, loaded));
       setBranch(detail.branch);
       const active = detail.services.filter((s) => s.status === "active");
       setServices(active);
@@ -114,19 +114,26 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
     return () => window.clearTimeout(timer);
   }, [load]);
 
+  const state = data?.state ?? null;
+  const draft = data?.draft ?? null;
   const todayDate = state?.todayDate ?? "";
   const loadPreview = useCallback(async () => {
     if (!serviceId || !todayDate) return;
     setPreviewLoading(true);
     setPreviewError(null);
     try {
+      const fromDate = addDays(todayDate, week * AVAILABILITY_LIMITS.previewDays);
+      const lastDay = Math.min(
+        (week + 1) * AVAILABILITY_LIMITS.previewDays - 1,
+        AVAILABILITY_LIMITS.bookingWindowDays,
+      );
       setPreview(
         await listBranchSlots({
           branchId,
           serviceId,
           mode,
-          fromDate: todayDate,
-          toDate: addDays(todayDate, AVAILABILITY_LIMITS.previewDays - 1),
+          fromDate,
+          toDate: addDays(todayDate, lastDay),
         }),
       );
     } catch (error) {
@@ -134,7 +141,7 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
     } finally {
       setPreviewLoading(false);
     }
-  }, [branchId, serviceId, mode, todayDate, strings]);
+  }, [branchId, serviceId, mode, week, todayDate, strings]);
 
   useEffect(() => {
     if (tab !== "preview") return;
@@ -144,32 +151,39 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
     return () => window.clearTimeout(timer);
   }, [tab, loadPreview, state?.availability.version]);
 
-  /** Runs a write; conflicts open the dialog, a version mismatch asks to reload. */
-  async function runWrite(attempt: (keep: string[]) => Promise<Availability>, keep: string[] = []) {
+  /**
+   * Runs a write. Outcomes come from the pure helpers: conflicts open the
+   * dialog, a version mismatch asks to reload, the draft is never dropped.
+   */
+  async function runWrite(
+    kind: WriteKind,
+    attempt: (keep: string[]) => Promise<Availability>,
+    keep: string[] = [],
+  ) {
     setIsSaving(true);
     setActionError(null);
     setSuccess(null);
     try {
       const saved = await attempt(keep);
-      setState((current) => (current ? { ...current, availability: saved } : current));
-      setDraft(payloadOf(saved));
+      setData((current) => (current ? applySaved(kind, current, saved) : current));
       setPending(null);
       setSuccess(t.saved);
     } catch (error) {
-      const raw = conflictDetails(error);
-      const key = mapAvailabilityError(error);
-      if (raw) {
-        setPending({ conflicts: mapConflicts(raw), kept: keep, retry: attempt });
-      } else if (key === "versionChanged") {
-        setPending(null);
-        setVersionChanged(true);
-      } else {
-        setPending(null);
-        setActionError(availabilityErrorMessage(error, strings));
+      const failure = classifyWriteError(error, keep);
+      setPending(failure.type === "conflicts" ? { kind, ...failure, retry: attempt } : null);
+      if (failure.type === "versionChanged") setVersionChanged(true);
+      if (failure.type === "error") {
+        setActionError(
+          failure.key === "generic" ? strings.errors.generic : strings.errors.availability[failure.key],
+        );
       }
     } finally {
       setIsSaving(false);
     }
+  }
+
+  function setDraft(next: WeeklyPayload) {
+    setData((current) => (current ? { ...current, draft: next } : current));
   }
 
   if (isLoading) return <AvailabilitySkeleton />;
@@ -194,7 +208,7 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
   const readOnly = sessionKind === "suspended" || archived;
   const validation = validateWeekly(draft.weekly);
   const homeValidation = validateWeekly(draft.homeVisitWeekly);
-  const dirty = JSON.stringify(draft) !== JSON.stringify(payloadOf(availability));
+  const dirty = isDirty(draft, availability);
   const canSave = !readOnly && dirty && validation.ok && homeValidation.ok && !isSaving;
 
   function saveWeekly() {
@@ -205,14 +219,14 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
       homeVisitWeekly: homeValidation.weekly,
     };
     const expectedVersion = availability.version;
-    void runWrite((keep) =>
+    void runWrite("weekly", (keep) =>
       saveBranchAvailability({ branchId, expectedVersion, payload, keepAppointmentIds: keep }),
     );
   }
 
   function writeException(date: string, exception: AvailabilityException | null) {
     const expectedVersion = availability.version;
-    void runWrite((keep) =>
+    void runWrite("exception", (keep) =>
       setBranchAvailabilityException({
         branchId,
         expectedVersion,
@@ -374,10 +388,14 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
             isLoading={previewLoading}
             error={previewError}
             hasUnsavedChanges={dirty}
+            canPrevWeek={week > 0}
+            canNextWeek={week < MAX_PREVIEW_WEEK}
             strings={strings}
             locale={locale}
             onServiceChange={setServiceId}
             onModeChange={setMode}
+            onPrevWeek={() => setWeek((w) => Math.max(0, w - 1))}
+            onNextWeek={() => setWeek((w) => Math.min(MAX_PREVIEW_WEEK, w + 1))}
           />
         </section>
       ) : null}
@@ -391,7 +409,7 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
           strings={strings}
           locale={locale}
           isSubmitting={isSaving}
-          onSubmit={(keep) => void runWrite(pending.retry, keep)}
+          onSubmit={(keep) => void runWrite(pending.kind, pending.retry, keep)}
           onClose={() => setPending(null)}
         />
       ) : null}

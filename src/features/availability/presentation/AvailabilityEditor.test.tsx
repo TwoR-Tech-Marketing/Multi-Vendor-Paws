@@ -34,6 +34,7 @@ import { AvailabilitySection } from "@/features/availability/presentation/Availa
 import { AvailabilitySkeleton } from "@/features/availability/presentation/AvailabilitySkeleton";
 import { AvailabilityTabs } from "@/features/availability/presentation/AvailabilityTabs";
 import { CapacityStepper } from "@/features/availability/presentation/CapacityStepper";
+import { CopyDayDialog } from "@/features/availability/presentation/CopyDayDialog";
 import { HomeVisitSummary } from "@/features/availability/presentation/HomeVisitSummary";
 import { nextInterval } from "@/features/availability/presentation/IntervalList";
 import { WeeklyEditor } from "@/features/availability/presentation/WeeklyEditor";
@@ -122,6 +123,26 @@ describe("WeeklyEditor", () => {
     expect(nextInterval([])).toEqual({ start: "09:00", end: "17:00" });
     expect(nextInterval([{ start: "09:00", end: "17:00" }])).toEqual({ start: "17:00", end: "18:00" });
     expect(nextInterval([{ start: "23:30", end: "24:00" }])).toBeNull();
+  });
+});
+
+describe("CopyDayDialog", () => {
+  it("offers the other days, Saturday first, with apply disabled until one is picked", () => {
+    const html = renderToStaticMarkup(
+      <CopyDayDialog from="mon" strings={en} onApply={noop} onClose={noop} />,
+    );
+    expect(html).toContain("Copy Monday hours to");
+    const days = [...html.matchAll(/type="checkbox" value="(\w+)"/g)].map((m) => m[1]);
+    expect(days).toEqual(["sat", "sun", "tue", "wed", "thu", "fri"]);
+    expect(html).toMatch(new RegExp(`<button[^>]*disabled=""[^>]*>${en.availability.copyDayApply}<`));
+  });
+
+  it("renders Arabic copy", () => {
+    const html = renderToStaticMarkup(
+      <CopyDayDialog from="sat" strings={ar} onApply={noop} onClose={noop} />,
+    );
+    expect(html).toContain(ar.availability.copyDayTitle.replace("{day}", ar.availability.days.sat));
+    expect(html).toContain(ar.availability.copyDayApply);
   });
 });
 

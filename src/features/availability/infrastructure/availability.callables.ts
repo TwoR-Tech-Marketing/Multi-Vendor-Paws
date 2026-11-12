@@ -7,7 +7,6 @@ export const AVAILABILITY_CALLABLES = {
   get: "vendor_availability-getBranchAvailability",
   save: "vendor_availability-saveBranchAvailability",
   setException: "vendor_availability-setBranchAvailabilityException",
-  previewConflicts: "vendor_availability-previewBranchAvailabilityConflicts",
   listSlots: "vendor_availability-listBranchSlots",
 } as const;
 
