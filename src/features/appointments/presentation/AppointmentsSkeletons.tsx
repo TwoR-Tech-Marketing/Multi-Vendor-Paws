@@ -83,6 +83,15 @@ export function AppointmentDetailSkeleton() {
         <SkeletonText size="md" width="40%" />
       </div>
       <div className={branchStyles.panel}>
+        <div className={branchStyles.panelHeader}>
+          <SkeletonText size="lg" width={140} />
+          <SkeletonText size="sm" width={88} />
+        </div>
+        <SkeletonText size="md" width="70%" />
+        <SkeletonText size="md" width="50%" />
+        <SkeletonButton width={152} />
+      </div>
+      <div className={branchStyles.panel}>
         <SkeletonText size="lg" width={100} />
         <div className={styles.chips}>
           <SkeletonButton width={152} />

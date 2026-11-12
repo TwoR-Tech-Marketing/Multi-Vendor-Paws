@@ -71,12 +71,27 @@ export type AppointmentHistoryEntry = {
   note: string | null;
 };
 
+export const NO_SHOW_ANSWERS = [
+  "did_not_attend",
+  "attended",
+  "arrived_late",
+  "report_issue",
+] as const;
+
+export type NoShowAnswer = (typeof NO_SHOW_ANSWERS)[number];
+
+export const NO_SHOW_CONFIRMERS = ["buyer", "timeout", "provider", "admin"] as const;
+
+export type NoShowConfirmer = (typeof NO_SHOW_CONFIRMERS)[number];
+
 export type AppointmentNoShow = {
   state: NoShowState;
   flaggedAtMs: number | null;
   answerDueAtMs: number | null;
-  answer: string | null;
+  answer: NoShowAnswer | null;
+  answeredAtMs: number | null;
   buyerNote: string | null;
+  confirmedBy: NoShowConfirmer | null;
 };
 
 export type HomeAddress = { text: string; lat: number | null; lng: number | null };
@@ -103,12 +118,59 @@ export type Appointment = AppointmentRow & {
 };
 
 /** Provider actions this portal offers. The server decides which apply. */
-export const APPOINTMENT_ACTIONS = ["complete", "cancel", "reschedule"] as const;
+export const APPOINTMENT_ACTIONS = [
+  "complete",
+  "cancel",
+  "reschedule",
+  "flagNoShow",
+  "markCompleted",
+  "confirmNoShow",
+  "createExtraInvoice",
+  "voidExtraInvoice",
+] as const;
 
 export type AppointmentAction = (typeof APPOINTMENT_ACTIONS)[number];
 
+/** Actions shown as buttons in the action bar; invoice actions live on the invoices card. */
+export const ACTION_BAR_ACTIONS = [
+  "complete",
+  "markCompleted",
+  "flagNoShow",
+  "confirmNoShow",
+  "reschedule",
+  "cancel",
+] as const satisfies readonly AppointmentAction[];
+
+export type ActionBarAction = (typeof ACTION_BAR_ACTIONS)[number];
+
+export const EXTRA_INVOICE_STATUSES = ["unpaid", "paid", "void"] as const;
+
+export type ExtraInvoiceStatus = (typeof EXTRA_INVOICE_STATUSES)[number];
+
+export type ExtraInvoiceLine = {
+  kind: "service" | "custom";
+  serviceId: string | null;
+  nameEn: string;
+  nameAr: string;
+  unitPricePiastres: number;
+  quantity: number;
+  lineTotalPiastres: number;
+};
+
+export type ExtraInvoice = {
+  invoiceId: string;
+  status: ExtraInvoiceStatus;
+  lines: ExtraInvoiceLine[];
+  totalPiastres: number;
+  note: string | null;
+  createdAtMs: number | null;
+  paidAtMs: number | null;
+  voidedAtMs: number | null;
+};
+
 export type AppointmentDetail = {
   appointment: Appointment;
+  extraInvoices: ExtraInvoice[];
   allowedActions: AppointmentAction[];
 };
 
@@ -126,4 +188,21 @@ export const APPOINTMENT_LIMITS = {
   pageSize: 20,
   maxRangeDays: 92,
   slotWindowDays: 7,
+  /** Minutes after the start before a no-show can be flagged (server enforced). */
+  noShowAfterMinutes: 120,
+} as const;
+
+/** Extra invoice limits, mirrored for form feedback. The server is the authority. */
+export const EXTRA_INVOICE_LIMITS = {
+  maxInvoices: 5,
+  maxLines: 10,
+  quantityMin: 1,
+  quantityMax: 10,
+  nameMin: 2,
+  nameMax: 80,
+  unitPriceMinPiastres: 100,
+  unitPriceMaxPiastres: 1_000_000,
+  totalMinPiastres: 100,
+  totalMaxPiastres: 5_000_000,
+  noteMax: 300,
 } as const;

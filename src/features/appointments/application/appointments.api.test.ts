@@ -8,13 +8,22 @@ vi.mock("@/lib/firebase", () => ({ firebaseFunctions: {} }));
 import {
   cancelVendorAppointment,
   completeVendorAppointment,
+  createExtraInvoice,
+  flagNoShow,
   getVendorAppointment,
   listVendorAppointments,
   mapAppointment,
   mapAppointmentRow,
+  mapExtraInvoice,
+  newCallableRequestId,
   rescheduleVendorAppointment,
+  resolveLateArrival,
+  voidExtraInvoice,
 } from "@/features/appointments/application/appointments.api";
-import { appointmentErrorMessage } from "@/features/appointments/presentation/appointments-copy";
+import {
+  appointmentErrorMessage,
+  formatInstant,
+} from "@/features/appointments/presentation/appointments-copy";
 import { RAW_APPOINTMENT, RAW_ROW } from "@/features/appointments/presentation/test-fixtures";
 import { getStrings } from "@/shared/i18n/get-strings";
 
@@ -190,5 +199,176 @@ describe("appointment callables", () => {
     expect(appointmentErrorMessage(error, en)).toBe(en.errors.appointments.held);
     expect(appointmentErrorMessage(error, ar)).toBe(ar.errors.appointments.held);
     expect(appointmentErrorMessage(new Error("x"), en)).toBe(en.errors.generic);
+  });
+});
+
+const RAW_INVOICE = {
+  invoiceId: "inv1",
+  status: "unpaid",
+  lines: [
+    {
+      kind: "service",
+      serviceId: "s1",
+      nameEn: "Nail trim",
+      nameAr: "قص الأظافر",
+      unitPricePiastres: 15_000,
+      quantity: 2,
+      lineTotalPiastres: 30_000,
+    },
+    {
+      kind: "custom",
+      serviceId: null,
+      nameEn: "Shampoo",
+      nameAr: "Shampoo",
+      unitPricePiastres: 5_000,
+      quantity: 1,
+      lineTotalPiastres: 5_000,
+    },
+  ],
+  totalPiastres: 35_000,
+  note: null,
+  createdAtMs: 9_000,
+  paidAtMs: null,
+  voidedAtMs: null,
+};
+
+describe("no-show and extra invoice callables", () => {
+  it("maps the no-show sub-object with answer and confirmer", () => {
+    const appointment = mapAppointment({
+      ...RAW_APPOINTMENT,
+      status: "no_show",
+      noShow: {
+        state: "confirmed",
+        flaggedAtMs: 1,
+        answerDueAtMs: 2,
+        answer: "did_not_attend",
+        answeredAtMs: 3,
+        buyerNote: "",
+        supportCaseId: null,
+        confirmedBy: "buyer",
+      },
+    });
+    expect(appointment.noShow).toEqual({
+      state: "confirmed",
+      flaggedAtMs: 1,
+      answerDueAtMs: 2,
+      answer: "did_not_attend",
+      answeredAtMs: 3,
+      buyerNote: null,
+      confirmedBy: "buyer",
+    });
+    expect(appointment.noShowState).toBe("confirmed");
+    const odd = mapAppointment({ ...RAW_APPOINTMENT, noShow: { state: "late_returned", answer: "x", confirmedBy: "y" } });
+    expect(odd.noShow?.answer).toBeNull();
+    expect(odd.noShow?.confirmedBy).toBeNull();
+  });
+
+  it("maps extra invoices in integer piastres and drops ones without an id", async () => {
+    expect(mapExtraInvoice(RAW_INVOICE).lines[1]).toEqual({
+      kind: "custom",
+      serviceId: null,
+      nameEn: "Shampoo",
+      nameAr: "Shampoo",
+      unitPricePiastres: 5_000,
+      quantity: 1,
+      lineTotalPiastres: 5_000,
+    });
+    expect(mapExtraInvoice({ status: "refunded", totalPiastres: 1.5 })).toMatchObject({
+      status: "unpaid",
+      totalPiastres: 0,
+    });
+    mocks.callableFn.mockResolvedValue({
+      data: {
+        ok: true,
+        appointment: RAW_APPOINTMENT,
+        extraInvoices: [RAW_INVOICE, { status: "void" }],
+        allowedActions: ["createExtraInvoice", "voidExtraInvoice", "flagNoShow", "unknown"],
+      },
+    });
+    const detail = await getVendorAppointment("appt1");
+    expect(detail.extraInvoices.map((i) => i.invoiceId)).toEqual(["inv1"]);
+    expect(detail.allowedActions).toEqual(["flagNoShow", "createExtraInvoice", "voidExtraInvoice"]);
+  });
+
+  it("flags a no-show and resolves a late arrival with the appointment id only", async () => {
+    mocks.callableFn.mockResolvedValue({ data: { ok: true, appointment: RAW_APPOINTMENT } });
+    await flagNoShow("appt1");
+    expect(lastCall()).toEqual({ name: "vendor_appointments-flagNoShow", payload: { appointmentId: "appt1" } });
+    await resolveLateArrival("appt1", "completed");
+    expect(lastCall()).toEqual({
+      name: "vendor_appointments-resolveLateArrival",
+      payload: { appointmentId: "appt1", outcome: "completed" },
+    });
+    await resolveLateArrival("appt1", "no_show");
+    expect(lastCall().payload).toEqual({ appointmentId: "appt1", outcome: "no_show" });
+  });
+
+  it("creates an invoice with the request id, lines and note, and voids by invoice id", async () => {
+    mocks.callableFn.mockResolvedValue({ data: { ok: true, invoice: RAW_INVOICE, replayed: true } });
+    const created = await createExtraInvoice({
+      appointmentId: "appt1",
+      requestId: "req-12345678",
+      payload: {
+        lines: [
+          { serviceId: "s1", quantity: 2 },
+          { name: "Shampoo", unitPricePiastres: 5_000, quantity: 1 },
+        ],
+        note: "Thanks",
+      },
+    });
+    expect(lastCall()).toEqual({
+      name: "vendor_appointments-createExtraInvoice",
+      payload: {
+        appointmentId: "appt1",
+        requestId: "req-12345678",
+        lines: [
+          { serviceId: "s1", quantity: 2 },
+          { name: "Shampoo", unitPricePiastres: 5_000, quantity: 1 },
+        ],
+        note: "Thanks",
+      },
+    });
+    expect(created.replayed).toBe(true);
+    expect(created.invoice.totalPiastres).toBe(35_000);
+
+    await createExtraInvoice({
+      appointmentId: "appt1",
+      requestId: "req-2",
+      payload: { lines: [{ serviceId: "s1", quantity: 1 }] },
+    });
+    expect(lastCall().payload).not.toHaveProperty("note");
+
+    mocks.callableFn.mockResolvedValue({ data: { ok: true, invoice: { ...RAW_INVOICE, status: "void" } } });
+    const voided = await voidExtraInvoice("appt1", "inv1");
+    expect(lastCall()).toEqual({
+      name: "vendor_appointments-voidExtraInvoice",
+      payload: { appointmentId: "appt1", invoiceId: "inv1" },
+    });
+    expect(voided.status).toBe("void");
+  });
+
+  it("generates distinct request ids within the server's 8 to 64 characters", () => {
+    const a = newCallableRequestId();
+    const b = newCallableRequestId();
+    expect(a).not.toBe(b);
+    expect(a.length).toBeGreaterThanOrEqual(8);
+    expect(a.length).toBeLessThanOrEqual(64);
+  });
+
+  it("maps flag, window and limit errors to friendly copy in both languages", () => {
+    const en = getStrings("en");
+    const ar = getStrings("ar");
+    const err = (reason: string) => ({ code: "functions/failed-precondition", details: { reason } });
+    const startMs = Date.UTC(2026, 10, 14, 7, 30);
+    const opensAt = Date.UTC(2026, 10, 14, 9, 30);
+    expect(
+      appointmentErrorMessage(err("too_early"), en, { action: "flagNoShow", startMs, locale: "en" }),
+    ).toBe(en.appointments.noShow.tooEarly.replace("{time}", formatInstant(opensAt, "en")));
+    expect(
+      appointmentErrorMessage(err("too_early"), ar, { action: "flagNoShow", startMs, locale: "ar" }),
+    ).toBe(ar.appointments.noShow.tooEarly.replace("{time}", formatInstant(opensAt, "ar")));
+    expect(appointmentErrorMessage(err("too_early"), en)).toBe(en.errors.appointments.tooEarly);
+    expect(appointmentErrorMessage(err("window_closed"), ar)).toBe(ar.errors.appointments.windowClosed);
+    expect(appointmentErrorMessage(err("invoice_limit"), en)).toBe(en.errors.appointments.invoiceLimit);
   });
 });

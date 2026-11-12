@@ -91,3 +91,60 @@ describe("resolveNotificationCopy review_new", () => {
     expect(copyAr.body).not.toContain("{");
   });
 });
+
+describe("resolveNotificationCopy no-show types", () => {
+  it.each([
+    ["appointment_no_show_late", "appointmentNoShowLate"],
+    ["appointment_no_show_review", "appointmentNoShowReview"],
+  ] as const)("renders %s with the appointment number in both languages", (type, key) => {
+    const copyEn = resolveNotificationCopy(appointment(type), en, "en");
+    expect(copyEn.title).toBe(en.notifications.types[key].title);
+    expect(copyEn.body).toContain("#ABCD1234");
+    expect(copyEn.body).not.toContain("{");
+    const copyAr = resolveNotificationCopy(appointment(type), ar, "ar");
+    expect(copyAr.title).toBe(ar.notifications.types[key].title);
+    expect(copyAr.body).toContain("#ABCD1234");
+    expect(copyAr.body).not.toContain("{");
+  });
+
+  it("uses the exact late arrival and review wording", () => {
+    expect(resolveNotificationCopy(appointment("appointment_no_show_late"), en, "en").body).toBe(
+      "Please mark appointment #ABCD1234 as completed or no-show.",
+    );
+    expect(resolveNotificationCopy(appointment("appointment_no_show_review"), ar, "ar").body).toBe(
+      "اعترض العميل على تسجيل عدم الحضور للموعد #ABCD1234. فريقنا يراجعه.",
+    );
+  });
+
+  it("fills the resolved outcome from its key", () => {
+    const resolved = (outcome: string) => ({
+      ...appointment("appointment_no_show_resolved"),
+      params: { appointmentNumber: "#ABCD1234", date: "2026-11-14", time: "09:30", outcome },
+    });
+    expect(resolveNotificationCopy(resolved("confirmed"), en, "en")).toEqual({
+      title: "No-show update",
+      body: "The no-show for #ABCD1234 was confirmed.",
+    });
+    expect(resolveNotificationCopy(resolved("overturned"), en, "en").body).toBe(
+      "The no-show for #ABCD1234 was removed.",
+    );
+    expect(resolveNotificationCopy(resolved("confirmed"), ar, "ar")).toEqual({
+      title: "تحديث عدم الحضور",
+      body: "تم تأكيد عدم الحضور للموعد #ABCD1234.",
+    });
+    expect(resolveNotificationCopy(resolved("overturned"), ar, "ar").body).toBe(
+      "تم إلغاء عدم الحضور للموعد #ABCD1234.",
+    );
+  });
+
+  it("falls back to the generic body for an unknown outcome", () => {
+    const odd = {
+      ...appointment("appointment_no_show_resolved"),
+      params: { appointmentNumber: "#ABCD1234", outcome: "raw_code" },
+    };
+    const copy = resolveNotificationCopy(odd, en, "en");
+    expect(copy.title).toBe(en.notifications.types.appointmentNoShowResolved.title);
+    expect(copy.body).toBe(en.notifications.fallbackBody);
+    expect(copy.body).not.toContain("raw_code");
+  });
+});
