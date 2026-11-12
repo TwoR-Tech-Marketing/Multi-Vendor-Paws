@@ -273,6 +273,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Vendor coupons. Closed to every client; the portal, vendor app and
+    // admin panel use the vendor_coupons Cloud Functions (Admin SDK).
+    match /vendorCoupons/{couponId} {
+      allow read, write: if false;
+      match /{sub=**} { allow read, write: if false; }
+    }
+
     // -----------------------------------------------------------------
     // Admin governance + audit
     // -----------------------------------------------------------------

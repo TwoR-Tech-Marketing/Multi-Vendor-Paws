@@ -21,5 +21,7 @@ export const Routes = {
     notifications: "/notifications",
     branches: "/branches",
     branchDetail: (branchId: string) => `/branches/${encodeURIComponent(branchId)}`,
+    coupons: "/coupons",
+    couponDetail: (couponId: string) => `/coupons/${encodeURIComponent(couponId)}`,
   },
 } as const;

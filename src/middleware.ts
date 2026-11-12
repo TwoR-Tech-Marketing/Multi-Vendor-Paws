@@ -13,6 +13,7 @@ const PORTAL_PATHS = [
   Routes.vendor.settings,
   Routes.vendor.notifications,
   Routes.vendor.branches,
+  Routes.vendor.coupons,
 ] as const;
 
 const AUTH_PATHS = [
@@ -60,6 +61,7 @@ export const config = {
     "/settings/:path*",
     "/notifications/:path*",
     "/branches/:path*",
+    "/coupons/:path*",
     "/login",
     "/register",
     "/forgot-password",

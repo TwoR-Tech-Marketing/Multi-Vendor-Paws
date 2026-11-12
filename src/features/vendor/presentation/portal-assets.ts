@@ -10,4 +10,5 @@ export const portalNavAssets = {
   navBranches: "/portal-nav/nav-branches.svg",
   navAppointments: "/portal-nav/nav-appointments.svg",
   navTelehealth: "/portal-nav/nav-telehealth.svg",
+  navCoupons: "/portal-nav/nav-coupons.svg",
 } as const;

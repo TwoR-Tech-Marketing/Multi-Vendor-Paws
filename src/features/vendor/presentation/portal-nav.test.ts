@@ -18,12 +18,24 @@ const STORE_SIDEBAR_BEFORE_S17 = [
   { id: "settings", href: "/settings", label: "Settings", icon: "/portal-nav/nav-settings.svg", requiresActiveAccount: false },
 ].map((item) => ({ ...item, comingSoon: false }));
 
+const COUPONS_ITEM = {
+  id: "coupons",
+  href: "/coupons",
+  label: "Coupons",
+  icon: "/portal-nav/nav-coupons.svg",
+  requiresActiveAccount: true,
+  comingSoon: false,
+};
+
+/** The store sidebar keeps every earlier item, with Coupons before Settings. */
+const STORE_SIDEBAR = [...STORE_SIDEBAR_BEFORE_S17.slice(0, 4), COUPONS_ITEM, STORE_SIDEBAR_BEFORE_S17[4]];
+
 describe("getPortalSidebarNavItems", () => {
-  it("keeps today's store sidebar for store vendors and vendors without a type", () => {
-    expect(getPortalSidebarNavItems(strings, "store")).toEqual(STORE_SIDEBAR_BEFORE_S17);
-    expect(getPortalSidebarNavItems(strings)).toEqual(STORE_SIDEBAR_BEFORE_S17);
-    expect(getPortalSidebarNavItems(strings, null)).toEqual(STORE_SIDEBAR_BEFORE_S17);
-    expect(getPortalSidebarNavItems(strings, "")).toEqual(STORE_SIDEBAR_BEFORE_S17);
+  it("keeps today's store sidebar plus Coupons for store vendors and vendors without a type", () => {
+    expect(getPortalSidebarNavItems(strings, "store")).toEqual(STORE_SIDEBAR);
+    expect(getPortalSidebarNavItems(strings)).toEqual(STORE_SIDEBAR);
+    expect(getPortalSidebarNavItems(strings, null)).toEqual(STORE_SIDEBAR);
+    expect(getPortalSidebarNavItems(strings, "")).toEqual(STORE_SIDEBAR);
   });
 
   it.each(["clinic", "groomer"])(
@@ -35,8 +47,10 @@ describe("getPortalSidebarNavItems", () => {
         "branches",
         "appointments",
         "earnings",
+        "coupons",
         "settings",
       ]);
+      expect(items.find((item) => item.id === "coupons")).toEqual(COUPONS_ITEM);
       const branches = items.find((item) => item.id === "branches");
       expect(branches).toMatchObject({
         href: "/branches",
@@ -59,6 +73,13 @@ describe("getPortalSidebarNavItems", () => {
     );
   });
 
+  it("gives coupon pages their own title", () => {
+    expect(resolvePortalPageMeta("/coupons", strings).title).toBe(strings.pages.coupons.title);
+    expect(resolvePortalPageMeta("/coupons/uid1_SAVE10", strings).title).toBe(
+      strings.pages.coupons.detailTitle,
+    );
+  });
+
   it("gives the statement page its own title under earnings", () => {
     expect(resolvePortalPageMeta("/earnings/payouts", strings).title).toBe(
       strings.pages.statement.title,
@@ -77,6 +98,10 @@ describe("getPortalSidebarNavItems", () => {
       const ids = getPortalSidebarNavItems(strings, type).map((item) => item.id);
       expect(ids).not.toContain("products");
       expect(ids).not.toContain("orders");
+    }
+    for (const type of ["doctor", "hotel"]) {
+      const ids = getPortalSidebarNavItems(strings, type).map((item) => item.id);
+      expect(ids).not.toContain("coupons");
     }
     expect(getPortalSidebarNavItems(strings, "hotel").map((item) => item.id)).toEqual([
       "dashboard",
