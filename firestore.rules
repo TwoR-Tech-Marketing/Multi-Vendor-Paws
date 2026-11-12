@@ -115,7 +115,8 @@ service cloud.firestore {
     match /vendors/{vendorId}/patients/{buyerUid} { allow read: if isAdmin(); allow write: if false; }
 
     match /vendor_signup_requests/{requestId} {
-      allow create: if isSignedIn();
+      allow create: if isSignedIn()
+        && !('isTest' in request.resource.data);
       allow read: if isSignedIn() && (
         resource.data.authUid == request.auth.uid ||
         resource.data.email == request.auth.token.email ||

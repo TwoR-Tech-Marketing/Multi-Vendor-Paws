@@ -21,4 +21,13 @@ describe("test account flag rules copy", () => {
       ".hasAny(['vendorType', 'providerProfile', 'isTest'])",
     );
   });
+
+  it("refuses signup requests that carry the flag", () => {
+    const start = rules.indexOf("match /vendor_signup_requests/{requestId} {");
+    expect(start).toBeGreaterThan(0);
+    const body = rules.slice(start, start + 200);
+    expect(body).toContain(
+      "allow create: if isSignedIn()\n        && !('isTest' in request.resource.data);",
+    );
+  });
 });
