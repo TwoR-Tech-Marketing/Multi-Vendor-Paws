@@ -1,9 +1,14 @@
 import { VendorPortalLayout } from "@/features/vendor/presentation/VendorPortalLayout";
+import { FirebaseConfigGate } from "@/shared/components/config-error/FirebaseConfigGate";
 
 export default function PortalLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <VendorPortalLayout>{children}</VendorPortalLayout>;
+  return (
+    <FirebaseConfigGate>
+      <VendorPortalLayout>{children}</VendorPortalLayout>
+    </FirebaseConfigGate>
+  );
 }

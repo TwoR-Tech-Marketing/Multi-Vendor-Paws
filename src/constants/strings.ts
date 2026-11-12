@@ -13,6 +13,15 @@ export const Strings = {
     backToHome: "Back to home",
     save: "Save changes",
   },
+  configError: {
+    title: "We'll be right back",
+    description: "The vendor portal isn't available right now. Please try again in a few minutes.",
+    devTitle: "Local setup incomplete",
+    devDescription:
+      "These settings are missing. Add them to your local environment file, then restart the portal.",
+    devMissingLabel: "Missing settings",
+    devDemoHint: "To try the portal against the local emulators, run npm run dev:demo.",
+  },
   portal: {
     brandName: "Tender Paws",
     brandTagline: "Vendor Portal",
