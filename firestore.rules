@@ -280,6 +280,23 @@ service cloud.firestore {
       match /{sub=**} { allow read, write: if false; }
     }
 
+    // Telehealth. All writes are Cloud Functions only. Participants
+    // (buyer, assigned doctor) and admins read; queued sessions are not
+    // readable by doctors here (doctorId is null), the queue is callable only.
+    match /telehealthSessions/{sessionId} {
+      allow read: if isAdmin() || (isSignedIn() && (resource.data.buyerUid == request.auth.uid
+        || resource.data.doctorId == request.auth.uid));
+      allow write: if false;
+      match /messages/{messageId} {
+        allow read: if isAdmin() || (isSignedIn() && (
+          get(/databases/$(database)/documents/telehealthSessions/$(sessionId)).data.buyerUid == request.auth.uid ||
+          get(/databases/$(database)/documents/telehealthSessions/$(sessionId)).data.doctorId == request.auth.uid));
+        allow write: if false;
+      }
+    }
+    match /doctorAvailability/{doctorId} { allow read: if isOwner(doctorId) || isAdmin(); allow write: if false; }
+    match /telehealthConfig/{docId}      { allow read: if isSignedIn(); allow write: if false; }
+
     // -----------------------------------------------------------------
     // Admin governance + audit
     // -----------------------------------------------------------------

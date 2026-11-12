@@ -5,6 +5,7 @@ import {
   resolvePortalNavId,
   resolvePortalPageMeta,
 } from "@/features/vendor/presentation/portal-nav";
+import { Routes } from "@/constants/routes";
 import { getStrings } from "@/shared/i18n/get-strings";
 
 const strings = getStrings("en");
@@ -92,10 +93,34 @@ describe("getPortalSidebarNavItems", () => {
     expect(resolvePortalNavId("/earnings/deal")).toBe("earnings");
   });
 
-  it("shows a comingSoon telehealth item for doctors", () => {
+  it("links the telehealth item for doctors without an active lock", () => {
     const items = getPortalSidebarNavItems(strings, "doctor");
     expect(items.map((item) => item.id)).toEqual(["dashboard", "telehealth", "earnings", "settings"]);
-    expect(items[1]).toMatchObject({ comingSoon: true, href: null, label: "Telehealth" });
+    expect(items[1]).toMatchObject({
+      comingSoon: false,
+      href: Routes.vendor.telehealth,
+      label: "Telehealth",
+      requiresActiveAccount: false,
+    });
+    const ar = getStrings("ar");
+    expect(getPortalSidebarNavItems(ar, "doctor")[1].label).toBe(ar.nav.telehealth);
+  });
+
+  it("never shows telehealth to other types", () => {
+    for (const type of ["store", "clinic", "groomer", "hotel"]) {
+      const ids = getPortalSidebarNavItems(strings, type).map((item) => item.id);
+      expect(ids).not.toContain("telehealth");
+    }
+  });
+
+  it("resolves the telehealth inbox and chat headers", () => {
+    expect(resolvePortalNavId(Routes.vendor.telehealth)).toBe("telehealth");
+    expect(resolvePortalPageMeta(Routes.vendor.telehealth, strings).title).toBe(
+      strings.pages.telehealth.title,
+    );
+    expect(resolvePortalPageMeta(Routes.vendor.telehealthChat("s1"), strings).title).toBe(
+      strings.pages.telehealth.chatTitle,
+    );
   });
 
   it("never shows store items to providers or unknown types", () => {

@@ -14,6 +14,7 @@ const PORTAL_PATHS = [
   Routes.vendor.notifications,
   Routes.vendor.branches,
   Routes.vendor.coupons,
+  Routes.vendor.telehealth,
 ] as const;
 
 const AUTH_PATHS = [
@@ -62,6 +63,7 @@ export const config = {
     "/notifications/:path*",
     "/branches/:path*",
     "/coupons/:path*",
+    "/telehealth/:path*",
     "/login",
     "/register",
     "/forgot-password",

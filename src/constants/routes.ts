@@ -24,5 +24,7 @@ export const Routes = {
     branchDetail: (branchId: string) => `/branches/${encodeURIComponent(branchId)}`,
     coupons: "/coupons",
     couponDetail: (couponId: string) => `/coupons/${encodeURIComponent(couponId)}`,
+    telehealth: "/telehealth",
+    telehealthChat: (sessionId: string) => `/telehealth/${encodeURIComponent(sessionId)}`,
   },
 } as const;

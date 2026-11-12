@@ -445,6 +445,20 @@
     { "collectionGroup": "admin_user_chats", "queryScope": "COLLECTION", "fields": [
       { "fieldPath": "userId", "order": "ASCENDING" },
       { "fieldPath": "lastMessageTime", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "telehealthSessions", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "status", "order": "ASCENDING" },
+      { "fieldPath": "queuedAt", "order": "ASCENDING" }
+    ]},
+    { "collectionGroup": "telehealthSessions", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "doctorId", "order": "ASCENDING" },
+      { "fieldPath": "status", "order": "ASCENDING" },
+      { "fieldPath": "updatedAt", "order": "DESCENDING" }
+    ]},
+    { "collectionGroup": "telehealthSessions", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "status", "order": "ASCENDING" },
+      { "fieldPath": "refundState", "order": "ASCENDING" },
+      { "fieldPath": "refundFlaggedAt", "order": "DESCENDING" }
     ]}
   ],
   "fieldOverrides": []
