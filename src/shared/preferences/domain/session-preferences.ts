@@ -13,8 +13,9 @@ export type SessionPreferences = {
 };
 
 /**
- * Reads the preferences fields of a session resolution. Absent or unknown
- * values mean local scope, defaults filled and nothing stored yet.
+ * Reads the preferences fields of a session resolution. An absent or unknown
+ * scope means local scope with defaults filled; an account scope without
+ * `preferencesSet` (older backend) is treated as already stored.
  */
 export function mapSessionPreferences(raw: unknown): SessionPreferences {
   const data = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
@@ -22,7 +23,11 @@ export function mapSessionPreferences(raw: unknown): SessionPreferences {
   return {
     preferences: normalizeVendorPreferences(data.preferences),
     preferencesScope,
-    preferencesSet: preferencesScope === "account" && data.preferencesSet === true,
+    // An older backend without the field: apply the account value (never
+    // overwrite stored account preferences), the same fallback as the app.
+    preferencesSet:
+      preferencesScope === "account" &&
+      (typeof data.preferencesSet === "boolean" ? data.preferencesSet : true),
   };
 }
 

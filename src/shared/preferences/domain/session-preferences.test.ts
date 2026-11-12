@@ -43,4 +43,10 @@ describe("mapSessionPreferences", () => {
     });
     expect(mapSessionPreferences({ preferencesScope: "local", preferencesSet: true }).preferencesSet).toBe(false);
   });
+
+  it("treats an account scope without preferencesSet as stored, so the account value applies", () => {
+    const mapped = mapSessionPreferences({ preferencesScope: "account" });
+    expect(mapped.preferencesSet).toBe(true);
+    expect(decideSessionPreferences(mapped)).toBe("applyAccount");
+  });
 });
