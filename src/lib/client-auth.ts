@@ -84,7 +84,9 @@ async function syncWithSession(): Promise<void> {
     await setPersistence(firebaseAuth, browserSessionPersistence);
     await signInWithCustomToken(firebaseAuth, session.token);
     if (generation !== startedAt) {
-      await signOut(firebaseAuth);
+      if (firebaseAuth.currentUser?.uid === session.uid) {
+        await signOut(firebaseAuth);
+      }
       throw unauthenticated();
     }
   }
