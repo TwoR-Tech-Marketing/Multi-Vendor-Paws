@@ -107,6 +107,13 @@ describe("ServiceShareChart", () => {
     expect(html.split("inline-size:34%")).toHaveLength(4);
   });
 
+  it("colours named services as the current series and the other row as the other series", () => {
+    const html = renderToStaticMarkup(<ServiceShareChart services={DATA.services} strings={en} locale="en" />);
+    expect(html.match(/data-series="current"/g)?.length).toBeGreaterThan(0);
+    expect(html.match(/data-series="other"/g)).toHaveLength(1);
+    expect(html).toMatch(/class="[^"]*barFill[^"]*barFillOther/);
+  });
+
   it("uses Arabic names in Arabic and shows the empty state", () => {
     expect(renderToStaticMarkup(<ServiceShareChart services={DATA.services} strings={ar} locale="ar" />)).toContain(
       "استحمام",
