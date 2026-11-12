@@ -9,8 +9,9 @@ import {
 
 import { APP_CURRENCY } from "@/features/products/domain/currency";
 import {
-  computeCommissionPiastres,
-} from "@/features/financials/infrastructure/commission.admin.repository";
+  buildSaleEarningEntry,
+  saleEarningEntryId,
+} from "@/features/financials/domain/sale-earning-entry";
 import type {
   VendorEarningsEntry,
   VendorEarningsPage,
@@ -113,31 +114,11 @@ export async function getVendorEarningsPage(vendorId: string): Promise<VendorEar
   return { summary, entries };
 }
 
-export function resolveSaleEarningAmounts(vendorOrder: VendorOrder): {
-  amountPiastres: number;
-  commissionPiastres: number;
-  netPiastres: number;
-} {
-  const amountPiastres = vendorOrder.totalPiastres;
-  const storedCommission = vendorOrder.commissionPiastres ?? 0;
-  const commissionPiastres =
-    storedCommission > 0
-      ? storedCommission
-      : vendorOrder.commissionRatePercent > 0
-        ? computeCommissionPiastres(amountPiastres, vendorOrder.commissionRatePercent)
-        : 0;
-
-  const storedNet = vendorOrder.netPiastres ?? 0;
-  const netPiastres =
-    storedNet > 0 &&
-    storedNet <= amountPiastres &&
-    storedCommission > 0
-      ? storedNet
-      : amountPiastres - commissionPiastres;
-
-  return { amountPiastres, commissionPiastres, netPiastres };
-}
-
+/**
+ * Records the sale for a delivered vendor order once per vendorOrderId.
+ * Rows written by the shared functions writer count, and both writers use
+ * the entry id `sale_{vendorOrderId}`, so neither path double credits.
+ */
 export async function recordSaleEarningForDeliveredOrder(
   vendorOrder: VendorOrder,
   actorUid: string,
@@ -145,35 +126,23 @@ export async function recordSaleEarningForDeliveredOrder(
   const db = getAdminFirestore();
   const entriesRef = earningsEntriesCollection(vendorOrder.vendorId);
   const summaryRef = db.collection(SUMMARY_COLLECTION).doc(vendorOrder.vendorId);
-
-  const existing = await entriesRef
+  const entryRef = entriesRef.doc(saleEarningEntryId(vendorOrder.vendorOrderId));
+  const existingQuery = entriesRef
     .where("vendorOrderId", "==", vendorOrder.vendorOrderId)
     .where("type", "==", "sale")
-    .limit(1)
-    .get();
+    .limit(1);
 
-  if (!existing.empty) return false;
+  const entry = buildSaleEarningEntry(vendorOrder, actorUid);
 
-  const { amountPiastres, commissionPiastres, netPiastres } =
-    resolveSaleEarningAmounts(vendorOrder);
+  return db.runTransaction(async (tx) => {
+    const [existing, ownRow, summarySnap] = await Promise.all([
+      tx.get(existingQuery),
+      tx.get(entryRef),
+      tx.get(summaryRef),
+    ]);
+    if (!existing.empty || ownRow.exists) return false;
 
-  await db.runTransaction(async (tx) => {
-    const summarySnap = await tx.get(summaryRef);
-    const entryRef = entriesRef.doc();
-
-    tx.set(entryRef, {
-      vendorId: vendorOrder.vendorId,
-      type: "sale",
-      amountPiastres,
-      commissionPiastres,
-      netPiastres,
-      vendorOrderId: vendorOrder.vendorOrderId,
-      orderId: vendorOrder.orderId,
-      description: `Order ${vendorOrder.orderId.slice(0, 8).toUpperCase()}`,
-      currency: APP_CURRENCY,
-      createdAt: FieldValue.serverTimestamp(),
-      createdBy: actorUid,
-    });
+    tx.create(entryRef, { ...entry, createdAt: FieldValue.serverTimestamp() });
 
     const current = summarySnap.exists
       ? (summarySnap.data() as EarningsSummaryDoc)
@@ -189,20 +158,19 @@ export async function recordSaleEarningForDeliveredOrder(
       summaryRef,
       {
         vendorId: vendorOrder.vendorId,
-        totalSalesPiastres: (current.totalSalesPiastres ?? 0) + amountPiastres,
+        totalSalesPiastres: (current.totalSalesPiastres ?? 0) + entry.amountPiastres,
         totalCommissionPiastres:
-          (current.totalCommissionPiastres ?? 0) + commissionPiastres,
-        netEarningsPiastres: (current.netEarningsPiastres ?? 0) + netPiastres,
+          (current.totalCommissionPiastres ?? 0) + entry.commissionPiastres,
+        netEarningsPiastres: (current.netEarningsPiastres ?? 0) + entry.netPiastres,
         pendingPayoutPiastres:
-          (current.pendingPayoutPiastres ?? 0) + netPiastres,
+          (current.pendingPayoutPiastres ?? 0) + entry.netPiastres,
         currency: APP_CURRENCY,
         updatedAt: FieldValue.serverTimestamp(),
       },
       { merge: true },
     );
+    return true;
   });
-
-  return true;
 }
 
 export async function getVendorEarningsSummary(

@@ -63,6 +63,10 @@ export type VendorOrder = {
   feeBasePiastres?: number | null;
   platformFeePiastres?: number | null;
   vendorNetPiastres?: number | null;
+  /** Fee model, coupon funding and deal type when present (sale ledger fields) */
+  feeModel?: string | null;
+  couponFunding?: string | null;
+  dealType?: string | null;
   currency: "EGP";
   placedAt: Date;
   updatedAt: Date;

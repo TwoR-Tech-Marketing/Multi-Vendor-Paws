@@ -370,6 +370,10 @@ export const arStrings: AppStrings = {
         body: "تم تسجيل دفعة بقيمة {amount} لحسابك.",
       },
     },
+    documentStatus: {
+      approved: "مقبول",
+      rejected: "مرفوض",
+    },
   },
   settings: {
     appearanceTitle: "المظهر",
@@ -862,6 +866,32 @@ export const arStrings: AppStrings = {
       adjustment: "تعديل",
       payout: "دفعة",
     },
+    title: "الأرباح",
+    summary: {
+      totalSales: "إجمالي المبيعات",
+      platformFee: "رسوم المنصة",
+      net: "صافي الأرباح",
+      pendingPayout: "مدفوعات معلقة",
+    },
+    entries: {
+      title: "النشاط الأخير",
+      empty: "لا توجد حركات من هذا النوع بعد.",
+    },
+    types: {
+      all: "الكل",
+      sale: "المبيعات",
+      refund: "المبالغ المستردة",
+      adjustment: "التعديلات",
+      payout: "المدفوعات",
+    },
+    entry: {
+      order: "الطلب {orderNumber}",
+      fee: "الرسوم",
+      net: "الصافي",
+    },
+    filterLabel: "تصفية النشاط حسب النوع",
+    loadMore: "عرض المزيد",
+    loadingMore: "جارٍ تحميل المزيد…",
   },
   dashboard: {
     openOrders: "طلبات مفتوحة",

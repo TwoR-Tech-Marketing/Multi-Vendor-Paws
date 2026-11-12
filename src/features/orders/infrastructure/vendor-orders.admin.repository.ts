@@ -57,6 +57,9 @@ type VendorOrderDoc = {
   feeBasePiastres?: number | null;
   platformFeePiastres?: number | null;
   vendorNetPiastres?: number | null;
+  feeModel?: string | null;
+  couponFunding?: string | null;
+  dealType?: string | null;
   currency: string;
   placedAt?: Timestamp;
   updatedAt?: Timestamp;
@@ -103,6 +106,9 @@ function toVendorOrder(snap: DocumentSnapshot<DocumentData>): VendorOrder {
     feeBasePiastres: data.feeBasePiastres ?? null,
     platformFeePiastres: data.platformFeePiastres ?? null,
     vendorNetPiastres: data.vendorNetPiastres ?? null,
+    feeModel: typeof data.feeModel === "string" ? data.feeModel : null,
+    couponFunding: typeof data.couponFunding === "string" ? data.couponFunding : null,
+    dealType: typeof data.dealType === "string" ? data.dealType : null,
     currency: "EGP",
     placedAt: data.placedAt?.toDate() ?? new Date(0),
     updatedAt: data.updatedAt?.toDate() ?? new Date(0),
