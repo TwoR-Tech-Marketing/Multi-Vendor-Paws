@@ -85,6 +85,16 @@ service cloud.firestore {
         allow read: if isOwner(vendorId) || isAdmin();
         allow write: if false;
       }
+      // Availability and slot locks. Owner and admin read; writes go
+      // through the vendor_availability Cloud Functions (Admin SDK).
+      match /availability/{docId} {
+        allow read: if isOwner(vendorId) || isAdmin();
+        allow write: if false;
+      }
+      match /slotLocks/{lockId} {
+        allow read: if isOwner(vendorId) || isAdmin();
+        allow write: if false;
+      }
     }
 
     match /vendor_signup_requests/{requestId} {
