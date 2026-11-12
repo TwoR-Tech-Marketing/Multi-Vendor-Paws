@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { Routes } from "@/constants/routes";
 import { DEFAULT_APPOINTMENT_FILTERS } from "@/features/appointments/domain/filters";
+import { APPOINTMENT_STATUSES } from "@/features/appointments/domain/types";
 import { formatEgp } from "@/features/products/domain/currency";
 import { makeRow } from "@/features/appointments/presentation/test-fixtures";
 import { getStrings } from "@/shared/i18n/get-strings";
@@ -110,5 +111,25 @@ describe("AppointmentsList", () => {
     expect(renderList({ strings: ar, locale: "ar" })).toContain("كشف");
     expect(renderList({ items: [] })).toContain(en.appointments.empty);
     expect(renderList({ hasMore: true })).toContain(en.appointments.loadMore);
+  });
+});
+
+describe("AppointmentsList statuses", () => {
+  it.each([
+    ["en", en],
+    ["ar", ar],
+  ] as const)("renders one row per status with its %s label", (locale, strings) => {
+    expect(APPOINTMENT_STATUSES).toHaveLength(8);
+    const items = APPOINTMENT_STATUSES.map((status) =>
+      makeRow({ appointmentId: `appt_${status}`, appointmentNumber: `#${status}`, status }),
+    );
+    const html = renderList({ items, strings, locale });
+    expect(html.match(/<li>/g)).toHaveLength(8);
+    for (const status of APPOINTMENT_STATUSES) {
+      const label = strings.appointments.status[status];
+      expect(label).toBeTruthy();
+      expect(html).toContain(`>${label}</span>`);
+      expect(html).toContain(`href="${Routes.vendor.appointmentDetail(`appt_${status}`)}"`);
+    }
   });
 });

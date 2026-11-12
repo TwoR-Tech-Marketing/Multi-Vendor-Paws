@@ -130,15 +130,11 @@ function mapNoShow(value: unknown): AppointmentNoShow | null {
   };
 }
 
-/** Reads the nested response field first, then the stored snapshot field. */
-function pick(raw: Raw, nested: string, snapshot: string, field: string): unknown {
-  return asObject(raw[nested])[field] ?? asObject(raw[snapshot])[field];
-}
-
 export function mapAppointment(value: unknown): Appointment {
   const raw = asObject(value);
   const row = mapAppointmentRow(raw);
-  const services = asArray(raw.services ?? raw.serviceSnapshots).map(mapService);
+  const services = asArray(raw.services).map(mapService);
+  const branch = asObject(raw.branch);
   const home = raw.homeAddress ? asObject(raw.homeAddress) : null;
   const counts = asObject(raw.rescheduleCount);
   return {
@@ -148,22 +144,20 @@ export function mapAppointment(value: unknown): Appointment {
       ? row.serviceNames
       : services.map((s) => ({ en: s.nameEn, ar: s.nameAr })),
     vendorType: asString(raw.vendorType),
-    serviceIds: (raw.serviceIds ? asArray(raw.serviceIds) : services.map((s) => s.serviceId)).filter(
-      (id): id is string => typeof id === "string" && id !== "",
-    ),
+    serviceIds: services.map((s) => s.serviceId).filter((id) => id !== ""),
     services,
     durationMinutes: asInt(raw.durationMinutes),
-    buyerPhone: asString(raw.buyerPhone ?? asObject(raw.buyerSnapshot).phone),
-    petName: asNullableString(pick(raw, "pet", "petSnapshot", "name")),
+    buyerPhone: asString(raw.buyerPhone),
+    petName: asNullableString(asObject(raw.pet).name),
     homeAddress: home
       ? { text: asString(home.text), lat: asNumberOrNull(home.lat), lng: asNumberOrNull(home.lng) }
       : null,
-    branchAddress: asString(pick(raw, "branch", "branchSnapshot", "address")),
-    branchPhone: asString(pick(raw, "branch", "branchSnapshot", "phone")),
+    branchAddress: asString(branch.address),
+    branchPhone: asString(branch.phone),
     itemsPiastres: asInt(raw.itemsPiastres),
     homeVisitFeePiastres: asInt(raw.homeVisitFeePiastres),
     discountPiastres: asInt(raw.discountPiastres),
-    paymentMethod: asNullableString(raw.paymentMethod ?? asObject(raw.payment).method),
+    paymentMethod: asNullableString(raw.paymentMethod),
     rescheduleCount: {
       buyer: Math.max(0, asInt(counts.buyer)),
       provider: Math.max(0, asInt(counts.provider)),

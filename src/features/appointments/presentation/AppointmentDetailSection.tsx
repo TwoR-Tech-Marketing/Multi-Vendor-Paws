@@ -66,6 +66,7 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
       setSuccess(done);
       await load();
     } catch (error) {
+      if (dialog === "complete") setDialog(null);
       setActionError(appointmentErrorMessage(error, strings));
       await load();
     } finally {
@@ -126,16 +127,7 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
         cancelLabel={strings.common.cancel}
         isConfirming={isSubmitting}
         onCancel={() => setDialog(null)}
-        onConfirm={() =>
-          run(async () => {
-            try {
-              await completeVendorAppointment(appointmentId);
-            } catch (error) {
-              setDialog(null);
-              throw error;
-            }
-          }, "completed")
-        }
+        onConfirm={() => run(() => completeVendorAppointment(appointmentId), "completed")}
       />
       {dialog === "cancel" ? (
         <CancelAppointmentDialog

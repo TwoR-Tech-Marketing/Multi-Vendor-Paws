@@ -1,6 +1,6 @@
 import type { Appointment, AppointmentRow } from "@/features/appointments/domain/types";
 
-/** Raw callable shapes, as the server returns them. */
+/** Raw callable response shapes. */
 export const RAW_ROW = {
   appointmentId: "appt1",
   appointmentNumber: "#APPT1AAA",
@@ -24,19 +24,18 @@ export const RAW_ROW = {
 export const RAW_APPOINTMENT = {
   ...RAW_ROW,
   vendorType: "clinic",
-  serviceIds: ["s1"],
-  serviceSnapshots: [
+  services: [
     { serviceId: "s1", nameEn: "Checkup", nameAr: "كشف", pricePiastres: 20_000, durationMinutes: 30 },
   ],
   durationMinutes: 30,
-  buyerSnapshot: { name: "Mona Ali", firstName: "Mona", phone: "01000000000" },
-  petSnapshot: { name: "Max" },
+  buyerPhone: "01000000000",
+  pet: { petId: "p1", name: "Max" },
   homeAddress: null,
-  branchSnapshot: { name: "Zamalek", address: "26 July St", phone: "0222222222" },
+  branch: { name: "Zamalek", address: "26 July St", phone: "0222222222" },
   itemsPiastres: 20_000,
   homeVisitFeePiastres: 5_000,
   discountPiastres: 0,
-  payment: { method: "dev_unpaid" },
+  paymentMethod: "dev_unpaid",
   rescheduleCount: { buyer: 1, provider: 0 },
   cancelReason: null,
   noShow: null,

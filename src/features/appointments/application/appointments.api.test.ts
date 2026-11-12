@@ -95,6 +95,22 @@ describe("appointment mapping", () => {
     expect(a.serviceIds).toEqual(["s9"]);
   });
 
+  it("reads only callable response fields, never stored document fields", () => {
+    const a = mapAppointment({
+      ...RAW_ROW,
+      buyerSnapshot: { phone: "0100" },
+      petSnapshot: { name: "Rex" },
+      branchSnapshot: { address: "Stored St" },
+      serviceSnapshots: [{ serviceId: "s1", pricePiastres: 100 }],
+      payment: { method: "fawaterak" },
+    });
+    expect(a.buyerPhone).toBe("");
+    expect(a.petName).toBeNull();
+    expect(a.branchAddress).toBe("");
+    expect(a.services).toEqual([]);
+    expect(a.paymentMethod).toBeNull();
+  });
+
   it("reads the no-show state from the sub-object when the row field is missing", () => {
     const a = mapAppointment({
       ...RAW_APPOINTMENT,
