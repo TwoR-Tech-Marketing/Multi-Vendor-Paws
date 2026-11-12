@@ -87,6 +87,11 @@ describe("getPortalSidebarNavItems", () => {
     expect(resolvePortalNavId("/earnings/payouts")).toBe("earnings");
   });
 
+  it("gives the deal page its own title under earnings", () => {
+    expect(resolvePortalPageMeta("/earnings/deal", strings).title).toBe(strings.pages.deal.title);
+    expect(resolvePortalNavId("/earnings/deal")).toBe("earnings");
+  });
+
   it("shows a comingSoon telehealth item for doctors", () => {
     const items = getPortalSidebarNavItems(strings, "doctor");
     expect(items.map((item) => item.id)).toEqual(["dashboard", "telehealth", "earnings", "settings"]);

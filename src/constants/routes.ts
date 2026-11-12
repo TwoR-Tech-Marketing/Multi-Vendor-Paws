@@ -16,6 +16,7 @@ export const Routes = {
     orderDetail: (orderId: string) => `/orders/${orderId}`,
     earnings: "/earnings",
     payouts: "/earnings/payouts",
+    deal: "/earnings/deal",
     settings: "/settings",
     coverage: "/settings/coverage",
     notifications: "/notifications",
