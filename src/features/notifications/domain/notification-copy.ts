@@ -27,6 +27,18 @@ const TYPE_TO_KEY: Record<string, TypeKey> = {
   appointment_cancelled_by_admin: "appointmentCancelledByAdmin",
 };
 
+/** Refund notices carry an order number for orders and none for appointments. */
+function refundTypeKey(params: VendorNotification["params"]): TypeKey {
+  const orderNumber = String(params.orderNumber ?? "").trim();
+  return orderNumber ? "refundRecordedOrder"
+    : "refundRecordedAppointment";
+}
+
+function typeKeyFor(notification: VendorNotification): TypeKey | undefined {
+  if (notification.type === "refund_recorded") return refundTypeKey(notification.params);
+  return TYPE_TO_KEY[notification.type];
+}
+
 function fillTemplate(template: string, params: Record<string, string>): string {
   return template
     .replace(/\{(\w+)\}/g, (_, key: string) => params[key] ?? "")
@@ -76,7 +88,7 @@ export function resolveNotificationCopy(
   locale: AppLocale = "en",
 ): NotificationCopy {
   const t = strings.notifications;
-  const key = TYPE_TO_KEY[notification.type];
+  const key = typeKeyFor(notification);
   if (key) {
     const params = paramsForDisplay(notification, strings, locale);
     const template = t.types[key].body;

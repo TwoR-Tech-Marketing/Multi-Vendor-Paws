@@ -451,6 +451,14 @@ export const arStrings: AppStrings = {
         title: "تم إلغاء الموعد",
         body: "ألغى فريق دعم تندر باوز الموعد {appointmentNumber}.",
       },
+      refundRecordedOrder: {
+        title: "تم تسجيل الاسترداد",
+        body: "تم تسجيل استرداد للطلب {orderNumber}.",
+      },
+      refundRecordedAppointment: {
+        title: "تم تسجيل الاسترداد",
+        body: "تم تسجيل استرداد للموعد {appointmentNumber}.",
+      },
     },
     noShowOutcome: {
       confirmed: "تأكيد",
