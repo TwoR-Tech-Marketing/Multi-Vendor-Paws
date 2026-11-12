@@ -10,6 +10,8 @@ import { describe, expect, it } from "vitest";
 import {
   buildDemoChildEnv,
   checkDemoEnv,
+  checkLocalEnv,
+  emulatorPortsFromEnv,
   CREDENTIAL_KEYS,
   parseEnvText,
   REQUIRED_EMULATOR_HOST_KEYS,
@@ -136,5 +138,28 @@ describe("Next.js env loading with a developer .env.local", () => {
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
+  });
+});
+
+describe("dev:local helpers", () => {
+  it("accepts the template with a fake key in the AIza format", () => {
+    const env = demoEnv({ NEXT_PUBLIC_FIREBASE_API_KEY: "AIzaSyD-demo-tenderpaws-local-only-0000" });
+    expect(checkLocalEnv(env)).toEqual([]);
+  });
+
+  it("refuses a production value in .env.local and a CLI token, by name only", () => {
+    const problems = checkLocalEnv(
+      demoEnv({ NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: `${PROD}.firebaseapp.com`, FIREBASE_TOKEN: "tok" }),
+    );
+    expect(problems).toContain("NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN points at the production project");
+    expect(problems).toContain("FIREBASE_TOKEN must be empty for a local run");
+    expect(problems.join(" ")).not.toContain(PROD);
+  });
+
+  it("reads the emulator ports from the template", () => {
+    expect(emulatorPortsFromEnv(template)).toEqual([8080, 9099, 9199, 5001]);
+    expect(() => emulatorPortsFromEnv({ ...template, FIRESTORE_EMULATOR_HOST: "bad" })).toThrow(
+      "FIRESTORE_EMULATOR_HOST",
+    );
   });
 });

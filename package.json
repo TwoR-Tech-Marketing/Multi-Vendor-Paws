@@ -10,7 +10,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "dev:demo": "node scripts/dev-demo.mjs"
+    "dev:demo": "node scripts/dev-demo.mjs",
+    "dev:local": "node scripts/dev-local.mjs"
   },
   "dependencies": {
     "firebase": "^12.13.0",
