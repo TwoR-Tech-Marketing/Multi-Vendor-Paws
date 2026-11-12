@@ -6,6 +6,16 @@ import { useMemo, useState } from "react";
 
 import type { VendorSignupPayload } from "@/features/auth/domain/types";
 import { mapAuthError } from "@/features/auth/domain/errors";
+import { signupBusinessSchema } from "@/features/auth/domain/signup-schema";
+import {
+  EMPTY_PROVIDER_TEXT_FIELDS,
+  buildProviderProfilePayload,
+  type ProviderTextFields,
+} from "@/features/vendor/domain/provider-profile-schema";
+import type { VendorType } from "@/features/vendor/domain/vendor-type-config";
+import { ProviderFieldsInputs } from "@/features/vendor/presentation/ProviderFieldsInputs";
+import { VendorTypePicker } from "@/features/vendor/presentation/VendorTypePicker";
+import { useStrings } from "@/shared/preferences/PreferencesContext";
 import { Routes } from "@/constants/routes";
 import {
   submitVendorSignupRequest,
@@ -14,7 +24,7 @@ import {
 import { PawlioLogo } from "@/shared/components/PawlioLogo";
 import styles from "./auth.module.css";
 
-type FormState = Omit<VendorSignupPayload, "logoUrl"> & {
+type FormState = Omit<VendorSignupPayload, "logoUrl" | "vendorType" | "providerProfile"> & {
   confirmPassword: string;
 };
 
@@ -33,7 +43,13 @@ const initialForm: FormState = {
 
 export function RegisterClient() {
   const router = useRouter();
+  const strings = useStrings();
   const [step, setStep] = useState(1);
+  const [vendorType, setVendorType] = useState<VendorType>("store");
+  const [providerFields, setProviderFields] = useState<ProviderTextFields>(
+    EMPTY_PROVIDER_TEXT_FIELDS,
+  );
+  const typeStrings = strings.vendorTypes[vendorType];
   const [form, setForm] = useState<FormState>(initialForm);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -41,19 +57,34 @@ export function RegisterClient() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const reviewRows = useMemo(
-    () => [
+  const businessInput = useMemo(
+    () => ({
+      vendorType,
+      storeName: form.storeName,
+      storeDescription: form.storeDescription,
+      providerProfile: buildProviderProfilePayload(vendorType, providerFields),
+    }),
+    [vendorType, form.storeName, form.storeDescription, providerFields],
+  );
+
+  const reviewRows = useMemo(() => {
+    const providerLabels = strings.vendorTypes.providerFields;
+    const providerRows = Object.entries(businessInput.providerProfile ?? {})
+      .filter(([, value]) => value.trim())
+      .map(([key, value]) => [providerLabels[key as keyof ProviderTextFields], value]);
+    return [
+      [strings.vendorTypes.title, typeStrings.label],
       ["Owner", form.ownerName],
       ["Sign-in email", form.email],
       ["Phone", form.phone],
-      ["Store", form.storeName],
-      ["Description", form.storeDescription],
+      [typeStrings.fields.storeName, form.storeName],
+      [typeStrings.fields.storeDescription, form.storeDescription],
+      ...providerRows,
       ["Contact phone", form.contactPhone],
       ["Store contact email", form.contactEmail],
       ["Address", form.contactAddress],
-    ],
-    [form],
-  );
+    ];
+  }, [form, businessInput, strings, typeStrings]);
 
   function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -66,10 +97,10 @@ export function RegisterClient() {
   }
 
   function validateStep2(): string | null {
-    if (!form.storeName.trim() || !form.storeDescription.trim()) {
-      return "Store name and description are required.";
-    }
-    return null;
+    const result = signupBusinessSchema.safeParse(businessInput);
+    if (result.success) return null;
+    const key = result.error.issues[0]?.message as keyof typeof strings.vendorTypes.errors;
+    return strings.vendorTypes.errors[key] ?? strings.errors.generic;
   }
 
   function onLogoChange(file: File | null) {
@@ -97,6 +128,7 @@ export function RegisterClient() {
         logoUrl = await uploadVendorLogo(logoFile);
       }
 
+      const business = signupBusinessSchema.parse(businessInput);
       await submitVendorSignupRequest({
         ownerName: form.ownerName.trim(),
         email: form.email.trim(),
@@ -108,6 +140,8 @@ export function RegisterClient() {
         contactEmail: form.contactEmail.trim(),
         contactAddress: form.contactAddress.trim(),
         logoUrl,
+        vendorType: business.vendorType,
+        ...(business.providerProfile ? { providerProfile: business.providerProfile } : {}),
       });
 
       router.replace(`${Routes.auth.login}?submitted=1`);
@@ -243,9 +277,10 @@ export function RegisterClient() {
           {step === 2 ? (
             <>
               <h3 className={styles.panelTitle}>Store profile</h3>
+              <VendorTypePicker strings={strings} value={vendorType} onChange={setVendorType} />
               <div className={styles.formGrid}>
                 <label className={`${styles.field} ${styles.span2}`}>
-                  Store name *
+                  {typeStrings.fields.storeName} *
                   <input
                     required
                     value={form.storeName}
@@ -254,7 +289,7 @@ export function RegisterClient() {
                   />
                 </label>
                 <label className={`${styles.field} ${styles.span2}`}>
-                  Store description *
+                  {typeStrings.fields.storeDescription} *
                   <textarea
                     rows={3}
                     required
@@ -263,8 +298,15 @@ export function RegisterClient() {
                     placeholder="What products do you sell?"
                   />
                 </label>
+                <ProviderFieldsInputs
+                  strings={strings}
+                  vendorType={vendorType}
+                  value={providerFields}
+                  onChange={setProviderFields}
+                  fieldClassName={`${styles.field} ${styles.span2}`}
+                />
                 <div className={styles.field}>
-                  Store logo
+                  {typeStrings.fields.logoUrl}
                   <label className={styles.uploadBox}>
                     <input
                       type="file"

@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { providerProfileSchema } from "@/features/vendor/domain/provider-profile-schema";
+import { VENDOR_TYPES } from "@/features/vendor/domain/vendor-type-config";
 import { apiForbidden, apiGenericError, apiUnauthorized } from "@/lib/api/response";
 import { getVendorApiContext } from "@/lib/auth/require-vendor-api";
 import { getAdminAuth } from "@/lib/firebase-admin";
 
 const bodySchema = z.object({
+  vendorType: z.enum(VENDOR_TYPES).optional(),
+  providerProfile: z.record(z.string(), z.unknown()).optional(),
   ownerName: z.string().min(1),
   storeName: z.string().min(1),
   storeDescription: z.string().min(1),
@@ -68,6 +72,13 @@ export async function POST(request: Request) {
 
   try {
     const payload = bodySchema.parse(await request.json());
+    if (payload.providerProfile) {
+      // Same per-type rules as signup; the callable re-validates.
+      payload.providerProfile = providerProfileSchema(
+        payload.vendorType ?? context.session.profile.vendorType,
+        "signup",
+      ).parse(payload.providerProfile);
+    }
     const idToken = await idTokenForUid(context.uid);
 
     const response = await fetch(reapplyCallableUrl(), {

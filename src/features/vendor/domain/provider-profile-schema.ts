@@ -60,7 +60,7 @@ const fieldSchemas = {
 export function providerProfileSchema(
   vendorType: string | null | undefined,
   phase: "signup" | "change",
-) {
+): z.ZodType<ProviderProfile> {
   const fields = getProviderConfig(vendorType).providerFields.filter(
     (field) => phase === "change" || field !== "photoUrls",
   );
@@ -69,5 +69,54 @@ export function providerProfileSchema(
     const base = fieldSchemas[field];
     shape[field] = field === "specialty" && phase === "signup" ? base : base.optional();
   }
-  return z.strictObject(shape, "fieldNotAllowed");
+  // ponytail: the shape is built per type at runtime, so its output is typed by hand.
+  return z.strictObject(shape, "fieldNotAllowed") as unknown as z.ZodType<ProviderProfile>;
+}
+
+/** Text provider fields a form can edit. photoUrls has its own upload flow. */
+export type ProviderTextFields = {
+  specialty: string;
+  education: string;
+  experience: string;
+};
+
+export const EMPTY_PROVIDER_TEXT_FIELDS: ProviderTextFields = {
+  specialty: "",
+  education: "",
+  experience: "",
+};
+
+/**
+ * Builds the providerProfile payload for a type from form text: only the
+ * type's text fields, undefined when nothing is left. Empty optional fields are
+ * dropped unless `includeEmpty` (a change request clears them with null).
+ * Doctor specialty is always kept so the schema can report it as required.
+ */
+export function buildProviderProfilePayload(
+  vendorType: string,
+  value: ProviderTextFields,
+  includeEmpty = false,
+): { specialty?: string; education?: string; experience?: string } | undefined {
+  const fields = getProviderConfig(vendorType).providerFields;
+  const out: { specialty?: string; education?: string; experience?: string } = {};
+  for (const key of ["specialty", "education", "experience"] as const) {
+    if (!fields.includes(key)) continue;
+    if (includeEmpty || key === "specialty" || value[key].trim()) out[key] = value[key];
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
+/**
+ * Reapply (rejected applicant): send provider fields only when the type changed
+ * or the applicant typed something; omitted keeps the stored map (contract 4.2).
+ */
+export function buildReapplyProviderProfile(
+  storedType: string,
+  nextType: string,
+  value: ProviderTextFields,
+): ReturnType<typeof buildProviderProfilePayload> {
+  const draft = buildProviderProfilePayload(nextType, value);
+  if (!draft) return undefined;
+  const typed = Object.values(draft).some((text) => text.trim());
+  return storedType !== nextType || typed ? draft : undefined;
 }

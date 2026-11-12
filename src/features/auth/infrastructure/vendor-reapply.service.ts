@@ -1,3 +1,4 @@
+import type { ProviderProfile } from "@/features/vendor/domain/provider-profile-schema";
 import { vendorApiPost } from "@/lib/auth-client";
 
 export type VendorReapplyPayload = {
@@ -9,6 +10,10 @@ export type VendorReapplyPayload = {
   contactEmail: string;
   contactAddress: string;
   logoUrl?: string | null;
+  /** S1.7: omitted keeps the stored type. */
+  vendorType?: string;
+  /** S1.7: omitted keeps the stored map unless the type changes. */
+  providerProfile?: ProviderProfile;
 };
 
 type ReapplyResponse = {
@@ -17,6 +22,7 @@ type ReapplyResponse = {
     requestId: string;
     status: "pending";
     reapplyCount: number;
+    vendorType?: string;
   };
 };
 

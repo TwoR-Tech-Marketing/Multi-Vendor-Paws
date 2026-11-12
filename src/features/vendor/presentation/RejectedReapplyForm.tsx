@@ -6,6 +6,18 @@ import { useRouter } from "next/navigation";
 import { Routes } from "@/constants/routes";
 import type { VendorProfile } from "@/features/auth/domain/types";
 import { reapplyVendorSignupRequest } from "@/features/auth/infrastructure/vendor-reapply.service";
+import {
+  EMPTY_PROVIDER_TEXT_FIELDS,
+  buildReapplyProviderProfile,
+  providerProfileSchema,
+  type ProviderTextFields,
+} from "@/features/vendor/domain/provider-profile-schema";
+import {
+  isKnownVendorType,
+  type VendorType,
+} from "@/features/vendor/domain/vendor-type-config";
+import { ProviderFieldsInputs } from "@/features/vendor/presentation/ProviderFieldsInputs";
+import { VendorTypePicker } from "@/features/vendor/presentation/VendorTypePicker";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./profile.module.css";
@@ -17,6 +29,14 @@ type RejectedReapplyFormProps = {
 export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
   const strings = useStrings();
   const router = useRouter();
+  const storedType = profile.vendorType;
+  const [vendorType, setVendorType] = useState<VendorType>(
+    isKnownVendorType(storedType) ? storedType : "store",
+  );
+  const [providerFields, setProviderFields] = useState<ProviderTextFields>(
+    EMPTY_PROVIDER_TEXT_FIELDS,
+  );
+  const typeStrings = strings.vendorTypes[vendorType];
   const [ownerName, setOwnerName] = useState(profile.ownerName);
   const [storeName, setStoreName] = useState(profile.storeName);
   const [storeDescription, setStoreDescription] = useState("");
@@ -32,10 +52,23 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
     event.preventDefault();
     setError(null);
     setSuccess(null);
+
+    const providerProfile = buildReapplyProviderProfile(storedType, vendorType, providerFields);
+    if (providerProfile) {
+      const checked = providerProfileSchema(vendorType, "signup").safeParse(providerProfile);
+      if (!checked.success) {
+        const key = checked.error.issues[0]?.message as keyof typeof strings.vendorTypes.errors;
+        setError(strings.vendorTypes.errors[key] ?? strings.accountStatus.reapplyError);
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
       await reapplyVendorSignupRequest({
+        vendorType,
+        ...(providerProfile ? { providerProfile } : {}),
         ownerName: ownerName.trim(),
         storeName: storeName.trim(),
         storeDescription: storeDescription.trim(),
@@ -69,6 +102,7 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
         </div>
       ) : null}
       <form className={styles.formStack} onSubmit={onSubmit}>
+        <VendorTypePicker strings={strings} value={vendorType} onChange={setVendorType} />
         <label>
           {strings.profile.fields.ownerName}
           <input
@@ -78,7 +112,7 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
           />
         </label>
         <label>
-          {strings.profile.fields.storeName}
+          {typeStrings.fields.storeName}
           <input
             required
             value={storeName}
@@ -86,13 +120,19 @@ export function RejectedReapplyForm({ profile }: RejectedReapplyFormProps) {
           />
         </label>
         <label>
-          {strings.profile.fields.storeDescription}
+          {typeStrings.fields.storeDescription}
           <textarea
             required
             value={storeDescription}
             onChange={(event) => setStoreDescription(event.target.value)}
           />
         </label>
+        <ProviderFieldsInputs
+          strings={strings}
+          vendorType={vendorType}
+          value={providerFields}
+          onChange={setProviderFields}
+        />
         <label>
           {strings.profile.fields.phone}
           <input
