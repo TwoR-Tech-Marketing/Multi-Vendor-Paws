@@ -14,22 +14,37 @@ Until the shared rules are in place, the emulator loads Firestore and Storage ru
 
 ## Vendor web portal (this repo)
 
-For local Next.js work against the suite:
-
-1. Keep production Firebase env values out of the process.
-2. Set:
+With the suite running and seeded, start the portal from this repo:
 
 ```bash
-export NEXT_PUBLIC_FIREBASE_PROJECT_ID=demo-tenderpaws
-export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
-export FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099
-export FIREBASE_STORAGE_EMULATOR_HOST=127.0.0.1:9199
-export NEXT_PUBLIC_FUNCTIONS_EMULATOR_HOST=127.0.0.1:5001
+npm run dev:demo
 ```
 
-3. When a portal ticket wires the client Firebase SDK or Admin SDK for emulator hosts, use those variables. Existing BFF routes that use the Admin SDK pick up `FIRESTORE_EMULATOR_HOST` and `FIREBASE_AUTH_EMULATOR_HOST` automatically when set.
+`scripts/dev-demo.mjs` loads `emulator.env.example`, blanks the service account variables (`GOOGLE_APPLICATION_CREDENTIALS`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`) so no `.env*` file can supply them, works out the final environment with the same loader Next.js uses, runs a safety check and then starts `next dev` (port 3000, or `PORT`). The check refuses to start, listing variable names only, when:
+
+- any value mentions the production project,
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID` or `FIREBASE_PROJECT_ID` does not start with `demo-`, or `GCLOUD_PROJECT` / `GOOGLE_CLOUD_PROJECT` is set to a non `demo-` id,
+- an emulator host is missing,
+- a service account credential is present.
+
+Variables the template sets:
+
+| Purpose | Variables |
+| --- | --- |
+| Browser config (demo values) | `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`, `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`, `NEXT_PUBLIC_FIREBASE_APP_ID` |
+| Browser emulators | `NEXT_PUBLIC_FIREBASE_AUTH_EMULATOR_HOST` (9099), `NEXT_PUBLIC_FIRESTORE_EMULATOR_HOST` (8080), `NEXT_PUBLIC_FUNCTIONS_EMULATOR_HOST` (5001), `NEXT_PUBLIC_STORAGE_EMULATOR_HOST` (9199) |
+| Server | `FIREBASE_PROJECT_ID`, `GCLOUD_PROJECT`, `FIREBASE_STORAGE_BUCKET`, `FIRESTORE_EMULATOR_HOST`, `FIREBASE_AUTH_EMULATOR_HOST`, `FIREBASE_STORAGE_EMULATOR_HOST`, `FIREBASE_FUNCTIONS_EMULATOR_HOST` |
+| Always empty | `GOOGLE_APPLICATION_CREDENTIALS`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` |
+
+How the code uses them:
+
+- Browser SDK (`src/lib/firebase.ts`): when any `NEXT_PUBLIC_*_EMULATOR_HOST` is set, each SDK connects to its emulator once. It throws if a host is set while `NEXT_PUBLIC_FIREBASE_PROJECT_ID` does not start with `demo-`. With no host set, nothing changes.
+- Admin SDK (`src/lib/firebase-admin.ts`): when `FIRESTORE_EMULATOR_HOST` and `FIREBASE_AUTH_EMULATOR_HOST` are set and the project id starts with `demo-`, it initializes with only the project id and bucket, no credential. Without those hosts it still requires a service account.
+- Server callables use `FIREBASE_FUNCTIONS_EMULATOR_HOST` and the project id from `GCLOUD_PROJECT` or `NEXT_PUBLIC_FIREBASE_PROJECT_ID`.
 
 Callable base for browser clients: `http://127.0.0.1:5001/demo-tenderpaws/us-central1`.
+
+The Google Maps key is not part of the demo, so the coverage map shows its own missing key state.
 
 ## Vendor mobile app (`tender_paws_partner`)
 

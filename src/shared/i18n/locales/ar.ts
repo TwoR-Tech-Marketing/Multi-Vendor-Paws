@@ -15,6 +15,15 @@ export const arStrings: AppStrings = {
     backToHome: "العودة للرئيسية",
     save: "حفظ التغييرات",
   },
+  configError: {
+    title: "سنعود قريباً",
+    description: "بوابة البائعين غير متاحة حالياً. يرجى المحاولة مرة أخرى بعد بضع دقائق.",
+    devTitle: "الإعداد المحلي غير مكتمل",
+    devDescription:
+      "هذه الإعدادات مفقودة. أضفها إلى ملف البيئة المحلي ثم أعد تشغيل البوابة.",
+    devMissingLabel: "الإعدادات المفقودة",
+    devDemoHint: "لتجربة البوابة مع المحاكيات المحلية، شغّل npm run dev:demo.",
+  },
   portal: {
     brandName: "تندر باوز",
     brandTagline: "بوابة البائع",

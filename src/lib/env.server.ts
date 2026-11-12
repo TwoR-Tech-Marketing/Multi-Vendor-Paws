@@ -6,4 +6,5 @@ export {
   getFirebaseAdminSetupMessage,
   getMissingFirebaseAdminEnvKeys,
   isFirebaseAdminConfigured,
+  isFirebaseAdminEmulatorMode,
 } from "@/lib/firebase-admin.env";
