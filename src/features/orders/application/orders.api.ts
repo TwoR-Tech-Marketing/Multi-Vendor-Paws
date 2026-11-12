@@ -1,5 +1,10 @@
 import { httpsCallable } from "firebase/functions";
 
+import {
+  buildListCallableRequest,
+  normalizeCallableOrder,
+  type VendorOrderResponse,
+} from "@/features/orders/application/orders-callable.mapper";
 import type {
   VendorOrder,
   VendorOrderListFilter,
@@ -8,17 +13,6 @@ import type {
 import { vendorApiGet, vendorApiPatch } from "@/lib/auth-client";
 import { firebaseFunctions } from "@/lib/firebase";
 import { getOrdersDataSource } from "@/lib/vendor-data-source";
-
-type VendorOrderResponse = Omit<VendorOrder, "placedAt" | "updatedAt" | "statusHistory"> & {
-  placedAt: string;
-  updatedAt: string;
-  statusHistory: Array<{
-    status: VendorOrderStatus;
-    at: string;
-    by: string;
-    note: string | null;
-  }>;
-};
 
 type VendorOrderListResponse = {
   items: VendorOrderResponse[];
@@ -53,40 +47,12 @@ function buildListQuery(filter: VendorOrderListFilter): string {
   return query ? `?${query}` : "";
 }
 
-function toIso(value: unknown): string {
-  if (typeof value === "string") return value;
-  if (value && typeof value === "object" && "toDate" in value) {
-    return (value as { toDate: () => Date }).toDate().toISOString();
-  }
-  return new Date(0).toISOString();
-}
-
-function normalizeCallableOrder(raw: Record<string, unknown>): VendorOrderResponse {
-  return {
-    ...(raw as unknown as VendorOrderResponse),
-    holdState: raw.holdState === "held" ? "held" : null,
-    heldReason: (raw.heldReason as string | null) ?? null,
-    placedAt: toIso(raw.placedAt),
-    updatedAt: toIso(raw.updatedAt),
-    statusHistory: Array.isArray(raw.statusHistory)
-      ? (raw.statusHistory as VendorOrderResponse["statusHistory"]).map((event) => ({
-          ...event,
-          at: toIso(event.at),
-        }))
-      : [],
-  };
-}
-
 export async function fetchVendorOrdersFromApi(
   filter: VendorOrderListFilter = {},
 ): Promise<{ items: VendorOrder[]; nextCursor: string | null; total: number }> {
   if (getOrdersDataSource() === "callable") {
     const callable = httpsCallable(firebaseFunctions, "vendor_orders-listVendorOrders");
-    const result = await callable({
-      status: filter.status,
-      pageSize: filter.pageSize,
-      cursor: filter.cursor,
-    });
+    const result = await callable(buildListCallableRequest(filter));
     const data = result.data as {
       items: Record<string, unknown>[];
       nextCursor: string | null;
