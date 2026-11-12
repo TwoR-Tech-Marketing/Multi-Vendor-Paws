@@ -8,7 +8,7 @@ export type ProductStatus =
   | "archived";
 
 /**
- * Source of truth for a Phase 3 product. Lives at top-level `products/{productId}`.
+ * Canonical shape of a Phase 3 product. Lives at top-level `products/{productId}`.
  *
  * Vendor isolation: every doc carries `vendorId` and is owned by the matching
  * Firebase Auth uid. Reads are public to signed-in users (marketplace browse).

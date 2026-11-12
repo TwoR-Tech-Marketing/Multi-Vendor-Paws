@@ -23,7 +23,7 @@ service firebase.storage {
         && request.resource.contentType.matches('image/.*');
     }
 
-    // DOC-1 — vendor compliance documents (own uid only)
+    // Vendor compliance documents (own uid only)
     match /vendor_documents/{vendorId}/{requirementId}/{file} {
       allow read: if request.auth != null &&
         (request.auth.uid == vendorId ||

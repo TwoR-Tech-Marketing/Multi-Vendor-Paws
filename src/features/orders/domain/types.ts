@@ -59,7 +59,7 @@ export type VendorOrder = {
   commissionRatePercent: number;
   commissionPiastres: number;
   netPiastres: number;
-  /** DL-1 fields when present */
+  /** Delivery fee split fields when present */
   feeBasePiastres?: number | null;
   platformFeePiastres?: number | null;
   vendorNetPiastres?: number | null;

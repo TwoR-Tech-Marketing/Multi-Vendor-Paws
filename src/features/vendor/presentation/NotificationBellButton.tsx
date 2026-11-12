@@ -17,7 +17,7 @@ import { useStrings } from "@/shared/preferences/PreferencesContext";
 import styles from "./portal.module.css";
 
 /**
- * Unread count for the bell; null on the BFF source (no badge, same as before PC-3).
+ * Unread count for the bell; null on the BFF source (no badge, same as before the inbox).
  * Refreshes on mount, when the inbox changes read state, and on window focus.
  */
 function useUnreadCount(): number | null {

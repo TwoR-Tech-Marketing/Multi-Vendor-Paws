@@ -10,9 +10,9 @@ export type VendorReapplyPayload = {
   contactEmail: string;
   contactAddress: string;
   logoUrl?: string | null;
-  /** S1.7: omitted keeps the stored type. */
+  /** Omitted keeps the stored type. */
   vendorType?: string;
-  /** S1.7: omitted keeps the stored map unless the type changes. */
+  /** Omitted keeps the stored map unless the type changes. */
   providerProfile?: ProviderProfile;
 };
 

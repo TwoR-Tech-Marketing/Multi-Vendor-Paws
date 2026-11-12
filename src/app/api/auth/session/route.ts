@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       return apiForbidden();
     }
 
-    // S1.1 / D15: resolve kind via shared callable using the login idToken.
+    // Resolve kind via shared callable using the login idToken.
     const resolution = await resolveVendorSessionViaCallable(body.idToken);
 
     if (!isAllowedPortalSessionKind(resolution.kind)) {

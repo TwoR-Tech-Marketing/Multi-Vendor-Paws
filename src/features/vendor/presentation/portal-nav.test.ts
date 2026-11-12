@@ -9,7 +9,7 @@ import { getStrings } from "@/shared/i18n/get-strings";
 
 const strings = getStrings("en");
 
-/** The store sidebar exactly as it was before S1.7. */
+/** The store sidebar exactly as it was before vendor types. */
 const STORE_SIDEBAR_BEFORE_S17 = [
   { id: "dashboard", href: "/dashboard", label: "Dashboard", icon: "/portal-nav/nav-dashboard.svg", requiresActiveAccount: false },
   { id: "products", href: "/products", label: "Products", icon: "/portal-nav/nav-inventory.svg", requiresActiveAccount: true },
