@@ -46,7 +46,7 @@ describe("buildSaleEarningEntry", () => {
     expect(saleEarningEntryId("vo_1")).toBe("sale_vo_1");
   });
 
-  it("keeps the legacy BFF fields and no DL-1 fields for a legacy order", () => {
+  it("keeps the legacy BFF fields and no fee fields for a legacy order", () => {
     const entry = buildSaleEarningEntry(order(), "actor_1");
     expect(entry).toEqual({
       vendorId: "vendor_a",
@@ -63,7 +63,7 @@ describe("buildSaleEarningEntry", () => {
     expect(entry).not.toHaveProperty("platformFeePiastres");
   });
 
-  it("adds the DL-1 fields from an items_only order", () => {
+  it("adds the fee fields from an items_only order", () => {
     const entry = buildSaleEarningEntry(
       order({
         feeModel: "items_only",
@@ -100,7 +100,7 @@ describe("buildSaleEarningEntry", () => {
     }
   });
 
-  it("stores null for DL-1 values the items_only order lacks", () => {
+  it("stores null for fee values the items_only order lacks", () => {
     const entry = buildSaleEarningEntry(
       order({ feeModel: "items_only", platformFeePiastres: null, couponFunding: null }),
       "",

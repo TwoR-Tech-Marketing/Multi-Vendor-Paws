@@ -268,7 +268,7 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // S1.6: vendor FCM device tokens, functions only.
+    // Vendor FCM device tokens, functions only.
     match /vendorFcmTokens/{id} {
       allow read, write: if false;
     }

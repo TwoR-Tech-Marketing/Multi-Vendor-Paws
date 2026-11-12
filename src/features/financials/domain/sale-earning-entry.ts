@@ -3,7 +3,7 @@ import type { VendorOrder } from "@/features/orders/domain/types";
 /**
  * Sale ledger row built for a delivered vendor order. Mirrors the shared
  * functions writer (`functions/lib/vendor_ledger.js`): same amounts, same
- * entry id, and the DL-1 fields for `items_only` orders. Money is integer
+ * entry id, and the fee fields for `items_only` orders. Money is integer
  * piastres. `createdAt` is added by the writer.
  */
 export type SaleEarningEntryDoc = {
@@ -61,7 +61,7 @@ export function resolveSaleEarningAmounts(vendorOrder: VendorOrder): {
   return { amountPiastres, commissionPiastres, netPiastres };
 }
 
-/** DL-1 fields stored on `items_only` sale rows; empty for legacy orders. */
+/** Fee fields stored on `items_only` sale rows; empty for legacy orders. */
 export function saleEarningDl1Fields(
   vendorOrder: VendorOrder,
 ): Partial<SaleEarningEntryDoc> {
