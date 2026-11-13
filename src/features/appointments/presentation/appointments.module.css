@@ -321,3 +321,7 @@
     color: var(--tp-color-action-primary);
   }
 }
+
+.negative {
+  color: var(--tp-color-money-out);
+}

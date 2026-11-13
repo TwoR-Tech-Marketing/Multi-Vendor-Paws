@@ -664,6 +664,7 @@ export const arStrings: AppStrings = {
     },
     homeVisitBadge: "زيارات منزلية",
     serviceCount: "{count} خدمات",
+    serviceCountOne: "خدمة واحدة",
     pendingHint: "أضف فرعًا وخدمات لاستكمال طلبك",
     limitReached: "يمكنك امتلاك 20 فرعًا نشطًا كحد أقصى.",
     readOnlyHint: "حسابك موقوف. الفروع متاحة للعرض فقط.",

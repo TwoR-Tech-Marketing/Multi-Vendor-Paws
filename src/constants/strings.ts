@@ -663,6 +663,7 @@ export const Strings = {
     },
     homeVisitBadge: "Home visits",
     serviceCount: "{count} services",
+    serviceCountOne: "1 service",
     pendingHint: "Add a branch and services to complete your application",
     limitReached: "You can have up to 20 active branches.",
     readOnlyHint: "Your account is suspended. Branches are read only.",

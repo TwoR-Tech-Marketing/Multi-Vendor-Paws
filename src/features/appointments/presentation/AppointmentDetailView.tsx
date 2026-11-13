@@ -112,7 +112,7 @@ function ServicesPanel({ appointment: a, strings, locale }: ViewProps) {
         {a.discountPiastres > 0 ? (
           <li className={styles.line}>
             <span>{t.discount}</span>
-            <span>{formatEgp(-a.discountPiastres, locale)}</span>
+            <span className={styles.negative}>{formatEgp(-a.discountPiastres, locale)}</span>
           </li>
         ) : null}
         <li className={styles.lineTotal}>

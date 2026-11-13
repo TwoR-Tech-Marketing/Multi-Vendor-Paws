@@ -122,6 +122,11 @@ describe("BranchList", () => {
     expect(html).toContain(en.branches.emptyTitle);
   });
 
+  it("uses the singular for one service", () => {
+    const html = renderList({ branches: [makeBranch({ serviceCount: 1 })] });
+    expect(html).toContain(en.branches.serviceCountOne);
+  });
+
   it("disables add at the 20 branch limit", () => {
     const branches = Array.from({ length: 20 }, (_, i) => makeBranch({ branchId: `b${i}` }));
     const html = renderList({ branches });

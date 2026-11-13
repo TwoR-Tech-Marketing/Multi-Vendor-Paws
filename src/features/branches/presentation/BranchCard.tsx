@@ -51,7 +51,11 @@ export function BranchCard({
       <div className={styles.badgeRow}>
         <StatusBadge
           tone="neutral"
-          label={t.serviceCount.replace("{count}", branch.serviceCount.toLocaleString("en-US"))}
+          label={
+            branch.serviceCount === 1
+              ? t.serviceCountOne
+              : t.serviceCount.replace("{count}", branch.serviceCount.toLocaleString("en-US"))
+          }
         />
         {branch.homeVisit.enabled ? <StatusBadge tone="success" label={t.homeVisitBadge} /> : null}
       </div>
