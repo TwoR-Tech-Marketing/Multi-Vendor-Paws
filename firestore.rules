@@ -344,6 +344,19 @@ service cloud.firestore {
     match /pointsBalances/{id} { allow read: if isAdmin(); allow write: if false; }
     match /pointsConfig/{id}   { allow read: if isAdmin(); allow write: if false; }
 
+    // Server payments. Functions only. The owning buyer reads their
+    // payment (status screen); everything else is admin read only.
+    match /payments/{id} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.buyerUid == request.auth.uid);
+      allow write: if false;
+    }
+    match /paymentInvoices/{id}      { allow read: if isAdmin(); allow write: if false; }
+    match /paymentWebhookEvents/{id} { allow read: if isAdmin(); allow write: if false; }
+    match /paymentsConfig/{id}       { allow read: if isAdmin(); allow write: if false; }
+    // Server-only stock and coupon reservation of a card order waiting
+    // for payment (the order doc is client writable).
+    match /orderHolds/{id}           { allow read: if isAdmin(); allow write: if false; }
+
     // Appointment reviews. The buyer reads their own; providers read through
     // the review callables, which strip buyer data. Cloud Functions write.
     match /appointmentReviews/{id} {

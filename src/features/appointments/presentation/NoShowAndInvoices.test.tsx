@@ -19,7 +19,10 @@ import { ExtraInvoiceDialog } from "@/features/appointments/presentation/ExtraIn
 import { ExtraInvoicesCard } from "@/features/appointments/presentation/ExtraInvoicesCard";
 import { InvoiceLineFields } from "@/features/appointments/presentation/InvoiceLineFields";
 import { NoShowPanel } from "@/features/appointments/presentation/NoShowPanel";
-import { formatInstant } from "@/features/appointments/presentation/appointments-copy";
+import {
+  appointmentErrorMessage,
+  formatInstant,
+} from "@/features/appointments/presentation/appointments-copy";
 import { confirmCopy } from "@/features/appointments/presentation/detail-dialogs";
 
 const en = getStrings("en");
@@ -417,5 +420,20 @@ describe("InvoiceLineFields", () => {
     expect(html).toContain(ar.extraInvoices.validation.name);
     expect(html).toContain(ar.extraInvoices.validation.price);
     expect(html).toContain(ar.extraInvoices.removeLine.replace("{number}", "2"));
+  });
+});
+
+describe("extra invoice void refused while the customer is paying", () => {
+  const refusal = {
+    code: "functions/failed-precondition",
+    details: { reason: "payment_in_progress" },
+  };
+
+  it("shows the localized message in English and Arabic, never the server text", () => {
+    const en = getStrings("en");
+    const arabic = getStrings("ar");
+    expect(appointmentErrorMessage(refusal, en)).toBe(en.errors.appointments.paymentInProgress);
+    expect(appointmentErrorMessage(refusal, arabic)).toBe(arabic.errors.appointments.paymentInProgress);
+    expect(arabic.errors.appointments.paymentInProgress).not.toBe(en.errors.appointments.paymentInProgress);
   });
 });
