@@ -33,7 +33,7 @@ export function ProductsPageClient() {
         params.set("tab", tab);
       }
       const query = params.toString();
-      router.replace(query ? `/products?${query}` : "/products");
+      router.replace(query ? `${Routes.vendor.products}?${query}` : Routes.vendor.products);
     },
     [router, searchParams],
   );

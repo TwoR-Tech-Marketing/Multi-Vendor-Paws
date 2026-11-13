@@ -1,39 +1,39 @@
 .actionsRow {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
   align-items: center;
   width: 100%;
 }
 
 .searchSkeleton {
   flex: 1 1 220px;
-  height: var(--control-height);
-  border-radius: var(--radius-sm);
+  height: var(--tp-size-control);
+  border-radius: var(--tp-radius-control);
 }
 
 .actionButtons {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .filterSkeleton {
   width: 120px;
-  height: var(--control-height);
-  border-radius: var(--radius-sm);
+  height: var(--tp-size-control);
+  border-radius: var(--tp-radius-control);
 }
 
 .exportSkeleton {
   width: 108px;
-  height: var(--control-height);
-  border-radius: var(--radius-sm);
+  height: var(--tp-size-control);
+  border-radius: var(--tp-radius-control);
 }
 
 .panel {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  background: var(--tp-color-surface-raised);
+  border: 1px solid var(--tp-color-border-default);
+  border-radius: var(--tp-radius-card);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
@@ -42,26 +42,26 @@
 .row {
   display: grid;
   grid-template-columns: 2.2fr 1fr 0.8fr 0.7fr 0.9fr 0.8fr;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
   align-items: center;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border-bottom: 1px solid var(--tp-color-border-default);
 }
 
 .tableHeader {
-  background: var(--color-surface-2);
+  background: var(--tp-color-surface-sunken);
 }
 
 .productCell {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--tp-space-3);
 }
 
 .thumbSkeleton {
   width: 44px;
   height: 44px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--tp-radius-control);
   flex-shrink: 0;
 }
 
@@ -75,35 +75,35 @@
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
 }
 
 .actionSkeleton {
   width: 36px;
   height: 36px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--tp-radius-control);
 }
 
 .categoryRow {
   display: grid;
   grid-template-columns: 1.4fr 0.8fr 1fr;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
   align-items: center;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border-bottom: 1px solid var(--tp-color-border-default);
 }
 
 .categoryActionSkeleton {
   width: 120px;
-  height: var(--control-height);
-  border-radius: var(--radius-control);
+  height: var(--tp-size-control);
+  border-radius: var(--tp-radius-control);
   justify-self: end;
 }
 
 .sectionStack {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 @media (max-width: 900px) {

@@ -20,7 +20,7 @@ export function PortalShellSkeleton() {
           className={shellStyles.logo}
           width={46}
           height={46}
-          borderRadius="var(--radius-sm)"
+          borderRadius="var(--tp-radius-control)"
         />
 
         <div className={shellStyles.navScroll}>
@@ -41,22 +41,16 @@ export function PortalShellSkeleton() {
 
       <div className={shellStyles.main}>
         <header className={shellStyles.topbar}>
-          <div className={shellStyles.topbarRow}>
-            <SkeletonBox width={44} height={44} borderRadius="var(--radius-sm)" />
-            <div className={shellStyles.topbarRight}>
-              <SkeletonIcon size={24} />
-              <SkeletonAvatar size={40} />
+          <div className={shellStyles.pageHeaderRow}>
+            <SkeletonBox width={40} height={40} borderRadius="var(--tp-radius-control)" />
+            <div className={shellStyles.pageHeaderTitle}>
+              <SkeletonText size="xl" width="42%" />
+              <SkeletonText size="sm" width="58%" />
             </div>
           </div>
-
-          <div className={shellStyles.pageHeader}>
-            <div className={shellStyles.pageHeaderRow}>
-              <SkeletonBox width={44} height={44} borderRadius="var(--radius-sm)" />
-              <div className={shellStyles.pageHeaderTitle}>
-                <SkeletonText size="xl" width="42%" />
-                <SkeletonText size="sm" width="58%" />
-              </div>
-            </div>
+          <div className={shellStyles.topbarRight}>
+            <SkeletonIcon size={24} />
+            <SkeletonAvatar size={40} />
           </div>
         </header>
 

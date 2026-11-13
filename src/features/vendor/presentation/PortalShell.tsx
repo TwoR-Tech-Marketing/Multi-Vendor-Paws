@@ -41,6 +41,9 @@ export function PortalShell({ children }: PortalShellProps) {
 
   return (
     <div className={styles.shell}>
+      <a href="#portal-main" className={styles.skipLink}>
+        {strings.portal.skipToContent}
+      </a>
       <div
         className={`${styles.backdrop} ${isDrawerOpen ? styles.backdropVisible : ""}`}
         onClick={closeDrawer}
@@ -58,7 +61,9 @@ export function PortalShell({ children }: PortalShellProps) {
             onMenuOpen={openDrawer}
             isMenuOpen={isDrawerOpen}
           />
-          <div className={styles.content}>{children}</div>
+          <main id="portal-main" className={styles.content} tabIndex={-1}>
+            {children}
+          </main>
         </div>
       </PortalHeaderActionsProvider>
     </div>

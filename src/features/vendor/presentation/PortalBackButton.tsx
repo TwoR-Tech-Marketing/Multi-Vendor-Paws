@@ -22,7 +22,7 @@ export function PortalBackButton() {
       onClick={onBack}
       aria-label={strings.portal.goBack}
     >
-      <IconChevronLeft className={styles.backChevron} width={22} height={22} />
+      <IconChevronLeft className={styles.backChevron} width={20} height={20} />
     </button>
   );
 }

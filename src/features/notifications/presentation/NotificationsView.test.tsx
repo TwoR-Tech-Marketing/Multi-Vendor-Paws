@@ -106,6 +106,25 @@ describe("NotificationsView", () => {
     expect(html).not.toContain(en.notifications.emptyAllTitle);
   });
 
+  it("hides the unread summary and mark all when the first load failed", () => {
+    const html = render({ loadError: en.notifications.loadError });
+    expect(markAllButton(html)).toBe("");
+    expect(html).not.toContain(en.notifications.unreadSummaryZero);
+  });
+
+  it("shows the offline copy in Arabic when the connection dropped", () => {
+    const html = render({ strings: ar, locale: "ar", loadError: ar.notifications.loadError, isOffline: true });
+    expect(html).toContain('data-kind="offline"');
+    expect(html).toContain(ar.states.offlineTitle);
+    expect(html).toContain(ar.common.retry);
+  });
+
+  it("keeps loaded items and shows a compact error above them", () => {
+    const html = render({ items: [item()], unreadCount: 1, loadError: en.notifications.loadError });
+    expect(html).toContain('role="alert"');
+    expect(html).toContain(en.notifications.types.orderNew.title);
+  });
+
   it("renders Arabic copy with Western digits", () => {
     const html = render({ strings: ar, locale: "ar", items: [item()], unreadCount: 1 });
     expect(html).toContain(ar.notifications.types.orderNew.title);

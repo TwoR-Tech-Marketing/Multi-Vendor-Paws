@@ -6,12 +6,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-3);
-  margin-bottom: var(--space-6);
+  gap: var(--tp-space-3);
+  margin-bottom: var(--tp-space-6);
 }
 
 .title {
-  margin-top: var(--space-2);
+  margin-top: var(--tp-space-2);
 }
 
 .subtitle {
@@ -19,14 +19,14 @@
 }
 
 .fieldGroup {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--tp-space-4);
 }
 
 .submit {
   width: 100%;
-  margin-top: var(--space-2);
+  margin-top: var(--tp-space-2);
 }
 
 .footer {
-  margin: var(--space-6) auto 0;
+  margin: var(--tp-space-6) auto 0;
 }

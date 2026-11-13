@@ -4,6 +4,7 @@ import { Routes } from "@/constants/routes";
 import { formatEgp } from "@/features/products/domain/currency";
 import { isScreenVisible } from "@/features/vendor/domain/vendor-type-config";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import portalStyles from "@/features/vendor/presentation/portal.module.css";
 import styles from "./settings.module.css";
@@ -16,6 +17,8 @@ type SettingsStoreSnapshotPanelProps = {
   isActiveVendor: boolean;
   /** Store when omitted. Providers have no products or orders cards. */
   vendorType?: string;
+  /** Portal language for money formatting. Defaults to English. */
+  locale?: AppLocale;
 };
 
 export function SettingsStoreSnapshotPanel({
@@ -25,6 +28,7 @@ export function SettingsStoreSnapshotPanel({
   netEarningsPiastres,
   isActiveVendor,
   vendorType,
+  locale = "en",
 }: SettingsStoreSnapshotPanelProps) {
   const t = strings.settings;
   const showProducts = isScreenVisible(vendorType, "products");
@@ -60,12 +64,12 @@ export function SettingsStoreSnapshotPanel({
             className={`${styles.snapshotCard} ${styles.snapshotCardHighlight}`}
           >
             <span className={styles.snapshotLabel}>{t.snapshotNetEarnings}</span>
-            <p className={styles.snapshotValue}>{formatEgp(netEarningsPiastres)}</p>
+            <p className={styles.snapshotValue}>{formatEgp(netEarningsPiastres, locale)}</p>
           </Link>
         ) : (
           <div className={`${styles.snapshotCard} ${styles.snapshotCardHighlight}`}>
             <span className={styles.snapshotLabel}>{t.snapshotNetEarnings}</span>
-            <p className={styles.snapshotValue}>{formatEgp(netEarningsPiastres)}</p>
+            <p className={styles.snapshotValue}>{formatEgp(netEarningsPiastres, locale)}</p>
           </div>
         )}
       </div>

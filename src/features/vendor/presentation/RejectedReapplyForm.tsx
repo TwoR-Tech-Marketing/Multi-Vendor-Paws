@@ -23,6 +23,7 @@ import { ProviderFieldsInputs } from "@/features/vendor/presentation/ProviderFie
 import { VendorTypePicker } from "@/features/vendor/presentation/VendorTypePicker";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
+import portalStyles from "./portal.module.css";
 import styles from "./profile.module.css";
 
 type RejectedReapplyFormProps = {
@@ -108,8 +109,8 @@ export function RejectedReapplyForm({ profile, storedProviderProfile }: Rejected
   }
 
   return (
-    <section>
-      <h2 className={styles.panelTitle}>{strings.accountStatus.reapplyTitle}</h2>
+    <section className={portalStyles.panel} aria-labelledby="reapply-title">
+      <h2 id="reapply-title" className={styles.panelTitle}>{strings.accountStatus.reapplyTitle}</h2>
       {error ? (
         <div className={`${styles.alert} ${styles.alertError}`} role="alert">
           {error}
@@ -122,7 +123,7 @@ export function RejectedReapplyForm({ profile, storedProviderProfile }: Rejected
       ) : null}
       <form className={styles.formStack} onSubmit={onSubmit}>
         <VendorTypePicker strings={strings} value={chosenType} onChange={setChosenType} />
-        <label>
+        <label className={styles.field}>
           {strings.profile.fields.ownerName}
           <input
             required
@@ -130,7 +131,7 @@ export function RejectedReapplyForm({ profile, storedProviderProfile }: Rejected
             onChange={(event) => setOwnerName(event.target.value)}
           />
         </label>
-        <label>
+        <label className={styles.field}>
           {typeStrings.fields.storeName}
           <input
             required
@@ -138,7 +139,7 @@ export function RejectedReapplyForm({ profile, storedProviderProfile }: Rejected
             onChange={(event) => setStoreName(event.target.value)}
           />
         </label>
-        <label>
+        <label className={styles.field}>
           {typeStrings.fields.storeDescription}
           <textarea
             required
@@ -151,8 +152,9 @@ export function RejectedReapplyForm({ profile, storedProviderProfile }: Rejected
           vendorType={effectiveType}
           value={providerFields}
           onChange={setProviderFields}
+          fieldClassName={styles.field}
         />
-        <label>
+        <label className={styles.field}>
           {strings.profile.fields.phone}
           <input
             required
@@ -160,7 +162,7 @@ export function RejectedReapplyForm({ profile, storedProviderProfile }: Rejected
             onChange={(event) => setPhone(event.target.value)}
           />
         </label>
-        <label>
+        <label className={styles.field}>
           {strings.profile.fields.contactPhone}
           <input
             required
@@ -168,7 +170,7 @@ export function RejectedReapplyForm({ profile, storedProviderProfile }: Rejected
             onChange={(event) => setContactPhone(event.target.value)}
           />
         </label>
-        <label>
+        <label className={styles.field}>
           {strings.profile.fields.contactEmail}
           <input
             required
@@ -177,7 +179,7 @@ export function RejectedReapplyForm({ profile, storedProviderProfile }: Rejected
             onChange={(event) => setContactEmail(event.target.value)}
           />
         </label>
-        <label>
+        <label className={styles.field}>
           {strings.profile.fields.contactAddress}
           <input
             required
@@ -185,11 +187,13 @@ export function RejectedReapplyForm({ profile, storedProviderProfile }: Rejected
             onChange={(event) => setContactAddress(event.target.value)}
           />
         </label>
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting
-            ? strings.accountStatus.reapplySubmitting
-            : strings.accountStatus.reapplySubmit}
-        </button>
+        <div className={styles.formActions}>
+          <button type="submit" className={styles.btnPrimary} disabled={isSubmitting}>
+            {isSubmitting
+              ? strings.accountStatus.reapplySubmitting
+              : strings.accountStatus.reapplySubmit}
+          </button>
+        </div>
       </form>
     </section>
   );

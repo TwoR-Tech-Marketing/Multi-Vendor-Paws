@@ -67,7 +67,7 @@
 }
 
 .small {
-  min-height: calc(var(--tp-size-control) - var(--tp-space-2));
+  min-height: var(--tp-size-control);
   padding: 0 var(--tp-space-3);
   font-size: var(--tp-font-size-13);
 }

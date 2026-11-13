@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView } from "@/components/ui/error-state/load-error";
 import { PendingBranchesHint } from "@/features/branches/presentation/PendingBranchesHint";
 import {
   fetchVendorProfileFromApi,
@@ -21,6 +23,7 @@ import { usePortalSession } from "@/features/vendor/presentation/PortalSessionCo
 import { ProfileSkeleton } from "@/features/vendor/presentation/ProfileSkeleton";
 import { useStrings } from "@/shared/preferences/PreferencesContext";
 
+import portalStyles from "./portal.module.css";
 import styles from "./profile.module.css";
 
 export function ProfileSection() {
@@ -33,6 +36,7 @@ export function ProfileSection() {
     useState<VendorProfileChangeRequest | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadFailure, setLoadFailure] = useState<unknown>(null);
 
   const needsStoreProfile =
     sessionKind === "active" ||
@@ -47,6 +51,7 @@ export function ProfileSection() {
     }
 
     setLoadError(null);
+    setLoadFailure(null);
 
     try {
       const {
@@ -59,7 +64,8 @@ export function ProfileSection() {
       setPendingChange(pending);
       setLastRejectedChange(rejected);
       await refreshStoreBranding();
-    } catch {
+    } catch (failure) {
+      setLoadFailure(failure);
       setLoadError(strings.errors.generic);
     } finally {
       setIsLoading(false);
@@ -79,7 +85,7 @@ export function ProfileSection() {
 
   if (sessionKind === "rejected") {
     return (
-      <>
+      <div className={styles.profileStack}>
         <AccountStatusBanner sessionKind={sessionKind} profile={profile} />
         <PendingBranchesHint showLink />
         <RejectedReapplyForm
@@ -88,23 +94,28 @@ export function ProfileSection() {
         />
         <VendorDocumentsSection />
         <ProfileActiveSessionCard />
-      </>
+      </div>
     );
   }
 
   if (sessionKind === "banned") {
     return (
-      <>
+      <div className={styles.profileStack}>
         <AccountStatusBanner sessionKind={sessionKind} profile={profile} />
         <ProfileActiveSessionCard />
-      </>
+      </div>
     );
   }
 
   if (loadError || !storeProfile) {
+    const view = toLoadErrorView(loadFailure, strings, loadError ?? strings.errors.generic);
     return (
-      <div className={`${styles.alert} ${styles.alertError}`} role="alert">
-        {loadError ?? strings.errors.generic}
+      <div className={portalStyles.panel}>
+        <LoadErrorState
+          view={view}
+          strings={strings}
+          onRetry={() => void loadProfile()}
+        />
       </div>
     );
   }
@@ -113,7 +124,7 @@ export function ProfileSection() {
   const canSubmit = sessionKind === "active";
 
   return (
-    <>
+    <div className={styles.profileStack}>
       <AccountStatusBanner sessionKind={sessionKind} profile={profile} />
       <PendingBranchesHint showLink />
 
@@ -136,6 +147,6 @@ export function ProfileSection() {
       {!isSuspended ? <VendorDocumentsSection /> : null}
 
       <ProfileActiveSessionCard />
-    </>
+    </div>
   );
 }

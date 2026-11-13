@@ -5,11 +5,16 @@ import { useState } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
 
 import { firebaseAuth } from "@/lib/firebase";
-import { mapAuthError } from "@/features/auth/domain/errors";
+import { Routes } from "@/constants/routes";
 import { PawlioLogo } from "@/shared/components/PawlioLogo";
+import { useStrings } from "@/shared/preferences/PreferencesContext";
+
+import { authErrorMessage } from "./auth-copy";
 import styles from "./auth.module.css";
 
 export function ForgotPasswordClient() {
+  const strings = useStrings();
+  const t = strings.auth;
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -23,9 +28,9 @@ export function ForgotPasswordClient() {
 
     try {
       await sendPasswordResetEmail(firebaseAuth, email.trim());
-      setMessage("If an account exists for this email, a reset link has been sent.");
+      setMessage(t.resetSent);
     } catch (resetError) {
-      setError(mapAuthError(resetError));
+      setError(authErrorMessage(resetError, strings));
     } finally {
       setIsSubmitting(false);
     }
@@ -36,8 +41,8 @@ export function ForgotPasswordClient() {
       <section className={styles.card}>
         <div className={styles.brand}>
           <PawlioLogo className={styles.logoMark} />
-          <h2>Reset password</h2>
-          <p>Enter your business email (the one you use to sign in).</p>
+          <h1>{t.resetTitle}</h1>
+          <p>{t.resetSubtitle}</p>
         </div>
 
         {message ? (
@@ -54,14 +59,15 @@ export function ForgotPasswordClient() {
 
         <form className={styles.formStack} onSubmit={onSubmit}>
           <label className={styles.field}>
-            Business email
+            {t.emailLabel}
             <input
               type="email"
               required
               autoComplete="username email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="vendor@store.com"
+              placeholder={t.emailPlaceholder}
+              dir="ltr"
             />
           </label>
           <button
@@ -69,13 +75,13 @@ export function ForgotPasswordClient() {
             className={`${styles.btnPrimary} ${styles.btnBlock}`}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Sending..." : "Send reset link"}
+            {isSubmitting ? t.resetSending : t.resetSend}
           </button>
         </form>
 
         <p className={styles.footer}>
-          <Link href="/login" className={styles.link}>
-            Back to sign in
+          <Link href={Routes.auth.login} className={styles.link}>
+            {t.backToSignIn}
           </Link>
         </p>
       </section>

@@ -1,3 +1,5 @@
+import type { AppLocale } from "@/shared/preferences/domain/types";
+
 /** App-wide currency. Phase 3 launches EGP-only. */
 export const APP_CURRENCY = "EGP" as const;
 
@@ -23,17 +25,31 @@ export function piastresToEgp(piastres: number): number {
 }
 
 /**
- * Formats integer piastres for display. Never throws: negative amounts
- * (refunds, payouts, negative adjustments) get a leading minus sign before
- * the absolute amount, and a non-finite value shows as zero. Fractions of a
- * piastre are truncated.
+ * Currency unit shown after the amount, per portal language. Kept in the
+ * domain beside the formatter (like the ISO code) so every caller, including
+ * exports and notification copy, formats money the same way.
  */
-export function formatEgp(piastres: number): string {
+export const CURRENCY_UNIT = { en: "EGP", ar: "ج.م" } as const;
+
+/** Left-to-right isolate around the figures so RTL text keeps them together. */
+const LRI = "\u2066";
+const PDI = "\u2069";
+
+/**
+ * Formats integer piastres for display as amount then unit, the same form as
+ * the vendor app: "1,500.00 EGP" in English, "1,500.00 ج.م" in Arabic with
+ * the figures in a left-to-right isolate. Western digits, two decimals. Never
+ * throws: negative amounts get a leading minus sign before the absolute
+ * amount, and a non-finite value shows as zero. Fractions of a piastre are
+ * truncated.
+ */
+export function formatEgp(piastres: number, locale: AppLocale = "en"): string {
   const value = Number.isFinite(piastres) ? Math.trunc(piastres) : 0;
-  const formatted = (Math.abs(value) / 100).toLocaleString("en-EG", {
-    style: "currency",
-    currency: APP_CURRENCY,
+  const digits = (Math.abs(value) / 100).toLocaleString("en-US", {
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-  return value < 0 ? `-${formatted}` : formatted;
+  const figures = value < 0 ? `-${digits}` : digits;
+  if (locale === "ar") return `${LRI}${figures}${PDI} ${CURRENCY_UNIT.ar}`;
+  return `${figures} ${CURRENCY_UNIT.en}`;
 }

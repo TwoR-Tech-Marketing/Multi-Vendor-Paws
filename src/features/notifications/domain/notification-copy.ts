@@ -57,7 +57,7 @@ function paramsForDisplay(
   }
   const { amount, status, documentNameAr, outcome } = notification.params;
   if (notification.type === "payout_recorded" && typeof amount === "number") {
-    out.amount = formatEgp(Math.trunc(amount));
+    out.amount = formatEgp(Math.trunc(amount), locale);
   }
   if (notification.type.startsWith("appointment_")) {
     if (out.date && isIsoDate(out.date)) out.date = formatDayLabel(out.date, locale);

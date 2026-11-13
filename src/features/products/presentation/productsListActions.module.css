@@ -1,47 +1,47 @@
 .actionsContainer {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
   align-items: center;
   width: 100%;
   min-width: 0;
 }
 
 .searchContainer {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--tp-color-surface-raised);
+  border: 1px solid var(--tp-color-border-default);
   display: flex;
   flex-direction: column;
-  height: var(--control-height);
+  height: var(--tp-size-control);
   justify-content: center;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-sm);
+  padding: var(--tp-space-2) var(--tp-space-4);
+  border-radius: var(--tp-radius-control);
   flex: 1 1 220px;
   min-width: 0;
   max-width: 100%;
   transition:
-    border-color var(--duration-base),
-    box-shadow var(--duration-base);
+    border-color var(--tp-motion-duration-press) var(--tp-motion-ease-out),
+    box-shadow var(--tp-motion-duration-press) var(--tp-motion-ease-out);
 }
 
 .searchContainer:focus-within {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-soft);
+  border-color: var(--tp-color-action-primary);
+  box-shadow: 0 0 0 3px var(--tp-color-selected-bg);
 }
 
 .searchInner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
   width: 100%;
 }
 
 .searchInput {
   width: 100%;
-  font-family: var(--font);
-  color: var(--color-text);
-  font-size: 14px;
+  font-family: inherit;
+  color: var(--tp-color-text-primary);
+  font-size: var(--tp-font-size-14);
   border: none;
   outline: none;
   background: transparent;
@@ -49,11 +49,11 @@
 }
 
 .searchInput::placeholder {
-  color: var(--color-text-muted);
+  color: var(--tp-color-text-muted);
 }
 
 .searchIcon {
-  color: var(--color-text-muted);
+  color: var(--tp-color-text-muted);
   flex-shrink: 0;
 }
 
@@ -61,7 +61,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .filterWrap {
@@ -71,18 +71,18 @@
 
 .filterButton {
   composes: button secondary from "../../../components/ui/button/button.module.css";
-  padding: var(--space-2) var(--space-4);
+  padding: var(--tp-space-2) var(--tp-space-4);
 }
 
 .filterIcon {
-  color: var(--color-text-muted);
+  color: var(--tp-color-text-muted);
   flex-shrink: 0;
 }
 
 .filterText {
-  font-weight: 500;
-  color: var(--color-text-secondary, var(--color-text-muted));
-  font-size: 14px;
+  font-weight: var(--tp-font-weight-medium);
+  color: var(--color-text-secondary, var(--tp-color-text-muted));
+  font-size: var(--tp-font-size-14);
   white-space: nowrap;
   max-width: 160px;
   overflow: hidden;
@@ -96,11 +96,11 @@
   min-width: 20px;
   height: 20px;
   padding-inline: 6px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary);
+  border-radius: var(--tp-radius-full);
+  background: var(--tp-color-action-primary);
   color: var(--color-icon-on-primary);
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--tp-font-size-11);
+  font-weight: var(--tp-font-weight-semibold);
   flex-shrink: 0;
 }
 
@@ -108,68 +108,68 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
   width: 100%;
-  padding: var(--space-2) var(--space-1);
+  padding: var(--tp-space-2) var(--tp-space-1);
 }
 
 .appliedFiltersLabel {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--tp-font-size-12);
+  font-weight: var(--tp-font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--color-text-muted);
+  color: var(--tp-color-text-muted);
   flex-shrink: 0;
 }
 
 .appliedChipRow {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
 }
 
 .appliedChip {
   display: inline-flex;
   align-items: center;
   padding: 4px 10px;
-  border-radius: var(--radius-full);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-  font-size: 12px;
-  font-weight: 600;
+  border-radius: var(--tp-radius-full);
+  background: var(--tp-color-selected-bg);
+  color: var(--tp-color-action-primary);
+  font-size: var(--tp-font-size-12);
+  font-weight: var(--tp-font-weight-semibold);
 }
 
 .importButton {
   composes: button secondary from "../../../components/ui/button/button.module.css";
-  padding: var(--space-2) var(--space-6);
+  padding: var(--tp-space-2) var(--tp-space-6);
 }
 
 .importIcon {
-  color: var(--color-primary);
+  color: var(--tp-color-action-primary);
   flex-shrink: 0;
 }
 
 .importText {
-  font-weight: 500;
-  color: var(--color-primary);
-  font-size: 14px;
+  font-weight: var(--tp-font-weight-medium);
+  color: var(--tp-color-action-primary);
+  font-size: var(--tp-font-size-14);
   white-space: nowrap;
 }
 
 .exportButton {
   composes: button secondary from "../../../components/ui/button/button.module.css";
-  padding: var(--space-2) var(--space-6);
+  padding: var(--tp-space-2) var(--tp-space-6);
 }
 
 .exportIcon {
-  color: var(--color-primary);
+  color: var(--tp-color-action-primary);
   flex-shrink: 0;
 }
 
 .exportText {
-  font-weight: 500;
-  color: var(--color-primary);
-  font-size: 14px;
+  font-weight: var(--tp-font-weight-medium);
+  color: var(--tp-color-action-primary);
+  font-size: var(--tp-font-size-14);
   white-space: nowrap;
 }
 

@@ -58,24 +58,27 @@ export function NotificationBellButton() {
     : strings.notifications.open;
 
   return (
-    <div className={styles.bellWrap}>
-      <Link
-        href={Routes.vendor.notifications}
-        prefetch
-        scroll={false}
-        className={`${styles.bellBtn} ${isNotificationsActive ? styles.bellBtnActive : ""}`}
-        aria-label={ariaLabel}
-        aria-current={isNotificationsActive ? "page" : undefined}
-      >
-        <span className={styles.bellIcon} aria-hidden>
-          <ThemedSvgIcon src={uiAssets.bellRead} tone="muted" width={22} height={29} />
+    <Link
+      href={Routes.vendor.notifications}
+      prefetch
+      scroll={false}
+      className={`${styles.bellBtn} ${isNotificationsActive ? styles.bellBtnActive : ""}`}
+      aria-label={ariaLabel}
+      aria-current={isNotificationsActive ? "page" : undefined}
+    >
+      <span className={styles.bellIcon} aria-hidden>
+        <ThemedSvgIcon
+          src={uiAssets.bellRead}
+          tone={isNotificationsActive ? "accent" : "muted"}
+          width={20}
+          height={24}
+        />
+      </span>
+      {badge ? (
+        <span className={styles.bellBadge} aria-hidden>
+          {badge}
         </span>
-        {badge ? (
-          <span className={styles.bellBadge} aria-hidden>
-            {badge}
-          </span>
-        ) : null}
-      </Link>
-    </div>
+      ) : null}
+    </Link>
   );
 }

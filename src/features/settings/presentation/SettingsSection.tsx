@@ -18,6 +18,8 @@ import { SettingsShortcutsPanel } from "@/features/settings/presentation/Setting
 import { SettingsSkeleton } from "@/features/settings/presentation/SettingsSkeleton";
 import { SettingsStoreSnapshotPanel } from "@/features/settings/presentation/SettingsStoreSnapshotPanel";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView } from "@/components/ui/error-state/load-error";
 import { usePreferences } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./settings.module.css";
@@ -33,15 +35,18 @@ export function SettingsSection() {
   const [snapshot, setSnapshot] = useState<VendorSettingsSnapshot | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [failure, setFailure] = useState<unknown>(null);
   const [saveError, setSaveError] = useState(false);
 
   const loadSettings = useCallback(async () => {
     setError(null);
+    setFailure(null);
     setIsLoading(true);
     try {
       const data = await fetchVendorSettingsFromApi();
       setSnapshot(data);
-    } catch {
+    } catch (loadFailure) {
+      setFailure(loadFailure);
       setError(t.loadError);
     } finally {
       setIsLoading(false);
@@ -78,15 +83,17 @@ export function SettingsSection() {
 
   if (isLoading) return <SettingsSkeleton />;
 
+  const errorView = toLoadErrorView(failure, strings, error ?? undefined);
+
   return (
     <div className={styles.sectionStack}>
       {error ? (
-        <div className={styles.alertError}>
-          <p>{error}</p>
-          <button type="button" className={styles.retryButton} onClick={() => void loadSettings()}>
-            {strings.common.retry}
-          </button>
-        </div>
+        <LoadErrorState
+          view={errorView}
+          strings={strings}
+          onRetry={() => void loadSettings()}
+          compact
+        />
       ) : null}
 
       <div className={styles.settingsGrid}>
@@ -113,6 +120,7 @@ export function SettingsSection() {
           netEarningsPiastres={snapshot.netEarningsPiastres}
           isActiveVendor={isActiveVendor}
           vendorType={profile.vendorType}
+          locale={locale}
         />
       ) : null}
 

@@ -1,36 +1,30 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-import { EmptyState } from "@/components/ui/empty-state/EmptyState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
-import { Routes } from "@/constants/routes";
 import {
   archiveVendorProductFromApi,
   fetchProductCategoriesFromApi,
   fetchVendorProductsFromApi,
   type ProductCategoryOption,
 } from "@/features/products/application/products.api";
-import { formatEgp } from "@/features/products/domain/currency";
 import type { Product } from "@/features/products/domain/types";
-import { IconEdit, IconTrash } from "@/features/products/presentation/ProductIcons";
 import {
   EMPTY_PRODUCT_LIST_FILTERS,
   type ProductListFilters,
 } from "@/features/products/lib/productListFilters";
+import { ProductsListPanel } from "@/features/products/presentation/ProductsListPanel";
 import { ProductsListActions } from "@/features/products/presentation/ProductsListActions";
-import { ProductStatusBadge } from "@/features/products/presentation/ProductStatusBadge";
 import { ProductsSkeleton } from "@/features/products/presentation/ProductsSkeleton";
-import { useStrings } from "@/shared/preferences/PreferencesContext";
+import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./products.module.css";
 
-const LOW_STOCK_THRESHOLD = 15;
-
 export function ProductsSection() {
   const strings = useStrings();
+  const { locale } = usePreferences();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<{ value: string; label: string }[]>([]);
   const [categoryItems, setCategoryItems] = useState<ProductCategoryOption[]>([]);
@@ -38,6 +32,7 @@ export function ProductsSection() {
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<ProductListFilters>(EMPTY_PRODUCT_LIST_FILTERS);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
@@ -54,12 +49,12 @@ export function ProductsSection() {
         })),
       );
     } catch {
-      // Category filter is optional — catalog can still load.
+      // Category filter is optional; the catalog can still load.
     }
   }, []);
 
   const loadProducts = useCallback(async () => {
-    setError(null);
+    setLoadError(null);
     if (products.length === 0) {
       setIsLoading(true);
     }
@@ -72,18 +67,12 @@ export function ProductsSection() {
         pageSize: 50,
       });
       setProducts(productPage.items);
-    } catch {
-      setError(strings.products.loadError);
+    } catch (failure) {
+      setLoadError(toLoadErrorView(failure, strings, strings.products.loadError));
     } finally {
       setIsLoading(false);
     }
-  }, [
-    filters.categoryId,
-    filters.status,
-    products.length,
-    search,
-    strings.products.loadError,
-  ]);
+  }, [filters.categoryId, filters.status, products.length, search, strings]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -152,113 +141,26 @@ export function ProductsSection() {
         }}
       />
 
-      {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
-      {success ? (
-        <div className={`${styles.alert} ${styles.alertSuccess}`}>{success}</div>
+      {error ? (
+        <div className={`${styles.alert} ${styles.alertError}`} role="alert">
+          {error}
+        </div>
       ) : null}
-
-      <article className={styles.panel}>
-        {products.length === 0 ? (
-          <EmptyState
-            title={
-              isFiltered ? strings.products.emptyFilteredTitle : strings.products.emptyTitle
-            }
-            description={
-              isFiltered
-                ? strings.products.emptyFilteredDescription
-                : strings.products.emptyDescription
-            }
-            action={
-              isFiltered ? (
-                <button type="button" className={styles.btnSecondary} onClick={clearFilters}>
-                  {strings.products.clearFilters}
-                </button>
-              ) : null
-            }
-          />
-        ) : (
-          <div className={styles.tableWrap}>
-            <table className={styles.dataTable}>
-              <thead>
-                <tr>
-                  <th>{strings.products.tableProduct}</th>
-                  <th>{strings.products.tableCategory}</th>
-                  <th className={styles.money}>{strings.products.tablePrice}</th>
-                  <th>{strings.products.tableStock}</th>
-                  <th>{strings.products.tableStatus}</th>
-                  <th>{strings.products.tableActions}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => {
-                  const isLowStock =
-                    product.stock > 0 && product.stock <= LOW_STOCK_THRESHOLD;
-
-                  return (
-                    <tr key={product.productId}>
-                      <td>
-                        <div className={styles.productCell}>
-                          <div className={styles.thumb}>
-                            {product.primaryImageUrl ? (
-                              <Image
-                                src={product.primaryImageUrl}
-                                alt=""
-                                width={48}
-                                height={48}
-                                unoptimized
-                              />
-                            ) : null}
-                          </div>
-                          <div className={styles.productMeta}>
-                            <strong>{product.name}</strong>
-                            {product.description ? (
-                              <small>{product.description}</small>
-                            ) : null}
-                          </div>
-                        </div>
-                      </td>
-                      <td>{product.categoryNames[0] ?? "—"}</td>
-                      <td className={styles.money}>{formatEgp(product.pricePiastres)}</td>
-                      <td>
-                        <span className={isLowStock ? styles.stockLow : undefined}>
-                          {isLowStock
-                            ? strings.products.stockLow.replace(
-                                "{count}",
-                                String(product.stock),
-                              )
-                            : product.stock}
-                        </span>
-                      </td>
-                      <td>
-                        <ProductStatusBadge status={product.status} strings={strings} />
-                      </td>
-                      <td>
-                        <div className={styles.actions}>
-                          <Link
-                            href={Routes.vendor.productEdit(product.productId)}
-                            className={styles.iconBtn}
-                            aria-label={strings.products.editAction}
-                          >
-                            <IconEdit />
-                          </Link>
-                          <button
-                            type="button"
-                            className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
-                            aria-label={strings.products.deleteAction}
-                            onClick={() => setDeleteTarget(product)}
-                          >
-                            <IconTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </article>
+      {success ? (
+        <div className={`${styles.alert} ${styles.alertSuccess}`} role="status">
+          {success}
+        </div>
+      ) : null}
+      <ProductsListPanel
+        products={products}
+        loadError={loadError}
+        isFiltered={isFiltered}
+        strings={strings}
+        locale={locale}
+        onRetry={() => void loadProducts()}
+        onClearFilters={clearFilters}
+        onDelete={setDeleteTarget}
+      />
 
       <LogoutConfirmDialog
         open={deleteTarget !== null}

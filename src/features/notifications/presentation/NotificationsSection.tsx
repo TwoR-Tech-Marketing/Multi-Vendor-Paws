@@ -20,6 +20,7 @@ import type {
 } from "@/features/notifications/domain/types";
 import { resolveNotificationHref } from "@/features/notifications/domain/notification-link";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
+import { isNetworkError } from "@/shared/lib/network-error";
 import { usePreferences } from "@/shared/preferences/PreferencesContext";
 
 import { NotificationsView } from "./NotificationsView";
@@ -45,6 +46,7 @@ export function NotificationsSection() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isMarkingAll, setIsMarkingAll] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [requests] = useState(createRequestTracker);
 
@@ -62,9 +64,10 @@ export function NotificationsSection() {
         setNextCursor(page.nextCursor);
         setUnreadCount(page.unreadCount);
         setNow(new Date());
-      } catch {
+      } catch (failure) {
         if (!requests.isLatest(requestId)) return;
         setNextCursor(null);
+        setIsOffline(isNetworkError(failure));
         setLoadError(t.loadError);
       } finally {
         if (requests.isLatest(requestId)) setIsLoading(false);
@@ -147,6 +150,7 @@ export function NotificationsSection() {
       unreadCount={unreadCount}
       isLoading={isLoading}
       loadError={loadError}
+      isOffline={isOffline}
       actionError={actionError}
       isMarkingAll={isMarkingAll}
       hasMore={nextCursor !== null}

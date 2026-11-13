@@ -3,6 +3,9 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { StatusBadge } from "@/components/ui/badge/StatusBadge";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { PortalSelect } from "@/components/ui/select/PortalSelect";
 import {
   fetchVendorOrderFromApi,
@@ -14,11 +17,14 @@ import {
   type VendorOrder,
   type VendorOrderStatus,
 } from "@/features/orders/domain/types";
+import { formatOrderRef } from "@/features/orders/presentation/OrdersListPanel";
 import { OrderStatusBadge } from "@/features/orders/presentation/OrderStatusBadge";
 import { OrderStatusTimeline } from "@/features/orders/presentation/OrderStatusTimeline";
-import { OrdersSkeleton } from "@/features/orders/presentation/OrdersSkeleton";
+import { OrderDetailSkeleton } from "@/features/orders/presentation/OrderDetailSkeleton";
 import { formatEgp } from "@/features/products/domain/currency";
-import { useStrings } from "@/shared/preferences/PreferencesContext";
+import { IconImage } from "@/features/products/presentation/ProductIcons";
+import { formatDateTime } from "@/shared/lib/format-date";
+import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./orders.module.css";
 
@@ -26,36 +32,32 @@ type OrderDetailSectionProps = {
   vendorOrderId: string;
 };
 
-function formatDate(date: Date): string {
-  return date.toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
-
 export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
   const strings = useStrings();
+  const { locale } = usePreferences();
+  const formatDate = useCallback((date: Date) => formatDateTime(date, locale), [locale]);
   const [order, setOrder] = useState<VendorOrder | null>(null);
   const [nextStatus, setNextStatus] = useState<VendorOrderStatus>("pending");
   const [note, setNote] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   const loadOrder = useCallback(async () => {
-    setError(null);
+    setLoadError(null);
     setIsLoading(true);
     try {
       const data = await fetchVendorOrderFromApi(vendorOrderId);
       setOrder(data);
       setNextStatus(data.status);
-    } catch {
-      setError(strings.orders.loadError);
+    } catch (failure) {
+      setLoadError(toLoadErrorView(failure, strings, strings.orders.detailLoadError));
     } finally {
       setIsLoading(false);
     }
-  }, [vendorOrderId, strings.orders.loadError]);
+  }, [vendorOrderId, strings]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -97,9 +99,18 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
     }
   }
 
-  if (isLoading) return <OrdersSkeleton />;
+  if (isLoading) return <OrderDetailSkeleton />;
   if (!order) {
-    return <div className={`${styles.alert} ${styles.alertError}`}>{strings.orders.loadError}</div>;
+    const view = loadError ?? toLoadErrorView(null, strings, strings.orders.detailLoadError);
+    return (
+      <article className={styles.panel}>
+        <LoadErrorState
+          view={view}
+          strings={strings}
+          onRetry={() => void loadOrder()}
+        />
+      </article>
+    );
   }
 
   const isHeld = order.holdState === "held";
@@ -112,135 +123,156 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
 
   return (
     <section className={styles.sectionStack}>
-      {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
+      {error ? (
+        <div className={`${styles.alert} ${styles.alertError}`} role="alert">
+          {error}
+        </div>
+      ) : null}
       {success ? (
-        <div className={`${styles.alert} ${styles.alertSuccess}`}>{success}</div>
+        <div className={`${styles.alert} ${styles.alertSuccess}`} role="status">
+          {success}
+        </div>
       ) : null}
       {isHeld ? (
-        <div className={`${styles.alert} ${styles.alertError}`} role="status">
+        <div className={`${styles.alert} ${styles.alertHold}`} role="status">
           <strong>{strings.orders.holdBannerTitle}</strong>
           <p>{strings.orders.holdBannerMessage}</p>
         </div>
       ) : null}
 
+      <article className={`${styles.panel} ${styles.detailHeader}`}>
+        <div className={styles.detailHeaderMain}>
+          <h2 className={styles.detailOrderRef}>
+            <bdi>{formatOrderRef(order.orderId)}</bdi>
+          </h2>
+          <span className={styles.badgeRow}>
+            <OrderStatusBadge status={order.status} strings={strings} />
+            {isHeld ? (
+              <StatusBadge tone="hold" label={strings.orders.heldLabel} status="held" />
+            ) : null}
+          </span>
+        </div>
+        <dl className={styles.detailHeaderMeta}>
+          <div>
+            <dt>{strings.orders.tableDate}</dt>
+            <dd>{formatDate(order.placedAt)}</dd>
+          </div>
+          <div>
+            <dt>{strings.orders.tableCustomer}</dt>
+            <dd title={order.buyerDisplayName ?? undefined}>
+              {order.buyerDisplayName ?? strings.orders.guestCustomer}
+            </dd>
+          </div>
+        </dl>
+      </article>
+
       <div className={styles.detailGrid}>
-        <article className={styles.panel}>
+        <article className={`${styles.panel} ${styles.areaItems}`}>
           <div className={styles.detailPanel}>
             <h2 className={styles.sectionTitle}>{strings.orders.itemsSection}</h2>
-            {order.lineItems.map((item) => (
-              <div key={`${item.productId}-${item.name}`} className={styles.itemRow}>
-                <div className={styles.itemThumb}>
-                  {item.imageUrl ? (
-                    <Image src={item.imageUrl} alt="" width={44} height={44} unoptimized />
-                  ) : null}
-                </div>
-                <div className={styles.itemMeta}>
-                  <strong>{item.name}</strong>
-                  <small>
-                    {item.quantity} × {formatEgp(item.unitPricePiastres)}
-                  </small>
-                </div>
-                <strong>{formatEgp(item.lineTotalPiastres)}</strong>
-              </div>
-            ))}
+            <ul className={styles.itemList}>
+              {order.lineItems.map((item) => (
+                <li key={`${item.productId}-${item.name}`} className={styles.itemRow}>
+                  <div className={styles.itemThumb}>
+                    {item.imageUrl ? (
+                      <Image src={item.imageUrl} alt="" width={44} height={44} unoptimized />
+                    ) : (
+                      <IconImage />
+                    )}
+                  </div>
+                  <div className={styles.itemMeta}>
+                    <strong title={item.name}>{item.name}</strong>
+                    <small>
+                      {strings.orders.lineSummary
+                        .replace("{quantity}", String(item.quantity))
+                        .replace("{price}", formatEgp(item.unitPricePiastres, locale))}
+                    </small>
+                  </div>
+                  <span className={styles.itemTotal}>
+                    {formatEgp(item.lineTotalPiastres, locale)}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </article>
 
-        <div className={styles.sectionStack}>
-          <article className={styles.panel}>
+        <article className={`${styles.panel} ${styles.areaSummary}`}>
+          <div className={styles.detailPanel}>
+            <h2 className={styles.sectionTitle}>{strings.orders.summarySection}</h2>
+            <dl className={styles.metaList}>
+              <div className={styles.metaRow}>
+                <dt>{strings.orders.subtotal}</dt>
+                <dd>{formatEgp(order.subtotalPiastres, locale)}</dd>
+              </div>
+              <div className={styles.metaRow}>
+                <dt>{strings.orders.deliveryFee}</dt>
+                <dd>{formatEgp(order.deliveryFeePiastres, locale)}</dd>
+              </div>
+              <div className={styles.metaRow}>
+                <dt>{strings.orders.discount}</dt>
+                <dd>{formatEgp(order.discountPiastres, locale)}</dd>
+              </div>
+              <div className={`${styles.metaRow} ${styles.metaRowTotal}`}>
+                <dt>{strings.orders.total}</dt>
+                <dd>{formatEgp(order.totalPiastres, locale)}</dd>
+              </div>
+              <div className={styles.metaRow}>
+                <dt>{strings.orders.commission}</dt>
+                <dd>
+                  <bdi>{order.commissionRatePercent}%</bdi> · {formatEgp(displayFee, locale)}
+                </dd>
+              </div>
+              <div className={`${styles.metaRow} ${styles.metaRowTotal} ${styles.metaRowEarnings}`}>
+                <dt>{strings.orders.netEarnings}</dt>
+                <dd>{formatEgp(displayNet, locale)}</dd>
+              </div>
+            </dl>
+          </div>
+        </article>
+
+        <article className={`${styles.panel} ${styles.areaHistory}`}>
+          <div className={styles.detailPanel}>
+            <h2 className={styles.sectionTitle}>{strings.orders.timelineSection}</h2>
+            <OrderStatusTimeline
+              events={order.statusHistory}
+              strings={strings}
+              formatDate={formatDate}
+            />
+          </div>
+        </article>
+
+        {!isHeld ? (
+          <article className={`${styles.panel} ${styles.areaUpdate}`}>
             <div className={styles.detailPanel}>
-              <h2 className={styles.sectionTitle}>{strings.orders.customerSection}</h2>
-              <dl className={styles.metaList}>
-                <div className={styles.metaRow}>
-                  <dt>{strings.orders.tableCustomer}</dt>
-                  <dd>{order.buyerDisplayName ?? "—"}</dd>
-                </div>
-                <div className={styles.metaRow}>
-                  <dt>{strings.orders.tableStatus}</dt>
-                  <dd>
-                    <OrderStatusBadge status={order.status} strings={strings} />
-                  </dd>
-                </div>
-                <div className={styles.metaRow}>
-                  <dt>{strings.orders.tableDate}</dt>
-                  <dd>{formatDate(order.placedAt)}</dd>
-                </div>
-              </dl>
+              <h2 className={styles.sectionTitle}>{strings.orders.updateStatus}</h2>
+              <div className={styles.statusForm}>
+                <label>
+                  {strings.orders.updateStatus}
+                  <PortalSelect
+                    value={nextStatus}
+                    options={statusOptions}
+                    onChange={(value) => setNextStatus(value as VendorOrderStatus)}
+                    ariaLabel={strings.orders.updateStatus}
+                  />
+                </label>
+                <label>
+                  {strings.orders.statusNote}
+                  <textarea value={note} onChange={(event) => setNote(event.target.value)} />
+                </label>
+                <button
+                  type="button"
+                  className={styles.btnPrimary}
+                  disabled={isUpdating || nextStatus === order.status}
+                  onClick={() => void handleUpdateStatus()}
+                >
+                  {strings.orders.updateStatus}
+                </button>
+              </div>
             </div>
           </article>
-
-          <article className={styles.panel}>
-            <div className={styles.detailPanel}>
-              <h2 className={styles.sectionTitle}>{strings.orders.summarySection}</h2>
-              <dl className={styles.metaList}>
-                <div className={styles.metaRow}>
-                  <dt>{strings.orders.subtotal}</dt>
-                  <dd>{formatEgp(order.subtotalPiastres)}</dd>
-                </div>
-                <div className={styles.metaRow}>
-                  <dt>{strings.orders.deliveryFee}</dt>
-                  <dd>{formatEgp(order.deliveryFeePiastres)}</dd>
-                </div>
-                <div className={styles.metaRow}>
-                  <dt>{strings.orders.discount}</dt>
-                  <dd>{formatEgp(order.discountPiastres)}</dd>
-                </div>
-                <div className={styles.metaRow}>
-                  <dt>{strings.orders.total}</dt>
-                  <dd>{formatEgp(order.totalPiastres)}</dd>
-                </div>
-                <div className={styles.metaRow}>
-                  <dt>{strings.orders.commission}</dt>
-                  <dd>
-                    {order.commissionRatePercent}% · {formatEgp(displayFee)}
-                  </dd>
-                </div>
-                <div className={styles.metaRow}>
-                  <dt>{strings.orders.netEarnings}</dt>
-                  <dd>{formatEgp(displayNet)}</dd>
-                </div>
-              </dl>
-
-              {!isHeld ? (
-                <div className={styles.statusForm}>
-                  <label>
-                    {strings.orders.updateStatus}
-                    <PortalSelect
-                      value={nextStatus}
-                      options={statusOptions}
-                      onChange={(value) => setNextStatus(value as VendorOrderStatus)}
-                      ariaLabel={strings.orders.updateStatus}
-                    />
-                  </label>
-                  <label>
-                    {strings.orders.statusNote}
-                    <textarea value={note} onChange={(event) => setNote(event.target.value)} />
-                  </label>
-                  <button
-                    type="button"
-                    className={styles.btnPrimary}
-                    disabled={isUpdating || nextStatus === order.status}
-                    onClick={() => void handleUpdateStatus()}
-                  >
-                    {strings.orders.updateStatus}
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          </article>
-        </div>
+        ) : null}
       </div>
-
-      <article className={styles.panel}>
-        <div className={styles.detailPanel}>
-          <h2 className={styles.sectionTitle}>{strings.orders.timelineSection}</h2>
-          <OrderStatusTimeline
-            events={order.statusHistory}
-            strings={strings}
-            formatDate={formatDate}
-          />
-        </div>
-      </article>
     </section>
   );
 }

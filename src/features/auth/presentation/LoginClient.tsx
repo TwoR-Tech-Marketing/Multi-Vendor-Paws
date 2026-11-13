@@ -4,18 +4,20 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import {
-  mapAuthError,
-  VENDOR_LOGIN_FAILED_MESSAGE,
-} from "@/features/auth/domain/errors";
+import { Routes } from "@/constants/routes";
 import { portalPostLoginHref } from "@/features/auth/domain/portal-account-gate";
 import { createServerSession } from "@/lib/auth-client";
 import { signInVendorForIdToken, signOutVendor } from "@/lib/auth";
 import { PawlioLogo } from "@/shared/components/PawlioLogo";
+import { useStrings } from "@/shared/preferences/PreferencesContext";
+
+import { authErrorMessage } from "./auth-copy";
 import styles from "./auth.module.css";
 
 export function LoginClient() {
   const router = useRouter();
+  const strings = useStrings();
+  const t = strings.auth;
   const searchParams = useSearchParams();
   const submitted = searchParams.get("submitted") === "1";
   const showLoginFailed = searchParams.get("invalid") === "1";
@@ -41,10 +43,10 @@ export function LoginClient() {
         return;
       }
 
-      setError(VENDOR_LOGIN_FAILED_MESSAGE);
+      setError(t.loginFailed);
     } catch (signInError) {
       await signOutVendor();
-      setError(mapAuthError(signInError));
+      setError(authErrorMessage(signInError, strings));
     } finally {
       setIsSubmitting(false);
     }
@@ -55,43 +57,44 @@ export function LoginClient() {
       <section className={styles.card}>
         <div className={styles.brand}>
           <PawlioLogo className={styles.logoMark} priority />
-          <h2>Vendor sign in</h2>
-          <p>Sign in with your business email and password.</p>
+          <h1>{t.loginTitle}</h1>
+          <p>{t.loginSubtitle}</p>
         </div>
 
         {submitted ? (
           <div className={`${styles.alert} ${styles.alertSuccess}`} role="status">
-            Application submitted. Sign in with your business email to check your status.
+            {t.submittedNotice}
           </div>
         ) : null}
 
         {(error || showLoginFailed) ? (
           <div className={`${styles.alert} ${styles.alertError}`} role="alert">
-            {error ?? VENDOR_LOGIN_FAILED_MESSAGE}
+            {error ?? t.loginFailed}
           </div>
         ) : null}
 
         <form className={styles.formStack} onSubmit={onSubmit}>
           <label className={styles.field}>
-            Business email
+            {t.emailLabel}
             <input
               type="email"
               required
               autoComplete="username email"
-              placeholder="vendor@store.com"
+              placeholder={t.emailPlaceholder}
+              dir="ltr"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
           </label>
 
           <label className={styles.field}>
-            Password
+            {t.passwordLabel}
             <input
               type="password"
               required
               minLength={8}
               autoComplete="current-password"
-              placeholder="Min. 8 characters"
+              placeholder={t.passwordPlaceholder}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
@@ -100,10 +103,10 @@ export function LoginClient() {
           <div className={styles.rowBetween}>
             <label className={`${styles.field} ${styles.checkbox}`}>
               <input type="checkbox" defaultChecked />
-              Remember me
+              {t.rememberMe}
             </label>
-            <Link href="/forgot-password" className={styles.link}>
-              Forgot password?
+            <Link href={Routes.auth.forgotPassword} className={styles.link}>
+              {t.forgotPassword}
             </Link>
           </div>
 
@@ -112,14 +115,14 @@ export function LoginClient() {
             className={`${styles.btnPrimary} ${styles.btnBlock}`}
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Signing in..." : "Sign in"}
+            {isSubmitting ? t.signingIn : t.signIn}
           </button>
         </form>
 
         <p className={styles.footer}>
-          New vendor?{" "}
-          <Link href="/register" className={styles.link}>
-            Create account
+          {t.newVendor}{" "}
+          <Link href={Routes.auth.register} className={styles.link}>
+            {t.createAccount}
           </Link>
         </p>
       </section>

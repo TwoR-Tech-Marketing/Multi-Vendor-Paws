@@ -1,6 +1,9 @@
 "use client";
 
-import {useCallback, useEffect, useState} from "react";
+import { useCallback, useEffect, useState } from "react";
+
+import { StatusBadge } from "@/components/ui/badge/StatusBadge";
+import type { AppStrings } from "@/shared/i18n/types";
 
 import {
   fetchMyVendorDocuments,
@@ -15,6 +18,30 @@ import styles from "./profile.module.css";
 type VendorDocumentsSectionProps = {
   vendorType?: string;
 };
+
+const DOCUMENT_TONES = {
+  approved: "success",
+  pending: "warning",
+  rejected: "danger",
+} as const;
+
+/** Text badge for one document: approved, under review, needs a new file or missing. */
+export function DocumentStatusBadge({
+  status,
+  strings,
+}: {
+  status: "pending" | "approved" | "rejected" | null;
+  strings: AppStrings;
+}) {
+  const t = strings.accountStatus;
+  if (!status) return <StatusBadge tone="neutral" label={t.documentsMissing} />;
+  const labels = {
+    approved: t.documentApproved,
+    pending: t.documentPending,
+    rejected: t.documentRejected,
+  };
+  return <StatusBadge tone={DOCUMENT_TONES[status]} label={labels[status]} status={status} />;
+}
 
 export function VendorDocumentsSection({
   vendorType = "store",
@@ -100,11 +127,7 @@ export function VendorDocumentsSection({
             <li key={requirement.id} className={styles.documentsItem}>
               <div>
                 <strong>{label}</strong>
-                <span>
-                  {row?.status
-                    ? `${strings.accountStatus.status}: ${row.status}`
-                    : strings.accountStatus.documentsMissing}
-                </span>
+                <DocumentStatusBadge status={row?.status ?? null} strings={strings} />
                 {row?.status === "rejected" && row.rejectionReason ? (
                   <span>
                     {strings.accountStatus.reason}: {row.rejectionReason}

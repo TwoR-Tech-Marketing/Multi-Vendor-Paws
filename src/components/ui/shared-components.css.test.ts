@@ -20,6 +20,7 @@ const SHARED_MODULES = [
   "skeleton/skeleton.module.css",
   "select/PortalSelect.module.css",
   "LogoutConfirmDialog.module.css",
+  "error-state/errorState.module.css",
 ];
 
 /** Layout hooks callers may set; they are not theme values. */
@@ -96,6 +97,26 @@ describe("shared component styles", () => {
     for (const variant of ["primary", "secondary", "ghost", "danger"]) {
       expect(css).toMatch(new RegExp(`\\.${variant} \\{`));
     }
+  });
+
+  it("keeps every button variant, small included, at the 40 px control target", () => {
+    const css = read("button/button.module.css");
+    expect(css).toMatch(/\.button \{[^}]*min-height: var\(--tp-size-control\)/);
+    expect(css).toMatch(/\.small \{[^}]*min-height: var\(--tp-size-control\)/);
+    expect(css).not.toMatch(/min-height: calc\(var\(--tp-size-control\) -/);
+  });
+
+  it("keeps the order date toggles and the filter close control at 40 px", () => {
+    const orders = readFileSync(
+      path.join(SRC, "features/orders/presentation/OrdersFilterPopover.module.css"),
+      "utf8",
+    );
+    expect(orders).toMatch(/\.dateToggle \{[^}]*min-height: var\(--tp-size-control\)/);
+    const products = readFileSync(
+      path.join(SRC, "features/products/presentation/ProductsFilterPopover.module.css"),
+      "utf8",
+    );
+    expect(products).toMatch(/\.closeBtn \{[^}]*width: var\(--tp-size-control\)/);
   });
 
   it("gives inputs the 44 px size, the input border and the focus ring", () => {

@@ -1,10 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-import { EmptyState } from "@/components/ui/empty-state/EmptyState";
-import { Routes } from "@/constants/routes";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { fetchVendorOrdersFromApi } from "@/features/orders/application/orders.api";
 import type { VendorOrder } from "@/features/orders/domain/types";
 import {
@@ -12,33 +10,23 @@ import {
   EMPTY_ORDER_LIST_FILTERS,
   type OrderListFilters,
 } from "@/features/orders/lib/orderListFilters";
-import { OrderStatusBadge } from "@/features/orders/presentation/OrderStatusBadge";
+import { OrdersListPanel } from "@/features/orders/presentation/OrdersListPanel";
 import { OrdersListActions } from "@/features/orders/presentation/OrdersListActions";
 import { OrdersSkeleton } from "@/features/orders/presentation/OrdersSkeleton";
-import { formatEgp } from "@/features/products/domain/currency";
-import { useStrings } from "@/shared/preferences/PreferencesContext";
+import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./orders.module.css";
 
-function formatOrderRef(orderId: string): string {
-  return `#${orderId.slice(0, 8).toUpperCase()}`;
-}
-
-function formatDate(date: Date): string {
-  return date.toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
 
 export function OrdersSection() {
   const strings = useStrings();
+  const { locale } = usePreferences();
   const [orders, setOrders] = useState<VendorOrder[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<OrderListFilters>(EMPTY_ORDER_LIST_FILTERS);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<LoadErrorView | null>(null);
 
   const loadOrders = useCallback(async () => {
     setError(null);
@@ -56,8 +44,8 @@ export function OrdersSection() {
         pageSize: 50,
       });
       setOrders(page.items);
-    } catch {
-      setError(strings.orders.loadError);
+    } catch (loadError) {
+      setError(toLoadErrorView(loadError, strings, strings.orders.loadError));
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +56,7 @@ export function OrdersSection() {
     filters.status,
     orders.length,
     search,
-    strings.orders.loadError,
+    strings,
   ]);
 
   useEffect(() => {
@@ -103,67 +91,15 @@ export function OrdersSection() {
         onFilterChange={setFilters}
       />
 
-      {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
-
-      <article className={styles.panel}>
-        {orders.length === 0 ? (
-          <EmptyState
-            title={isFiltered ? strings.orders.emptyFilteredTitle : strings.orders.emptyTitle}
-            description={
-              isFiltered
-                ? strings.orders.emptyFilteredDescription
-                : strings.orders.emptyDescription
-            }
-            action={
-              isFiltered ? (
-                <button type="button" className={styles.btnSecondary} onClick={clearFilters}>
-                  {strings.orders.clearFilters}
-                </button>
-              ) : null
-            }
-          />
-        ) : (
-          <div className={styles.tableWrap}>
-            <table className={styles.dataTable}>
-              <thead>
-                <tr>
-                  <th>{strings.orders.tableOrder}</th>
-                  <th>{strings.orders.tableCustomer}</th>
-                  <th>{strings.orders.tableItems}</th>
-                  <th className={styles.money}>{strings.orders.tableTotal}</th>
-                  <th>{strings.orders.tableStatus}</th>
-                  <th>{strings.orders.tableDate}</th>
-                  <th>{strings.orders.tableActions}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.vendorOrderId}>
-                    <td>{formatOrderRef(order.orderId)}</td>
-                    <td>{order.buyerDisplayName ?? "—"}</td>
-                    <td>{order.itemCount}</td>
-                    <td className={styles.money}>{formatEgp(order.totalPiastres)}</td>
-                    <td>
-                      <OrderStatusBadge status={order.status} strings={strings} />
-                    </td>
-                    <td>{formatDate(order.placedAt)}</td>
-                    <td>
-                      <div className={styles.actions}>
-                        <Link
-                          href={Routes.vendor.orderDetail(order.vendorOrderId)}
-                          className={styles.linkBtn}
-                        >
-                          {strings.orders.viewOrder}
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </article>
+      <OrdersListPanel
+        orders={orders}
+        error={error}
+        isFiltered={isFiltered}
+        strings={strings}
+        locale={locale}
+        onRetry={() => void loadOrders()}
+        onClearFilters={clearFilters}
+      />
     </section>
   );
 }

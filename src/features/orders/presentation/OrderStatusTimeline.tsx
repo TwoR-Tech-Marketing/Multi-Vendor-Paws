@@ -22,7 +22,7 @@ export function OrderStatusTimeline({ events, strings, formatDate }: OrderStatus
             </span>
             {event.note ? <span className={styles.timelineNote}>{event.note}</span> : null}
           </span>
-          <span>{formatDate(event.at)}</span>
+          <span className={styles.timelineDate}>{formatDate(event.at)}</span>
         </li>
       ))}
     </ol>

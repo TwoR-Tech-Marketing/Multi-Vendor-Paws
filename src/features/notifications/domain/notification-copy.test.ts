@@ -25,7 +25,7 @@ function payout(amount: number): VendorNotification {
 describe("resolveNotificationCopy payout_recorded", () => {
   it("formats the payout amount in EGP in both languages", () => {
     expect(resolveNotificationCopy(payout(250000), en, "en").body).toContain(formatEgp(250000));
-    expect(resolveNotificationCopy(payout(250000), ar, "ar").body).toContain(formatEgp(250000));
+    expect(resolveNotificationCopy(payout(250000), ar, "ar").body).toContain(formatEgp(250000, "ar"));
   });
 
   it("does not throw on a negative or fractional amount", () => {

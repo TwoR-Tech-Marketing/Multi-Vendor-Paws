@@ -32,37 +32,28 @@ export function PortalTopbar({
 
   return (
     <header className={styles.topbar}>
-      <div className={styles.topbarTopRow}>
-        <div className={styles.topbarTopRowLeft}>
-          <button
-            type="button"
-            className={styles.menuBtn}
-            onClick={onMenuOpen}
-            aria-label={strings.portal.openMenu}
-            aria-expanded={isMenuOpen}
-          >
-            <IconMenu />
-          </button>
-          <TestAccountBadge isTest={isTestAccount} />
+      <div className={styles.topbarLeading}>
+        <button
+          type="button"
+          className={styles.menuBtn}
+          onClick={onMenuOpen}
+          aria-label={strings.portal.openMenu}
+          aria-expanded={isMenuOpen}
+        >
+          <IconMenu />
+        </button>
+        {showBack ? <PortalBackButton /> : null}
+        <div className={styles.pageHeaderTitle}>
+          <h1 title={title}>{title}</h1>
+          <p title={subtitle}>{subtitle}</p>
         </div>
-
-        <div className={styles.topbarTopRowRight}>
-          <NotificationBellButton />
-          <StoreAvatarButton />
-        </div>
+        <TestAccountBadge isTest={isTestAccount} />
       </div>
 
-      <div className={styles.pageHeaderCard}>
-        <div className={styles.pageHeaderRow}>
-          {showBack ? <PortalBackButton /> : null}
-          <div className={styles.pageHeaderTitle}>
-            <h1>{title}</h1>
-            <p>{subtitle}</p>
-          </div>
-          {headerActions ? (
-            <div className={styles.pageHeaderActions}>{headerActions}</div>
-          ) : null}
-        </div>
+      <div className={styles.topbarTrailing}>
+        {headerActions ? <div className={styles.pageHeaderActions}>{headerActions}</div> : null}
+        <NotificationBellButton />
+        <StoreAvatarButton />
       </div>
     </header>
   );

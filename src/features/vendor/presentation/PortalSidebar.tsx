@@ -33,7 +33,7 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
   return (
     <aside
       className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ""}`}
-      aria-label="Portal navigation"
+      aria-label={strings.portal.navigationLabel}
     >
       <div className={styles.sidebarBg} aria-hidden />
 
@@ -65,7 +65,7 @@ export function PortalSidebar({ isOpen, onClose }: PortalSidebarProps) {
             const isLocked =
               item.comingSoon || (item.requiresActiveAccount && !isActiveVendor);
             const isLast = index === navItems.length - 1;
-            const iconTone = isActive ? "on-primary" : "default";
+            const iconTone = isActive ? "accent" : "default";
 
             const itemClassName = [
               styles.navItem,

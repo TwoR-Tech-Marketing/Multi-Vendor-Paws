@@ -1,29 +1,35 @@
+/*
+ * Notifications inbox. Unread rows carry the accent line on the start edge and
+ * a dot with a label (never colour alone). Hover is gated behind a fine pointer.
+ */
 .section {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tp-space-4);
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
-  margin-bottom: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .subtitle {
   margin: 0;
-  font-size: var(--text-base);
-  font-weight: var(--font-light);
-  color: var(--color-text);
+  font-size: var(--tp-font-size-14);
+  font-weight: var(--tp-font-weight-medium);
+  color: var(--tp-color-text-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
 .markAllBtn {
-  composes: button primary from "../../../components/ui/button/button.module.css";
+  composes: button secondary from "../../../components/ui/button/button.module.css";
 }
 
 .tabs {
   composes: tabs from "../../../components/ui/tabs/tabs.module.css";
-  margin-bottom: var(--space-4);
 }
 
 .tab {
@@ -34,12 +40,119 @@
   composes: tabActive from "../../../components/ui/tabs/tabs.module.css";
 }
 
-.loadingHint {
-  margin: var(--space-6) 0;
-  font-size: var(--text-sm);
-  font-weight: var(--font-light);
-  color: var(--color-text-muted);
-  text-align: center;
+.alertError {
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border: 1px solid color-mix(in srgb, var(--tp-color-status-danger-fg) 30%, transparent);
+  border-inline-start: 3px solid var(--tp-color-status-danger-fg);
+  border-radius: var(--tp-radius-card);
+  background: var(--tp-color-status-danger-surface);
+  color: var(--tp-color-text-primary);
+  font-size: var(--tp-font-size-14);
+}
+
+.alertError p {
+  margin: 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tp-space-2);
+}
+
+.item {
+  width: 100%;
+  min-height: calc(var(--tp-size-input) + var(--tp-space-4));
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--tp-space-4);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border: 1px solid var(--tp-color-border-default);
+  border-inline-start: 3px solid transparent;
+  border-radius: var(--tp-radius-card);
+  background: var(--tp-color-surface-raised);
+  box-shadow: inset 0 1px 0 var(--tp-effect-edge-highlight);
+  color: var(--tp-color-text-primary);
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color var(--tp-motion-duration-press) var(--tp-motion-ease-out);
+}
+
+.item:focus-visible {
+  outline: 2px solid var(--tp-color-focus);
+  outline-offset: 2px;
+}
+
+.itemUnread {
+  border-inline-start-color: var(--tp-color-line);
+}
+
+.itemText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tp-space-1);
+  min-width: 0;
+}
+
+.itemTitle {
+  font-size: var(--tp-font-size-14);
+  font-weight: var(--tp-font-weight-medium);
+  color: var(--tp-color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.itemUnread .itemTitle {
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
+}
+
+.itemBody {
+  font-size: var(--tp-font-size-14);
+  font-weight: var(--tp-font-weight-regular);
+  color: var(--tp-color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.itemMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--tp-space-2);
+  flex-shrink: 0;
+}
+
+.itemTime {
+  font-size: var(--tp-font-size-12);
+  color: var(--tp-color-text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.unreadDot {
+  width: var(--tp-space-2);
+  height: var(--tp-space-2);
+  border-radius: var(--tp-radius-full);
+  background: var(--tp-color-line);
+}
+
+.loadMoreRow {
+  display: flex;
+  justify-content: center;
+}
+
+.loadMoreBtn {
+  composes: button secondary from "../../../components/ui/button/button.module.css";
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .item:hover {
+    background: var(--tp-color-surface-sunken);
+  }
 }
 
 @media (max-width: 767px) {
@@ -51,108 +164,15 @@
   .markAllBtn {
     width: 100%;
   }
+
+  .item {
+    flex-direction: column;
+    gap: var(--tp-space-2);
+  }
 }
 
-.alertError {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  margin-bottom: var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-error-bg);
-  color: var(--color-error);
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    transition: none;
+  }
 }
-
-.alertError p {
-  margin: 0;
-}
-
-.retryButton {
-  composes: button secondary small from "../../../components/ui/button/button.module.css";
-}
-
-.list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.item {
-  width: 100%;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-4);
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-family: var(--font);
-  text-align: start;
-  cursor: pointer;
-  transition: background-color var(--duration-base);
-}
-
-.item:hover {
-  background: var(--color-surface-2);
-}
-
-.itemUnread {
-  background: var(--color-primary-soft);
-}
-
-.itemText {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-width: 0;
-}
-
-.itemTitle {
-  font-size: var(--text-base);
-  font-weight: var(--font-semibold);
-}
-
-.itemBody {
-  font-size: var(--text-sm);
-  font-weight: var(--font-normal);
-  color: var(--color-text-muted);
-  overflow-wrap: anywhere;
-}
-
-.itemMeta {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  flex-shrink: 0;
-}
-
-.itemTime {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-  white-space: nowrap;
-}
-
-.unreadDot {
-  width: var(--space-2);
-  height: var(--space-2);
-  border-radius: 50%;
-  background: var(--color-primary);
-}
-
-.loadMoreRow {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--space-4);
-}
-
-.loadMoreBtn {
-  composes: button secondary from "../../../components/ui/button/button.module.css";
-}
-
