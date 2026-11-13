@@ -324,6 +324,14 @@ service cloud.firestore {
     }
     match /doctorAvailability/{doctorId} { allow read: if isOwner(doctorId) || isAdmin(); allow write: if false; }
     match /telehealthConfig/{docId}      { allow read: if isSignedIn(); allow write: if false; }
+    // The buyer's consultation checkout (payable target of payment
+    // kind telehealth) and the admin only payment link of a paid session.
+    // Doctors read neither. All writes are Cloud Functions only.
+    match /telehealthCheckouts/{checkoutId} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.buyerUid == request.auth.uid);
+      allow write: if false;
+    }
+    match /telehealthSessionPayments/{sessionId} { allow read: if isAdmin(); allow write: if false; }
 
     // Appointments. All writes are Cloud Functions only. The provider and the
     // buyer of an appointment read it; admins read everything.
@@ -356,6 +364,42 @@ service cloud.firestore {
     // Server-only stock and coupon reservation of a card order waiting
     // for payment (the order doc is client writable).
     match /orderHolds/{id}           { allow read: if isAdmin(); allow write: if false; }
+    // Legacy checkout through the server. Invoice records and the
+    // per uid rate limit counters are written by functions only.
+    match /legacyInvoices/{id}       { allow read: if isAdmin(); allow write: if false; }
+    match /legacyPaymentLimits/{id}  { allow read: if isAdmin(); allow write: if false; }
+
+    // In-app purchases. Functions only. The owner reads their
+    // entitlement (store status card); store records and the server
+    // switch are admin read only; the catalog is read by signed-in users
+    // and edited by admins. users/{uid} plan fields stay owner writable
+    // until the forced update, as the live Fawaterak flow writes them.
+    match /entitlements/{uid} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+      allow write: if false;
+      match /stickers/{stickerId} {
+        allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+        allow write: if false;
+      }
+    }
+    match /iapSubscriptions/{id} { allow read: if isAdmin(); allow write: if false; }
+    match /iapTransactions/{id}  { allow read: if isAdmin(); allow write: if false; }
+    match /iapNotifications/{id} { allow read: if isAdmin(); allow write: if false; }
+    match /iapConfig/{id}        { allow read: if isAdmin(); allow write: if false; }
+    match /iapCatalog/{id} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    // Sticker coins. The owner reads their balance and ledger;
+    // only Cloud Functions write (the ledger is append-only).
+    match /wallets/{uid} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+      allow write: if false;
+    }
+    match /coinLedger/{id} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid);
+      allow write: if false;
+    }
 
     // Appointment reviews. The buyer reads their own; providers read through
     // the review callables, which strip buyer data. Cloud Functions write.
