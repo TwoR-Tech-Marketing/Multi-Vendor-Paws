@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
+
 import {
   fetchGovernoratesForCoverage,
   fetchMyDeliveryCoverage,
@@ -17,6 +20,7 @@ import {
   MIN_RADIUS_METERS,
 } from "@/features/coverage/domain/types";
 import { CoverageMap } from "@/features/coverage/presentation/CoverageMap";
+import { CoverageModeToggle } from "@/features/coverage/presentation/CoverageModeToggle";
 import { CoverageSkeleton } from "@/features/coverage/presentation/CoverageSkeleton";
 import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
@@ -35,6 +39,7 @@ export function CoverageSection() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [vendorType, setVendorType] = useState("store");
@@ -47,6 +52,7 @@ export function CoverageSection() {
 
   const load = useCallback(async () => {
     setIsLoading(true);
+    setLoadError(null);
     setError(null);
     try {
       const [mine, govs] = await Promise.all([
@@ -65,12 +71,12 @@ export function CoverageSection() {
         setMode("governorates");
         setGovernorateIds(coverage.governorateIds || []);
       }
-    } catch {
-      setError(t.loadError);
+    } catch (cause) {
+      setLoadError(toLoadErrorView(cause, strings, t.loadError));
     } finally {
       setIsLoading(false);
     }
-  }, [t.loadError]);
+  }, [strings, t.loadError]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -132,6 +138,16 @@ export function CoverageSection() {
 
   if (isLoading) return <CoverageSkeleton />;
 
+  if (loadError) {
+    return (
+      <div className={styles.sectionStack}>
+        <section className={styles.panel}>
+          <LoadErrorState view={loadError} strings={strings} onRetry={() => void load()} />
+        </section>
+      </div>
+    );
+  }
+
   if (vendorType && vendorType !== "store") {
     return (
       <div className={styles.sectionStack}>
@@ -149,27 +165,18 @@ export function CoverageSection() {
         <h2 className={styles.panelTitle}>{t.title}</h2>
         <p className={styles.hint}>{t.subtitle}</p>
 
-        {error ? <div className={styles.alertError}>{error}</div> : null}
-        {success ? <div className={styles.alertSuccess}>{success}</div> : null}
+        {error ? (
+          <div className={styles.alertError} role="alert">
+            {error}
+          </div>
+        ) : null}
+        {success ? (
+          <div className={styles.alertSuccess} role="status">
+            {success}
+          </div>
+        ) : null}
 
-        <div className={styles.modeRow} role="group" aria-label={t.modeLabel}>
-          <button
-            type="button"
-            className={styles.primaryButton}
-            aria-pressed={mode === "zone"}
-            onClick={() => setMode("zone")}
-          >
-            {t.modeZone}
-          </button>
-          <button
-            type="button"
-            className={styles.primaryButton}
-            aria-pressed={mode === "governorates"}
-            onClick={() => setMode("governorates")}
-          >
-            {t.modeGovernorates}
-          </button>
-        </div>
+        <CoverageModeToggle mode={mode} strings={strings} onChange={setMode} />
 
         {mode === "zone" ? (
           <>
