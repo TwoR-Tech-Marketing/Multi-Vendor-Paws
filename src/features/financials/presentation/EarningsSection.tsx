@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
+
 import {
   fetchVendorEarningsEntries,
   fetchVendorEarningsOverview,
@@ -15,7 +17,7 @@ import type {
 import { EarningsView } from "@/features/financials/presentation/EarningsView";
 import { createRequestTracker } from "@/features/notifications/domain/notification-state";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
-import { useStrings } from "@/shared/preferences/PreferencesContext";
+import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 function appendEntries(
   current: VendorEarningsEntry[],
@@ -27,6 +29,7 @@ function appendEntries(
 
 export function EarningsSection() {
   const strings = useStrings();
+  const { locale } = usePreferences();
   const { profile } = usePortalSession();
   const [paged] = useState(isEarningsLedgerPaged);
   const [summary, setSummary] = useState<VendorEarningsSummary | null>(null);
@@ -36,7 +39,7 @@ export function EarningsSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingEntries, setIsLoadingEntries] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<LoadErrorView | null>(null);
   const [requests] = useState(createRequestTracker);
   const loadError = strings.earnings.loadError;
 
@@ -51,12 +54,12 @@ export function EarningsSection() {
       setSummary(page.summary);
       setEntries(page.entries);
       setNextCursor(page.nextCursor);
-    } catch {
-      if (requests.isLatest(requestId)) setError(loadError);
+    } catch (cause) {
+      if (requests.isLatest(requestId)) setError(toLoadErrorView(cause, strings, loadError));
     } finally {
       if (requests.isLatest(requestId)) setIsLoading(false);
     }
-  }, [requests, loadError]);
+  }, [requests, strings, loadError]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -79,8 +82,8 @@ export function EarningsSection() {
       if (!requests.isLatest(requestId)) return;
       setEntries(page.entries);
       setNextCursor(page.nextCursor);
-    } catch {
-      if (requests.isLatest(requestId)) setError(loadError);
+    } catch (cause) {
+      if (requests.isLatest(requestId)) setError(toLoadErrorView(cause, strings, loadError));
     } finally {
       if (requests.isLatest(requestId)) setIsLoadingEntries(false);
     }
@@ -96,8 +99,8 @@ export function EarningsSection() {
       if (!requests.isLatest(requestId)) return;
       setEntries((current) => appendEntries(current, page.entries));
       setNextCursor(page.nextCursor);
-    } catch {
-      if (requests.isLatest(requestId)) setError(loadError);
+    } catch (cause) {
+      if (requests.isLatest(requestId)) setError(toLoadErrorView(cause, strings, loadError));
     } finally {
       if (requests.isLatest(requestId)) setIsLoadingMore(false);
     }
@@ -106,6 +109,7 @@ export function EarningsSection() {
   return (
     <EarningsView
       strings={strings}
+      locale={locale}
       vendorType={profile.vendorType}
       summary={summary}
       entries={entries}

@@ -1,6 +1,8 @@
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import type { VendorReview } from "@/features/reviews/domain/types";
 import { ReviewCard } from "@/features/reviews/presentation/ReviewCard";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import branchStyles from "@/features/branches/presentation/branches.module.css";
 import styles from "./reviews.module.css";
@@ -8,7 +10,7 @@ import styles from "./reviews.module.css";
 type ReviewsListProps = {
   items: VendorReview[];
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   hasMore: boolean;
   isLoadingMore: boolean;
   onLoadMore: () => void;
@@ -26,7 +28,11 @@ export function ReviewsList({
   onReply,
 }: ReviewsListProps) {
   const t = strings.reviews;
-  if (items.length === 0) return <p className={branchStyles.muted}>{t.empty}</p>;
+  if (items.length === 0) {
+    return (
+      <EmptyState headingLevel={2} live title={t.emptyTitle} description={t.emptyDescription} />
+    );
+  }
   return (
     <>
       <ul className={styles.list}>

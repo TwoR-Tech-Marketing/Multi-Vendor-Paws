@@ -112,6 +112,32 @@ describe("AppointmentsList", () => {
     expect(renderList({ items: [] })).toContain(en.appointments.empty);
     expect(renderList({ hasMore: true })).toContain(en.appointments.loadMore);
   });
+
+  it("shows the empty state with art, one line and a clear filters action when filtered", () => {
+    const plain = renderList({ items: [] });
+    expect(plain).toContain(en.appointments.emptyTitle);
+    expect(plain).toContain('data-testid="empty-state-art"');
+    expect(plain).not.toContain(en.appointments.clearFilters);
+    const filtered = renderList({ items: [], isFiltered: true, onClearFilters: noop });
+    expect(filtered).toContain(en.appointments.clearFilters);
+  });
+
+  it("shows the total as amount then unit with isolated figures in Arabic", () => {
+    const html = renderList({
+      strings: ar,
+      locale: "ar",
+      items: [makeRow({ totalPiastres: 99_999_999_999 })],
+    });
+    expect(html).toContain("\u2066999,999,999.99\u2069 ج.م");
+    expect(html).not.toMatch(/[٠-٩]/);
+  });
+
+  it("isolates the appointment number and gives long names a tooltip", () => {
+    const name = "Abdelrahman".repeat(7);
+    const html = renderList({ items: [makeRow({ buyerFirstName: name, buyerName: name })] });
+    expect(html).toContain(`title="${name}"`);
+    expect(html).toMatch(/<bdi[^>]*>[^<]+<\/bdi>/);
+  });
 });
 
 describe("AppointmentsList statuses", () => {

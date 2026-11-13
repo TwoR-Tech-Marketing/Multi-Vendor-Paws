@@ -37,7 +37,9 @@ export function TelehealthChatView({
     <section className={styles.panel}>
       <div className={styles.panelHeader}>
         <div className={styles.rowMain}>
-          <h2 className={styles.panelTitle}>{session.buyer.displayName}</h2>
+          <h2 className={styles.panelTitle} title={session.buyer.displayName}>
+            {session.buyer.displayName}
+          </h2>
           <div className={styles.rowMeta}>
             {pet ? <span>{`${t.chat.petLabel}: ${pet}`}</span> : null}
             <TelehealthStatusBadge status={session.status} strings={strings} />
@@ -62,7 +64,7 @@ export function TelehealthChatView({
       {session.intakeNote ? (
         <div className={styles.intake}>
           <p className={styles.intakeLabel}>{t.chat.intake}</p>
-          <p className={styles.rowTitle}>{session.intakeNote}</p>
+          <p className={styles.intakeText}>{session.intakeNote}</p>
         </div>
       ) : null}
       {messageList}

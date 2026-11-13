@@ -9,6 +9,7 @@ import {
 import { formatInstant } from "@/features/appointments/presentation/appointments-copy";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import branchStyles from "@/features/branches/presentation/branches.module.css";
 import styles from "./appointments.module.css";
@@ -23,7 +24,7 @@ type ExtraInvoicesCardProps = {
   invoices: ExtraInvoice[];
   allowedActions: readonly AppointmentAction[];
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   disabled: boolean;
   onAdd: () => void;
   onVoid: (invoiceId: string) => void;
@@ -42,7 +43,7 @@ function InvoiceItem({
   index: number;
   canVoid: boolean;
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   disabled: boolean;
   onVoid: (invoiceId: string) => void;
 }) {
@@ -67,15 +68,15 @@ function InvoiceItem({
               <span className={branchStyles.muted}>
                 {t.lineSummary
                   .replace("{quantity}", String(line.quantity))
-                  .replace("{price}", formatEgp(line.unitPricePiastres))}
+                  .replace("{price}", formatEgp(line.unitPricePiastres, locale))}
               </span>
             </span>
-            <span>{formatEgp(line.lineTotalPiastres)}</span>
+            <span>{formatEgp(line.lineTotalPiastres, locale)}</span>
           </li>
         ))}
         <li className={styles.lineTotal}>
           <span>{t.total}</span>
-          <span>{formatEgp(invoice.totalPiastres)}</span>
+          <span>{formatEgp(invoice.totalPiastres, locale)}</span>
         </li>
       </ul>
       {invoice.note ? <p className={styles.rowText}>{invoice.note}</p> : null}

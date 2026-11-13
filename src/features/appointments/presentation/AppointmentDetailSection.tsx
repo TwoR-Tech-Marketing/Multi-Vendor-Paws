@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 
 import { ConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { Routes } from "@/constants/routes";
 import {
   cancelVendorAppointment,
@@ -45,7 +47,7 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
   const t = strings.appointments;
 
   const [detail, setDetail] = useState<AppointmentDetail | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [dialog, setDialog] = useState<DetailDialog | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -56,7 +58,7 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
       setDetail(await getVendorAppointment(appointmentId));
       setLoadError(null);
     } catch (error) {
-      setLoadError(appointmentErrorMessage(error, strings));
+      setLoadError(toLoadErrorView(error, strings, appointmentErrorMessage(error, strings)));
     }
   }, [appointmentId, strings]);
 
@@ -123,17 +125,14 @@ export function AppointmentDetailSection({ appointmentId }: { appointmentId: str
     if (!loadError) return <AppointmentDetailSkeleton />;
     return (
       <div className={branchStyles.stack}>
-        <div className={branchStyles.alertError} role="alert">
-          {loadError}
-        </div>
         <div className={branchStyles.actions}>
-          <button type="button" className={branchStyles.secondaryButton} onClick={() => void load()}>
-            {strings.common.retry}
-          </button>
           <Link href={Routes.vendor.appointments} className={branchStyles.linkButton}>
             {t.detail.back}
           </Link>
         </div>
+        <section className={branchStyles.panel}>
+          <LoadErrorState view={loadError} strings={strings} onRetry={() => void load()} />
+        </section>
       </div>
     );
   }

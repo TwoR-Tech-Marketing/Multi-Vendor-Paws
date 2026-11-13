@@ -98,6 +98,7 @@ describe("StatementView", () => {
     expect(html).toContain(en.statement.cycle.monthly);
     for (const label of Object.values(en.statement.columns)) expect(html).toContain(label);
     expect(html).toContain(en.statement.period.closed);
+    expect(html).toContain('data-tone="neutral" data-status="closed"');
   });
 
   it("shows Cairo period bounds with Western digits", () => {
@@ -125,6 +126,7 @@ describe("StatementView", () => {
       statement: statement({ cycle: "weekly", periods: [period({ closed: false, payouts: [] })] }),
     });
     expect(html).toContain(en.statement.period.open);
+    expect(html).toContain('data-tone="success" data-status="open"');
     expect(html).toContain(en.statement.cycle.weekly);
     expect(html).not.toContain(en.statement.payout.title);
   });
@@ -137,11 +139,15 @@ describe("StatementView", () => {
 
   it("shows the empty state for a statement without periods", () => {
     const html = render({ statement: statement({ currentBalancePiastres: 0, periods: [] }) });
-    expect(html).toContain(en.statement.empty);
+    expect(html).toContain(en.statement.emptyTitle);
+    expect(html).toContain(en.statement.emptyDescription);
   });
 
   it("shows the error with a retry button when loading failed", () => {
-    const html = render({ statement: null, error: en.statement.loadError });
+    const html = render({
+      statement: null,
+      error: { kind: "error", title: en.statement.loadError },
+    });
     expect(html).toContain('role="alert"');
     expect(html).toContain(en.statement.loadError.replace("'", "&#x27;"));
     expect(html).toContain(en.common.retry);

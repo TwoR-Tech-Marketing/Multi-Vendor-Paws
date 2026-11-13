@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import {
   TELEHEALTH_LIST_TABS,
   type TelehealthListTab,
@@ -10,6 +11,7 @@ import { TelehealthQueueList } from "@/features/telehealth/presentation/Teleheal
 import { TelehealthSessionList } from "@/features/telehealth/presentation/TelehealthSessionList";
 import { TelehealthListSkeleton } from "@/features/telehealth/presentation/TelehealthSkeletons";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import styles from "./telehealth.module.css";
 
@@ -20,7 +22,7 @@ export type SessionListState = {
 
 type TelehealthInboxViewProps = {
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   tab: TelehealthListTab;
   tabs: readonly TelehealthListTab[];
   status: TelehealthStatusSummary;
@@ -67,14 +69,14 @@ export function TelehealthInboxView({
           onAccept={onAccept}
         />
       ) : (
-        <p className={styles.muted}>{t.queueOffline}</p>
+        <EmptyState headingLevel={3} title={t.queueOffline} />
       );
     }
     const list = lists[tab];
     return (
       <TelehealthSessionList
         sessions={list.items}
-        emptyText={tab === "active" ? t.activeEmpty : t.endedEmpty}
+        emptyText={tab === "active" ? t.activeEmptyTitle : t.endedEmptyTitle}
         strings={strings}
         locale={locale}
         hasMore={list.nextCursor !== null}
@@ -95,7 +97,7 @@ export function TelehealthInboxView({
           ) : null}
           <span>{t.activeCount.replace("{count}", String(status.activeCount))}</span>
           {status.pricePiastres !== null ? (
-            <span>{t.price.replace("{amount}", formatEgp(status.pricePiastres))}</span>
+            <span>{t.price.replace("{amount}", formatEgp(status.pricePiastres, locale))}</span>
           ) : null}
         </div>
       </div>

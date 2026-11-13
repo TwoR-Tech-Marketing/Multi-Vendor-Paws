@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
+
 import {
   getBranchAvailability,
   listBranchSlots,
@@ -64,7 +67,7 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
   const t = strings.availability;
 
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [data, setData] = useState<EditorData | null>(null);
   const [branch, setBranch] = useState<Branch | null>(null);
   const [services, setServices] = useState<BranchService[]>([]);
@@ -83,7 +86,7 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
   const [week, setWeek] = useState(0);
   const [preview, setPreview] = useState<SlotPreviewData | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<LoadErrorView | null>(null);
 
   const load = useCallback(async () => {
     setLoadError(null);
@@ -101,7 +104,7 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
       setVersionChanged(false);
       setPending(null);
     } catch (error) {
-      setLoadError(availabilityErrorMessage(error, strings));
+      setLoadError(toLoadErrorView(error, strings, availabilityErrorMessage(error, strings)));
     } finally {
       setIsLoading(false);
     }
@@ -137,7 +140,7 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
         }),
       );
     } catch (error) {
-      setPreviewError(availabilityErrorMessage(error, strings));
+      setPreviewError(toLoadErrorView(error, strings, availabilityErrorMessage(error, strings)));
     } finally {
       setPreviewLoading(false);
     }
@@ -191,14 +194,13 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
   if (loadError || !state || !draft || !branch) {
     return (
       <div className={branchStyles.stack}>
-        <div className={branchStyles.alertError} role="alert">
-          {loadError ?? strings.errors.generic}
-        </div>
-        <div className={branchStyles.actions}>
-          <button type="button" className={branchStyles.secondaryButton} onClick={() => void load()}>
-            {strings.common.retry}
-          </button>
-        </div>
+        <section className={branchStyles.panel}>
+          <LoadErrorState
+            view={loadError ?? toLoadErrorView(null, strings, strings.errors.generic, false)}
+            strings={strings}
+            onRetry={() => void load()}
+          />
+        </section>
       </div>
     );
   }
@@ -302,7 +304,12 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
       {tab === "homeVisit" ? (
         <section className={branchStyles.panel} aria-label={t.homeVisit}>
           <h2 className={branchStyles.panelTitle}>{t.homeVisit}</h2>
-          <HomeVisitSummary branchId={branchId} homeVisit={state.homeVisit} strings={strings} />
+          <HomeVisitSummary
+            branchId={branchId}
+            homeVisit={state.homeVisit}
+            strings={strings}
+            locale={locale}
+          />
           {state.homeVisit.enabled ? (
             <>
               <WeeklyEditor
@@ -387,6 +394,7 @@ export function AvailabilitySection({ branchId }: { branchId: string }) {
             preview={preview}
             isLoading={previewLoading}
             error={previewError}
+            onRetry={() => void loadPreview()}
             hasUnsavedChanges={dirty}
             canPrevWeek={week > 0}
             canNextWeek={week < MAX_PREVIEW_WEEK}

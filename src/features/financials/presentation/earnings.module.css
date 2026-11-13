@@ -1,18 +1,18 @@
 .sectionStack {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .statCard {
   composes: card from "../../../components/ui/card/card.module.css";
-  padding: var(--space-4);
+  padding: var(--tp-space-4);
 }
 
 .statCardHighlight {
@@ -22,17 +22,19 @@
 
 .statLabel {
   display: block;
-  margin-bottom: var(--space-2);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text-muted);
+  margin-bottom: var(--tp-space-2);
+  font-size: var(--tp-font-size-13);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-muted);
 }
 
 .statValue {
   margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  font-size: var(--tp-font-size-24);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .panel {
@@ -41,29 +43,29 @@
 }
 
 .panelHeader {
-  padding: var(--space-4) var(--space-6);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--tp-space-4) var(--tp-space-6);
+  border-bottom: 1px solid var(--tp-color-border-default);
 }
 
 .panelHeaderRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--tp-space-3);
 }
 
 .headerLinks {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .panelHeader h2 {
   margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--color-text);
+  font-size: var(--tp-font-size-16);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .tableWrap {
@@ -74,41 +76,36 @@
   composes: table from "../../../components/ui/table/table.module.css";
 }
 
-.alertError {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-error-bg);
-  color: var(--color-error);
-  border: 1px solid var(--color-error-border);
-  font-size: 13px;
-  font-weight: 600;
+.orderLink:focus-visible {
+  outline: 2px solid var(--tp-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--tp-radius-control);
 }
 
-.alertError p {
-  margin: 0;
+.nameCell > a,
+.nameCell > span {
+  display: block;
+  max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.retryButton {
-  composes: button secondary small from "../../../components/ui/button/button.module.css";
+.dateCell {
+  white-space: nowrap;
+  color: var(--tp-color-text-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
 .orderLink {
-  color: var(--color-primary);
-  font-weight: 600;
+  color: var(--tp-color-action-primary);
+  font-weight: var(--tp-font-weight-semibold);
   text-decoration: none;
-}
-
-.orderLink:hover {
-  text-decoration: underline;
 }
 
 .emptyCta {
   composes: button primary from "../../../components/ui/button/button.module.css";
-  margin-top: var(--space-4);
+  margin-top: var(--tp-space-4);
 }
 
 @media (max-width: 900px) {
@@ -138,22 +135,31 @@
 
 .filteredEmpty {
   margin: 0;
-  padding: var(--space-6);
+  padding: var(--tp-space-6);
   text-align: center;
-  color: var(--color-text-muted);
+  color: var(--tp-color-text-muted);
 }
 
 .loadMoreRow {
   display: flex;
   justify-content: center;
-  padding: var(--space-4);
+  padding: var(--tp-space-4);
 }
 
 .loadMoreBtn {
   composes: button secondary from "../../../components/ui/button/button.module.css";
 }
 
-
 .money {
   composes: numeric from "../../../components/ui/table/table.module.css";
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .orderLink:hover {
+    text-decoration: underline;
+  }
+}
+
+.negative {
+  color: var(--tp-color-money-out);
 }

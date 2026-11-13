@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
+
 import { fetchVendorStatement } from "@/features/financials/application/statement.api";
 import type { VendorStatement } from "@/features/financials/domain/statement-types";
 import { StatementView } from "@/features/financials/presentation/StatementView";
@@ -13,7 +15,7 @@ export function StatementSection() {
   const { locale } = usePreferences();
   const [statement, setStatement] = useState<VendorStatement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<LoadErrorView | null>(null);
   const [requests] = useState(createRequestTracker);
   const loadError = strings.statement.loadError;
 
@@ -24,12 +26,12 @@ export function StatementSection() {
     try {
       const next = await fetchVendorStatement();
       if (requests.isLatest(requestId)) setStatement(next);
-    } catch {
-      if (requests.isLatest(requestId)) setError(loadError);
+    } catch (cause) {
+      if (requests.isLatest(requestId)) setError(toLoadErrorView(cause, strings, loadError));
     } finally {
       if (requests.isLatest(requestId)) setIsLoading(false);
     }
-  }, [requests, loadError]);
+  }, [requests, strings, loadError]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {

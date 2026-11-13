@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import {
   createBranch,
   getBranchDeals,
@@ -23,7 +26,8 @@ import { BranchForm } from "@/features/branches/presentation/BranchForm";
 import { PendingBranchesHint } from "@/features/branches/presentation/PendingBranchesHint";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import type { AppStrings } from "@/shared/i18n/types";
-import { useStrings } from "@/shared/preferences/PreferencesContext";
+import type { AppLocale } from "@/shared/preferences/domain/types";
+import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./branches.module.css";
 
@@ -31,6 +35,7 @@ type BranchListProps = {
   branches: Branch[];
   deals: Record<string, BranchDeal>;
   strings: AppStrings;
+  locale: AppLocale;
   readOnly: boolean;
   onAdd: () => void;
   onEdit: (branch: Branch) => void;
@@ -43,6 +48,7 @@ export function BranchList({
   branches,
   deals,
   strings,
+  locale,
   readOnly,
   onAdd,
   onEdit,
@@ -60,6 +66,7 @@ export function BranchList({
       branch={branch}
       deal={deals[branch.branchId] ?? null}
       strings={strings}
+      locale={locale}
       readOnly={readOnly}
       onEdit={onEdit}
       onArchive={onArchive}
@@ -86,7 +93,18 @@ export function BranchList({
         {readOnly ? <p className={styles.muted}>{t.readOnlyHint}</p> : null}
         {!readOnly && atLimit ? <p className={styles.muted}>{t.limitReached}</p> : null}
         {active.length === 0 ? (
-          <p className={styles.muted}>{t.empty}</p>
+          <EmptyState
+            headingLevel={3}
+            title={t.emptyTitle}
+            description={t.emptyDescription}
+            action={
+              !readOnly && !atLimit ? (
+                <button type="button" className={styles.primaryButton} onClick={onAdd}>
+                  {t.add}
+                </button>
+              ) : null
+            }
+          />
         ) : (
           <div className={styles.grid}>{active.map(card)}</div>
         )}
@@ -105,12 +123,13 @@ type Editing = { mode: "new" } | { mode: "edit"; branch: Branch } | null;
 
 export function BranchesSection() {
   const strings = useStrings();
+  const { locale } = usePreferences();
   const t = strings.branches;
   const { sessionKind } = usePortalSession();
   const readOnly = sessionKind === "suspended";
 
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [deals, setDeals] = useState<Record<string, BranchDeal>>({});
   const [editing, setEditing] = useState<Editing>(null);
@@ -130,12 +149,12 @@ export function BranchesSection() {
       const byBranch: Record<string, BranchDeal> = {};
       for (const row of dealSummary?.branches ?? []) byBranch[row.branchId] = row.deal;
       setDeals(byBranch);
-    } catch {
-      setLoadError(t.loadError);
+    } catch (error) {
+      setLoadError(toLoadErrorView(error, strings, t.loadError));
     } finally {
       setIsLoading(false);
     }
-  }, [t.loadError]);
+  }, [strings, t.loadError]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -179,14 +198,9 @@ export function BranchesSection() {
   if (loadError) {
     return (
       <div className={styles.stack}>
-        <div className={styles.alertError} role="alert">
-          {loadError}
-        </div>
-        <div className={styles.actions}>
-          <button type="button" className={styles.secondaryButton} onClick={() => void load()}>
-            {strings.common.retry}
-          </button>
-        </div>
+        <section className={styles.panel}>
+          <LoadErrorState view={loadError} strings={strings} onRetry={() => void load()} />
+        </section>
       </div>
     );
   }
@@ -222,6 +236,7 @@ export function BranchesSection() {
           branches={branches}
           deals={deals}
           strings={strings}
+          locale={locale}
           readOnly={readOnly}
           onAdd={() => {
             setSuccess(null);

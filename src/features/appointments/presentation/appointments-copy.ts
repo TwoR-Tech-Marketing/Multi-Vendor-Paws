@@ -6,8 +6,8 @@ import type {
   AppointmentStatus,
 } from "@/features/appointments/domain/types";
 import { formatDayLabel, formatTime12, isIsoDate } from "@/features/availability/domain/time";
-import { CAIRO_TIME_ZONE } from "@/features/orders/lib/cairoDates";
 import type { AppStrings } from "@/shared/i18n/types";
+import { formatDateTime } from "@/shared/lib/format-date";
 
 /** The call that failed, when its refusal needs the appointment to explain itself. */
 export type AppointmentErrorContext = { action: "flagNoShow"; startMs: number; locale: string };
@@ -58,11 +58,7 @@ export function serviceSummary(
 /** Cairo date and time of an instant, Western digits in both languages. */
 export function formatInstant(ms: number | null, locale: string): string {
   if (ms === null) return "";
-  return new Date(ms).toLocaleString(locale === "ar" ? "ar-EG-u-nu-latn" : "en", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: CAIRO_TIME_ZONE,
-  });
+  return formatDateTime(new Date(ms), locale === "ar" ? "ar" : "en");
 }
 
 export function statusLabel(status: AppointmentStatus, strings: AppStrings): string {

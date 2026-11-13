@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import { Routes } from "@/constants/routes";
 import type { TelehealthSession } from "@/features/telehealth/domain/types";
 import { TelehealthStatusBadge } from "@/features/telehealth/presentation/TelehealthStatusBadge";
@@ -33,12 +34,13 @@ export function TelehealthSessionList({
   onLoadMore,
 }: TelehealthSessionListProps) {
   const t = strings.telehealth;
-  if (sessions.length === 0) return <p className={styles.muted}>{emptyText}</p>;
+  if (sessions.length === 0) return <EmptyState headingLevel={3} live title={emptyText} />;
   return (
     <>
       <ul className={styles.list}>
         {sessions.map((session) => {
           const pet = formatPet(session.buyer);
+          const who = pet ? `${session.buyer.displayName} · ${pet}` : session.buyer.displayName;
           const when = session.endedAtMs
             ? t.endedAt.replace("{time}", formatTelehealthTime(session.endedAtMs, locale))
             : session.lastMessageAtMs
@@ -50,9 +52,8 @@ export function TelehealthSessionList({
           return (
             <li key={session.sessionId} className={styles.row}>
               <div className={styles.rowMain}>
-                <p className={styles.rowTitle}>
-                  {session.buyer.displayName}
-                  {pet ? ` · ${pet}` : ""}
+                <p className={styles.rowTitle} title={who}>
+                  {who}
                 </p>
                 <p className={styles.rowText}>{formatPreview(session, strings)}</p>
                 <div className={styles.rowMeta}>
@@ -63,6 +64,7 @@ export function TelehealthSessionList({
               <Link
                 className={styles.secondaryButton}
                 href={Routes.vendor.telehealthChat(session.sessionId)}
+                aria-label={`${t.openChat} ${session.buyer.displayName}`}
               >
                 {t.openChat}
               </Link>

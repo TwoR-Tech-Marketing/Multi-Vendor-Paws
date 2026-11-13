@@ -4,7 +4,7 @@ import type { AppStrings } from "@/shared/i18n/types";
 
 export const COUPON_STATUS_TONE: Record<CouponStatus, StatusTone> = {
   active: "success",
-  paused: "warning",
+  paused: "hold",
   expired: "neutral",
   exhausted: "neutral",
 };

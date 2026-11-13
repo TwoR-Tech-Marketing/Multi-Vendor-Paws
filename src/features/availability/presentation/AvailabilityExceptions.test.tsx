@@ -230,6 +230,7 @@ describe("SlotPreview", () => {
         }}
         isLoading={false}
         error={null}
+        onRetry={noop}
         hasUnsavedChanges={false}
         canPrevWeek={false}
         canNextWeek
@@ -255,7 +256,18 @@ describe("SlotPreview", () => {
 
   it("shows a skeleton while loading and an error when it fails", () => {
     expect(render({ isLoading: true })).toContain('aria-busy="true"');
-    expect(render({ error: "Oops" })).toContain("Oops");
+    const failed = render({ error: { kind: "error", title: "Oops" } });
+    expect(failed).toContain("Oops");
+    expect(failed).toContain('role="alert"');
+    expect(failed).toContain(en.common.retry);
+    const offline = render({
+      error: {
+        kind: "offline",
+        title: en.states.offlineTitle,
+        description: en.states.offlineDescription,
+      },
+    });
+    expect(offline).toContain('data-kind="offline"');
   });
 
   it("pages by week within the booking window", () => {

@@ -11,6 +11,7 @@ import type {
 import { EXTRA_INVOICE_LIMITS } from "@/features/appointments/domain/types";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import branchStyles from "@/features/branches/presentation/branches.module.css";
 import styles from "./appointments.module.css";
@@ -23,7 +24,7 @@ type InvoiceLineFieldsProps = {
   showErrors: boolean;
   canRemove: boolean;
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   onChange: (line: InvoiceLineDraft) => void;
   onRemove: () => void;
 };
@@ -74,7 +75,10 @@ export function InvoiceLineFields({
               { value: "", label: t.selectService },
               ...services.map((s) => ({
                 value: s.serviceId,
-                label: `${locale === "ar" ? s.nameAr || s.nameEn : s.nameEn} (${formatEgp(s.pricePiastres)})`,
+                label: `${locale === "ar" ? s.nameAr || s.nameEn : s.nameEn} (${formatEgp(
+                  s.pricePiastres,
+                  locale,
+                )})`,
               })),
             ]}
             onChange={(serviceId) => onChange({ ...line, serviceId })}
@@ -132,7 +136,7 @@ export function InvoiceLineFields({
       </div>
       <div className={branchStyles.field}>
         <span className={branchStyles.label}>{t.lineTotal}</span>
-        <span className={styles.amount}>{formatEgp(check?.lineTotalPiastres ?? 0)}</span>
+        <span className={styles.amount}>{formatEgp(check?.lineTotalPiastres ?? 0, locale)}</span>
       </div>
       {canRemove ? (
         <div className={branchStyles.actions}>

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { Ref } from "react";
 
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import {
   TELEHEALTH_PHOTO_THUMB_PX,
   type TelehealthMessage,
@@ -51,7 +52,7 @@ export function TelehealthMessageList({
           </button>
         </div>
       ) : null}
-      {messages.length === 0 ? <p className={styles.muted}>{t.empty}</p> : null}
+      {messages.length === 0 ? <EmptyState headingLevel={3} title={t.empty} /> : null}
       {messages.map((message) => {
         const own = message.senderRole === "doctor";
         return (

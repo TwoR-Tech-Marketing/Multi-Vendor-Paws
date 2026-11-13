@@ -16,3 +16,19 @@ export function formatDateTime(date: Date, locale: AppLocale): string {
     timeZone: CAIRO_TIME_ZONE,
   });
 }
+
+/** Calendar date in Cairo, medium style, in the portal language. */
+export function formatDate(date: Date, locale: AppLocale): string {
+  return date.toLocaleDateString(intlLocale(locale), {
+    dateStyle: "medium",
+    timeZone: CAIRO_TIME_ZONE,
+  });
+}
+
+/** Time of day in Cairo, short style, in the portal language. */
+export function formatTime(date: Date, locale: AppLocale): string {
+  return date.toLocaleTimeString(intlLocale(locale), {
+    timeStyle: "short",
+    timeZone: CAIRO_TIME_ZONE,
+  });
+}

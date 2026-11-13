@@ -3,7 +3,7 @@
   flex-wrap: wrap;
   align-items: flex-end;
   justify-content: space-between;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .branchField {
@@ -13,25 +13,25 @@
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
 }
 
 .chip {
-  min-height: var(--control-height);
-  padding: 0 var(--space-4);
-  border-radius: var(--radius-full);
-  border: 1px solid var(--color-tab-border);
-  background: var(--color-surface);
-  color: var(--color-text);
+  min-height: var(--tp-size-control);
+  padding: 0 var(--tp-space-4);
+  border-radius: var(--tp-radius-full);
+  border: 1px solid color-mix(in srgb, var(--tp-color-action-primary) 30%, transparent);
+  background: var(--tp-color-surface-raised);
+  color: var(--tp-color-text-primary);
   cursor: pointer;
-  font-family: var(--font);
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  font-family: inherit;
+  font-size: var(--tp-font-size-14);
+  font-weight: var(--tp-font-weight-medium);
 }
 
 .chipActive {
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
+  border-color: var(--tp-color-action-primary);
+  background: var(--tp-color-selected-bg);
 }
 
 .list {
@@ -45,9 +45,9 @@
 .card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-4) 0;
-  border-bottom: 1px solid var(--color-border);
+  gap: var(--tp-space-3);
+  padding: var(--tp-space-4) 0;
+  border-bottom: 1px solid var(--tp-color-border-default);
 }
 
 .list > li:last-child .card {
@@ -59,28 +59,33 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--tp-space-3);
 }
 
 .cardWho {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--tp-space-1);
+  min-width: 0;
+  max-width: 100%;
 }
 
 .buyer {
   margin: 0;
-  font-size: var(--text-base);
-  font-weight: var(--font-semibold);
-  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--tp-font-size-16);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .cardMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-4);
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  gap: var(--tp-space-2) var(--tp-space-4);
+  font-size: var(--tp-font-size-12);
+  color: var(--tp-color-text-muted);
 }
 
 .edited {
@@ -90,12 +95,12 @@
 .stars {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--tp-space-1);
 }
 
 .star,
 .starFilled {
-  font-size: var(--text-base);
+  font-size: var(--tp-font-size-16);
   line-height: 1;
 }
 
@@ -105,41 +110,45 @@
 }
 
 .star {
-  color: var(--color-border);
+  color: var(--tp-color-border-default);
 }
 
 .starFilled {
-  color: var(--color-warning);
+  color: var(--tp-color-status-warning-fg);
 }
 
 .starValue {
-  margin-inline-start: var(--space-1);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--color-text);
+  margin-inline-start: var(--tp-space-1);
+  font-size: var(--tp-font-size-14);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .scores {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-6);
+  gap: var(--tp-space-2) var(--tp-space-6);
   margin: 0;
 }
 
 .score {
   display: flex;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
+  gap: var(--tp-space-2);
+  font-size: var(--tp-font-size-14);
 }
 
 .score dt {
-  color: var(--color-text-muted);
+  color: var(--tp-color-text-muted);
+}
+
+.scoreValue {
+  font-variant-numeric: tabular-nums;
 }
 
 .score dd {
   margin: 0;
-  font-weight: var(--font-semibold);
-  color: var(--color-text);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .tags {
@@ -148,22 +157,22 @@
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
 }
 
 .tag {
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
-  background: var(--color-primary-soft);
-  color: var(--color-text);
-  font-size: var(--text-xs);
-  font-weight: var(--font-medium);
+  padding: var(--tp-space-1) var(--tp-space-3);
+  border-radius: var(--tp-radius-full);
+  background: var(--tp-color-selected-bg);
+  color: var(--tp-color-text-primary);
+  font-size: var(--tp-font-size-12);
+  font-weight: var(--tp-font-weight-medium);
 }
 
 .comment {
   margin: 0;
-  font-size: var(--text-sm);
-  color: var(--color-text);
+  font-size: var(--tp-font-size-14);
+  color: var(--tp-color-text-primary);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -171,32 +180,36 @@
 .reply {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-3) var(--space-4);
-  border-inline-start: 3px solid var(--color-primary);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-2);
+  gap: var(--tp-space-1);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border-inline-start: 3px solid var(--tp-color-action-primary);
+  border-radius: var(--tp-radius-control);
+  background: var(--tp-color-surface-sunken);
 }
 
 .replyLabel {
   margin: 0;
-  font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
-  color: var(--color-text-muted);
+  font-size: var(--tp-font-size-12);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-muted);
 }
 
 .notice {
   margin: 0;
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius);
-  border: 1px solid var(--color-pending-border);
-  background: var(--color-pending-surface);
-  color: var(--color-text);
-  font-size: var(--text-sm);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border-radius: var(--tp-radius-card);
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--tp-color-status-warning-fg) 30%,
+      var(--tp-color-status-warning-surface)
+    );
+  background: var(--tp-color-status-warning-surface);
+  color: var(--tp-color-text-primary);
+  font-size: var(--tp-font-size-14);
 }
 
 .textarea {
   composes: textarea from "../../../components/ui/field/field.module.css";
   min-height: calc(var(--tp-size-input) * 3);
 }
-

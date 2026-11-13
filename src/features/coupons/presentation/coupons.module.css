@@ -1,15 +1,15 @@
 .stack {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--tp-space-6);
 }
 
 .panel {
   composes: card from "../../../components/ui/card/card.module.css";
-  padding: var(--space-6);
+  padding: var(--tp-space-6);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .panelHeader {
@@ -17,39 +17,39 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--tp-space-3);
 }
 
 .panelTitle {
   margin: 0;
-  font-size: var(--text-lg);
-  font-weight: var(--font-semibold);
-  color: var(--color-text);
+  font-size: var(--tp-font-size-18);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .codeTitle {
   margin: 0;
-  font-size: var(--text-xl);
-  font-weight: var(--font-bold);
-  color: var(--color-text);
+  font-size: var(--tp-font-size-20);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
   letter-spacing: 0.04em;
   overflow-wrap: anywhere;
 }
 
 .muted {
   margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
+  color: var(--tp-color-text-muted);
+  font-size: var(--tp-font-size-14);
 }
 
 .hintList {
   margin: 0;
-  padding-inline-start: var(--space-4);
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
+  padding-inline-start: var(--tp-space-4);
+  color: var(--tp-color-text-muted);
+  font-size: var(--tp-font-size-14);
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--tp-space-1);
 }
 
 .tabs {
@@ -68,7 +68,7 @@
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
   align-items: center;
 }
 
@@ -81,42 +81,57 @@
 }
 
 .alertError {
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius);
-  border: 1px solid var(--color-error-border);
-  background: var(--color-error-bg);
-  color: var(--color-error);
-  font-size: var(--text-sm);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border-radius: var(--tp-radius-card);
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--tp-color-status-danger-fg) 30%,
+      var(--tp-color-status-danger-surface)
+    );
+  background: var(--tp-color-status-danger-surface);
+  color: var(--tp-color-status-danger-fg);
+  font-size: var(--tp-font-size-14);
 }
 
 .alertSuccess {
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius);
-  border: 1px solid var(--color-success-border);
-  background: var(--color-success-surface);
-  color: var(--color-success);
-  font-size: var(--text-sm);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border-radius: var(--tp-radius-card);
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--tp-color-status-success-fg) 30%,
+      var(--tp-color-status-success-surface)
+    );
+  background: var(--tp-color-status-success-surface);
+  color: var(--tp-color-status-success-fg);
+  font-size: var(--tp-font-size-14);
 }
 
 .alertInfo {
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius);
-  border: 1px solid var(--color-pending-border);
-  background: var(--color-pending-surface);
-  color: var(--color-text);
-  font-size: var(--text-sm);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border-radius: var(--tp-radius-card);
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--tp-color-status-warning-fg) 30%,
+      var(--tp-color-status-warning-surface)
+    );
+  background: var(--tp-color-status-warning-surface);
+  color: var(--tp-color-text-primary);
+  font-size: var(--tp-font-size-14);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .fieldGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .field {
@@ -152,60 +167,87 @@
 }
 
 .code {
-  font-weight: var(--font-semibold);
+  font-weight: var(--tp-font-weight-semibold);
   letter-spacing: 0.04em;
+}
+
+.code bdi {
+  display: block;
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.numeric {
+  composes: numeric from "../../../components/ui/table/table.module.css";
+}
+
+.dateCell {
+  white-space: nowrap;
+  color: var(--tp-color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--tp-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--tp-radius-control);
 }
 
 .subLine {
   display: block;
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  font-size: var(--tp-font-size-12);
+  color: var(--tp-color-text-muted);
 }
 
 .statGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .stat {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-2);
+  gap: var(--tp-space-1);
+  padding: var(--tp-space-4);
+  border: 1px solid var(--tp-color-border-default);
+  border-radius: var(--tp-radius-card);
+  background: var(--tp-color-surface-sunken);
 }
 
 .statLabel {
   margin: 0;
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  font-size: var(--tp-font-size-12);
+  color: var(--tp-color-text-muted);
 }
 
 .statValue {
   margin: 0;
-  font-size: var(--text-lg);
-  font-weight: var(--font-semibold);
-  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  font-size: var(--tp-font-size-18);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .link {
-  color: var(--color-primary);
-  font-weight: var(--font-medium);
+  color: var(--tp-color-action-primary);
+  font-weight: var(--tp-font-weight-medium);
   text-decoration: none;
 }
 
 .skeletonRow {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--tp-space-3);
 }
 
 @media (max-width: 640px) {
   .panel {
-    padding: var(--space-4);
+    padding: var(--tp-space-4);
   }
 }
 

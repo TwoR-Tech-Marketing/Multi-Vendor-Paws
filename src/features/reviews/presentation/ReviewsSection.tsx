@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { listBranches } from "@/features/branches/application/branches.api";
 import { listMyVendorReviews, replyToReview } from "@/features/reviews/application/reviews.api";
 import { mapReviewError } from "@/features/reviews/domain/errors";
@@ -36,7 +38,7 @@ export function ReviewsSection() {
   const [list, setList] = useState<ListState | null>(null);
   const [isListLoading, setIsListLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<LoadErrorView | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [replyTarget, setReplyTarget] = useState<VendorReview | null>(null);
   const [replyError, setReplyError] = useState<string | null>(null);
@@ -56,13 +58,13 @@ export function ReviewsSection() {
         if (id !== requestRef.current) return;
         setList(page);
         setError(null);
-      } catch {
-        if (id === requestRef.current) setError(t.loadError);
+      } catch (loadError) {
+        if (id === requestRef.current) setError(toLoadErrorView(loadError, strings, t.loadError));
       } finally {
         if (id === requestRef.current) setIsListLoading(false);
       }
     },
-    [t.loadError],
+    [strings, t.loadError],
   );
 
   useEffect(() => {
@@ -98,7 +100,7 @@ export function ReviewsSection() {
       if (id !== requestRef.current) return;
       setList((prev) => ({ items: [...(prev?.items ?? []), ...page.items], nextCursor: page.nextCursor }));
     } catch (loadError) {
-      setError(reviewErrorMessage(loadError, strings));
+      setError(toLoadErrorView(loadError, strings, reviewErrorMessage(loadError, strings)));
     } finally {
       setIsLoadingMore(false);
     }
@@ -137,17 +139,12 @@ export function ReviewsSection() {
 
   if (!list && isListLoading) return <ReviewsSkeleton />;
 
+  const hasRows = (list?.items.length ?? 0) > 0;
+
   return (
     <div className={branchStyles.stack}>
-      {error ? (
-        <div className={branchStyles.alertError} role="alert">
-          {error}
-          <div className={branchStyles.actions}>
-            <button type="button" className={branchStyles.secondaryButton} onClick={() => void load(query)}>
-              {strings.common.retry}
-            </button>
-          </div>
-        </div>
+      {error && hasRows ? (
+        <LoadErrorState view={error} strings={strings} onRetry={() => void load(query)} compact />
       ) : null}
       {success ? (
         <div className={branchStyles.alertSuccess} role="status">
@@ -165,6 +162,8 @@ export function ReviewsSection() {
         />
         {isListLoading ? (
           <ReviewListSkeleton />
+        ) : error && !hasRows ? (
+          <LoadErrorState view={error} strings={strings} onRetry={() => void load(query)} />
         ) : list ? (
           <ReviewsList
             items={list.items}

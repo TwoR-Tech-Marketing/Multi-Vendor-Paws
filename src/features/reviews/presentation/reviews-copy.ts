@@ -1,7 +1,7 @@
-import { CAIRO_TIME_ZONE } from "@/features/orders/lib/cairoDates";
 import { mapReviewError } from "@/features/reviews/domain/errors";
 import type { LocalizedServiceName, VendorReview } from "@/features/reviews/domain/types";
 import type { AppStrings } from "@/shared/i18n/types";
+import { formatDate } from "@/shared/lib/format-date";
 
 /** Localized copy for any review callable error. Never the raw message. */
 export function reviewErrorMessage(error: unknown, strings: AppStrings): string {
@@ -21,8 +21,5 @@ export function serviceName(name: LocalizedServiceName, locale: string): string 
 /** Cairo calendar date, Western digits in both languages. */
 export function formatReviewDate(ms: number | null, locale: string): string {
   if (ms === null) return "";
-  return new Date(ms).toLocaleDateString(locale === "ar" ? "ar-EG-u-nu-latn" : "en", {
-    dateStyle: "medium",
-    timeZone: CAIRO_TIME_ZONE,
-  });
+  return formatDate(new Date(ms), locale === "ar" ? "ar" : "en");
 }

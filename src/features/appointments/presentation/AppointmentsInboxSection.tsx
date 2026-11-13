@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
+
 import { listVendorAppointments } from "@/features/appointments/application/appointments.api";
 import {
   DEFAULT_APPOINTMENT_FILTERS,
@@ -38,7 +41,7 @@ export function AppointmentsInboxSection() {
   const [list, setList] = useState<ListState | null>(null);
   const [isListLoading, setIsListLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<LoadErrorView | null>(null);
   const requestRef = useRef(0);
 
   const load = useCallback(
@@ -55,13 +58,13 @@ export function AppointmentsInboxSection() {
         if (id !== requestRef.current) return;
         setList({ items: page.items, nextCursor: page.nextCursor });
         setError(null);
-      } catch {
-        if (id === requestRef.current) setError(t.loadError);
+      } catch (loadError) {
+        if (id === requestRef.current) setError(toLoadErrorView(loadError, strings, t.loadError));
       } finally {
         if (id === requestRef.current) setIsListLoading(false);
       }
     },
-    [t.loadError],
+    [strings, t.loadError],
   );
 
   useEffect(() => {
@@ -108,7 +111,7 @@ export function AppointmentsInboxSection() {
         nextCursor: page.nextCursor,
       }));
     } catch (loadError) {
-      setError(appointmentErrorMessage(loadError, strings));
+      setError(toLoadErrorView(loadError, strings, appointmentErrorMessage(loadError, strings)));
     } finally {
       setIsLoadingMore(false);
     }
@@ -116,21 +119,13 @@ export function AppointmentsInboxSection() {
 
   if (!list && isListLoading) return <AppointmentsInboxSkeleton />;
 
+  const hasRows = (list?.items.length ?? 0) > 0;
+  const isFiltered = JSON.stringify(filters) !== JSON.stringify(DEFAULT_APPOINTMENT_FILTERS);
+
   return (
     <div className={branchStyles.stack}>
-      {error ? (
-        <div className={branchStyles.alertError} role="alert">
-          {error}
-          <div className={branchStyles.actions}>
-            <button
-              type="button"
-              className={branchStyles.secondaryButton}
-              onClick={() => void load(filters)}
-            >
-              {strings.common.retry}
-            </button>
-          </div>
-        </div>
+      {error && hasRows ? (
+        <LoadErrorState view={error} strings={strings} onRetry={() => void load(filters)} compact />
       ) : null}
       <section className={branchStyles.panel} aria-label={t.title}>
         <AppointmentsFilters
@@ -142,6 +137,8 @@ export function AppointmentsInboxSection() {
         />
         {isListLoading ? (
           <AppointmentListSkeleton />
+        ) : error && !hasRows ? (
+          <LoadErrorState view={error} strings={strings} onRetry={() => void load(filters)} />
         ) : list ? (
           <AppointmentsList
             items={list.items}
@@ -149,7 +146,9 @@ export function AppointmentsInboxSection() {
             locale={locale}
             hasMore={list.nextCursor !== null}
             isLoadingMore={isLoadingMore}
+            isFiltered={isFiltered}
             onLoadMore={() => void loadMore()}
+            onClearFilters={() => setFilters(DEFAULT_APPOINTMENT_FILTERS)}
           />
         ) : null}
       </section>

@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import type { TelehealthQueueItem } from "@/features/telehealth/domain/types";
 import {
   formatPet,
@@ -24,18 +25,22 @@ export function TelehealthQueueList({
   onAccept,
 }: TelehealthQueueListProps) {
   const t = strings.telehealth;
-  if (items.length === 0) return <p className={styles.muted}>{t.queueEmpty}</p>;
+  if (items.length === 0) {
+    return (
+      <EmptyState headingLevel={3} live title={t.queueEmptyTitle} description={t.queueEmpty} />
+    );
+  }
   return (
     <ul className={styles.list}>
       {items.map((item) => {
         const pet = formatPet(item.buyer);
+        const who = pet ? `${item.buyer.displayName} · ${pet}` : item.buyer.displayName;
         const isAccepting = acceptingId === item.sessionId;
         return (
           <li key={item.sessionId} className={styles.row}>
             <div className={styles.rowMain}>
-              <p className={styles.rowTitle}>
-                {item.buyer.displayName}
-                {pet ? ` · ${pet}` : ""}
+              <p className={styles.rowTitle} title={who}>
+                {who}
               </p>
               <p className={styles.rowText}>{item.intakeNote}</p>
               <div className={styles.rowMeta}>
@@ -51,6 +56,7 @@ export function TelehealthQueueList({
               type="button"
               className={styles.primaryButton}
               disabled={acceptingId !== null}
+              aria-label={`${isAccepting ? t.accepting : t.accept} ${item.buyer.displayName}`}
               onClick={() => onAccept(item.sessionId)}
             >
               {isAccepting ? t.accepting : t.accept}

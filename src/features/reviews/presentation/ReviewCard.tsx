@@ -6,6 +6,7 @@ import {
   serviceName,
 } from "@/features/reviews/presentation/reviews-copy";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import branchStyles from "@/features/branches/presentation/branches.module.css";
 import styles from "./reviews.module.css";
@@ -13,7 +14,7 @@ import styles from "./reviews.module.css";
 type ReviewCardProps = {
   review: VendorReview;
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   onReply: (review: VendorReview) => void;
 };
 
@@ -25,7 +26,9 @@ export function ReviewCard({ review, strings, locale, onReply }: ReviewCardProps
     <article className={styles.card}>
       <header className={styles.cardHeader}>
         <div className={styles.cardWho}>
-          <p className={styles.buyer}>{buyerLabel(review, strings)}</p>
+          <p className={styles.buyer} title={buyerLabel(review, strings)}>
+            {buyerLabel(review, strings)}
+          </p>
           <StarRating tenths={review.overallTenths} strings={strings} />
         </div>
         <div className={styles.cardMeta}>
@@ -39,7 +42,9 @@ export function ReviewCard({ review, strings, locale, onReply }: ReviewCardProps
         {review.ratings.map((rating) => (
           <div key={rating.id} className={styles.score}>
             <dt>{t.categories[rating.id]}</dt>
-            <dd>{t.score.replace("{value}", String(rating.value))}</dd>
+            <dd className={styles.scoreValue}>
+              {t.score.replace("{value}", String(rating.value))}
+            </dd>
           </div>
         ))}
       </dl>
@@ -64,7 +69,12 @@ export function ReviewCard({ review, strings, locale, onReply }: ReviewCardProps
         </div>
       ) : review.canReply ? (
         <div className={branchStyles.actions}>
-          <button type="button" className={branchStyles.secondaryButton} onClick={() => onReply(review)}>
+          <button
+            type="button"
+            className={branchStyles.secondaryButton}
+            aria-label={`${t.reply.action} ${buyerLabel(review, strings)}`}
+            onClick={() => onReply(review)}
+          >
             {t.reply.action}
           </button>
         </div>

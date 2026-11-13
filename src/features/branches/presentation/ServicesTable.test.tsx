@@ -26,7 +26,7 @@ function render(props: Partial<Parameters<typeof ServicesTable>[0]> = {}) {
 
 describe("ServicesTable", () => {
   it("shows the empty state", () => {
-    expect(render({ services: [] })).toContain(en.services.empty);
+    expect(render({ services: [] })).toContain(en.services.emptyTitle);
   });
 
   it("shows name, piastres as EGP, duration and status in English", () => {
@@ -43,6 +43,7 @@ describe("ServicesTable", () => {
     const html = render({ strings: ar, locale: "ar" });
     expect(html).toContain("كشف");
     expect(html).toContain(ar.services.durationMinutes.replace("{count}", "30"));
+    expect(html).toContain("\u2066250.00\u2069 ج.م");
   });
 
   it("shows free services, photo thumbs and restore for archived rows", () => {

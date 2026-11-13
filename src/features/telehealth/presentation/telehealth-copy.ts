@@ -4,8 +4,8 @@ import {
   type TelehealthBuyer,
   type TelehealthSession,
 } from "@/features/telehealth/domain/types";
-import { CAIRO_TIME_ZONE } from "@/features/orders/lib/cairoDates";
 import type { AppStrings } from "@/shared/i18n/types";
+import { formatDateTime, formatTime } from "@/shared/lib/format-date";
 
 /** Localized copy for any telehealth callable error. Never the raw message. */
 export function telehealthErrorMessage(error: unknown, strings: AppStrings): string {
@@ -16,20 +16,13 @@ export function telehealthErrorMessage(error: unknown, strings: AppStrings): str
 /** Cairo date and time with Western digits in both locales. */
 export function formatTelehealthTime(ms: number | null, locale: string): string {
   if (ms === null) return "";
-  return new Date(ms).toLocaleString(locale === "ar" ? "ar-EG-u-nu-latn" : "en", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: CAIRO_TIME_ZONE,
-  });
+  return formatDateTime(new Date(ms), locale === "ar" ? "ar" : "en");
 }
 
 /** Cairo time of day only, for chat bubbles and queue expiry. */
 export function formatTelehealthClock(ms: number | null, locale: string): string {
   if (ms === null) return "";
-  return new Date(ms).toLocaleTimeString(locale === "ar" ? "ar-EG-u-nu-latn" : "en", {
-    timeStyle: "short",
-    timeZone: CAIRO_TIME_ZONE,
-  });
+  return formatTime(new Date(ms), locale === "ar" ? "ar" : "en");
 }
 
 /** "Max (dog)", "Max", "dog" or empty. Pet details are display data from the buyer. */
