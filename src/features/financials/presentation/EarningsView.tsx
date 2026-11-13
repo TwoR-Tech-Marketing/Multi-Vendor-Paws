@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import type { LoadErrorView } from "@/components/ui/error-state/load-error";
 import { Routes } from "@/constants/routes";
 import type {
   EarningsEntryFilter,
@@ -14,16 +16,20 @@ import {
 import { EarningsTypeTabs } from "@/features/financials/presentation/EarningsTypeTabs";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
+import { formatDateTime } from "@/shared/lib/format-date";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import styles from "./earnings.module.css";
 
 export type EarningsViewProps = {
   strings: AppStrings;
+  locale: AppLocale;
   vendorType?: string;
   summary: VendorEarningsSummary | null;
   entries: VendorEarningsEntry[];
   isLoading: boolean;
-  error: string | null;
+  /** Load failure: full state before the first load, compact above kept data. */
+  error: LoadErrorView | null;
   /** Type tabs and load more, callable source only. */
   paged: boolean;
   tab: EarningsEntryFilter;
@@ -35,23 +41,32 @@ export type EarningsViewProps = {
   onRetry: () => void;
 };
 
-function formatDate(date: Date): string {
-  return date.toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
+type SummaryCardProps = {
+  label: string;
+  piastres: number;
+  locale: AppLocale;
+  highlight?: boolean;
+};
 
-function SummaryCard({ label, piastres, highlight }: { label: string; piastres: number; highlight?: boolean }) {
+function SummaryCard({ label, piastres, locale, highlight }: SummaryCardProps) {
+  const amount = formatEgp(piastres, locale);
   return (
     <article className={`${styles.statCard} ${highlight ? styles.statCardHighlight : ""}`}>
       <span className={styles.statLabel}>{label}</span>
-      <p className={styles.statValue}>{formatEgp(piastres)}</p>
+      <p className={styles.statValue} title={amount}>
+        {amount}
+      </p>
     </article>
   );
 }
 
-function EntriesTable({ strings, entries }: { strings: AppStrings; entries: VendorEarningsEntry[] }) {
+type EntriesTableProps = {
+  strings: AppStrings;
+  locale: AppLocale;
+  entries: VendorEarningsEntry[];
+};
+
+function EntriesTable({ strings, locale, entries }: EntriesTableProps) {
   return (
     <div className={styles.tableWrap}>
       <table className={styles.dataTable}>
@@ -68,24 +83,25 @@ function EntriesTable({ strings, entries }: { strings: AppStrings; entries: Vend
         <tbody>
           {entries.map((entry) => (
             <tr key={entry.entryId}>
-              <td>{formatDate(entry.createdAt)}</td>
+              <td className={styles.dateCell}>{formatDateTime(entry.createdAt, locale)}</td>
               <td>{strings.earnings.typeLabels[entry.type]}</td>
-              <td>
+              <td className={styles.nameCell}>
                 {entry.vendorOrderId ? (
                   <Link
                     href={Routes.vendor.orderDetail(entry.vendorOrderId)}
                     className={styles.orderLink}
-                    aria-label={strings.earnings.viewOrder}
+                    title={entry.description ?? undefined}
+                    aria-label={`${strings.earnings.viewOrder} ${entry.description ?? ""}`.trim()}
                   >
-                    {entry.description ?? "-"}
+                    <bdi>{entry.description ?? "-"}</bdi>
                   </Link>
                 ) : (
-                  (entry.description ?? "-")
+                  <span title={entry.description ?? undefined}>{entry.description ?? "-"}</span>
                 )}
               </td>
-              <td className={styles.money}>{formatEgp(entry.amountPiastres)}</td>
-              <td className={styles.money}>{formatEgp(entry.commissionPiastres)}</td>
-              <td className={styles.money}>{formatEgp(entry.netPiastres)}</td>
+              <td className={styles.money}>{formatEgp(entry.amountPiastres, locale)}</td>
+              <td className={styles.money}>{formatEgp(entry.commissionPiastres, locale)}</td>
+              <td className={styles.money}>{formatEgp(entry.netPiastres, locale)}</td>
             </tr>
           ))}
         </tbody>
@@ -95,15 +111,24 @@ function EntriesTable({ strings, entries }: { strings: AppStrings; entries: Vend
 }
 
 function LedgerBody(props: EarningsViewProps) {
-  const { strings, entries, paged, tab } = props;
+  const { strings, locale, entries, paged, tab } = props;
   if (paged && props.isLoadingEntries) return <EarningsRowsSkeleton label={strings.common.loading} />;
   if (entries.length === 0) {
-    if (paged && tab !== "all") return <p className={styles.filteredEmpty}>{strings.earnings.entries.empty}</p>;
+    if (props.error) {
+      return <LoadErrorState view={props.error} strings={strings} onRetry={props.onRetry} />;
+    }
+    if (paged && tab !== "all") {
+      return (
+        <p className={styles.filteredEmpty} role="status">
+          {strings.earnings.entries.empty}
+        </p>
+      );
+    }
     return <EarningsEmptyState strings={strings} vendorType={props.vendorType} />;
   }
   return (
     <>
-      <EntriesTable strings={strings} entries={entries} />
+      <EntriesTable strings={strings} locale={locale} entries={entries} />
       {paged && props.hasMore ? (
         <div className={styles.loadMoreRow}>
           <button
@@ -121,34 +146,44 @@ function LedgerBody(props: EarningsViewProps) {
 }
 
 export function EarningsView(props: EarningsViewProps) {
-  const { strings, summary, error } = props;
+  const { strings, locale, summary, error } = props;
   if (props.isLoading) return <EarningsSkeleton />;
+
+  if (error && !summary) {
+    return (
+      <section className={styles.sectionStack}>
+        <article className={styles.panel}>
+          <LoadErrorState view={error} strings={strings} onRetry={props.onRetry} />
+        </article>
+      </section>
+    );
+  }
 
   return (
     <section className={styles.sectionStack}>
-      {error ? (
-        <div className={styles.alertError} role="alert">
-          <p>{error}</p>
-          <button type="button" className={styles.retryButton} onClick={props.onRetry}>
-            {strings.common.retry}
-          </button>
-        </div>
+      {error && props.entries.length > 0 ? (
+        <LoadErrorState view={error} strings={strings} onRetry={props.onRetry} compact />
       ) : null}
 
       <div className={styles.statsGrid}>
-        <SummaryCard label={strings.earnings.summarySales} piastres={summary?.totalSalesPiastres ?? 0} />
+        <SummaryCard label={strings.earnings.summarySales} piastres={summary?.totalSalesPiastres ?? 0}
+          locale={locale}
+        />
         <SummaryCard
           label={strings.earnings.summaryCommission}
           piastres={summary?.totalCommissionPiastres ?? 0}
+          locale={locale}
         />
         <SummaryCard
           label={strings.earnings.summaryNet}
           piastres={summary?.netEarningsPiastres ?? 0}
+          locale={locale}
           highlight
         />
         <SummaryCard
           label={strings.earnings.summaryPending}
           piastres={summary?.pendingPayoutPiastres ?? 0}
+          locale={locale}
         />
       </div>
 

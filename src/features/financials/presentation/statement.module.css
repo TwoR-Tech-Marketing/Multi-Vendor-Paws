@@ -1,46 +1,51 @@
 .sectionStack {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .summaryGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .summaryCard {
   composes: card from "../../../components/ui/card/card.module.css";
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
+  gap: var(--tp-space-2);
+  padding: var(--tp-space-4);
 }
 
 .summaryHighlight {
-  background: var(--color-primary-soft);
-  border-color: var(--color-primary);
+  background: var(--tp-color-selected-bg);
+  border-color: var(--tp-color-action-primary);
 }
 
 .summaryLabel {
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--color-text-muted);
+  font-size: var(--tp-font-size-14);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-muted);
 }
 
 .summaryValue {
   margin: 0;
-  font-size: var(--text-2xl);
-  font-weight: var(--font-bold);
-  color: var(--color-text);
+  overflow-wrap: anywhere;
+  font-size: var(--tp-font-size-24);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
+}
+
+.summaryMoney {
+  font-variant-numeric: tabular-nums;
 }
 
 .sectionTitle {
   margin: 0;
-  font-size: var(--text-base);
-  font-weight: var(--font-bold);
-  color: var(--color-text);
+  font-size: var(--tp-font-size-16);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .titleRow {
@@ -48,18 +53,14 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--tp-space-3);
 }
 
 .link {
-  color: var(--color-primary);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
+  color: var(--tp-color-action-primary);
+  font-size: var(--tp-font-size-14);
+  font-weight: var(--tp-font-weight-semibold);
   text-decoration: none;
-}
-
-.link:hover {
-  text-decoration: underline;
 }
 
 .periodCard {
@@ -71,49 +72,37 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-4) var(--space-6);
-  border-bottom: 1px solid var(--color-border);
+  gap: var(--tp-space-3);
+  padding: var(--tp-space-4) var(--tp-space-6);
+  border-bottom: 1px solid var(--tp-color-border-default);
 }
 
 .periodTitle {
   margin: 0;
-  font-size: var(--text-base);
-  font-weight: var(--font-bold);
-  color: var(--color-text);
-}
-
-.badge {
-  composes: badge from "../../../components/ui/badge/statusBadge.module.css";
-}
-
-.badgeOpen {
-  composes: warning from "../../../components/ui/badge/statusBadge.module.css";
-}
-
-.badgeClosed {
-  composes: success from "../../../components/ui/badge/statusBadge.module.css";
+  font-size: var(--tp-font-size-16);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .badgeSkeleton {
-  width: var(--space-16);
-  height: var(--space-6);
-  border-radius: var(--radius-full);
+  width: var(--tp-space-16);
+  height: var(--tp-space-6);
+  border-radius: var(--tp-radius-full);
 }
 
 .columns {
   margin: 0;
-  padding: var(--space-2) var(--space-6);
+  padding: var(--tp-space-2) var(--tp-space-6);
 }
 
 .columnRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--color-border);
-  font-size: var(--text-sm);
+  gap: var(--tp-space-4);
+  padding: var(--tp-space-2) 0;
+  border-bottom: 1px solid var(--tp-color-border-default);
+  font-size: var(--tp-font-size-14);
 }
 
 .columnRow:last-child {
@@ -121,20 +110,21 @@
 }
 
 .columnRow dt {
-  color: var(--color-text-muted);
+  color: var(--tp-color-text-muted);
 }
 
 .columnRow dd {
   margin: 0;
-  font-weight: var(--font-semibold);
-  color: var(--color-text);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
   text-align: end;
+  font-variant-numeric: tabular-nums;
 }
 
 .columnStrong dt,
 .columnStrong dd {
-  font-weight: var(--font-bold);
-  color: var(--color-text);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .columnRow dd.negative,
@@ -143,15 +133,15 @@
 }
 
 .payouts {
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--tp-color-border-default);
 }
 
 .payoutsTitle {
   margin: 0;
-  padding: var(--space-3) var(--space-6);
-  font-size: var(--text-sm);
-  font-weight: var(--font-bold);
-  color: var(--color-text);
+  padding: var(--tp-space-3) var(--tp-space-6);
+  font-size: var(--tp-font-size-14);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .tableWrap {
@@ -162,36 +152,33 @@
   composes: table from "../../../components/ui/table/table.module.css";
 }
 
-.empty {
-  margin: 0;
-  padding: var(--space-12) var(--space-6);
-  text-align: center;
-  color: var(--color-text-muted);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+.stateCard {
+  composes: card from "../../../components/ui/card/card.module.css";
+  overflow: hidden;
 }
 
-.alertError {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-error-bg);
-  color: var(--color-error);
-  border: 1px solid var(--color-error-border);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
+.refCell {
+  max-width: 14rem;
 }
 
-.alertError p {
-  margin: 0;
+.refCell bdi {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
-.retryButton {
-  composes: button secondary small from "../../../components/ui/button/button.module.css";
+.dateCell {
+  white-space: nowrap;
+  color: var(--tp-color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--tp-color-focus);
+  outline-offset: 2px;
+  border-radius: var(--tp-radius-control);
 }
 
 @media (max-width: 640px) {
@@ -201,10 +188,16 @@
 
   .periodHeader,
   .columns {
-    padding-inline: var(--space-4);
+    padding-inline: var(--tp-space-4);
   }
 }
 
 .money {
   composes: numeric from "../../../components/ui/table/table.module.css";
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    text-decoration: underline;
+  }
 }

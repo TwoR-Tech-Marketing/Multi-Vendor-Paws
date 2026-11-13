@@ -34,6 +34,7 @@ function render(overrides: Partial<EarningsViewProps> = {}): string {
   return renderToStaticMarkup(
     <EarningsView
       strings={en}
+      locale="en"
       vendorType="store"
       summary={null}
       entries={[]}
@@ -154,10 +155,44 @@ describe("EarningsView", () => {
     expect(html).toContain(ar.earnings.loadMore);
   });
 
-  it("shows the error with a retry button", () => {
-    const html = render({ error: en.earnings.loadError });
+  it("shows the full error with a retry and no zero totals when the first load failed", () => {
+    const html = render({ error: { kind: "error", title: en.earnings.loadError } });
     expect(html).toContain('role="alert"');
     expect(html).toContain(en.common.retry);
+    expect(html).not.toContain(en.earnings.summarySales);
+  });
+
+  it("shows the offline state when the connection dropped", () => {
+    const html = render({
+      error: { kind: "offline", title: en.states.offlineTitle, description: en.states.offlineDescription },
+    });
+    expect(html).toContain('data-kind="offline"');
+    expect(html).toContain(en.states.offlineTitle);
+  });
+
+  it("keeps loaded rows under a compact error when loading more failed", () => {
+    const html = render({
+      summary: {
+        vendorId: "v1",
+        totalSalesPiastres: 100,
+        totalCommissionPiastres: 10,
+        netEarningsPiastres: 90,
+        pendingPayoutPiastres: 0,
+        currency: "EGP",
+        updatedAt: new Date("2026-11-12T10:00:00.000Z"),
+      },
+      entries: [entry()],
+      error: { kind: "error", title: en.earnings.loadError },
+    });
+    expect(html).toContain('role="alert"');
+    expect(html).toContain("Order ABCDEFGH");
+  });
+
+  it("shows money as amount then unit with isolated figures and Cairo dates in Arabic", () => {
+    const html = render({ strings: ar, locale: "ar", entries: [entry()] });
+    expect(html).toContain("\u2066115.00\u2069 ج.م");
+    expect(html).not.toMatch(/[٠-٩]/);
+    expect(html).toContain("<bdi>Order ABCDEFGH</bdi>");
   });
 });
 

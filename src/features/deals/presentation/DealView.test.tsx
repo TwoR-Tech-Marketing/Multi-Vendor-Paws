@@ -275,7 +275,8 @@ describe("DealView branches", () => {
 
   it("shows the empty branches message for a groomer without branches", () => {
     const html = decode(render({ deal: view({ vendorType: "groomer", branches: [] }) }));
-    expect(html).toContain(en.deals.branchesEmpty);
+    expect(html).toContain(en.deals.branchesEmptyTitle);
+    expect(html).toContain(en.deals.branchesEmptyDescription);
   });
 
   it("has no branch section for store and doctor", () => {
@@ -302,11 +303,45 @@ describe("DealView states and links", () => {
   });
 
   it("shows the error with a retry button when loading failed", () => {
-    const html = decode(render({ deal: null, error: en.deals.loadError }));
+    const html = decode(render({ deal: null, error: { kind: "error", title: en.deals.loadError } }));
     expect(html).toContain('role="alert"');
     expect(html).toContain(en.deals.loadError);
     expect(html).toContain(en.common.retry);
     expect(html).not.toContain(en.deals.current);
+  });
+
+  it("shows the offline state with a retry when the connection dropped", () => {
+    const html = decode(
+      render({
+        deal: null,
+        error: { kind: "offline", title: en.states.offlineTitle, description: en.states.offlineDescription },
+      }),
+    );
+    expect(html).toContain('data-kind="offline"');
+    expect(html).toContain(en.states.offlineTitle);
+    expect(html).toContain(en.common.retry);
+  });
+
+  it("keeps a loaded deal under a compact error after a failed refresh", () => {
+    const html = decode(render({ error: { kind: "error", title: en.deals.loadError } }));
+    expect(html).toContain('role="alert"');
+    expect(html).toContain(en.deals.current);
+  });
+
+  it("formats the fixed fee as amount then unit in the portal language", () => {
+    const html = render({
+      strings: ar,
+      locale: "ar",
+      deal: view({
+        vendorType: "clinic",
+        current: { ...DEFAULT_CURRENT, source: "vendor", type: "both", fixedFeePerOrderPiastres: 1500 },
+        branches: [branch()],
+      }),
+    });
+    expect(html).toContain("\u206615.00\u2069 ج.م");
+    expect(html).toContain("\u206620.00\u2069 ج.م");
+    expect(html).toContain("ج.م");
+    expect(html).not.toContain("EGP ");
   });
 
   it("renders Arabic copy with Western digits", () => {

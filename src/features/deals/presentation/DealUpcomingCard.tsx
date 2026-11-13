@@ -1,3 +1,4 @@
+import { StatusBadge } from "@/components/ui/badge/StatusBadge";
 import type { DealTerms } from "@/features/deals/domain/types";
 import { DealTermsList } from "@/features/deals/presentation/DealTermsList";
 import { formatCairoDate } from "@/features/financials/domain/statement-dates";
@@ -21,12 +22,13 @@ export function DealUpcomingCard({ deal, effectiveFromMs, strings, locale }: Dea
       <div className={styles.cardHeader}>
         <h2 className={styles.cardTitle}>{t.upcoming}</h2>
         {effectiveFromMs !== null ? (
-          <span className={`${styles.badge} ${styles.badgeWarning}`}>
-            {t.upcomingFrom.replace("{date}", formatCairoDate(effectiveFromMs, locale))}
-          </span>
+          <StatusBadge
+            tone="warning"
+            label={t.upcomingFrom.replace("{date}", formatCairoDate(effectiveFromMs, locale))}
+          />
         ) : null}
       </div>
-      <DealTermsList terms={deal} strings={strings} />
+      <DealTermsList terms={deal} strings={strings} locale={locale} />
     </article>
   );
 }

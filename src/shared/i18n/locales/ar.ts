@@ -646,6 +646,8 @@ export const arStrings: AppStrings = {
   branches: {
     title: "الفروع",
     empty: "لا توجد فروع بعد. أضف أول فرع لتبدأ بعرض خدماتك.",
+    emptyTitle: "لا توجد فروع بعد",
+    emptyDescription: "أضف أول فرع لتبدأ بعرض خدماتك.",
     add: "إضافة فرع",
     edit: "تعديل الفرع",
     archive: "أرشفة الفرع",
@@ -1182,6 +1184,8 @@ export const arStrings: AppStrings = {
   services: {
     title: "الخدمات",
     empty: "لا توجد خدمات في هذا الفرع بعد. أضف خدمة أو انسخها من فرع آخر.",
+    emptyTitle: "لا توجد خدمات بعد",
+    emptyDescription: "أضف خدمة أو انسخها من فرع آخر.",
     add: "إضافة خدمة",
     edit: "تعديل الخدمة",
     archive: "أرشفة الخدمة",
@@ -1263,6 +1267,8 @@ export const arStrings: AppStrings = {
     },
     branches: "الفروع",
     branchesEmpty: "لا توجد فروع بعد. سيظهر كل فرع تضيفه هنا مع رسومه.",
+    branchesEmptyTitle: "لا توجد فروع بعد",
+    branchesEmptyDescription: "سيظهر هنا كل فرع تضيفه مع رسومه.",
     columns: {
       branch: "الفرع",
       status: "الحالة",
@@ -1634,6 +1640,8 @@ export const arStrings: AppStrings = {
     },
     periodsTitle: "فترات كشف الحساب",
     empty: "لا يوجد كشف حساب بعد. ستظهر الفترات هنا بمجرد وجود نشاط في متجرك.",
+    emptyTitle: "لا يوجد كشف حساب بعد",
+    emptyDescription: "ستظهر الفترات هنا بمجرد وجود نشاط في متجرك.",
     loadError: "تعذر تحميل كشف الحساب. يرجى المحاولة مرة أخرى.",
     viewStatement: "عرض كشف الحساب",
   },

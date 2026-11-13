@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { Routes } from "@/constants/routes";
 import { hasBranchDeals, hasUpcomingDeal, type VendorDealView } from "@/features/deals/domain/types";
 import { DealBranchesTable } from "@/features/deals/presentation/DealBranchesTable";
@@ -16,22 +18,12 @@ export type DealViewProps = {
   locale: AppLocale;
   deal: VendorDealView | null;
   isLoading: boolean;
-  error: string | null;
+  /** Load failure: full state without a deal, compact above a kept one. */
+  error: LoadErrorView | null;
   onRetry: () => void;
   /** Vendor type from the session, used to shape the skeleton before data arrives. */
   vendorType?: string;
 };
-
-function ErrorAlert({ strings, error, onRetry }: { strings: AppStrings; error: string; onRetry: () => void }) {
-  return (
-    <div className={styles.alertError} role="alert">
-      <p>{error}</p>
-      <button type="button" className={styles.retryButton} onClick={onRetry}>
-        {strings.common.retry}
-      </button>
-    </div>
-  );
-}
 
 function DealLinks({ strings }: { strings: AppStrings }) {
   return (
@@ -57,17 +49,28 @@ export function DealView({ strings, locale, deal, isLoading, error, onRetry, ven
   if (!deal) {
     return (
       <section className={styles.sectionStack}>
-        <ErrorAlert strings={strings} error={error ?? t.loadError} onRetry={onRetry} />
         <DealLinks strings={strings} />
+        <article className={styles.card}>
+          <LoadErrorState
+            view={error ?? toLoadErrorView(null, strings, t.loadError, false)}
+            strings={strings}
+            onRetry={onRetry}
+          />
+        </article>
       </section>
     );
   }
 
   return (
     <section className={styles.sectionStack} aria-label={t.title}>
-      {error ? <ErrorAlert strings={strings} error={error} onRetry={onRetry} /> : null}
+      {error ? <LoadErrorState view={error} strings={strings} onRetry={onRetry} compact /> : null}
       <DealLinks strings={strings} />
-      <DealCurrentCard current={deal.current} defaultPercent={deal.defaultPercent} strings={strings} />
+      <DealCurrentCard
+        current={deal.current}
+        defaultPercent={deal.defaultPercent}
+        strings={strings}
+        locale={locale}
+      />
       {hasUpcomingDeal(deal) && deal.vendorDeal ? (
         <DealUpcomingCard
           deal={deal.vendorDeal}
@@ -77,7 +80,7 @@ export function DealView({ strings, locale, deal, isLoading, error, onRetry, ven
         />
       ) : null}
       {hasBranchDeals(deal.vendorType) ? (
-        <DealBranchesTable branches={deal.branches} strings={strings} />
+        <DealBranchesTable branches={deal.branches} strings={strings} locale={locale} />
       ) : null}
     </section>
   );

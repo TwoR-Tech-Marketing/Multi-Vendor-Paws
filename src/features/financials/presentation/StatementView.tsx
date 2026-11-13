@@ -1,5 +1,9 @@
 import Link from "next/link";
 
+import { StatusBadge } from "@/components/ui/badge/StatusBadge";
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { Routes } from "@/constants/routes";
 import { formatPeriodRange, formatCairoDate } from "@/features/financials/domain/statement-dates";
 import type {
@@ -19,17 +23,18 @@ export type StatementViewProps = {
   locale: AppLocale;
   statement: VendorStatement | null;
   isLoading: boolean;
-  error: string | null;
+  /** Load failure: full state without a statement, compact above a kept one. */
+  error: LoadErrorView | null;
   onRetry: () => void;
 };
 
-type ColumnProps = { label: string; piastres: number; strong?: boolean };
+type ColumnProps = { label: string; piastres: number; locale: AppLocale; strong?: boolean };
 
-function Column({ label, piastres, strong }: ColumnProps) {
+function Column({ label, piastres, locale, strong }: ColumnProps) {
   return (
     <div className={`${styles.columnRow} ${strong ? styles.columnStrong : ""}`}>
       <dt>{label}</dt>
-      <dd className={piastres < 0 ? styles.negative : undefined}>{formatEgp(piastres)}</dd>
+      <dd className={piastres < 0 ? styles.negative : undefined}>{formatEgp(piastres, locale)}</dd>
     </div>
   );
 }
@@ -59,10 +64,16 @@ function PayoutsTable({
           <tbody>
             {payouts.map((payout) => (
               <tr key={payout.entryId}>
-                <td>{payout.transferReference ?? "-"}</td>
-                <td>{formatCairoDate(payout.paidAtMs ?? payout.createdAtMs, locale)}</td>
+                <td className={styles.refCell}>
+                  <bdi title={payout.transferReference ?? undefined}>
+                    {payout.transferReference ?? "-"}
+                  </bdi>
+                </td>
+                <td className={styles.dateCell}>
+                  {formatCairoDate(payout.paidAtMs ?? payout.createdAtMs, locale)}
+                </td>
                 <td className={`${styles.money} ${styles.negative}`}>
-                  {formatEgp(-payout.amountPiastres)}
+                  {formatEgp(-payout.amountPiastres, locale)}
                 </td>
               </tr>
             ))}
@@ -88,18 +99,20 @@ function PeriodCard({
     <article className={styles.periodCard} aria-label={range}>
       <div className={styles.periodHeader}>
         <h3 className={styles.periodTitle}>{range}</h3>
-        <span className={`${styles.badge} ${period.closed ? styles.badgeClosed : styles.badgeOpen}`}>
-          {period.closed ? t.period.closed : t.period.open}
-        </span>
+        <StatusBadge
+          tone={period.closed ? "success" : "warning"}
+          label={period.closed ? t.period.closed : t.period.open}
+          status={period.closed ? "closed" : "open"}
+        />
       </div>
       <dl className={styles.columns}>
-        <Column label={t.columns.opening} piastres={period.openingPiastres} />
-        <Column label={t.columns.sales} piastres={period.salesPiastres} />
-        <Column label={t.columns.fees} piastres={-period.feesPiastres} />
-        <Column label={t.columns.refunds} piastres={period.refundsPiastres} />
-        <Column label={t.columns.adjustments} piastres={period.adjustmentsPiastres} />
-        <Column label={t.columns.payouts} piastres={period.payoutsPiastres} />
-        <Column label={t.columns.closing} piastres={period.closingPiastres} strong />
+        <Column label={t.columns.opening} piastres={period.openingPiastres} locale={locale} />
+        <Column label={t.columns.sales} piastres={period.salesPiastres} locale={locale} />
+        <Column label={t.columns.fees} piastres={-period.feesPiastres} locale={locale} />
+        <Column label={t.columns.refunds} piastres={period.refundsPiastres} locale={locale} />
+        <Column label={t.columns.adjustments} piastres={period.adjustmentsPiastres} locale={locale} />
+        <Column label={t.columns.payouts} piastres={period.payoutsPiastres} locale={locale} />
+        <Column label={t.columns.closing} piastres={period.closingPiastres} locale={locale} strong />
       </dl>
       {period.payouts.length > 0 ? (
         <PayoutsTable strings={strings} locale={locale} payouts={period.payouts} />
@@ -108,36 +121,30 @@ function PeriodCard({
   );
 }
 
-function ErrorAlert({ strings, error, onRetry }: { strings: AppStrings; error: string; onRetry: () => void }) {
-  return (
-    <div className={styles.alertError} role="alert">
-      <p>{error}</p>
-      <button type="button" className={styles.retryButton} onClick={onRetry}>
-        {strings.common.retry}
-      </button>
-    </div>
-  );
-}
-
 /** Read only vendor statement: balance, cycle and periods newest first. */
 export function StatementView({ strings, locale, statement, isLoading, error, onRetry }: StatementViewProps) {
   const t = strings.statement;
   if (isLoading) return <StatementSkeleton label={strings.common.loading} />;
   if (!statement) {
+    const view = error ?? toLoadErrorView(null, strings, t.loadError, false);
     return (
       <section className={styles.sectionStack}>
-        <ErrorAlert strings={strings} error={error ?? t.loadError} onRetry={onRetry} />
+        <article className={styles.stateCard}>
+          <LoadErrorState view={view} strings={strings} onRetry={onRetry} />
+        </article>
       </section>
     );
   }
 
   return (
     <section className={styles.sectionStack} aria-label={t.title}>
-      {error ? <ErrorAlert strings={strings} error={error} onRetry={onRetry} /> : null}
+      {error ? <LoadErrorState view={error} strings={strings} onRetry={onRetry} compact /> : null}
       <div className={styles.summaryGrid}>
         <article className={`${styles.summaryCard} ${styles.summaryHighlight}`}>
           <span className={styles.summaryLabel}>{t.currentBalance}</span>
-          <p className={styles.summaryValue}>{formatEgp(statement.currentBalancePiastres)}</p>
+          <p className={`${styles.summaryValue} ${styles.summaryMoney}`}>
+            {formatEgp(statement.currentBalancePiastres, locale)}
+          </p>
         </article>
         <article className={styles.summaryCard}>
           <span className={styles.summaryLabel}>{t.cycleLabel}</span>
@@ -152,7 +159,9 @@ export function StatementView({ strings, locale, statement, isLoading, error, on
         </Link>
       </div>
       {statement.periods.length === 0 ? (
-        <p className={styles.empty}>{t.empty}</p>
+        <article className={styles.stateCard}>
+          <EmptyState headingLevel={3} title={t.emptyTitle} description={t.emptyDescription} />
+        </article>
       ) : (
         statement.periods.map((period) => (
           <PeriodCard key={period.periodKey} strings={strings} locale={locale} period={period} />

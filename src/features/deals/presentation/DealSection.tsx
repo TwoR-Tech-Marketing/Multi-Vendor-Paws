@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
+
 import { fetchVendorDeal } from "@/features/deals/application/deals.api";
 import type { VendorDealView } from "@/features/deals/domain/types";
 import { DealView } from "@/features/deals/presentation/DealView";
@@ -15,7 +17,7 @@ export function DealSection() {
   const { profile } = usePortalSession();
   const [deal, setDeal] = useState<VendorDealView | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<LoadErrorView | null>(null);
   const [requests] = useState(createRequestTracker);
   const loadError = strings.deals.loadError;
 
@@ -26,12 +28,12 @@ export function DealSection() {
     try {
       const next = await fetchVendorDeal();
       if (requests.isLatest(requestId)) setDeal(next);
-    } catch {
-      if (requests.isLatest(requestId)) setError(loadError);
+    } catch (cause) {
+      if (requests.isLatest(requestId)) setError(toLoadErrorView(cause, strings, loadError));
     } finally {
       if (requests.isLatest(requestId)) setIsLoading(false);
     }
-  }, [requests, loadError]);
+  }, [requests, strings, loadError]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {

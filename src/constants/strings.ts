@@ -645,6 +645,8 @@ export const Strings = {
   branches: {
     title: "Branches",
     empty: "You have no branches yet. Add your first branch to start listing services.",
+    emptyTitle: "No branches yet",
+    emptyDescription: "Add your first branch to start listing services.",
     add: "Add branch",
     edit: "Edit branch",
     archive: "Archive branch",
@@ -1182,6 +1184,8 @@ export const Strings = {
   services: {
     title: "Services",
     empty: "No services in this branch yet. Add a service or copy them from another branch.",
+    emptyTitle: "No services yet",
+    emptyDescription: "Add a service or copy them from another branch.",
     add: "Add service",
     edit: "Edit service",
     archive: "Archive service",
@@ -1263,6 +1267,8 @@ export const Strings = {
     },
     branches: "Branches",
     branchesEmpty: "You have no branches yet. Each branch you add appears here with its fee.",
+    branchesEmptyTitle: "No branches yet",
+    branchesEmptyDescription: "Each branch you add appears here with its fee.",
     columns: {
       branch: "Branch",
       status: "Status",
@@ -1634,6 +1640,8 @@ export const Strings = {
     },
     periodsTitle: "Statement periods",
     empty: "No statement yet. Your periods appear here once your store has activity.",
+    emptyTitle: "No statement yet",
+    emptyDescription: "Your periods appear here once your store has activity.",
     loadError: "We couldn't load your statement. Please try again.",
     viewStatement: "View statement",
   },
