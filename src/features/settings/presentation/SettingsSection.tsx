@@ -18,6 +18,8 @@ import { SettingsShortcutsPanel } from "@/features/settings/presentation/Setting
 import { SettingsSkeleton } from "@/features/settings/presentation/SettingsSkeleton";
 import { SettingsStoreSnapshotPanel } from "@/features/settings/presentation/SettingsStoreSnapshotPanel";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
+import { ErrorState } from "@/components/ui/error-state/ErrorState";
+import { toLoadErrorView } from "@/components/ui/error-state/load-error";
 import { usePreferences } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./settings.module.css";
@@ -78,15 +80,20 @@ export function SettingsSection() {
 
   if (isLoading) return <SettingsSkeleton />;
 
+  const errorView = toLoadErrorView(null, strings, error ?? undefined);
+
   return (
     <div className={styles.sectionStack}>
       {error ? (
-        <div className={styles.alertError}>
-          <p>{error}</p>
-          <button type="button" className={styles.retryButton} onClick={() => void loadSettings()}>
-            {strings.common.retry}
-          </button>
-        </div>
+        <ErrorState
+          compact
+          kind={errorView.kind}
+          title={errorView.title}
+          description={errorView.description}
+          retryLabel={strings.common.retry}
+          onRetry={() => void loadSettings()}
+          headingLevel={2}
+        />
       ) : null}
 
       <div className={styles.settingsGrid}>
@@ -113,6 +120,7 @@ export function SettingsSection() {
           netEarningsPiastres={snapshot.netEarningsPiastres}
           isActiveVendor={isActiveVendor}
           vendorType={profile.vendorType}
+          locale={locale}
         />
       ) : null}
 

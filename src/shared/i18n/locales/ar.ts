@@ -38,7 +38,7 @@ export const arStrings: AppStrings = {
   states: {
     errorTitle: "تعذر تحميل هذه البيانات",
     errorDescription: "حدث خطأ من جهتنا. يرجى المحاولة مرة أخرى.",
-    offlineTitle: "أنت غير متصل بالإنترنت",
+    offlineTitle: "لا يوجد اتصال",
     offlineDescription: "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى.",
     retry: "حاول مرة أخرى",
     retrying: "جاري المحاولة...",
@@ -249,6 +249,9 @@ export const arStrings: AppStrings = {
     },
   },
   accountStatus: {
+    documentApproved: "مقبول",
+    documentPending: "قيد المراجعة",
+    documentRejected: "يحتاج ملفًا جديدًا",
     title: "طلبك",
     activeTitle: "تم تفعيل المتجر",
     activeMessage:
@@ -1471,6 +1474,7 @@ export const arStrings: AppStrings = {
     },
   },
   orders: {
+    heldLabel: "معلّق",
     searchPlaceholder: "ابحث في الطلبات…",
     filterStatus: "تصفية حسب الحالة",
     filterDate: "تاريخ الطلب",
@@ -1504,8 +1508,7 @@ export const arStrings: AppStrings = {
     tableActions: "إجراءات",
     viewOrder: "عرض الطلب",
     emptyTitle: "لا توجد طلبات بعد",
-    emptyDescription:
-      "عندما يشتري المشترون من متجرك عبر تطبيق تندر باوز، ستظهر طلباتهم هنا.",
+    emptyDescription: "تظهر هنا الطلبات الجديدة من عملائك.",
     emptyFilteredTitle: "لا توجد طلبات مطابقة",
     emptyFilteredDescription: "جرّب تعديل البحث أو عوامل التصفية.",
     loadError: "تعذر تحميل طلباتك. يرجى المحاولة مرة أخرى.",

@@ -16,6 +16,8 @@ type SettingsStoreSnapshotPanelProps = {
   isActiveVendor: boolean;
   /** Store when omitted. Providers have no products or orders cards. */
   vendorType?: string;
+  /** Portal language for money formatting. Defaults to English. */
+  locale?: string;
 };
 
 export function SettingsStoreSnapshotPanel({
@@ -25,6 +27,7 @@ export function SettingsStoreSnapshotPanel({
   netEarningsPiastres,
   isActiveVendor,
   vendorType,
+  locale = "en",
 }: SettingsStoreSnapshotPanelProps) {
   const t = strings.settings;
   const showProducts = isScreenVisible(vendorType, "products");
@@ -60,12 +63,12 @@ export function SettingsStoreSnapshotPanel({
             className={`${styles.snapshotCard} ${styles.snapshotCardHighlight}`}
           >
             <span className={styles.snapshotLabel}>{t.snapshotNetEarnings}</span>
-            <p className={styles.snapshotValue}>{formatEgp(netEarningsPiastres)}</p>
+            <p className={styles.snapshotValue}>{formatEgp(netEarningsPiastres, locale)}</p>
           </Link>
         ) : (
           <div className={`${styles.snapshotCard} ${styles.snapshotCardHighlight}`}>
             <span className={styles.snapshotLabel}>{t.snapshotNetEarnings}</span>
-            <p className={styles.snapshotValue}>{formatEgp(netEarningsPiastres)}</p>
+            <p className={styles.snapshotValue}>{formatEgp(netEarningsPiastres, locale)}</p>
           </div>
         )}
       </div>

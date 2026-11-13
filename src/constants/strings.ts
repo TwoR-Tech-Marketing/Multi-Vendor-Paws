@@ -36,7 +36,7 @@ export const Strings = {
   states: {
     errorTitle: "We couldn't load this",
     errorDescription: "Something went wrong on our side. Please try again.",
-    offlineTitle: "You're offline",
+    offlineTitle: "No connection",
     offlineDescription: "Check your internet connection, then try again.",
     retry: "Try again",
     retrying: "Trying again...",
@@ -247,6 +247,9 @@ export const Strings = {
     },
   },
   accountStatus: {
+    documentApproved: "Approved",
+    documentPending: "Under review",
+    documentRejected: "Needs a new file",
     title: "Your application",
     activeTitle: "Store activated",
     activeMessage:
@@ -1471,6 +1474,7 @@ export const Strings = {
     },
   },
   orders: {
+    heldLabel: "On hold",
     searchPlaceholder: "Search orders…",
     filterStatus: "Filter by status",
     filterDate: "Order date",
@@ -1504,8 +1508,7 @@ export const Strings = {
     tableActions: "Actions",
     viewOrder: "View order",
     emptyTitle: "No orders yet",
-    emptyDescription:
-      "When buyers purchase from your store in the Tender Paws app, their orders will appear here.",
+    emptyDescription: "New orders from your customers appear here.",
     emptyFilteredTitle: "No matching orders",
     emptyFilteredDescription: "Try adjusting your search or filters.",
     loadError: "We couldn't load your orders. Please try again.",

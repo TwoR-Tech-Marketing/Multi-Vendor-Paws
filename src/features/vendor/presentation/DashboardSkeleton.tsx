@@ -1,4 +1,4 @@
-import { SkeletonBox, SkeletonText } from "@/components/ui/skeleton";
+import { SkeletonText } from "@/components/ui/skeleton";
 import { Strings } from "@/constants/strings";
 
 import styles from "./dashboard.module.css";
@@ -13,10 +13,12 @@ export function DashboardSkeleton() {
     >
       <div className={styles.statsGrid}>
         {Array.from({ length: 3 }).map((_, index) => (
-          <SkeletonBox key={index} className={styles.statSkeleton} />
+          <div key={index} className={styles.statCard}>
+            <SkeletonText size="sm" width="40%" />
+            <SkeletonText size="xl" width="70%" />
+          </div>
         ))}
       </div>
-      <SkeletonText width="40%" />
     </section>
   );
 }

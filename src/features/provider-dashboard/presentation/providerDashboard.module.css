@@ -23,9 +23,15 @@
   font-weight: var(--font-medium);
 }
 
+.chip:focus-visible {
+  outline: 2px solid var(--tp-color-focus);
+  outline-offset: 2px;
+}
+
 .chipActive {
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
+  border-color: var(--tp-color-line);
+  background: var(--tp-color-selected-bg);
+  color: var(--tp-color-selected-fg);
 }
 
 .statsGrid {
@@ -187,32 +193,6 @@
   color: var(--color-text);
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
-}
-
-.alertError {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-error-bg);
-  color: var(--color-error);
-  border: 1px solid var(--color-error-border);
-  font-size: var(--text-sm);
-}
-
-.retry {
-  min-height: var(--control-height);
-  padding: 0 var(--space-4);
-  border-radius: var(--radius-control);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text);
-  cursor: pointer;
-  font-family: var(--font);
-  font-size: var(--text-sm);
 }
 
 @media (max-width: 900px) {

@@ -322,7 +322,6 @@
   border: 1px solid transparent;
   border-inline-start-width: 3px;
   border-radius: var(--tp-radius-card);
-  margin-bottom: var(--tp-space-4);
   color: var(--tp-color-text-primary);
 }
 
