@@ -3,7 +3,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-const root = path.resolve(__dirname, "../../../..");
+const root = path.resolve(__dirname, "../..");
 
 describe("points rules and index repo copies", () => {
   const rules = readFileSync(path.join(root, "firestore.rules"), "utf8");
