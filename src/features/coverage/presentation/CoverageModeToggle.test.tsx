@@ -13,7 +13,9 @@ const noop = () => {};
 
 describe("CoverageModeToggle", () => {
   it("presses only the selected mode inside a labelled group", () => {
-    const html = renderToStaticMarkup(<CoverageModeToggle mode="zone" strings={en} onChange={noop} />);
+    const html = renderToStaticMarkup(
+      <CoverageModeToggle mode="zone" strings={en} onChange={noop} />,
+    );
     expect(html).toContain(`role="group" aria-label="${en.coverage.modeLabel}"`);
     expect(html).toMatch(new RegExp(`aria-pressed="true"[^>]*>${en.coverage.modeZone}<`));
     expect(html).toMatch(new RegExp(`aria-pressed="false"[^>]*>${en.coverage.modeGovernorates}<`));

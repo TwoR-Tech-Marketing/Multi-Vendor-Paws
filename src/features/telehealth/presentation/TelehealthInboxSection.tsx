@@ -182,7 +182,8 @@ export function TelehealthInboxSection() {
         <div className={styles.alertError} role="alert">
           {actionError}
         </div>
-      ) : loadError ? (
+      ) : null}
+      {loadError ? (
         <LoadErrorState view={loadError} strings={strings} onRetry={() => void refresh()} compact />
       ) : null}
       <TelehealthInboxView

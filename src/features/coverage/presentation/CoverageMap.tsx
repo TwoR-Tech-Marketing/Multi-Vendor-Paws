@@ -158,8 +158,8 @@ export function CoverageMap({ lat, lng, radiusMeters, onPick }: CoverageMapProps
 
   if (error) {
     return (
-      <div className={styles.mapFrame} role="alert">
-        <p className={styles.mapError}>{error}</p>
+      <div className={styles.mapFallback} role="status">
+        <p className={styles.hint}>{error}</p>
       </div>
     );
   }

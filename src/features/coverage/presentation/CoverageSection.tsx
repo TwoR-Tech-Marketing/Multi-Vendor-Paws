@@ -32,6 +32,12 @@ const DEFAULT_ZONE = {
   radiusMeters: 5000,
 };
 
+/** Radius in km with one decimal, Western digits in both languages. */
+function formatKm(radiusMeters: number): string {
+  const km = Number.isFinite(radiusMeters) ? radiusMeters / 1000 : 0;
+  return km.toLocaleString("en-US", { maximumFractionDigits: 1 });
+}
+
 export function CoverageSection() {
   const strings = useStrings();
   const { locale } = usePreferences();
@@ -230,15 +236,8 @@ export function CoverageSection() {
                   aria-describedby="coverage-radius-km"
                   onChange={(e) => setRadiusMeters(Number(e.target.value))}
                 />
-                <p className={styles.fieldHint} id="coverage-radius-km" aria-live="polite">
-                  <bdi>
-                    {t.radiusKm.replace(
-                      "{km}",
-                      (Number.isFinite(radiusMeters) ? radiusMeters / 1000 : 0).toLocaleString("en-US", {
-                        maximumFractionDigits: 1,
-                      }),
-                    )}
-                  </bdi>
+                <p className={styles.fieldHint} id="coverage-radius-km">
+                  <bdi>{t.radiusKm.replace("{km}", formatKm(radiusMeters))}</bdi>
                 </p>
               </div>
             </div>

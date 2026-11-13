@@ -64,10 +64,16 @@
   background: var(--tp-color-surface-sunken);
 }
 
-.mapError {
-  padding: var(--tp-space-4);
-  color: var(--tp-color-status-danger-fg);
-  font-size: var(--tp-font-size-14);
+.mapFallback {
+  margin-bottom: var(--tp-space-4);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border: 1px solid var(--tp-color-border-default);
+  border-radius: var(--tp-radius-control);
+  background: var(--tp-color-surface-sunken);
+}
+
+.mapFallback .hint {
+  margin: 0;
 }
 
 .govList {
