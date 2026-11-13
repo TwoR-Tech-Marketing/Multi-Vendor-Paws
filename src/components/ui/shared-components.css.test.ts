@@ -20,6 +20,7 @@ const SHARED_MODULES = [
   "skeleton/skeleton.module.css",
   "select/PortalSelect.module.css",
   "LogoutConfirmDialog.module.css",
+  "error-state/errorState.module.css",
 ];
 
 /** Layout hooks callers may set; they are not theme values. */

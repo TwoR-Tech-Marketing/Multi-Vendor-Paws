@@ -32,6 +32,17 @@ export const arStrings: AppStrings = {
     openProfile: "فتح الملف الشخصي",
     goBack: "رجوع",
     testAccountBadge: "حساب تجريبي",
+    navigationLabel: "التنقل الرئيسي",
+    skipToContent: "انتقل إلى المحتوى الرئيسي",
+  },
+  states: {
+    errorTitle: "تعذر تحميل هذه البيانات",
+    errorDescription: "حدث خطأ من جهتنا. يرجى المحاولة مرة أخرى.",
+    offlineTitle: "أنت غير متصل بالإنترنت",
+    offlineDescription: "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى.",
+    retry: "حاول مرة أخرى",
+    retrying: "جاري المحاولة...",
+    notProvided: "غير متوفر",
   },
   nav: {
     dashboard: "لوحة التحكم",

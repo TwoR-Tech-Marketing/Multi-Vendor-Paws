@@ -30,6 +30,17 @@ export const Strings = {
     openProfile: "Open profile",
     goBack: "Go back",
     testAccountBadge: "Test account",
+    navigationLabel: "Main navigation",
+    skipToContent: "Skip to main content",
+  },
+  states: {
+    errorTitle: "We couldn't load this",
+    errorDescription: "Something went wrong on our side. Please try again.",
+    offlineTitle: "You're offline",
+    offlineDescription: "Check your internet connection, then try again.",
+    retry: "Try again",
+    retrying: "Trying again...",
+    notProvided: "Not provided",
   },
   nav: {
     dashboard: "Dashboard",
