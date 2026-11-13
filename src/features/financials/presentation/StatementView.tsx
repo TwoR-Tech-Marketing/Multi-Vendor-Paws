@@ -110,9 +110,18 @@ function PeriodCard({
         <Column label={t.columns.sales} piastres={period.salesPiastres} locale={locale} />
         <Column label={t.columns.fees} piastres={-period.feesPiastres} locale={locale} />
         <Column label={t.columns.refunds} piastres={period.refundsPiastres} locale={locale} />
-        <Column label={t.columns.adjustments} piastres={period.adjustmentsPiastres} locale={locale} />
+        <Column
+          label={t.columns.adjustments}
+          piastres={period.adjustmentsPiastres}
+          locale={locale}
+        />
         <Column label={t.columns.payouts} piastres={period.payoutsPiastres} locale={locale} />
-        <Column label={t.columns.closing} piastres={period.closingPiastres} locale={locale} strong />
+        <Column
+          label={t.columns.closing}
+          piastres={period.closingPiastres}
+          locale={locale}
+          strong
+        />
       </dl>
       {period.payouts.length > 0 ? (
         <PayoutsTable strings={strings} locale={locale} payouts={period.payouts} />

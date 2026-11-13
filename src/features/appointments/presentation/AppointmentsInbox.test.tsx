@@ -123,7 +123,11 @@ describe("AppointmentsList", () => {
   });
 
   it("shows the total as amount then unit with isolated figures in Arabic", () => {
-    const html = renderList({ strings: ar, locale: "ar", items: [makeRow({ totalPiastres: 99_999_999_999 })] });
+    const html = renderList({
+      strings: ar,
+      locale: "ar",
+      items: [makeRow({ totalPiastres: 99_999_999_999 })],
+    });
     expect(html).toContain("\u2066999,999,999.99\u2069 ج.م");
     expect(html).not.toMatch(/[٠-٩]/);
   });

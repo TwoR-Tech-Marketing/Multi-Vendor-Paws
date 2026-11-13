@@ -42,7 +42,9 @@ export function ReviewCard({ review, strings, locale, onReply }: ReviewCardProps
         {review.ratings.map((rating) => (
           <div key={rating.id} className={styles.score}>
             <dt>{t.categories[rating.id]}</dt>
-            <dd className={styles.scoreValue}>{t.score.replace("{value}", String(rating.value))}</dd>
+            <dd className={styles.scoreValue}>
+              {t.score.replace("{value}", String(rating.value))}
+            </dd>
           </div>
         ))}
       </dl>

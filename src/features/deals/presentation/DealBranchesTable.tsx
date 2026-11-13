@@ -56,7 +56,9 @@ export function DealBranchesTable({ branches, strings, locale }: DealBranchesTab
                     />
                   </td>
                   <td>{dealSourceLabel(branch.deal.source, strings)}</td>
-                  <td className={styles.termsCell}>{formatDealTermsLine(branch.deal, strings, locale)}</td>
+                  <td className={styles.termsCell}>
+                    {formatDealTermsLine(branch.deal, strings, locale)}
+                  </td>
                 </tr>
               ))}
             </tbody>

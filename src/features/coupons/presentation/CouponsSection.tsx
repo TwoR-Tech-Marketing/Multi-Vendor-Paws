@@ -82,7 +82,12 @@ export function CouponList({
           description={t.emptyDescription}
           action={
             !atLimit ? (
-              <button type="button" className={styles.primaryButton} onClick={onAdd} disabled={isBusy}>
+              <button
+                type="button"
+                className={styles.primaryButton}
+                onClick={onAdd}
+                disabled={isBusy}
+              >
                 {t.add}
               </button>
             ) : null
@@ -92,7 +97,12 @@ export function CouponList({
         <>
           <CouponStatusTabs strings={strings} tab={tab} onTabChange={onTabChange} />
           {visible.length === 0 ? (
-            <EmptyState headingLevel={3} live title={t.filteredEmptyTitle} description={t.filteredEmpty} />
+            <EmptyState
+              headingLevel={3}
+              live
+              title={t.filteredEmptyTitle}
+              description={t.filteredEmpty}
+            />
           ) : (
             <CouponsTable
               coupons={visible}

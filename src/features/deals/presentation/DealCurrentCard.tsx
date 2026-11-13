@@ -16,7 +16,12 @@ type DealCurrentCardProps = {
 };
 
 /** The fee that applies to orders placed today. */
-export function DealCurrentCard({ current, defaultPercent, strings, locale }: DealCurrentCardProps) {
+export function DealCurrentCard({
+  current,
+  defaultPercent,
+  strings,
+  locale,
+}: DealCurrentCardProps) {
   const t = strings.deals;
   return (
     <article className={`${styles.card} ${styles.cardHighlight}`} aria-label={t.current}>

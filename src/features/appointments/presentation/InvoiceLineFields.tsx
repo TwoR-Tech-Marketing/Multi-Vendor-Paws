@@ -75,7 +75,10 @@ export function InvoiceLineFields({
               { value: "", label: t.selectService },
               ...services.map((s) => ({
                 value: s.serviceId,
-                label: `${locale === "ar" ? s.nameAr || s.nameEn : s.nameEn} (${formatEgp(s.pricePiastres, locale)})`,
+                label: `${locale === "ar" ? s.nameAr || s.nameEn : s.nameEn} (${formatEgp(
+                  s.pricePiastres,
+                  locale,
+                )})`,
               })),
             ]}
             onChange={(serviceId) => onChange({ ...line, serviceId })}

@@ -29,7 +29,9 @@ export function ReviewsList({
 }: ReviewsListProps) {
   const t = strings.reviews;
   if (items.length === 0) {
-    return <EmptyState headingLevel={2} live title={t.emptyTitle} description={t.emptyDescription} />;
+    return (
+      <EmptyState headingLevel={2} live title={t.emptyTitle} description={t.emptyDescription} />
+    );
   }
   return (
     <>

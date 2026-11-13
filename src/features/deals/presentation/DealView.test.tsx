@@ -303,7 +303,9 @@ describe("DealView states and links", () => {
   });
 
   it("shows the error with a retry button when loading failed", () => {
-    const html = decode(render({ deal: null, error: { kind: "error", title: en.deals.loadError } }));
+    const html = decode(
+      render({ deal: null, error: { kind: "error", title: en.deals.loadError } }),
+    );
     expect(html).toContain('role="alert"');
     expect(html).toContain(en.deals.loadError);
     expect(html).toContain(en.common.retry);
@@ -314,7 +316,11 @@ describe("DealView states and links", () => {
     const html = decode(
       render({
         deal: null,
-        error: { kind: "offline", title: en.states.offlineTitle, description: en.states.offlineDescription },
+        error: {
+          kind: "offline",
+          title: en.states.offlineTitle,
+          description: en.states.offlineDescription,
+        },
       }),
     );
     expect(html).toContain('data-kind="offline"');
@@ -334,7 +340,12 @@ describe("DealView states and links", () => {
       locale: "ar",
       deal: view({
         vendorType: "clinic",
-        current: { ...DEFAULT_CURRENT, source: "vendor", type: "both", fixedFeePerOrderPiastres: 1500 },
+        current: {
+          ...DEFAULT_CURRENT,
+          source: "vendor",
+          type: "both",
+          fixedFeePerOrderPiastres: 1500,
+        },
         branches: [branch()],
       }),
     });

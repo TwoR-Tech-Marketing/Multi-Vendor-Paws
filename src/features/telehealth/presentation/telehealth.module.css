@@ -88,19 +88,34 @@
 }
 
 .alertError {
-  border: 1px solid color-mix(in srgb, var(--tp-color-status-danger-fg) 30%, var(--tp-color-status-danger-surface));
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--tp-color-status-danger-fg) 30%,
+      var(--tp-color-status-danger-surface)
+    );
   background: var(--tp-color-status-danger-surface);
   color: var(--tp-color-status-danger-fg);
 }
 
 .alertSuccess {
-  border: 1px solid color-mix(in srgb, var(--tp-color-status-success-fg) 30%, var(--tp-color-status-success-surface));
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--tp-color-status-success-fg) 30%,
+      var(--tp-color-status-success-surface)
+    );
   background: var(--tp-color-status-success-surface);
   color: var(--tp-color-status-success-fg);
 }
 
 .alertInfo {
-  border: 1px solid color-mix(in srgb, var(--tp-color-status-warning-fg) 30%, var(--tp-color-status-warning-surface));
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--tp-color-status-warning-fg) 30%,
+      var(--tp-color-status-warning-surface)
+    );
   background: var(--tp-color-status-warning-surface);
   color: var(--tp-color-text-primary);
 }

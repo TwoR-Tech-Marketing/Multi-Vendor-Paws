@@ -82,7 +82,9 @@ export function TelehealthChatSection({ sessionId }: { sessionId: string }) {
         toLoadErrorView(
           error,
           strings,
-          mapTelehealthError(error) === "notFound" ? strings.errors.telehealth.notFound : t.loadError,
+          mapTelehealthError(error) === "notFound"
+            ? strings.errors.telehealth.notFound
+            : t.loadError,
         ),
       );
     }

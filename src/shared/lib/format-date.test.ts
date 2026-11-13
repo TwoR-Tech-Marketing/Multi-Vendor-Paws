@@ -12,7 +12,8 @@ describe("portal date formatting", () => {
   });
 
   it("keeps Western digits in Arabic", () => {
-    for (const text of [formatDate(LATE, "ar"), formatTime(LATE, "ar"), formatDateTime(LATE, "ar")]) {
+    const texts = [formatDate(LATE, "ar"), formatTime(LATE, "ar"), formatDateTime(LATE, "ar")];
+    for (const text of texts) {
       expect(text).not.toMatch(/[٠-٩]/);
       expect(text).toMatch(/[0-9]/);
     }

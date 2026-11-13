@@ -96,7 +96,10 @@ export function CouponDetail({
             label={t.usage.remaining}
             value={usage.remainingTotal === null ? t.usage.unlimited : String(usage.remainingTotal)}
           />
-          <Stat label={t.usage.discountGiven} value={formatEgp(usage.discountGivenPiastres, locale)} />
+          <Stat
+            label={t.usage.discountGiven}
+            value={formatEgp(usage.discountGivenPiastres, locale)}
+          />
           <Stat
             label={t.usage.lastUsed}
             value={

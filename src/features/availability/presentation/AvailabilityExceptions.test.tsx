@@ -261,7 +261,11 @@ describe("SlotPreview", () => {
     expect(failed).toContain('role="alert"');
     expect(failed).toContain(en.common.retry);
     const offline = render({
-      error: { kind: "offline", title: en.states.offlineTitle, description: en.states.offlineDescription },
+      error: {
+        kind: "offline",
+        title: en.states.offlineTitle,
+        description: en.states.offlineDescription,
+      },
     });
     expect(offline).toContain('data-kind="offline"');
   });

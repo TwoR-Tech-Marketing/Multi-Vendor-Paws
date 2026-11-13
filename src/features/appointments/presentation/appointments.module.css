@@ -130,7 +130,12 @@
 .notice {
   padding: var(--tp-space-3) var(--tp-space-4);
   border-radius: var(--tp-radius-card);
-  border: 1px solid color-mix(in srgb, var(--tp-color-status-warning-fg) 30%, var(--tp-color-status-warning-surface));
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--tp-color-status-warning-fg) 30%,
+      var(--tp-color-status-warning-surface)
+    );
   background: var(--tp-color-status-warning-surface);
   color: var(--tp-color-text-primary);
   font-size: var(--tp-font-size-14);

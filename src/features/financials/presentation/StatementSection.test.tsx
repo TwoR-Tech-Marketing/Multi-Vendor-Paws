@@ -144,7 +144,10 @@ describe("StatementView", () => {
   });
 
   it("shows the error with a retry button when loading failed", () => {
-    const html = render({ statement: null, error: { kind: "error", title: en.statement.loadError } });
+    const html = render({
+      statement: null,
+      error: { kind: "error", title: en.statement.loadError },
+    });
     expect(html).toContain('role="alert"');
     expect(html).toContain(en.statement.loadError.replace("'", "&#x27;"));
     expect(html).toContain(en.common.retry);

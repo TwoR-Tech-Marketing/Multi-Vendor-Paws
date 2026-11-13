@@ -104,9 +104,15 @@ function EntriesTable({ strings, locale, entries }: EntriesTableProps) {
                   <span title={entry.description ?? undefined}>{entry.description ?? "-"}</span>
                 )}
               </td>
-              <td className={moneyClass(entry.amountPiastres)}>{formatEgp(entry.amountPiastres, locale)}</td>
-              <td className={moneyClass(entry.commissionPiastres)}>{formatEgp(entry.commissionPiastres, locale)}</td>
-              <td className={moneyClass(entry.netPiastres)}>{formatEgp(entry.netPiastres, locale)}</td>
+              <td className={moneyClass(entry.amountPiastres)}>
+                {formatEgp(entry.amountPiastres, locale)}
+              </td>
+              <td className={moneyClass(entry.commissionPiastres)}>
+                {formatEgp(entry.commissionPiastres, locale)}
+              </td>
+              <td className={moneyClass(entry.netPiastres)}>
+                {formatEgp(entry.netPiastres, locale)}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -171,7 +177,9 @@ export function EarningsView(props: EarningsViewProps) {
       ) : null}
 
       <div className={styles.statsGrid}>
-        <SummaryCard label={strings.earnings.summarySales} piastres={summary?.totalSalesPiastres ?? 0}
+        <SummaryCard
+          label={strings.earnings.summarySales}
+          piastres={summary?.totalSalesPiastres ?? 0}
           locale={locale}
         />
         <SummaryCard

@@ -165,7 +165,11 @@ describe("EarningsView", () => {
 
   it("shows the offline state when the connection dropped", () => {
     const html = render({
-      error: { kind: "offline", title: en.states.offlineTitle, description: en.states.offlineDescription },
+      error: {
+        kind: "offline",
+        title: en.states.offlineTitle,
+        description: en.states.offlineDescription,
+      },
     });
     expect(html).toContain('data-kind="offline"');
     expect(html).toContain(en.states.offlineTitle);

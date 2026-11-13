@@ -153,7 +153,9 @@ describe("BranchList", () => {
       strings: ar,
       locale: "ar",
       branches: [makeBranch()],
-      deals: { b1: { source: "vendorDeal", type: "fixed", fixedFeePerOrderPiastres: 1000, percentage: 0 } },
+      deals: {
+        b1: { source: "vendorDeal", type: "fixed", fixedFeePerOrderPiastres: 1000, percentage: 0 },
+      },
     });
     expect(html).toContain("\u206610.00\u2069 ج.م");
     expect(html).not.toMatch(/[٠-٩]/);
