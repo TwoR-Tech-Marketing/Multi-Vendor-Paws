@@ -552,6 +552,7 @@ export const Strings = {
     latLabel: "Latitude",
     lngLabel: "Longitude",
     radiusLabel: "Radius (meters)",
+    radiusKm: "About {km} km from the center",
     save: "Save coverage",
     saving: "Saving…",
     saveSuccess: "Coverage saved.",
@@ -560,7 +561,7 @@ export const Strings = {
     radiusInvalid: "Radius must be between 500 and 100000 meters.",
     governoratesRequired: "Select at least one governorate.",
     mapsKeyMissing:
-      "Maps is not configured for this environment. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to continue.",
+      "The map is not available right now. Enter the latitude and longitude below instead.",
     mapsLoadError: "Could not load the map. Check your connection and try again.",
     notForVendorType: "Delivery coverage is only available for store accounts.",
     missingBannerTitle: "Set your delivery coverage",

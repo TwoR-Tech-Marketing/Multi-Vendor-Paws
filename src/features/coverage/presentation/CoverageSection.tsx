@@ -227,8 +227,19 @@ export function CoverageSection() {
                   min={MIN_RADIUS_METERS}
                   max={MAX_RADIUS_METERS}
                   value={radiusMeters}
+                  aria-describedby="coverage-radius-km"
                   onChange={(e) => setRadiusMeters(Number(e.target.value))}
                 />
+                <p className={styles.fieldHint} id="coverage-radius-km" aria-live="polite">
+                  <bdi>
+                    {t.radiusKm.replace(
+                      "{km}",
+                      (Number.isFinite(radiusMeters) ? radiusMeters / 1000 : 0).toLocaleString("en-US", {
+                        maximumFractionDigits: 1,
+                      }),
+                    )}
+                  </bdi>
+                </p>
               </div>
             </div>
           </>

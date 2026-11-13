@@ -553,6 +553,7 @@ export const arStrings: AppStrings = {
     latLabel: "خط العرض",
     lngLabel: "خط الطول",
     radiusLabel: "نصف القطر (متر)",
+    radiusKm: "حوالي {km} كم من المركز",
     save: "حفظ النطاق",
     saving: "جاري الحفظ…",
     saveSuccess: "تم حفظ النطاق.",
@@ -561,7 +562,7 @@ export const arStrings: AppStrings = {
     radiusInvalid: "يجب أن يكون نصف القطر بين 500 و 100000 متر.",
     governoratesRequired: "اختر محافظة واحدة على الأقل.",
     mapsKeyMissing:
-      "الخرائط غير مُعدّة في هذه البيئة. أضف NEXT_PUBLIC_GOOGLE_MAPS_API_KEY للمتابعة.",
+      "الخريطة غير متاحة حاليًا. أدخل خط العرض وخط الطول بالأسفل بدلًا منها.",
     mapsLoadError: "تعذر تحميل الخريطة. تحقق من الاتصال وحاول مرة أخرى.",
     notForVendorType: "نطاق التوصيل متاح فقط لحسابات المتاجر.",
     missingBannerTitle: "عيّن نطاق التوصيل",

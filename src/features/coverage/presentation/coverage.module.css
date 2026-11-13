@@ -43,6 +43,13 @@
   color: var(--tp-color-text-secondary);
 }
 
+.fieldHint {
+  margin: var(--tp-space-1) 0 0;
+  font-size: var(--tp-font-size-12);
+  color: var(--tp-color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
 .input {
   composes: input from "../../../components/ui/field/field.module.css";
 }
