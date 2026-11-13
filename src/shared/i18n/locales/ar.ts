@@ -794,6 +794,7 @@ export const arStrings: AppStrings = {
     emptyTitle: "لا توجد كوبونات بعد",
     emptyDescription: "أنشئ كوبونًا لمكافأة عملائك.",
     filteredEmpty: "لا توجد كوبونات بهذه الحالة.",
+    filteredEmptyTitle: "لا يوجد شيء هنا",
     add: "إنشاء كوبون",
     edit: "تعديل الكوبون",
     view: "عرض",
@@ -1136,8 +1137,9 @@ export const arStrings: AppStrings = {
     price: "سعر الاستشارة: {amount}",
     queueEmpty: "لا توجد استشارات في الانتظار الآن.",
     queueOffline: "كن متاحًا لرؤية الاستشارات المنتظرة.",
-    activeEmpty: "ليس لديك استشارات نشطة.",
-    endedEmpty: "ليس لديك استشارات منتهية بعد.",
+    queueEmptyTitle: "لا يوجد أحد في الانتظار",
+    activeEmptyTitle: "لا توجد استشارات نشطة",
+    endedEmptyTitle: "لا توجد استشارات منتهية",
     accept: "قبول",
     accepting: "جارٍ القبول...",
     openChat: "فتح المحادثة",
@@ -1569,7 +1571,7 @@ export const arStrings: AppStrings = {
     tableAmount: "المبلغ",
     tableCommission: "العمولة",
     tableNet: "الصافي",
-    emptyTitle: "لا توجد أرباح بعد",
+    emptyTitle: "لا يوجد نشاط بعد",
     emptyDescription:
       "تظهر الأرباح هنا عند تحديد الطلبات كـ «تم التسليم». تُحسب العمولة تلقائياً.",
     emptyDescriptionProvider:
@@ -1647,7 +1649,7 @@ export const arStrings: AppStrings = {
   reviews: {
     title: "التقييمات",
     subtitle: "ما يقوله العملاء عن زياراتهم",
-    empty: "لا توجد تقييمات هنا بعد.",
+    emptyTitle: "لا توجد تقييمات بعد",
     emptyDescription: "تظهر التقييمات هنا بعد أن يقيّم العملاء زياراتهم.",
     loadError: "تعذر تحميل التقييمات. يرجى المحاولة مرة أخرى.",
     loadMore: "تحميل المزيد",

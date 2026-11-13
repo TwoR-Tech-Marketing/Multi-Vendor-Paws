@@ -98,6 +98,7 @@ describe("StatementView", () => {
     expect(html).toContain(en.statement.cycle.monthly);
     for (const label of Object.values(en.statement.columns)) expect(html).toContain(label);
     expect(html).toContain(en.statement.period.closed);
+    expect(html).toContain('data-tone="neutral" data-status="closed"');
   });
 
   it("shows Cairo period bounds with Western digits", () => {
@@ -125,6 +126,7 @@ describe("StatementView", () => {
       statement: statement({ cycle: "weekly", periods: [period({ closed: false, payouts: [] })] }),
     });
     expect(html).toContain(en.statement.period.open);
+    expect(html).toContain('data-tone="success" data-status="open"');
     expect(html).toContain(en.statement.cycle.weekly);
     expect(html).not.toContain(en.statement.payout.title);
   });

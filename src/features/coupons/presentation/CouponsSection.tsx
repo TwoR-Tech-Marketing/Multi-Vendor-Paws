@@ -92,7 +92,7 @@ export function CouponList({
         <>
           <CouponStatusTabs strings={strings} tab={tab} onTabChange={onTabChange} />
           {visible.length === 0 ? (
-            <EmptyState headingLevel={3} live title={t.filteredEmpty} />
+            <EmptyState headingLevel={3} live title={t.filteredEmptyTitle} description={t.filteredEmpty} />
           ) : (
             <CouponsTable
               coupons={visible}

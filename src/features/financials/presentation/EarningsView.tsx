@@ -41,6 +41,11 @@ export type EarningsViewProps = {
   onRetry: () => void;
 };
 
+/** Money cell class; negative amounts use the money out colour. */
+function moneyClass(piastres: number): string {
+  return piastres < 0 ? `${styles.money} ${styles.negative}` : styles.money;
+}
+
 type SummaryCardProps = {
   label: string;
   piastres: number;
@@ -99,9 +104,9 @@ function EntriesTable({ strings, locale, entries }: EntriesTableProps) {
                   <span title={entry.description ?? undefined}>{entry.description ?? "-"}</span>
                 )}
               </td>
-              <td className={styles.money}>{formatEgp(entry.amountPiastres, locale)}</td>
-              <td className={styles.money}>{formatEgp(entry.commissionPiastres, locale)}</td>
-              <td className={styles.money}>{formatEgp(entry.netPiastres, locale)}</td>
+              <td className={moneyClass(entry.amountPiastres)}>{formatEgp(entry.amountPiastres, locale)}</td>
+              <td className={moneyClass(entry.commissionPiastres)}>{formatEgp(entry.commissionPiastres, locale)}</td>
+              <td className={moneyClass(entry.netPiastres)}>{formatEgp(entry.netPiastres, locale)}</td>
             </tr>
           ))}
         </tbody>

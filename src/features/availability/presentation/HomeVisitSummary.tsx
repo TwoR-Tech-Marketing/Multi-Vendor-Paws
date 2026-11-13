@@ -25,7 +25,7 @@ export function HomeVisitSummary({ branchId, homeVisit, strings, locale }: HomeV
       {homeVisit.enabled ? (
         <div className={branchStyles.badgeRow}>
           <StatusBadge
-            tone="confirmed"
+            tone="success"
             label={t.homeVisitFee.replace("{amount}", formatEgp(homeVisit.feePiastres, locale))}
           />
           <StatusBadge tone="neutral" label={t.homeVisitRadius.replace("{km}", km)} />

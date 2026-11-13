@@ -124,7 +124,7 @@ describe("ReviewsList", () => {
 
   it("shows the empty state and paging", () => {
     const empty = renderList({ items: [] });
-    expect(empty).toContain(en.reviews.empty);
+    expect(empty).toContain(en.reviews.emptyTitle);
     expect(empty).toContain(en.reviews.emptyDescription);
     expect(empty).toContain('data-testid="empty-state-art"');
     expect(renderList({ hasMore: true })).toContain(en.reviews.loadMore);

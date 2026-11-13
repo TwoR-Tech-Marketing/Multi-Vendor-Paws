@@ -178,7 +178,7 @@ describe("HomeVisitSummary", () => {
       />,
     );
     expect(html).toContain("Home visit fee: 150.00 EGP");
-    expect(html).toContain('data-tone="confirmed"');
+    expect(html).toContain('data-tone="success"');
     expect(html).toContain("Coverage radius: 3.5 km");
     expect(html).toContain('href="/branches/b1"');
   });

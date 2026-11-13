@@ -100,7 +100,7 @@ function PeriodCard({
       <div className={styles.periodHeader}>
         <h3 className={styles.periodTitle}>{range}</h3>
         <StatusBadge
-          tone={period.closed ? "success" : "warning"}
+          tone={period.closed ? "neutral" : "success"}
           label={period.closed ? t.period.closed : t.period.open}
           status={period.closed ? "closed" : "open"}
         />

@@ -162,3 +162,7 @@
     text-decoration: underline;
   }
 }
+
+.negative {
+  color: var(--tp-color-money-out);
+}

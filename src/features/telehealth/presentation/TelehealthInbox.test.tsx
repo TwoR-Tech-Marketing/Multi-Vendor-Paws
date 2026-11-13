@@ -223,7 +223,7 @@ describe("TelehealthInboxView", () => {
     });
     expect(html).toContain(en.telehealth.inactiveHint);
     expect(html).not.toContain('role="tablist"');
-    expect(html).not.toContain(en.telehealth.activeEmpty);
+    expect(html).not.toContain(en.telehealth.activeEmptyTitle);
   });
 
   it("lets a suspended doctor see active and ended consultations only", () => {
@@ -270,6 +270,6 @@ describe("TelehealthInboxView", () => {
   it("renders Arabic copy", () => {
     const html = renderView({ strings: ar, locale: "ar", tab: "active" });
     expect(html).toContain(ar.telehealth.tabs.queue);
-    expect(html).toContain(ar.telehealth.activeEmpty);
+    expect(html).toContain(ar.telehealth.activeEmptyTitle);
   });
 });

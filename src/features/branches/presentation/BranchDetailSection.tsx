@@ -274,7 +274,7 @@ export function BranchDetailSection({ branchId }: { branchId: string }) {
           </p>
           {branch.homeVisit.enabled ? (
             <div className={styles.badgeRow}>
-              <StatusBadge tone="confirmed" label={t.homeVisitBadge} />
+              <StatusBadge tone="success" label={t.homeVisitBadge} />
             </div>
           ) : null}
           {canOpenAvailability(branch, profile.vendorType) ? (

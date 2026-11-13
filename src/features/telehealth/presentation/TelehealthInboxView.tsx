@@ -76,7 +76,7 @@ export function TelehealthInboxView({
     return (
       <TelehealthSessionList
         sessions={list.items}
-        emptyText={tab === "active" ? t.activeEmpty : t.endedEmpty}
+        emptyText={tab === "active" ? t.activeEmptyTitle : t.endedEmptyTitle}
         strings={strings}
         locale={locale}
         hasMore={list.nextCursor !== null}

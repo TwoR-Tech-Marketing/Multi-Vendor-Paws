@@ -109,6 +109,7 @@ describe("EarningsView", () => {
     });
     expect(html).toContain("-25.00 EGP");
     expect(html).toContain(en.earnings.typeLabels.payout);
+    expect(html).toMatch(/class="[^"]*negative[^"]*">-25\.00 EGP/);
   });
 
   it("shows a negative payout row and negative summary on the bff layout", () => {

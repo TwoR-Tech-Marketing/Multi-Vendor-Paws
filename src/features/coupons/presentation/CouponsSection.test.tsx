@@ -82,6 +82,7 @@ describe("CouponList", () => {
     expect(html).toContain(en.coupons.pause);
     expect(html).toContain(en.coupons.resume);
     expect(html).toContain(en.coupons.status.paused);
+    expect(html).toContain('data-tone="hold"');
     for (const id of ["all", "active", "paused", "expired", "exhausted"] as const) {
       expect(html).toContain(en.coupons.tabs[id]);
     }

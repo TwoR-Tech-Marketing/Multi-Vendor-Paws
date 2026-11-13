@@ -793,6 +793,7 @@ export const Strings = {
     emptyTitle: "No coupons yet",
     emptyDescription: "Create a coupon to reward your customers.",
     filteredEmpty: "No coupons with this status.",
+    filteredEmptyTitle: "Nothing here",
     add: "Create coupon",
     edit: "Edit coupon",
     view: "View",
@@ -1135,8 +1136,9 @@ export const Strings = {
     price: "Consultation price: {amount}",
     queueEmpty: "No consultations are waiting right now.",
     queueOffline: "Go online to see waiting consultations.",
-    activeEmpty: "You have no active consultations.",
-    endedEmpty: "You have no ended consultations yet.",
+    queueEmptyTitle: "No one is waiting",
+    activeEmptyTitle: "No active consultations",
+    endedEmptyTitle: "No ended consultations",
     accept: "Accept",
     accepting: "Accepting...",
     openChat: "Open chat",
@@ -1569,7 +1571,7 @@ export const Strings = {
     tableAmount: "Amount",
     tableCommission: "Commission",
     tableNet: "Net",
-    emptyTitle: "No earnings yet",
+    emptyTitle: "No activity yet",
     emptyDescription:
       "Earnings appear here when you mark orders as delivered. Commission is calculated automatically.",
     emptyDescriptionProvider:
@@ -1647,7 +1649,7 @@ export const Strings = {
   reviews: {
     title: "Reviews",
     subtitle: "What customers say about their visits",
-    empty: "No reviews here yet.",
+    emptyTitle: "No reviews yet",
     emptyDescription: "Reviews appear here after customers rate their visits.",
     loadError: "We couldn't load your reviews. Please try again.",
     loadMore: "Load more",

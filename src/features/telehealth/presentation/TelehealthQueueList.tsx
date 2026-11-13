@@ -25,7 +25,7 @@ export function TelehealthQueueList({
   onAccept,
 }: TelehealthQueueListProps) {
   const t = strings.telehealth;
-  if (items.length === 0) return <EmptyState headingLevel={3} live title={t.queueEmpty} />;
+  if (items.length === 0) return <EmptyState headingLevel={3} live title={t.queueEmptyTitle} description={t.queueEmpty} />;
   return (
     <ul className={styles.list}>
       {items.map((item) => {

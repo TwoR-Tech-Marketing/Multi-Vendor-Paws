@@ -53,7 +53,7 @@ export function BranchCard({
           tone="neutral"
           label={t.serviceCount.replace("{count}", branch.serviceCount.toLocaleString("en-US"))}
         />
-        {branch.homeVisit.enabled ? <StatusBadge tone="confirmed" label={t.homeVisitBadge} /> : null}
+        {branch.homeVisit.enabled ? <StatusBadge tone="success" label={t.homeVisitBadge} /> : null}
       </div>
       {deal ? (
         <p className={styles.cardLine}>
