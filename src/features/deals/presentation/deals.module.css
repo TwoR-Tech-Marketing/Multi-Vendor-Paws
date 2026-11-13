@@ -117,12 +117,12 @@
 }
 
 .branchName {
-  max-width: 16rem;
   font-weight: var(--tp-font-weight-semibold);
 }
 
 .branchName span {
   display: block;
+  max-width: 16rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

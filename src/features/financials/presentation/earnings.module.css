@@ -82,13 +82,10 @@
   border-radius: var(--tp-radius-control);
 }
 
-.nameCell {
-  max-width: 18rem;
-}
-
 .nameCell > a,
 .nameCell > span {
   display: block;
+  max-width: 18rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

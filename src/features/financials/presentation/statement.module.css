@@ -157,12 +157,9 @@
   overflow: hidden;
 }
 
-.refCell {
-  max-width: 14rem;
-}
-
 .refCell bdi {
   display: block;
+  max-width: 14rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

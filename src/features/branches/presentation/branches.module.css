@@ -112,7 +112,12 @@
 .hint {
   padding: var(--tp-space-3) var(--tp-space-4);
   border-radius: var(--tp-radius-card);
-  border: 1px solid color-mix(in srgb, var(--tp-color-status-warning-fg) 30%, var(--tp-color-status-warning-surface));
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--tp-color-status-warning-fg) 30%,
+      var(--tp-color-status-warning-surface)
+    );
   background: var(--tp-color-status-warning-surface);
   color: var(--tp-color-text-primary);
   font-size: var(--tp-font-size-14);
@@ -131,7 +136,12 @@
 .alertError {
   padding: var(--tp-space-3) var(--tp-space-4);
   border-radius: var(--tp-radius-card);
-  border: 1px solid color-mix(in srgb, var(--tp-color-status-danger-fg) 30%, var(--tp-color-status-danger-surface));
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--tp-color-status-danger-fg) 30%,
+      var(--tp-color-status-danger-surface)
+    );
   background: var(--tp-color-status-danger-surface);
   color: var(--tp-color-status-danger-fg);
   font-size: var(--tp-font-size-14);
@@ -140,7 +150,12 @@
 .alertSuccess {
   padding: var(--tp-space-3) var(--tp-space-4);
   border-radius: var(--tp-radius-card);
-  border: 1px solid color-mix(in srgb, var(--tp-color-status-success-fg) 30%, var(--tp-color-status-success-surface));
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--tp-color-status-success-fg) 30%,
+      var(--tp-color-status-success-surface)
+    );
   background: var(--tp-color-status-success-surface);
   color: var(--tp-color-status-success-fg);
   font-size: var(--tp-font-size-14);
@@ -267,12 +282,9 @@
   composes: numeric from "../../../components/ui/table/table.module.css";
 }
 
-.nameCell {
-  max-width: 18rem;
-}
-
 .nameCell span {
   display: block;
+  max-width: 18rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
