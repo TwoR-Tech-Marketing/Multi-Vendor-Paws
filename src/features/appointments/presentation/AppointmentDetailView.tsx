@@ -8,18 +8,21 @@ import {
 } from "@/features/appointments/presentation/appointments-copy";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import branchStyles from "@/features/branches/presentation/branches.module.css";
 import styles from "./appointments.module.css";
 
-type ViewProps = { appointment: Appointment; strings: AppStrings; locale: string };
+type ViewProps = { appointment: Appointment; strings: AppStrings; locale: AppLocale };
 
-function Detail({ label, value }: { label: string; value: string }) {
+type DetailProps = { label: string; value: string; ltr?: boolean };
+
+function Detail({ label, value, ltr = false }: DetailProps) {
   if (!value) return null;
   return (
     <div className={styles.detailItem}>
       <dt>{label}</dt>
-      <dd>{value}</dd>
+      <dd>{ltr ? <bdi dir="ltr">{value}</bdi> : value}</dd>
     </div>
   );
 }
@@ -29,7 +32,9 @@ function SummaryPanel({ appointment: a, strings, locale }: ViewProps) {
   return (
     <section className={branchStyles.panel}>
       <div className={branchStyles.panelHeader}>
-        <h2 className={branchStyles.panelTitle}>{a.appointmentNumber}</h2>
+        <h2 className={branchStyles.panelTitle}>
+          <bdi>{a.appointmentNumber}</bdi>
+        </h2>
         <AppointmentBadges
           status={a.status}
           held={a.held}
@@ -69,7 +74,7 @@ function BuyerPanel({ appointment: a, strings }: ViewProps) {
       <h2 className={branchStyles.panelTitle}>{t.buyer}</h2>
       <dl className={styles.details}>
         <Detail label={t.buyer} value={a.buyerName || a.buyerFirstName} />
-        <Detail label={t.phone} value={a.buyerPhone} />
+        <Detail label={t.phone} value={a.buyerPhone} ltr />
         <Detail label={t.pet} value={a.petName ?? ""} />
         <Detail label={t.homeAddress} value={a.homeAddress?.text ?? ""} />
       </dl>
@@ -91,28 +96,28 @@ function ServicesPanel({ appointment: a, strings, locale }: ViewProps) {
                 {t.duration.replace("{minutes}", String(s.durationMinutes))}
               </span>
             </span>
-            <span>{formatEgp(s.pricePiastres)}</span>
+            <span>{formatEgp(s.pricePiastres, locale)}</span>
           </li>
         ))}
         <li className={styles.line}>
           <span>{t.items}</span>
-          <span>{formatEgp(a.itemsPiastres)}</span>
+          <span>{formatEgp(a.itemsPiastres, locale)}</span>
         </li>
         {a.homeVisitFeePiastres > 0 ? (
           <li className={styles.line}>
             <span>{t.homeVisitFee}</span>
-            <span>{formatEgp(a.homeVisitFeePiastres)}</span>
+            <span>{formatEgp(a.homeVisitFeePiastres, locale)}</span>
           </li>
         ) : null}
         {a.discountPiastres > 0 ? (
           <li className={styles.line}>
             <span>{t.discount}</span>
-            <span>{formatEgp(-a.discountPiastres)}</span>
+            <span>{formatEgp(-a.discountPiastres, locale)}</span>
           </li>
         ) : null}
         <li className={styles.lineTotal}>
           <span>{t.total}</span>
-          <span>{formatEgp(a.totalPiastres)}</span>
+          <span>{formatEgp(a.totalPiastres, locale)}</span>
         </li>
       </ul>
     </section>

@@ -895,6 +895,8 @@ export const Strings = {
   appointments: {
     title: "Appointments",
     empty: "No appointments match these filters.",
+    emptyTitle: "No appointments",
+    clearFilters: "Clear filters",
     loadError: "We couldn't load your appointments. Please try again.",
     loadMore: "Load more",
     loadingMore: "Loading more...",

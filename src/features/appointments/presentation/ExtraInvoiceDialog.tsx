@@ -19,6 +19,7 @@ import { EXTRA_INVOICE_LIMITS } from "@/features/appointments/domain/types";
 import { InvoiceLineFields } from "@/features/appointments/presentation/InvoiceLineFields";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import branchStyles from "@/features/branches/presentation/branches.module.css";
 import styles from "./appointments.module.css";
@@ -31,7 +32,7 @@ type ServicesState =
 type ExtraInvoiceDialogProps = {
   branchId: string;
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   isSubmitting: boolean;
   error: string | null;
   /** `requestId` stays the same on a plain retry and changes after any edit. */
@@ -193,7 +194,7 @@ export function ExtraInvoiceDialog({
         <ul className={styles.lines}>
           <li className={styles.lineTotal}>
             <span>{t.total}</span>
-            <span>{formatEgp(check.totalPiastres)}</span>
+            <span>{formatEgp(check.totalPiastres, locale)}</span>
           </li>
         </ul>
         {messages.map((message) => (

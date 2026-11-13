@@ -896,6 +896,8 @@ export const arStrings: AppStrings = {
   appointments: {
     title: "المواعيد",
     empty: "لا توجد مواعيد تطابق هذه الفلاتر.",
+    emptyTitle: "لا توجد مواعيد",
+    clearFilters: "مسح الفلاتر",
     loadError: "تعذر تحميل مواعيدك. يرجى المحاولة مرة أخرى.",
     loadMore: "عرض المزيد",
     loadingMore: "جارٍ تحميل المزيد...",

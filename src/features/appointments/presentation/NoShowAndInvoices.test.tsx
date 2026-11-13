@@ -261,7 +261,7 @@ function invoice(overrides: Partial<ExtraInvoice> = {}): ExtraInvoice {
   };
 }
 
-function card(invoices: ExtraInvoice[], allowedActions: Parameters<typeof ExtraInvoicesCard>[0]["allowedActions"], strings = en, locale = "en") {
+function card(invoices: ExtraInvoice[], allowedActions: Parameters<typeof ExtraInvoicesCard>[0]["allowedActions"], strings = en, locale: "en" | "ar" = "en") {
   return renderToStaticMarkup(
     <ExtraInvoicesCard
       invoices={invoices}
