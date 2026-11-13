@@ -644,7 +644,6 @@ export const Strings = {
   },
   branches: {
     title: "Branches",
-    empty: "You have no branches yet. Add your first branch to start listing services.",
     emptyTitle: "No branches yet",
     emptyDescription: "Add your first branch to start listing services.",
     add: "Add branch",
@@ -791,7 +790,6 @@ export const Strings = {
   },
   coupons: {
     title: "Coupons",
-    empty: "You have no coupons yet. Create a coupon to reward your customers.",
     emptyTitle: "No coupons yet",
     emptyDescription: "Create a coupon to reward your customers.",
     filteredEmpty: "No coupons with this status.",
@@ -1187,7 +1185,6 @@ export const Strings = {
   },
   services: {
     title: "Services",
-    empty: "No services in this branch yet. Add a service or copy them from another branch.",
     emptyTitle: "No services yet",
     emptyDescription: "Add a service or copy them from another branch.",
     add: "Add service",
@@ -1270,7 +1267,6 @@ export const Strings = {
       legacy: "Current rate",
     },
     branches: "Branches",
-    branchesEmpty: "You have no branches yet. Each branch you add appears here with its fee.",
     branchesEmptyTitle: "No branches yet",
     branchesEmptyDescription: "Each branch you add appears here with its fee.",
     columns: {
@@ -1643,7 +1639,6 @@ export const Strings = {
       amount: "Amount",
     },
     periodsTitle: "Statement periods",
-    empty: "No statement yet. Your periods appear here once your store has activity.",
     emptyTitle: "No statement yet",
     emptyDescription: "Your periods appear here once your store has activity.",
     loadError: "We couldn't load your statement. Please try again.",

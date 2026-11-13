@@ -645,7 +645,6 @@ export const arStrings: AppStrings = {
   },
   branches: {
     title: "الفروع",
-    empty: "لا توجد فروع بعد. أضف أول فرع لتبدأ بعرض خدماتك.",
     emptyTitle: "لا توجد فروع بعد",
     emptyDescription: "أضف أول فرع لتبدأ بعرض خدماتك.",
     add: "إضافة فرع",
@@ -792,7 +791,6 @@ export const arStrings: AppStrings = {
   },
   coupons: {
     title: "الكوبونات",
-    empty: "ليس لديك كوبونات بعد. أنشئ كوبونًا لمكافأة عملائك.",
     emptyTitle: "لا توجد كوبونات بعد",
     emptyDescription: "أنشئ كوبونًا لمكافأة عملائك.",
     filteredEmpty: "لا توجد كوبونات بهذه الحالة.",
@@ -1187,7 +1185,6 @@ export const arStrings: AppStrings = {
   },
   services: {
     title: "الخدمات",
-    empty: "لا توجد خدمات في هذا الفرع بعد. أضف خدمة أو انسخها من فرع آخر.",
     emptyTitle: "لا توجد خدمات بعد",
     emptyDescription: "أضف خدمة أو انسخها من فرع آخر.",
     add: "إضافة خدمة",
@@ -1270,7 +1267,6 @@ export const arStrings: AppStrings = {
       legacy: "السعر الحالي",
     },
     branches: "الفروع",
-    branchesEmpty: "لا توجد فروع بعد. سيظهر كل فرع تضيفه هنا مع رسومه.",
     branchesEmptyTitle: "لا توجد فروع بعد",
     branchesEmptyDescription: "سيظهر هنا كل فرع تضيفه مع رسومه.",
     columns: {
@@ -1643,7 +1639,6 @@ export const arStrings: AppStrings = {
       amount: "المبلغ",
     },
     periodsTitle: "فترات كشف الحساب",
-    empty: "لا يوجد كشف حساب بعد. ستظهر الفترات هنا بمجرد وجود نشاط في متجرك.",
     emptyTitle: "لا يوجد كشف حساب بعد",
     emptyDescription: "ستظهر الفترات هنا بمجرد وجود نشاط في متجرك.",
     loadError: "تعذر تحميل كشف الحساب. يرجى المحاولة مرة أخرى.",
