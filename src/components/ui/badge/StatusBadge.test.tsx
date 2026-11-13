@@ -65,7 +65,8 @@ describe("feature status tones", () => {
   it("maps product statuses", () => {
     expect(productStatusTone("active")).toBe("success");
     expect(productStatusTone("out_of_stock")).toBe("warning");
-    expect(productStatusTone("archived")).toBe("neutral");
+    expect(productStatusTone("archived")).toBe("cancelled");
+    expect(productStatusTone("inactive")).toBe("neutral");
   });
 
   it("maps appointment statuses and shows held as on hold", () => {

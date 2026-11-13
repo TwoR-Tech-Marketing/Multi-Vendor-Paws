@@ -15,8 +15,18 @@ export function OrderDetailSkeleton() {
       aria-label={Strings.common.loading}
       aria-busy="true"
     >
+      <article className={`${styles.panel} ${styles.detailHeader}`}>
+        <div className={styles.detailHeaderMain}>
+          <SkeletonText size="lg" width={120} />
+          <SkeletonText width={80} />
+        </div>
+        <div className={styles.detailHeaderMeta}>
+          <SkeletonText width={140} />
+          <SkeletonText width={120} />
+        </div>
+      </article>
       <div className={styles.detailGrid}>
-        <article className={styles.panel}>
+        <article className={`${styles.panel} ${styles.areaItems}`}>
           <div className={styles.detailPanel}>
             <div className={styles.sectionTitle}>
               <SkeletonText size="lg" width="30%" />
@@ -33,7 +43,7 @@ export function OrderDetailSkeleton() {
             ))}
           </div>
         </article>
-        <div className={styles.sectionStack}>
+        <div className={`${styles.sectionStack} ${styles.areaSummary}`}>
           <article className={styles.panel}>
             <div className={styles.detailPanel}>
               <div className={styles.sectionTitle}>

@@ -32,7 +32,7 @@ describe("ServicesTable", () => {
   it("shows name, piastres as EGP, duration and status in English", () => {
     const html = render();
     expect(html).toContain("Checkup");
-    expect(html).toMatch(/EGP\s?250\.00/);
+    expect(html).toMatch(/250\.00[\d.]* EGP/);
     expect(html).toContain("30 min");
     expect(html).toContain(en.branches.activeBadge);
     expect(html).toContain(en.services.edit);

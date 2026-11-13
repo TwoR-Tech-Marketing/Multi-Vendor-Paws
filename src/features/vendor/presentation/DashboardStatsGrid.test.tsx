@@ -21,8 +21,8 @@ function hrefs(vendorType?: string) {
 
 describe("DashboardStatsGrid", () => {
   it("keeps today's three cards for store vendors", () => {
-    expect(hrefs("store")).toEqual(["/orders", "/earnings", "/earnings"]);
-    expect(hrefs(undefined)).toEqual(["/orders", "/earnings", "/earnings"]);
+    expect(hrefs("store")).toEqual(["/earnings", "/orders", "/earnings"]);
+    expect(hrefs(undefined)).toEqual(["/earnings", "/orders", "/earnings"]);
   });
 
   it("drops the open orders card for providers", () => {
@@ -34,6 +34,26 @@ describe("DashboardStatsGrid", () => {
     const html = renderToStaticMarkup(
       <DashboardStatsGrid strings={en} vendorType="store" openOrders={0} netEarnings={-2500} totalSales={0} />,
     );
-    expect(html).toMatch(/-EGP\s?25/);
+    expect(html).toMatch(/-25[\d.]* EGP/);
+  });
+});
+
+describe("DashboardStatsGrid in Arabic", () => {
+  it("puts the hero first and formats money with the unit after isolated figures", () => {
+    const html = renderToStaticMarkup(
+      <DashboardStatsGrid
+        strings={getStrings("ar")}
+        vendorType="store"
+        openOrders={1284}
+        netEarnings={99999999999}
+        totalSales={0}
+        locale="ar"
+      />,
+    );
+    expect(html.indexOf(getStrings("ar").dashboard.netEarnings)).toBeLessThan(
+      html.indexOf(getStrings("ar").dashboard.openOrders),
+    );
+    expect(html).toContain("⁦999,999,999.99⁩ ج.م");
+    expect(html).toContain("1,284");
   });
 });

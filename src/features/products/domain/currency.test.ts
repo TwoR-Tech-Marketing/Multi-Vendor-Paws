@@ -16,7 +16,14 @@ describe("formatEgp", () => {
     expect(formatEgp(-50)).toBe(`-${formatEgp(50)}`);
     expect(formatEgp(-199)).toBe(`-${formatEgp(199)}`);
     expect(formatEgp(-199)).toMatch(/1\.99/);
-    expect(formatEgp(-2500)).toMatch(/^-EGP\s?25/);
+    expect(formatEgp(-2500)).toBe("-25.00 EGP");
+  });
+
+  it("puts the unit after the amount, isolating the figures in Arabic", () => {
+    expect(formatEgp(150000)).toBe("1,500.00 EGP");
+    expect(formatEgp(150000, "ar")).toBe("\u20661,500.00\u2069 ج.م");
+    expect(formatEgp(-50, "ar")).toBe("\u2066-0.50\u2069 ج.م");
+    expect(formatEgp(99999999999)).toBe("999,999,999.99 EGP");
   });
 
   it("never throws on unusual input", () => {

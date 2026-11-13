@@ -1,35 +1,26 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-import { EmptyState } from "@/components/ui/empty-state/EmptyState";
-import { ErrorState } from "@/components/ui/error-state/ErrorState";
 import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
-import { Routes } from "@/constants/routes";
 import {
   archiveVendorProductFromApi,
   fetchProductCategoriesFromApi,
   fetchVendorProductsFromApi,
   type ProductCategoryOption,
 } from "@/features/products/application/products.api";
-import { formatEgp } from "@/features/products/domain/currency";
 import type { Product } from "@/features/products/domain/types";
-import { IconEdit, IconImage, IconTrash } from "@/features/products/presentation/ProductIcons";
 import {
   EMPTY_PRODUCT_LIST_FILTERS,
   type ProductListFilters,
 } from "@/features/products/lib/productListFilters";
+import { ProductsListPanel } from "@/features/products/presentation/ProductsListPanel";
 import { ProductsListActions } from "@/features/products/presentation/ProductsListActions";
-import { ProductStatusBadge } from "@/features/products/presentation/ProductStatusBadge";
 import { ProductsSkeleton } from "@/features/products/presentation/ProductsSkeleton";
 import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./products.module.css";
-
-const LOW_STOCK_THRESHOLD = 15;
 
 export function ProductsSection() {
   const strings = useStrings();
@@ -160,163 +151,16 @@ export function ProductsSection() {
           {success}
         </div>
       ) : null}
-      {loadError && products.length > 0 ? (
-        <ErrorState
-          compact
-          kind={loadError.kind}
-          title={loadError.title}
-          description={loadError.description}
-          retryLabel={strings.states.retry}
-          onRetry={() => void loadProducts()}
-          headingLevel={2}
-        />
-      ) : null}
-
-      <article className={styles.panel}>
-        {loadError && products.length === 0 ? (
-          <ErrorState
-            kind={loadError.kind}
-            title={loadError.title}
-            description={loadError.description}
-            retryLabel={strings.states.retry}
-            onRetry={() => void loadProducts()}
-            headingLevel={2}
-          />
-        ) : products.length === 0 ? (
-          <EmptyState
-            headingLevel={2}
-            title={
-              isFiltered ? strings.products.emptyFilteredTitle : strings.products.emptyTitle
-            }
-            description={
-              isFiltered
-                ? strings.products.emptyFilteredDescription
-                : strings.products.emptyDescription
-            }
-            action={
-              isFiltered ? (
-                <button type="button" className={styles.btnSecondary} onClick={clearFilters}>
-                  {strings.products.clearFilters}
-                </button>
-              ) : (
-                <Link href={Routes.vendor.productNew} className={styles.btnPrimary}>
-                  {strings.products.addProduct}
-                </Link>
-              )
-            }
-          />
-        ) : (
-          <div className={styles.tableWrap}>
-            <table className={styles.dataTable}>
-              <thead>
-                <tr>
-                  <th>{strings.products.tableProduct}</th>
-                  <th>{strings.products.tableCategory}</th>
-                  <th className={styles.money}>{strings.products.tablePrice}</th>
-                  <th className={styles.money}>{strings.products.tableStock}</th>
-                  <th>{strings.products.tableStatus}</th>
-                  <th className={styles.actionsHead}>{strings.products.tableActions}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => {
-                  const isLowStock =
-                    product.stock > 0 && product.stock <= LOW_STOCK_THRESHOLD;
-                  const displayName =
-                    locale === "ar" && product.nameAr ? product.nameAr : product.name;
-                  const displayDescription =
-                    locale === "ar" && product.descriptionAr
-                      ? product.descriptionAr
-                      : product.description;
-                  const discounted = product.priceAfterDiscountPiastres ?? null;
-                  const hasDiscount = discounted !== null && discounted < product.pricePiastres;
-
-                  return (
-                    <tr key={product.productId}>
-                      <td>
-                        <div className={styles.productCell}>
-                          <div className={styles.thumb}>
-                            {product.primaryImageUrl ? (
-                              <Image
-                                src={product.primaryImageUrl}
-                                alt=""
-                                width={48}
-                                height={48}
-                                unoptimized
-                              />
-                            ) : (
-                              <IconImage />
-                            )}
-                          </div>
-                          <div className={styles.productMeta}>
-                            <strong title={displayName}>{displayName}</strong>
-                            {displayDescription ? (
-                              <small title={displayDescription}>{displayDescription}</small>
-                            ) : null}
-                          </div>
-                        </div>
-                      </td>
-                      <td className={product.categoryNames[0] ? undefined : styles.mutedCell}>
-                        {product.categoryNames[0] ?? strings.states.notProvided}
-                      </td>
-                      <td className={styles.money}>
-                        {hasDiscount ? (
-                          <span className={styles.priceStack}>
-                            <span>{formatEgp(discounted)}</span>
-                            <s className={styles.priceWas}>{formatEgp(product.pricePiastres)}</s>
-                          </span>
-                        ) : (
-                          formatEgp(product.pricePiastres)
-                        )}
-                      </td>
-                      <td className={styles.money}>
-                        <span
-                          className={
-                            product.stock === 0
-                              ? styles.stockOut
-                              : isLowStock
-                                ? styles.stockLow
-                                : undefined
-                          }
-                        >
-                          {isLowStock
-                            ? strings.products.stockLow.replace(
-                                "{count}",
-                                String(product.stock),
-                              )
-                            : product.stock}
-                        </span>
-                      </td>
-                      <td>
-                        <ProductStatusBadge status={product.status} strings={strings} />
-                      </td>
-                      <td>
-                        <div className={styles.actions}>
-                          <Link
-                            href={Routes.vendor.productEdit(product.productId)}
-                            className={styles.iconBtn}
-                            aria-label={`${strings.products.editAction}: ${displayName}`}
-                          >
-                            <IconEdit />
-                          </Link>
-                          <button
-                            type="button"
-                            className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
-                            aria-label={`${strings.products.deleteAction}: ${displayName}`}
-                            onClick={() => setDeleteTarget(product)}
-                          >
-                            <IconTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </article>
+      <ProductsListPanel
+        products={products}
+        loadError={loadError}
+        isFiltered={isFiltered}
+        strings={strings}
+        locale={locale}
+        onRetry={() => void loadProducts()}
+        onClearFilters={clearFilters}
+        onDelete={setDeleteTarget}
+      />
 
       <LogoutConfirmDialog
         open={deleteTarget !== null}

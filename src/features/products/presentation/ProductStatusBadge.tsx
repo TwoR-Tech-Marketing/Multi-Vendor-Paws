@@ -13,6 +13,7 @@ type ProductStatusBadgeProps = {
 export function productStatusTone(status: ProductStatus): StatusTone {
   if (status === "active") return "success";
   if (status === "out_of_stock") return "warning";
+  if (status === "archived") return "cancelled";
   return "neutral";
 }
 

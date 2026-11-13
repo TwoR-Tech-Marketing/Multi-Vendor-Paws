@@ -85,6 +85,12 @@
   white-space: nowrap;
 }
 
+.badgeRow {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--tp-space-1);
+}
+
 .dateCell {
   white-space: nowrap;
   color: var(--tp-color-text-secondary);
@@ -97,8 +103,83 @@
 .detailGrid {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  grid-template-areas:
+    "items summary"
+    "history update";
   gap: var(--tp-space-4);
   align-items: start;
+}
+
+.areaItems {
+  grid-area: items;
+}
+
+.areaSummary {
+  grid-area: summary;
+}
+
+.areaHistory {
+  grid-area: history;
+}
+
+.areaUpdate {
+  grid-area: update;
+}
+
+.detailHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tp-space-3) var(--tp-space-6);
+  padding: var(--tp-space-5) var(--tp-space-6);
+}
+
+.detailHeaderMain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tp-space-3);
+  min-width: 0;
+}
+
+.detailOrderRef {
+  margin: 0;
+  font-size: var(--tp-font-size-20);
+  font-weight: var(--tp-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.detailHeaderMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--tp-space-3) var(--tp-space-8);
+  margin: 0;
+  min-width: 0;
+}
+
+.detailHeaderMeta div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tp-space-1);
+  min-width: 0;
+  max-width: 20rem;
+}
+
+.detailHeaderMeta dt {
+  font-size: var(--tp-font-size-12);
+  color: var(--tp-color-text-muted);
+}
+
+.detailHeaderMeta dd {
+  margin: 0;
+  font-size: var(--tp-font-size-14);
+  font-weight: var(--tp-font-weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .detailPanel {
@@ -306,6 +387,11 @@
 @media (max-width: 900px) {
   .detailGrid {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "items"
+      "summary"
+      "history"
+      "update";
   }
 }
 
