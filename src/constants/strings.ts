@@ -1653,6 +1653,7 @@ export const Strings = {
     title: "Reviews",
     subtitle: "What customers say about their visits",
     empty: "No reviews here yet.",
+    emptyDescription: "Reviews appear here after customers rate their visits.",
     loadError: "We couldn't load your reviews. Please try again.",
     loadMore: "Load more",
     loadingMore: "Loading more…",

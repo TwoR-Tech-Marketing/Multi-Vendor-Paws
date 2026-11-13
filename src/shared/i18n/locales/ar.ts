@@ -1653,6 +1653,7 @@ export const arStrings: AppStrings = {
     title: "التقييمات",
     subtitle: "ما يقوله العملاء عن زياراتهم",
     empty: "لا توجد تقييمات هنا بعد.",
+    emptyDescription: "تظهر التقييمات هنا بعد أن يقيّم العملاء زياراتهم.",
     loadError: "تعذر تحميل التقييمات. يرجى المحاولة مرة أخرى.",
     loadMore: "تحميل المزيد",
     loadingMore: "جاري تحميل المزيد…",

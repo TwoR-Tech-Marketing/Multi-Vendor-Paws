@@ -116,8 +116,17 @@ describe("ReviewsList", () => {
     expect(html).not.toContain(`>${en.reviews.reply.action}<`);
   });
 
+  it("names the reply action after the buyer and gives the name a tooltip", () => {
+    const html = renderList();
+    expect(html).toContain(`aria-label="${en.reviews.reply.action} Mona"`);
+    expect(html).toContain('title="Mona"');
+  });
+
   it("shows the empty state and paging", () => {
-    expect(renderList({ items: [] })).toContain(en.reviews.empty);
+    const empty = renderList({ items: [] });
+    expect(empty).toContain(en.reviews.empty);
+    expect(empty).toContain(en.reviews.emptyDescription);
+    expect(empty).toContain('data-testid="empty-state-art"');
     expect(renderList({ hasMore: true })).toContain(en.reviews.loadMore);
     expect(renderList({ hasMore: true, isLoadingMore: true })).toContain(en.reviews.loadingMore);
   });
