@@ -338,6 +338,12 @@ service cloud.firestore {
     match /supportCases/{id} { allow read: if isAdmin(); allow write: if false; }
     match /appointmentsConfig/{id} { allow read: if isAdmin(); allow write: if false; }
 
+    // Loyalty points ledger, balances and config. Cloud Functions only;
+    // buyers read through the points callable. Admin read only.
+    match /pointsLedger/{id}   { allow read: if isAdmin(); allow write: if false; }
+    match /pointsBalances/{id} { allow read: if isAdmin(); allow write: if false; }
+    match /pointsConfig/{id}   { allow read: if isAdmin(); allow write: if false; }
+
     // Appointment reviews. The buyer reads their own; providers read through
     // the review callables, which strip buyer data. Cloud Functions write.
     match /appointmentReviews/{id} {
