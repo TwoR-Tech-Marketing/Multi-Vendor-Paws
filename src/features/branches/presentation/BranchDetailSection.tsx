@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 
+import { StatusBadge } from "@/components/ui/badge/StatusBadge";
 import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { Routes } from "@/constants/routes";
 import {
   attachServicePhoto,
@@ -59,7 +62,7 @@ export function BranchDetailSection({ branchId }: { branchId: string }) {
   const t = strings.branches;
 
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [branch, setBranch] = useState<Branch | null>(null);
   const [services, setServices] = useState<BranchService[]>([]);
   const [deal, setDeal] = useState<BranchDeal | null>(null);
@@ -87,7 +90,7 @@ export function BranchDetailSection({ branchId }: { branchId: string }) {
       setServices(detail.services);
       setDeal(deals?.branches.find((row) => row.branchId === branchId)?.deal ?? null);
     } catch (error) {
-      setLoadError(branchesErrorMessage(error, strings));
+      setLoadError(toLoadErrorView(error, strings, branchesErrorMessage(error, strings)));
     } finally {
       setIsLoading(false);
     }
@@ -206,14 +209,13 @@ export function BranchDetailSection({ branchId }: { branchId: string }) {
   if (loadError || !branch) {
     return (
       <div className={styles.stack}>
-        <div className={styles.alertError} role="alert">
-          {loadError ?? strings.errors.generic}
-        </div>
-        <div className={styles.actions}>
-          <button type="button" className={styles.secondaryButton} onClick={() => void load()}>
-            {strings.common.retry}
-          </button>
-        </div>
+        <section className={styles.panel}>
+          <LoadErrorState
+            view={loadError ?? toLoadErrorView(null, strings, strings.errors.generic, false)}
+            strings={strings}
+            onRetry={() => void load()}
+          />
+        </section>
       </div>
     );
   }
@@ -257,20 +259,22 @@ export function BranchDetailSection({ branchId }: { branchId: string }) {
       ) : (
         <section className={styles.panel}>
           <div className={styles.panelHeader}>
-            <h2 className={styles.panelTitle}>{branch.name}</h2>
-            <span
-              className={`${styles.badge} ${archived ? styles.badgeArchived : styles.badgeActive}`}
-            >
-              {archived ? t.archivedBadge : t.activeBadge}
-            </span>
+            <h2 className={styles.panelTitle} title={branch.name}>
+              {branch.name}
+            </h2>
+            <StatusBadge
+              tone={archived ? "neutral" : "success"}
+              label={archived ? t.archivedBadge : t.activeBadge}
+              status={branch.status}
+            />
           </div>
           <p className={styles.cardLine}>{branch.address}</p>
-          <p className={styles.cardLine} dir="ltr">
-            {branch.phone}
+          <p className={styles.cardLine}>
+            <bdi dir="ltr">{branch.phone}</bdi>
           </p>
           {branch.homeVisit.enabled ? (
             <div className={styles.badgeRow}>
-              <span className={`${styles.badge} ${styles.badgeAccent}`}>{t.homeVisitBadge}</span>
+              <StatusBadge tone="confirmed" label={t.homeVisitBadge} />
             </div>
           ) : null}
           {canOpenAvailability(branch, profile.vendorType) ? (
@@ -320,7 +324,7 @@ export function BranchDetailSection({ branchId }: { branchId: string }) {
         </section>
       )}
 
-      {deal ? <BranchDealCard deal={deal} strings={strings} /> : null}
+      {deal ? <BranchDealCard deal={deal} strings={strings} locale={locale} /> : null}
 
       {panel?.kind === "newService" || panel?.kind === "editService" ? (
         <ServiceForm

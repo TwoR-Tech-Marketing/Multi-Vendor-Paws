@@ -1,9 +1,11 @@
 import Link from "next/link";
 
+import { StatusBadge } from "@/components/ui/badge/StatusBadge";
 import { Routes } from "@/constants/routes";
 import type { Branch, BranchDeal } from "@/features/branches/domain/types";
 import { formatDealTerms } from "@/features/branches/presentation/branch-copy";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import styles from "./branches.module.css";
 
@@ -11,6 +13,7 @@ type BranchCardProps = {
   branch: Branch;
   deal: BranchDeal | null;
   strings: AppStrings;
+  locale: AppLocale;
   readOnly: boolean;
   onEdit: (branch: Branch) => void;
   onArchive: (branch: Branch) => void;
@@ -21,6 +24,7 @@ export function BranchCard({
   branch,
   deal,
   strings,
+  locale,
   readOnly,
   onEdit,
   onArchive,
@@ -32,27 +36,36 @@ export function BranchCard({
   return (
     <article className={styles.card} data-branch-id={branch.branchId}>
       <div className={styles.cardTitleRow}>
-        <h3 className={styles.cardTitle}>{branch.name}</h3>
-        <span className={`${styles.badge} ${archived ? styles.badgeArchived : styles.badgeActive}`}>
-          {archived ? t.archivedBadge : t.activeBadge}
-        </span>
+        <h3 className={styles.cardTitle} title={branch.name}>
+          {branch.name}
+        </h3>
+        <StatusBadge
+          tone={archived ? "neutral" : "success"}
+          label={archived ? t.archivedBadge : t.activeBadge}
+          status={branch.status}
+        />
       </div>
-      <p className={styles.cardLine}>{branch.address}</p>
+      <p className={styles.cardLine} title={branch.address}>
+        {branch.address}
+      </p>
       <div className={styles.badgeRow}>
-        <span className={styles.badge}>
-          {t.serviceCount.replace("{count}", String(branch.serviceCount))}
-        </span>
-        {branch.homeVisit.enabled ? (
-          <span className={`${styles.badge} ${styles.badgeAccent}`}>{t.homeVisitBadge}</span>
-        ) : null}
+        <StatusBadge
+          tone="neutral"
+          label={t.serviceCount.replace("{count}", branch.serviceCount.toLocaleString("en-US"))}
+        />
+        {branch.homeVisit.enabled ? <StatusBadge tone="confirmed" label={t.homeVisitBadge} /> : null}
       </div>
       {deal ? (
         <p className={styles.cardLine}>
-          {strings.deals.branch.source[deal.source]}: {formatDealTerms(deal, strings)}
+          {strings.deals.branch.source[deal.source]}: {formatDealTerms(deal, strings, locale)}
         </p>
       ) : null}
       <div className={styles.actions}>
-        <Link className={styles.linkButton} href={Routes.vendor.branchDetail(branch.branchId)}>
+        <Link
+          className={styles.linkButton}
+          href={Routes.vendor.branchDetail(branch.branchId)}
+          aria-label={`${t.view} ${branch.name}`}
+        >
           {t.view}
         </Link>
         {!readOnly && !archived ? (

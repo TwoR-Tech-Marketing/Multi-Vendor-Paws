@@ -3,11 +3,12 @@ import type { Branch, BranchService, DealTerms } from "@/features/branches/domai
 import { isScreenVisible } from "@/features/vendor/domain/vendor-type-config";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
-/** Localized summary of a deal, for example "EGP 10.00 plus 8% per order". */
-export function formatDealTerms(deal: DealTerms, strings: AppStrings): string {
+/** Localized summary of a deal, for example "10.00 EGP plus 8% per order". */
+export function formatDealTerms(deal: DealTerms, strings: AppStrings, locale: AppLocale): string {
   const copy = strings.deals.branch;
-  const amount = formatEgp(deal.fixedFeePerOrderPiastres);
+  const amount = formatEgp(deal.fixedFeePerOrderPiastres, locale);
   const percent = String(deal.percentage);
   if (deal.type === "fixed") return copy.fixed.replace("{amount}", amount);
   if (deal.type === "both") {
@@ -32,6 +33,10 @@ export function serviceDisplayName(service: BranchService, locale: string): stri
   return preferred || service.nameEn || service.nameAr;
 }
 
-export function formatServicePrice(pricePiastres: number, strings: AppStrings): string {
-  return pricePiastres === 0 ? strings.services.free : formatEgp(pricePiastres);
+export function formatServicePrice(
+  pricePiastres: number,
+  strings: AppStrings,
+  locale: AppLocale,
+): string {
+  return pricePiastres === 0 ? strings.services.free : formatEgp(pricePiastres, locale);
 }

@@ -1,18 +1,21 @@
 import Image from "next/image";
 
+import { StatusBadge } from "@/components/ui/badge/StatusBadge";
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import type { BranchService } from "@/features/branches/domain/types";
 import {
   formatServicePrice,
   serviceDisplayName,
 } from "@/features/branches/presentation/branch-copy";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import styles from "./branches.module.css";
 
 type ServicesTableProps = {
   services: BranchService[];
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   readOnly: boolean;
   onEdit: (service: BranchService) => void;
   onArchive: (service: BranchService) => void;
@@ -31,7 +34,7 @@ export function ServicesTable({
   const t = strings.services;
 
   if (services.length === 0) {
-    return <p className={styles.muted}>{t.empty}</p>;
+    return <EmptyState headingLevel={3} title={t.emptyTitle} description={t.emptyDescription} />;
   }
 
   return (
@@ -41,8 +44,12 @@ export function ServicesTable({
           <tr>
             <th scope="col">{t.fields.photo}</th>
             <th scope="col">{t.title}</th>
-            <th scope="col">{t.fields.price}</th>
-            <th scope="col">{t.fields.duration}</th>
+            <th scope="col" className={styles.numeric}>
+              {t.fields.price}
+            </th>
+            <th scope="col" className={styles.numeric}>
+              {t.fields.duration}
+            </th>
             <th scope="col">{t.status}</th>
             {!readOnly ? <th scope="col">{t.actions}</th> : null}
           </tr>
@@ -66,15 +73,23 @@ export function ServicesTable({
                     <span className={styles.thumbEmpty} aria-hidden />
                   )}
                 </td>
-                <td>{serviceDisplayName(service, locale)}</td>
-                <td dir="ltr">{formatServicePrice(service.pricePiastres, strings)}</td>
-                <td>{t.durationMinutes.replace("{count}", String(service.durationMinutes))}</td>
-                <td>
-                  <span
-                    className={`${styles.badge} ${archived ? styles.badgeArchived : styles.badgeActive}`}
-                  >
-                    {archived ? strings.branches.archivedBadge : strings.branches.activeBadge}
+                <td className={styles.nameCell}>
+                  <span title={serviceDisplayName(service, locale)}>
+                    {serviceDisplayName(service, locale)}
                   </span>
+                </td>
+                <td className={styles.numeric}>
+                  {formatServicePrice(service.pricePiastres, strings, locale)}
+                </td>
+                <td className={styles.numeric}>
+                  {t.durationMinutes.replace("{count}", String(service.durationMinutes))}
+                </td>
+                <td>
+                  <StatusBadge
+                    tone={archived ? "neutral" : "success"}
+                    label={archived ? strings.branches.archivedBadge : strings.branches.activeBadge}
+                    status={service.status}
+                  />
                 </td>
                 {!readOnly ? (
                   <td>

@@ -1,15 +1,15 @@
 .stack {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--tp-space-6);
 }
 
 .panel {
   composes: card from "../../../components/ui/card/card.module.css";
-  padding: var(--space-6);
+  padding: var(--tp-space-6);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .panelHeader {
@@ -17,11 +17,17 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--tp-space-3);
 }
 
 .panelTitle {
+  min-width: 0;
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
   font-size: var(--tp-font-size-18);
   font-weight: var(--tp-font-weight-semibold);
   color: var(--tp-color-text-primary);
@@ -29,72 +35,61 @@
 
 .muted {
   margin: 0;
-  color: var(--color-text-muted);
-  font-size: var(--text-sm);
+  color: var(--tp-color-text-muted);
+  font-size: var(--tp-font-size-14);
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .card {
   composes: card from "../../../components/ui/card/card.module.css";
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-4);
+  gap: var(--tp-space-2);
+  padding: var(--tp-space-4);
 }
 
 .cardTitleRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
 }
 
 .cardTitle {
+  min-width: 0;
   margin: 0;
-  font-size: var(--text-base);
-  font-weight: var(--font-semibold);
-  color: var(--color-text);
+  font-size: var(--tp-font-size-16);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   overflow-wrap: anywhere;
 }
 
 .cardLine {
   margin: 0;
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+  font-size: var(--tp-font-size-14);
+  color: var(--tp-color-text-muted);
   overflow-wrap: anywhere;
 }
 
 .badgeRow {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.badge {
-  composes: badge from "../../../components/ui/badge/statusBadge.module.css";
-}
-
-.badgeActive {
-  composes: success from "../../../components/ui/badge/statusBadge.module.css";
-}
-
-.badgeArchived {
-  composes: warning from "../../../components/ui/badge/statusBadge.module.css";
-}
-
-.badgeAccent {
-  composes: confirmed from "../../../components/ui/badge/statusBadge.module.css";
+  gap: var(--tp-space-2);
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
   align-items: center;
 }
 
@@ -115,52 +110,52 @@
 }
 
 .hint {
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius);
-  border: 1px solid var(--color-pending-border);
-  background: var(--color-pending-surface);
-  color: var(--color-text);
-  font-size: var(--text-sm);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border-radius: var(--tp-radius-card);
+  border: 1px solid color-mix(in srgb, var(--tp-color-status-warning-fg) 30%, var(--tp-color-status-warning-surface));
+  background: var(--tp-color-status-warning-surface);
+  color: var(--tp-color-text-primary);
+  font-size: var(--tp-font-size-14);
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
   align-items: center;
   justify-content: space-between;
 }
 
 .hint a {
-  color: var(--color-primary);
-  font-weight: var(--font-semibold);
+  color: var(--tp-color-action-primary);
+  font-weight: var(--tp-font-weight-semibold);
 }
 
 .alertError {
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius);
-  border: 1px solid var(--color-error-border);
-  background: var(--color-error-bg);
-  color: var(--color-error);
-  font-size: var(--text-sm);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border-radius: var(--tp-radius-card);
+  border: 1px solid color-mix(in srgb, var(--tp-color-status-danger-fg) 30%, var(--tp-color-status-danger-surface));
+  background: var(--tp-color-status-danger-surface);
+  color: var(--tp-color-status-danger-fg);
+  font-size: var(--tp-font-size-14);
 }
 
 .alertSuccess {
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius);
-  border: 1px solid var(--color-success-border);
-  background: var(--color-success-surface);
-  color: var(--color-success);
-  font-size: var(--text-sm);
+  padding: var(--tp-space-3) var(--tp-space-4);
+  border-radius: var(--tp-radius-card);
+  border: 1px solid color-mix(in srgb, var(--tp-color-status-success-fg) 30%, var(--tp-color-status-success-surface));
+  background: var(--tp-color-status-success-surface);
+  color: var(--tp-color-status-success-fg);
+  font-size: var(--tp-font-size-14);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .fieldGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .field {
@@ -186,15 +181,15 @@
 .checkboxRow {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--color-text);
+  gap: var(--tp-space-2);
+  font-size: var(--tp-font-size-14);
+  color: var(--tp-color-text-primary);
 }
 
 .mapBlock {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
 }
 
 .tableWrap {
@@ -206,26 +201,26 @@
 }
 
 .thumb {
-  width: var(--space-12);
-  height: var(--space-12);
-  border-radius: var(--radius-sm);
+  width: var(--tp-space-12);
+  height: var(--tp-space-12);
+  border-radius: var(--tp-radius-control);
   object-fit: cover;
-  background: var(--color-surface-2);
+  background: var(--tp-color-surface-sunken);
 }
 
 .thumbEmpty {
   display: inline-block;
-  width: var(--space-12);
-  height: var(--space-12);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-2);
+  width: var(--tp-space-12);
+  height: var(--tp-space-12);
+  border-radius: var(--tp-radius-control);
+  background: var(--tp-color-surface-sunken);
 }
 
 .dealValue {
   margin: 0;
-  font-size: var(--text-base);
-  font-weight: var(--font-semibold);
-  color: var(--color-text);
+  font-size: var(--tp-font-size-16);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .overlay {
@@ -235,35 +230,50 @@
 .modal {
   composes: dialog from "../../../components/ui/dialog/dialog.module.css";
   max-width: 560px;
-  padding: var(--space-6);
+  padding: var(--tp-space-6);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .checkList {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
   max-height: 280px;
   overflow-y: auto;
-  padding: var(--space-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  padding: var(--tp-space-2);
+  border: 1px solid var(--tp-color-border-default);
+  border-radius: var(--tp-radius-card);
 }
 
 .skeletonRow {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--tp-space-3);
 }
 
 @media (max-width: 640px) {
   .panel {
-    padding: var(--space-4);
+    padding: var(--tp-space-4);
   }
 
   .modal {
-    padding: var(--space-4);
+    padding: var(--tp-space-4);
   }
+}
+
+.numeric {
+  composes: numeric from "../../../components/ui/table/table.module.css";
+}
+
+.nameCell {
+  max-width: 18rem;
+}
+
+.nameCell span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
