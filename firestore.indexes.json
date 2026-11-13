@@ -563,6 +563,15 @@
       "collectionGroup": "appointments",
       "queryScope": "COLLECTION",
       "fields": [
+        { "fieldPath": "buyerUid", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "endAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "appointments",
+      "queryScope": "COLLECTION",
+      "fields": [
         { "fieldPath": "noShow.state", "order": "ASCENDING" },
         { "fieldPath": "noShow.answerDueAt", "order": "ASCENDING" }
       ]
@@ -669,6 +678,33 @@
         { "fieldPath": "status", "order": "ASCENDING" },
         { "fieldPath": "lowRating", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "pointsLedger",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "type", "order": "ASCENDING" },
+        { "fieldPath": "open", "order": "ASCENDING" },
+        { "fieldPath": "expiresAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "pointsLedger",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "counted", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "pointsLedger",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "open", "order": "ASCENDING" },
+        { "fieldPath": "expiresAt", "order": "ASCENDING" }
       ]
     }
   ],
