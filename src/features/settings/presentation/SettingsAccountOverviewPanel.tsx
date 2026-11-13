@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { StatusBadge, type StatusTone } from "@/components/ui/badge/StatusBadge";
 import { Routes } from "@/constants/routes";
 import type { VendorSessionKind } from "@/features/auth/infrastructure/resolve-vendor-session";
 import type { VendorAccountStatus } from "@/features/auth/domain/types";
@@ -20,28 +21,28 @@ function resolveStatusPresentation(
   strings: AppStrings,
   sessionKind: VendorSessionKind,
   status: VendorAccountStatus,
-): { label: string; className: string } {
+): { label: string; tone: StatusTone } {
   if (sessionKind === "suspended") {
     return {
       label: strings.accountStatus.suspended,
-      className: styles.statusSuspended,
+      tone: "hold",
     };
   }
   if (sessionKind === "active") {
     return {
       label: strings.accountStatus.active,
-      className: styles.statusActive,
+      tone: "success",
     };
   }
   if (status === "suspended") {
     return {
       label: strings.accountStatus.suspended,
-      className: styles.statusSuspended,
+      tone: "hold",
     };
   }
   return {
     label: strings.accountStatus.pending,
-    className: styles.statusPending,
+    tone: "warning",
   };
 }
 
@@ -73,9 +74,7 @@ export function SettingsAccountOverviewPanel({
         <div className={styles.metaRow}>
           <dt>{t.statusLabel}</dt>
           <dd>
-            <span className={`${styles.statusValue} ${statusPresentation.className}`}>
-              {statusPresentation.label}
-            </span>
+            <StatusBadge tone={statusPresentation.tone} label={statusPresentation.label} />
           </dd>
         </div>
       </dl>

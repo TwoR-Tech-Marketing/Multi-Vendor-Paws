@@ -1,21 +1,23 @@
+/* Layout of the portal boot skeleton; mirrors the sidebar and one row header. */
 .shell {
   display: flex;
   min-height: 100vh;
+  background: var(--tp-color-bg);
 }
 
 .sidebar {
   width: var(--sidebar-width);
   background: var(--color-sidebar-glass);
-  border-right: 1px solid var(--color-border);
-  padding: 28px var(--space-3) var(--space-6);
+  border-inline-end: 1px solid var(--tp-color-border-default);
+  padding: var(--tp-space-6) var(--tp-space-3) var(--tp-space-4);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
 }
 
 .logo {
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--tp-space-3);
 }
 
 .navScroll {
@@ -30,9 +32,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
   margin-top: auto;
-  padding: 10px;
+  padding: var(--tp-space-2);
 }
 
 .main {
@@ -40,52 +42,54 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg);
 }
 
 .topbar {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-4) var(--space-6) var(--space-3);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.topbarRow {
-  display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 44px;
+  gap: var(--tp-space-4);
+  min-height: calc(var(--tp-space-16) + var(--tp-space-4));
+  padding: var(--tp-space-3) var(--tp-space-6);
+  border-bottom: 1px solid var(--tp-color-border-default);
 }
 
 .topbarRight {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
-}
-
-.pageHeader {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: var(--space-4) var(--space-6);
-  box-shadow: var(--shadow-sm);
+  gap: var(--tp-space-4);
 }
 
 .pageHeaderRow {
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-4);
+  align-items: center;
+  gap: var(--tp-space-3);
+  flex: 1;
+  min-width: 0;
 }
 
 .pageHeaderTitle {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
   flex: 1;
 }
 
 .content {
   flex: 1;
-  padding: var(--space-6);
+  padding: var(--tp-space-6);
+}
+
+@media (max-width: 767px) {
+  .sidebar {
+    display: none;
+  }
+
+  .topbar {
+    padding: var(--tp-space-3) var(--tp-space-4);
+  }
+
+  .content {
+    padding: var(--tp-space-4);
+  }
 }

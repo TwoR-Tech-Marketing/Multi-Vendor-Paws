@@ -60,23 +60,6 @@
   color: var(--color-text);
 }
 
-.statusValue {
-  font-weight: 600;
-  text-transform: capitalize;
-}
-
-.statusActive {
-  color: var(--color-success);
-}
-
-.statusPending {
-  color: var(--color-warning);
-}
-
-.statusSuspended {
-  color: var(--color-error);
-}
-
 .panelAction {
   composes: button primary from "../../../components/ui/button/button.module.css";
   margin-top: var(--space-4);
