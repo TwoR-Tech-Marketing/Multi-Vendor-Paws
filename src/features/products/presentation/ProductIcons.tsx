@@ -51,6 +51,17 @@ export function IconTrash(props: IconProps) {
   );
 }
 
+/** Placeholder for a product without a photo. */
+export function IconImage(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="4" y="5" width="16" height="14" rx="2" />
+      <circle cx="9" cy="10" r="1.5" />
+      <path d="M20 16l-5-5-8 8" />
+    </svg>
+  );
+}
+
 export function IconImageAdd(props: IconProps) {
   return (
     <svg {...base} {...props}>
@@ -62,7 +73,7 @@ export function IconImageAdd(props: IconProps) {
   );
 }
 
-/** POS staff directory — filter funnel */
+/** POS staff directory: filter funnel */
 export function IconFilter(props: IconProps) {
   return (
     <svg {...base} width={24} height={24} {...props}>
@@ -71,17 +82,18 @@ export function IconFilter(props: IconProps) {
   );
 }
 
-/** POS staff directory — export */
+/** POS staff directory: export */
 export function IconExport(props: IconProps) {
   return (
     <svg {...base} width={24} height={24} {...props}>
-      <path d="M9 11V17L11 19V11L7 7H17L13 11V14" />
-      <path d="M22 22L2 2" />
+      <path d="M12 15V3" />
+      <path d="M8 7l4-4 4 4" />
+      <path d="M4 21h16" />
     </svg>
   );
 }
 
-/** POS staff directory — import */
+/** POS staff directory: import */
 export function IconImport(props: IconProps) {
   return (
     <svg {...base} width={24} height={24} {...props}>
@@ -92,7 +104,7 @@ export function IconImport(props: IconProps) {
   );
 }
 
-/** POS staff header — add circle */
+/** POS staff header: add circle */
 export function IconAddCircle(props: IconProps) {
   return (
     <svg {...base} width={24} height={24} {...props}>

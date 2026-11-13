@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { ErrorState } from "@/components/ui/error-state/ErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { PortalSelect } from "@/components/ui/select/PortalSelect";
 import {
   fetchVendorOrderFromApi,
@@ -16,9 +18,11 @@ import {
 } from "@/features/orders/domain/types";
 import { OrderStatusBadge } from "@/features/orders/presentation/OrderStatusBadge";
 import { OrderStatusTimeline } from "@/features/orders/presentation/OrderStatusTimeline";
-import { OrdersSkeleton } from "@/features/orders/presentation/OrdersSkeleton";
+import { OrderDetailSkeleton } from "@/features/orders/presentation/OrderDetailSkeleton";
 import { formatEgp } from "@/features/products/domain/currency";
-import { useStrings } from "@/shared/preferences/PreferencesContext";
+import { IconImage } from "@/features/products/presentation/ProductIcons";
+import { formatDateTime } from "@/shared/lib/format-date";
+import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./orders.module.css";
 
@@ -26,36 +30,32 @@ type OrderDetailSectionProps = {
   vendorOrderId: string;
 };
 
-function formatDate(date: Date): string {
-  return date.toLocaleString(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
-
 export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
   const strings = useStrings();
+  const { locale } = usePreferences();
+  const formatDate = useCallback((date: Date) => formatDateTime(date, locale), [locale]);
   const [order, setOrder] = useState<VendorOrder | null>(null);
   const [nextStatus, setNextStatus] = useState<VendorOrderStatus>("pending");
   const [note, setNote] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   const loadOrder = useCallback(async () => {
-    setError(null);
+    setLoadError(null);
     setIsLoading(true);
     try {
       const data = await fetchVendorOrderFromApi(vendorOrderId);
       setOrder(data);
       setNextStatus(data.status);
-    } catch {
-      setError(strings.orders.loadError);
+    } catch (failure) {
+      setLoadError(toLoadErrorView(failure, strings, strings.orders.detailLoadError));
     } finally {
       setIsLoading(false);
     }
-  }, [vendorOrderId, strings.orders.loadError]);
+  }, [vendorOrderId, strings]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -97,9 +97,21 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
     }
   }
 
-  if (isLoading) return <OrdersSkeleton />;
+  if (isLoading) return <OrderDetailSkeleton />;
   if (!order) {
-    return <div className={`${styles.alert} ${styles.alertError}`}>{strings.orders.loadError}</div>;
+    const view = loadError ?? toLoadErrorView(null, strings, strings.orders.detailLoadError);
+    return (
+      <article className={styles.panel}>
+        <ErrorState
+          kind={view.kind}
+          title={view.title}
+          description={view.description}
+          retryLabel={strings.states.retry}
+          onRetry={() => void loadOrder()}
+          headingLevel={2}
+        />
+      </article>
+    );
   }
 
   const isHeld = order.holdState === "held";
@@ -112,12 +124,18 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
 
   return (
     <section className={styles.sectionStack}>
-      {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
+      {error ? (
+        <div className={`${styles.alert} ${styles.alertError}`} role="alert">
+          {error}
+        </div>
+      ) : null}
       {success ? (
-        <div className={`${styles.alert} ${styles.alertSuccess}`}>{success}</div>
+        <div className={`${styles.alert} ${styles.alertSuccess}`} role="status">
+          {success}
+        </div>
       ) : null}
       {isHeld ? (
-        <div className={`${styles.alert} ${styles.alertError}`} role="status">
+        <div className={`${styles.alert} ${styles.alertHold}`} role="status">
           <strong>{strings.orders.holdBannerTitle}</strong>
           <p>{strings.orders.holdBannerMessage}</p>
         </div>
@@ -127,22 +145,28 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
         <article className={styles.panel}>
           <div className={styles.detailPanel}>
             <h2 className={styles.sectionTitle}>{strings.orders.itemsSection}</h2>
-            {order.lineItems.map((item) => (
-              <div key={`${item.productId}-${item.name}`} className={styles.itemRow}>
-                <div className={styles.itemThumb}>
-                  {item.imageUrl ? (
-                    <Image src={item.imageUrl} alt="" width={44} height={44} unoptimized />
-                  ) : null}
-                </div>
-                <div className={styles.itemMeta}>
-                  <strong>{item.name}</strong>
-                  <small>
-                    {item.quantity} × {formatEgp(item.unitPricePiastres)}
-                  </small>
-                </div>
-                <strong>{formatEgp(item.lineTotalPiastres)}</strong>
-              </div>
-            ))}
+            <ul className={styles.itemList}>
+              {order.lineItems.map((item) => (
+                <li key={`${item.productId}-${item.name}`} className={styles.itemRow}>
+                  <div className={styles.itemThumb}>
+                    {item.imageUrl ? (
+                      <Image src={item.imageUrl} alt="" width={44} height={44} unoptimized />
+                    ) : (
+                      <IconImage />
+                    )}
+                  </div>
+                  <div className={styles.itemMeta}>
+                    <strong title={item.name}>{item.name}</strong>
+                    <small>
+                      {strings.orders.lineSummary
+                        .replace("{quantity}", String(item.quantity))
+                        .replace("{price}", formatEgp(item.unitPricePiastres))}
+                    </small>
+                  </div>
+                  <span className={styles.itemTotal}>{formatEgp(item.lineTotalPiastres)}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </article>
 
@@ -153,7 +177,7 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
               <dl className={styles.metaList}>
                 <div className={styles.metaRow}>
                   <dt>{strings.orders.tableCustomer}</dt>
-                  <dd>{order.buyerDisplayName ?? "—"}</dd>
+                  <dd>{order.buyerDisplayName ?? strings.orders.guestCustomer}</dd>
                 </div>
                 <div className={styles.metaRow}>
                   <dt>{strings.orders.tableStatus}</dt>
@@ -185,7 +209,7 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
                   <dt>{strings.orders.discount}</dt>
                   <dd>{formatEgp(order.discountPiastres)}</dd>
                 </div>
-                <div className={styles.metaRow}>
+                <div className={`${styles.metaRow} ${styles.metaRowTotal}`}>
                   <dt>{strings.orders.total}</dt>
                   <dd>{formatEgp(order.totalPiastres)}</dd>
                 </div>
@@ -195,7 +219,7 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
                     {order.commissionRatePercent}% · {formatEgp(displayFee)}
                   </dd>
                 </div>
-                <div className={styles.metaRow}>
+                <div className={`${styles.metaRow} ${styles.metaRowTotal} ${styles.metaRowEarnings}`}>
                   <dt>{strings.orders.netEarnings}</dt>
                   <dd>{formatEgp(displayNet)}</dd>
                 </div>

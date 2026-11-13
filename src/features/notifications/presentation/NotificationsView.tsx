@@ -1,4 +1,5 @@
 import { EmptyState } from "@/components/ui/empty-state/EmptyState";
+import { ErrorState } from "@/components/ui/error-state/ErrorState";
 import type {
   VendorNotification,
   VendorNotificationFilter,
@@ -21,6 +22,8 @@ export type NotificationsViewProps = {
   unreadCount: number;
   isLoading: boolean;
   loadError: string | null;
+  /** True when the load failed because the connection dropped. */
+  isOffline?: boolean;
   actionError: string | null;
   isMarkingAll: boolean;
   hasMore: boolean;
@@ -52,17 +55,19 @@ export function NotificationsView(props: NotificationsViewProps) {
 
   return (
     <section className={styles.section} aria-label={strings.pages.notifications.title}>
-      <div className={styles.header}>
-        <p className={styles.subtitle}>{formatUnreadSummary(unreadCount, t)}</p>
-        <button
-          type="button"
-          className={styles.markAllBtn}
-          disabled={props.isMarkingAll || unreadCount === 0}
-          onClick={props.onMarkAll}
-        >
-          {props.isMarkingAll ? t.markAllBusy : t.markAllAsRead}
-        </button>
-      </div>
+      {props.loadError && items.length === 0 ? null : (
+        <div className={styles.header}>
+          <p className={styles.subtitle}>{formatUnreadSummary(unreadCount, t)}</p>
+          <button
+            type="button"
+            className={styles.markAllBtn}
+            disabled={props.isMarkingAll || unreadCount === 0}
+            onClick={props.onMarkAll}
+          >
+            {props.isMarkingAll ? t.markAllBusy : t.markAllAsRead}
+          </button>
+        </div>
+      )}
 
       <div className={styles.tabs} role="tablist" aria-label={strings.pages.notifications.title}>
         {tabs.map(({ id, label }) => (
@@ -79,14 +84,21 @@ export function NotificationsView(props: NotificationsViewProps) {
         ))}
       </div>
 
-      {props.loadError || props.actionError ? (
+      {props.loadError ? (
+        <ErrorState
+          kind={props.isOffline ? "offline" : "error"}
+          title={props.isOffline ? strings.states.offlineTitle : strings.states.errorTitle}
+          description={props.isOffline ? strings.states.offlineDescription : props.loadError}
+          retryLabel={strings.common.retry}
+          onRetry={props.onRetry}
+          headingLevel={2}
+          compact={items.length > 0}
+        />
+      ) : null}
+
+      {props.actionError ? (
         <div className={styles.alertError} role="alert">
-          <p>{props.loadError ?? props.actionError}</p>
-          {props.loadError ? (
-            <button type="button" className={styles.retryButton} onClick={props.onRetry}>
-              {strings.common.retry}
-            </button>
-          ) : null}
+          <p>{props.actionError}</p>
         </div>
       ) : null}
 

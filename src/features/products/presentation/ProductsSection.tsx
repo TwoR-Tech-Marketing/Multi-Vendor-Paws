@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { EmptyState } from "@/components/ui/empty-state/EmptyState";
+import { ErrorState } from "@/components/ui/error-state/ErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
 import { Routes } from "@/constants/routes";
 import {
@@ -15,7 +17,7 @@ import {
 } from "@/features/products/application/products.api";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { Product } from "@/features/products/domain/types";
-import { IconEdit, IconTrash } from "@/features/products/presentation/ProductIcons";
+import { IconEdit, IconImage, IconTrash } from "@/features/products/presentation/ProductIcons";
 import {
   EMPTY_PRODUCT_LIST_FILTERS,
   type ProductListFilters,
@@ -23,7 +25,7 @@ import {
 import { ProductsListActions } from "@/features/products/presentation/ProductsListActions";
 import { ProductStatusBadge } from "@/features/products/presentation/ProductStatusBadge";
 import { ProductsSkeleton } from "@/features/products/presentation/ProductsSkeleton";
-import { useStrings } from "@/shared/preferences/PreferencesContext";
+import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./products.module.css";
 
@@ -31,6 +33,7 @@ const LOW_STOCK_THRESHOLD = 15;
 
 export function ProductsSection() {
   const strings = useStrings();
+  const { locale } = usePreferences();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<{ value: string; label: string }[]>([]);
   const [categoryItems, setCategoryItems] = useState<ProductCategoryOption[]>([]);
@@ -38,6 +41,7 @@ export function ProductsSection() {
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<ProductListFilters>(EMPTY_PRODUCT_LIST_FILTERS);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
@@ -54,12 +58,12 @@ export function ProductsSection() {
         })),
       );
     } catch {
-      // Category filter is optional — catalog can still load.
+      // Category filter is optional; the catalog can still load.
     }
   }, []);
 
   const loadProducts = useCallback(async () => {
-    setError(null);
+    setLoadError(null);
     if (products.length === 0) {
       setIsLoading(true);
     }
@@ -72,18 +76,12 @@ export function ProductsSection() {
         pageSize: 50,
       });
       setProducts(productPage.items);
-    } catch {
-      setError(strings.products.loadError);
+    } catch (failure) {
+      setLoadError(toLoadErrorView(failure, strings, strings.products.loadError));
     } finally {
       setIsLoading(false);
     }
-  }, [
-    filters.categoryId,
-    filters.status,
-    products.length,
-    search,
-    strings.products.loadError,
-  ]);
+  }, [filters.categoryId, filters.status, products.length, search, strings]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -152,14 +150,41 @@ export function ProductsSection() {
         }}
       />
 
-      {error ? <div className={`${styles.alert} ${styles.alertError}`}>{error}</div> : null}
+      {error ? (
+        <div className={`${styles.alert} ${styles.alertError}`} role="alert">
+          {error}
+        </div>
+      ) : null}
       {success ? (
-        <div className={`${styles.alert} ${styles.alertSuccess}`}>{success}</div>
+        <div className={`${styles.alert} ${styles.alertSuccess}`} role="status">
+          {success}
+        </div>
+      ) : null}
+      {loadError && products.length > 0 ? (
+        <ErrorState
+          compact
+          kind={loadError.kind}
+          title={loadError.title}
+          description={loadError.description}
+          retryLabel={strings.states.retry}
+          onRetry={() => void loadProducts()}
+          headingLevel={2}
+        />
       ) : null}
 
       <article className={styles.panel}>
-        {products.length === 0 ? (
+        {loadError && products.length === 0 ? (
+          <ErrorState
+            kind={loadError.kind}
+            title={loadError.title}
+            description={loadError.description}
+            retryLabel={strings.states.retry}
+            onRetry={() => void loadProducts()}
+            headingLevel={2}
+          />
+        ) : products.length === 0 ? (
           <EmptyState
+            headingLevel={2}
             title={
               isFiltered ? strings.products.emptyFilteredTitle : strings.products.emptyTitle
             }
@@ -173,7 +198,11 @@ export function ProductsSection() {
                 <button type="button" className={styles.btnSecondary} onClick={clearFilters}>
                   {strings.products.clearFilters}
                 </button>
-              ) : null
+              ) : (
+                <Link href={Routes.vendor.productNew} className={styles.btnPrimary}>
+                  {strings.products.addProduct}
+                </Link>
+              )
             }
           />
         ) : (
@@ -184,15 +213,23 @@ export function ProductsSection() {
                   <th>{strings.products.tableProduct}</th>
                   <th>{strings.products.tableCategory}</th>
                   <th className={styles.money}>{strings.products.tablePrice}</th>
-                  <th>{strings.products.tableStock}</th>
+                  <th className={styles.money}>{strings.products.tableStock}</th>
                   <th>{strings.products.tableStatus}</th>
-                  <th>{strings.products.tableActions}</th>
+                  <th className={styles.actionsHead}>{strings.products.tableActions}</th>
                 </tr>
               </thead>
               <tbody>
                 {products.map((product) => {
                   const isLowStock =
                     product.stock > 0 && product.stock <= LOW_STOCK_THRESHOLD;
+                  const displayName =
+                    locale === "ar" && product.nameAr ? product.nameAr : product.name;
+                  const displayDescription =
+                    locale === "ar" && product.descriptionAr
+                      ? product.descriptionAr
+                      : product.description;
+                  const discounted = product.priceAfterDiscountPiastres ?? null;
+                  const hasDiscount = discounted !== null && discounted < product.pricePiastres;
 
                   return (
                     <tr key={product.productId}>
@@ -207,20 +244,41 @@ export function ProductsSection() {
                                 height={48}
                                 unoptimized
                               />
-                            ) : null}
+                            ) : (
+                              <IconImage />
+                            )}
                           </div>
                           <div className={styles.productMeta}>
-                            <strong>{product.name}</strong>
-                            {product.description ? (
-                              <small>{product.description}</small>
+                            <strong title={displayName}>{displayName}</strong>
+                            {displayDescription ? (
+                              <small title={displayDescription}>{displayDescription}</small>
                             ) : null}
                           </div>
                         </div>
                       </td>
-                      <td>{product.categoryNames[0] ?? "—"}</td>
-                      <td className={styles.money}>{formatEgp(product.pricePiastres)}</td>
-                      <td>
-                        <span className={isLowStock ? styles.stockLow : undefined}>
+                      <td className={product.categoryNames[0] ? undefined : styles.mutedCell}>
+                        {product.categoryNames[0] ?? strings.states.notProvided}
+                      </td>
+                      <td className={styles.money}>
+                        {hasDiscount ? (
+                          <span className={styles.priceStack}>
+                            <span>{formatEgp(discounted)}</span>
+                            <s className={styles.priceWas}>{formatEgp(product.pricePiastres)}</s>
+                          </span>
+                        ) : (
+                          formatEgp(product.pricePiastres)
+                        )}
+                      </td>
+                      <td className={styles.money}>
+                        <span
+                          className={
+                            product.stock === 0
+                              ? styles.stockOut
+                              : isLowStock
+                                ? styles.stockLow
+                                : undefined
+                          }
+                        >
                           {isLowStock
                             ? strings.products.stockLow.replace(
                                 "{count}",
@@ -237,14 +295,14 @@ export function ProductsSection() {
                           <Link
                             href={Routes.vendor.productEdit(product.productId)}
                             className={styles.iconBtn}
-                            aria-label={strings.products.editAction}
+                            aria-label={`${strings.products.editAction}: ${displayName}`}
                           >
                             <IconEdit />
                           </Link>
                           <button
                             type="button"
                             className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
-                            aria-label={strings.products.deleteAction}
+                            aria-label={`${strings.products.deleteAction}: ${displayName}`}
                             onClick={() => setDeleteTarget(product)}
                           >
                             <IconTrash />
