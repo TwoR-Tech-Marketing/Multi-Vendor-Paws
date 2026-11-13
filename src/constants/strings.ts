@@ -623,6 +623,7 @@ export const Strings = {
       invalidField: "Please check the details and try again.",
       windowClosed: "Extra invoices can only be added or voided from the start of the appointment until the end of its day.",
       invoiceLimit: "This appointment already has 5 extra invoices, the maximum.",
+      paymentInProgress: "The customer is paying this invoice right now. Please try again later.",
     },
     reviews: {
       alreadyReplied: "You have already replied to this review.",

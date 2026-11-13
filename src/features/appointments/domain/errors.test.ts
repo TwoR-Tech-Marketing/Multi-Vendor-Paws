@@ -20,6 +20,10 @@ describe("mapAppointmentError for no-shows and extra invoices", () => {
     expect(mapAppointmentError(precondition("invalid_transition"))).toBe("invalidTransition");
   });
 
+  it("maps a void refused while the customer is paying", () => {
+    expect(mapAppointmentError(precondition("payment_in_progress"))).toBe("paymentInProgress");
+  });
+
   it("never passes an unknown reason through", () => {
     expect(mapAppointmentError(precondition("something_new"))).toBe("invalidTransition");
     expect(mapAppointmentError(new Error("boom"))).toBe("generic");

@@ -15,6 +15,7 @@ export type AppointmentErrorKey =
   | "noShowTooEarly"
   | "windowClosed"
   | "invoiceLimit"
+  | "paymentInProgress"
   | "busy"
   | "notFound"
   | "notAllowed"
@@ -36,6 +37,7 @@ const REASON_KEYS: Record<string, AppointmentErrorKey> = {
   reschedule_limit: "rescheduleLimit",
   window_closed: "windowClosed",
   invoice_limit: "invoiceLimit",
+  payment_in_progress: "paymentInProgress",
 };
 
 function read(value: unknown, key: string): unknown {
