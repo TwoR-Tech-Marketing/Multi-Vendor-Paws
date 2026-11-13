@@ -1,70 +1,70 @@
 .sectionStack {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .settingsGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-4);
+  gap: var(--tp-space-4);
 }
 
 .panel {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: var(--space-6);
+  background: var(--tp-color-surface-raised);
+  border: 1px solid var(--tp-color-border-default);
+  border-radius: var(--tp-radius-card);
+  padding: var(--tp-space-6);
   box-shadow: var(--shadow);
 }
 
 .metaRows {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  margin: var(--space-4) 0;
+  gap: var(--tp-space-3);
+  margin: var(--tp-space-4) 0;
 }
 
 .commissionSkeleton {
   height: 88px;
-  margin: var(--space-4) 0;
-  border-radius: var(--radius-sm);
+  margin: var(--tp-space-4) 0;
+  border-radius: var(--tp-radius-control);
 }
 
 .snapshotGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-4);
-  margin-top: var(--space-4);
+  gap: var(--tp-space-4);
+  margin-top: var(--tp-space-4);
 }
 
 .snapshotSkeleton {
   height: 88px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--tp-radius-control);
 }
 
 .shortcutsGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-3);
-  margin-top: var(--space-4);
+  gap: var(--tp-space-3);
+  margin-top: var(--tp-space-4);
 }
 
 .shortcutSkeleton {
   height: 72px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--tp-radius-control);
 }
 
 .segmentSkeleton {
   height: 40px;
   width: 240px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--tp-radius-control);
 }
 
 .helpGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-6);
+  gap: var(--tp-space-6);
 }
 
 @media (max-width: 900px) {
@@ -94,12 +94,12 @@
 .themeGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-3);
+  gap: var(--tp-space-3);
 }
 
 .themeSkeleton {
   height: 84px;
-  border-radius: var(--radius-control);
+  border-radius: var(--tp-radius-control);
 }
 
 @media (max-width: 900px) {

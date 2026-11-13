@@ -6,28 +6,28 @@
   composes: dialog from "../../../components/ui/dialog/dialog.module.css";
   width: 100%;
   max-width: 480px;
-  padding: var(--space-6);
+  padding: var(--tp-space-6);
 }
 
 .title {
-  margin: 0 0 var(--space-2);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--color-text);
+  margin: 0 0 var(--tp-space-2);
+  font-size: var(--tp-font-size-18);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-primary);
 }
 
 .subtitle {
-  margin: 0 0 var(--space-4);
-  font-size: 14px;
-  color: var(--color-text-muted);
+  margin: 0 0 var(--tp-space-4);
+  font-size: var(--tp-font-size-14);
+  color: var(--tp-color-text-muted);
   line-height: 1.5;
 }
 
 .columnList {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
+  gap: var(--tp-space-2);
+  margin-bottom: var(--tp-space-4);
   max-height: 240px;
   overflow-y: auto;
 }
@@ -35,26 +35,26 @@
 .columnOption {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  font-size: 14px;
-  color: var(--color-text);
+  gap: var(--tp-space-3);
+  font-size: var(--tp-font-size-14);
+  color: var(--tp-color-text-primary);
   cursor: pointer;
 }
 
 .columnOption input {
-  accent-color: var(--color-primary);
+  accent-color: var(--tp-color-action-primary);
 }
 
 .hint {
-  margin: 0 0 var(--space-4);
-  font-size: 13px;
-  color: var(--color-warning);
+  margin: 0 0 var(--tp-space-4);
+  font-size: var(--tp-font-size-13);
+  color: var(--tp-color-status-warning-fg);
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: var(--space-3);
+  gap: var(--tp-space-3);
 }
 
 .btnCancel {
@@ -64,4 +64,3 @@
 .btnExport {
   composes: button primary from "../../../components/ui/button/button.module.css";
 }
-

@@ -1,53 +1,48 @@
 .dateToggleRow {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--tp-space-2);
 }
 
 .dateToggle {
-  padding: 6px var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
-  background: var(--color-surface);
-  color: var(--color-text-secondary, var(--color-text-muted));
-  font-family: var(--font);
-  font-size: 12px;
-  font-weight: 600;
+  padding: 6px var(--tp-space-3);
+  border: 1px solid var(--tp-color-border-default);
+  border-radius: var(--tp-radius-full);
+  background: var(--tp-color-surface-raised);
+  color: var(--color-text-secondary, var(--tp-color-text-muted));
+  font-family: inherit;
+  font-size: var(--tp-font-size-12);
+  font-weight: var(--tp-font-weight-semibold);
   cursor: pointer;
   transition:
-    background var(--duration-base),
-    border-color var(--duration-base),
-    color var(--duration-base);
-}
-
-.dateToggle:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+    background var(--tp-motion-duration-press) var(--tp-motion-ease-out),
+    border-color var(--tp-motion-duration-press) var(--tp-motion-ease-out),
+    color var(--tp-motion-duration-press) var(--tp-motion-ease-out);
 }
 
 .dateToggleActive {
   composes: dateToggle;
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
+  border-color: var(--tp-color-action-primary);
+  background: var(--tp-color-selected-bg);
+  color: var(--tp-color-action-primary);
 }
 
 .dateRangeRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+  gap: var(--tp-space-3);
 }
 
 .dateField {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--tp-space-1);
 }
 
 .dateLabel {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-text-muted);
+  font-size: var(--tp-font-size-12);
+  font-weight: var(--tp-font-weight-semibold);
+  color: var(--tp-color-text-muted);
 }
 
 .dateInput {
@@ -57,5 +52,12 @@
 @media (max-width: 420px) {
   .dateRangeRow {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dateToggle:hover {
+    border-color: var(--tp-color-action-primary);
+    color: var(--tp-color-action-primary);
   }
 }

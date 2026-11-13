@@ -166,7 +166,7 @@ export function ProductsListPanel({
                                   "{count}",
                                   String(product.stock),
                                 )
-                              : product.stock}
+                              : product.stock.toLocaleString("en-US")}
                           </span>
                         </td>
                         <td>

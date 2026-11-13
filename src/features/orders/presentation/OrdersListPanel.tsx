@@ -106,7 +106,7 @@ export function OrdersListPanel({
                           {order.buyerDisplayName ?? strings.orders.guestCustomer}
                         </span>
                       </td>
-                      <td className={styles.money}>{order.itemCount}</td>
+                      <td className={styles.money}>{order.itemCount.toLocaleString("en-US")}</td>
                       <td className={styles.money}>{formatEgp(order.totalPiastres, locale)}</td>
                       <td>
                         <span className={styles.badgeRow}>
