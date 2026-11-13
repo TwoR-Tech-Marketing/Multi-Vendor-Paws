@@ -168,6 +168,23 @@ describe("TelehealthQueueList", () => {
       <TelehealthQueueList items={[]} strings={en} locale="en" acceptingId={null} onAccept={noop} />,
     );
     expect(html).toContain(en.telehealth.queueEmpty);
+    expect(html).toContain('data-testid="empty-state-art"');
+    expect(html).toContain('aria-live="polite"');
+  });
+
+  it("names each accept button after the buyer and gives long names a tooltip", () => {
+    const name = "Abdelrahman".repeat(7);
+    const html = renderToStaticMarkup(
+      <TelehealthQueueList
+        items={[makeQueueItem({ buyer: { displayName: name, petName: null, petType: null } })]}
+        strings={en}
+        locale="en"
+        acceptingId={null}
+        onAccept={noop}
+      />,
+    );
+    expect(html).toContain(`title="${name}"`);
+    expect(html).toContain(`aria-label="${en.telehealth.accept} ${name}"`);
   });
 });
 
@@ -187,6 +204,7 @@ describe("TelehealthInboxView", () => {
     expect(renderView({ status: makeStatus({ pricePiastres: null }) })).not.toContain("Consultation price");
     const html = renderView({ strings: ar, locale: "ar" });
     expect(html).toContain("سعر الاستشارة: ");
+    expect(html).toContain("\u2066200.00\u2069 ج.م");
   });
 
   it("asks an offline doctor to go online instead of showing the queue", () => {

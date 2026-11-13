@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { Routes } from "@/constants/routes";
 import {
   acceptTelehealthSession,
@@ -50,7 +52,7 @@ export function TelehealthInboxSection() {
   const tabs = tabsForKind(sessionKind);
 
   const [status, setStatus] = useState<TelehealthStatusSummary | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [tab, setTab] = useState<TelehealthListTab>(tabs[0] ?? "active");
   const [queue, setQueue] = useState<TelehealthQueueItem[]>([]);
   const [lists, setLists] = useState({ active: EMPTY_LIST, ended: EMPTY_LIST });
@@ -79,12 +81,12 @@ export function TelehealthInboxSection() {
       setStatus(next);
       await loadTab(tab, next.online);
       setLoadError(null);
-    } catch {
-      setLoadError(t.loadError);
+    } catch (error) {
+      setLoadError(toLoadErrorView(error, strings, t.loadError));
     } finally {
       setIsListLoading(false);
     }
-  }, [loadTab, tab, t.loadError]);
+  }, [loadTab, tab, strings, t.loadError]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -167,24 +169,21 @@ export function TelehealthInboxSection() {
     if (!loadError) return <TelehealthInboxSkeleton />;
     return (
       <div className={styles.stack}>
-        <div className={styles.alertError} role="alert">
-          {loadError}
-        </div>
-        <div className={styles.actions}>
-          <button type="button" className={styles.secondaryButton} onClick={() => void refresh()}>
-            {strings.common.retry}
-          </button>
-        </div>
+        <section className={styles.panel}>
+          <LoadErrorState view={loadError} strings={strings} onRetry={() => void refresh()} />
+        </section>
       </div>
     );
   }
 
   return (
     <div className={styles.stack}>
-      {actionError || loadError ? (
+      {actionError ? (
         <div className={styles.alertError} role="alert">
-          {actionError ?? loadError}
+          {actionError}
         </div>
+      ) : loadError ? (
+        <LoadErrorState view={loadError} strings={strings} onRetry={() => void refresh()} compact />
       ) : null}
       <TelehealthInboxView
         strings={strings}

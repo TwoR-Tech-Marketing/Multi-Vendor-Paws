@@ -1,8 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { ConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
+import { Routes } from "@/constants/routes";
 import {
   endTelehealthSession,
   getTelehealthSession,
@@ -41,7 +45,7 @@ export function TelehealthChatSection({ sessionId }: { sessionId: string }) {
   const [messages, setMessages] = useState<TelehealthMessage[]>([]);
   const [hasOlder, setHasOlder] = useState(false);
   const [isLoadingOlder, setIsLoadingOlder] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -75,7 +79,11 @@ export function TelehealthChatSection({ sessionId }: { sessionId: string }) {
       setLoadError(null);
     } catch (error) {
       setLoadError(
-        mapTelehealthError(error) === "notFound" ? strings.errors.telehealth.notFound : t.loadError,
+        toLoadErrorView(
+          error,
+          strings,
+          mapTelehealthError(error) === "notFound" ? strings.errors.telehealth.notFound : t.loadError,
+        ),
       );
     }
   }, [sessionId, addMessages, strings, t.loadError]);
@@ -196,14 +204,14 @@ export function TelehealthChatSection({ sessionId }: { sessionId: string }) {
     if (!loadError) return <TelehealthChatSkeleton />;
     return (
       <div className={styles.stack}>
-        <div className={styles.alertError} role="alert">
-          {loadError}
-        </div>
         <div className={styles.actions}>
-          <button type="button" className={styles.secondaryButton} onClick={() => void load()}>
-            {strings.common.retry}
-          </button>
+          <Link className={styles.secondaryButton} href={Routes.vendor.telehealth}>
+            {t.back}
+          </Link>
         </div>
+        <section className={styles.panel}>
+          <LoadErrorState view={loadError} strings={strings} onRetry={() => void load()} />
+        </section>
       </div>
     );
   }
