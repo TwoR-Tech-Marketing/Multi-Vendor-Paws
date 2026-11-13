@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import {
   createCoupon,
   listCoupons,
@@ -23,6 +26,7 @@ import { CouponsSkeleton } from "@/features/coupons/presentation/CouponsSkeleton
 import { CouponStatusTabs } from "@/features/coupons/presentation/CouponStatusTabs";
 import { CouponsTable } from "@/features/coupons/presentation/CouponsTable";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./coupons.module.css";
@@ -31,7 +35,7 @@ type CouponListProps = {
   coupons: Coupon[];
   tab: CouponStatusFilter;
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   isBusy: boolean;
   onTabChange: (tab: CouponStatusFilter) => void;
   onAdd: () => void;
@@ -72,12 +76,23 @@ export function CouponList({
       </div>
       {atLimit ? <p className={styles.muted}>{t.limitReached}</p> : null}
       {coupons.length === 0 ? (
-        <p className={styles.muted}>{t.empty}</p>
+        <EmptyState
+          headingLevel={3}
+          title={t.emptyTitle}
+          description={t.emptyDescription}
+          action={
+            !atLimit ? (
+              <button type="button" className={styles.primaryButton} onClick={onAdd} disabled={isBusy}>
+                {t.add}
+              </button>
+            ) : null
+          }
+        />
       ) : (
         <>
           <CouponStatusTabs strings={strings} tab={tab} onTabChange={onTabChange} />
           {visible.length === 0 ? (
-            <p className={styles.muted}>{t.filteredEmpty}</p>
+            <EmptyState headingLevel={3} live title={t.filteredEmpty} />
           ) : (
             <CouponsTable
               coupons={visible}
@@ -104,7 +119,7 @@ export function CouponsSection() {
 
   const [nowMs] = useState(() => Date.now());
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [tab, setTab] = useState<CouponStatusFilter>("all");
   const [editing, setEditing] = useState<Editing>(null);
@@ -117,12 +132,12 @@ export function CouponsSection() {
     setLoadError(null);
     try {
       setCoupons(await listCoupons("all"));
-    } catch {
-      setLoadError(t.loadError);
+    } catch (error) {
+      setLoadError(toLoadErrorView(error, strings, t.loadError));
     } finally {
       setIsLoading(false);
     }
-  }, [t.loadError]);
+  }, [strings, t.loadError]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -171,14 +186,9 @@ export function CouponsSection() {
   if (loadError) {
     return (
       <div className={styles.stack}>
-        <div className={styles.alertError} role="alert">
-          {loadError}
-        </div>
-        <div className={styles.actions}>
-          <button type="button" className={styles.secondaryButton} onClick={() => void load()}>
-            {strings.common.retry}
-          </button>
-        </div>
+        <section className={styles.panel}>
+          <LoadErrorState view={loadError} strings={strings} onRetry={() => void load()} />
+        </section>
       </div>
     );
   }

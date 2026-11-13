@@ -60,7 +60,9 @@ describe("CouponsSection", () => {
 describe("CouponList", () => {
   it("shows the empty state and the create button", () => {
     const html = renderList();
-    expect(html).toContain(en.coupons.empty);
+    expect(html).toContain(en.coupons.emptyTitle);
+    expect(html).toContain(en.coupons.emptyDescription);
+    expect(html).toContain('data-testid="empty-state-art"');
     expect(html).toContain(en.coupons.add);
     expect(html).not.toContain('role="tablist"');
   });
@@ -114,5 +116,22 @@ describe("CouponList", () => {
     expect(html).toContain("3 من 100");
     expect(html).toContain("2026");
     expect(html).not.toMatch(/[٠-٩]/);
+  });
+
+  it("shows fixed amounts as amount then unit with isolated figures in Arabic", () => {
+    const html = renderList({
+      strings: ar,
+      locale: "ar",
+      coupons: [makeCoupon({ type: "fixed", value: 5000, minOrderPiastres: 20000 })],
+    });
+    expect(html).toContain("\u206650.00\u2069 ج.م");
+    expect(html).toContain("\u2066200.00\u2069 ج.م");
+  });
+
+  it("isolates the code, gives it a tooltip and names the view link", () => {
+    const code = "SUMMERSALE".repeat(6);
+    const html = renderList({ coupons: [makeCoupon({ code })] });
+    expect(html).toContain(`<bdi dir="ltr" title="${code}">${code}</bdi>`);
+    expect(html).toContain(`aria-label="${en.coupons.view} ${code}"`);
   });
 });

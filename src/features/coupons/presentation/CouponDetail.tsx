@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { EmptyState } from "@/components/ui/empty-state/EmptyState";
 import { Routes } from "@/constants/routes";
 import type { CouponDetail as CouponDetailData } from "@/features/coupons/domain/types";
 import {
@@ -10,13 +11,14 @@ import {
 import { CouponStatusBadge } from "@/features/coupons/presentation/CouponStatusBadge";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import styles from "./coupons.module.css";
 
 type CouponDetailProps = {
   detail: CouponDetailData;
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   isBusy: boolean;
   onEdit: () => void;
   onPause: () => void;
@@ -44,7 +46,7 @@ export function CouponDetail({
 }: CouponDetailProps) {
   const t = strings.coupons;
   const { coupon, usage } = detail;
-  const conditions = formatCouponConditions(coupon, strings);
+  const conditions = formatCouponConditions(coupon, strings, locale);
   const perUser = `${t.fields.perUserLimit}: ${coupon.perUserLimit}`;
 
   return (
@@ -56,7 +58,7 @@ export function CouponDetail({
           </h2>
           <CouponStatusBadge status={coupon.status} strings={strings} />
         </div>
-        <p className={styles.panelTitle}>{formatCouponValue(coupon, strings)}</p>
+        <p className={styles.panelTitle}>{formatCouponValue(coupon, strings, locale)}</p>
         {conditions ? <p className={styles.muted}>{conditions}</p> : null}
         <p className={styles.muted}>
           {t.fields.expiresAt}:{" "}
@@ -94,7 +96,7 @@ export function CouponDetail({
             label={t.usage.remaining}
             value={usage.remainingTotal === null ? t.usage.unlimited : String(usage.remainingTotal)}
           />
-          <Stat label={t.usage.discountGiven} value={formatEgp(usage.discountGivenPiastres)} />
+          <Stat label={t.usage.discountGiven} value={formatEgp(usage.discountGivenPiastres, locale)} />
           <Stat
             label={t.usage.lastUsed}
             value={
@@ -111,7 +113,7 @@ export function CouponDetail({
           {t.usage.recent}
         </h2>
         {usage.recent.length === 0 ? (
-          <p className={styles.muted}>{t.usage.recentEmpty}</p>
+          <EmptyState headingLevel={3} title={t.usage.recentEmpty} />
         ) : (
           <div className={styles.tableWrap}>
             <table className={styles.table}>
@@ -119,26 +121,30 @@ export function CouponDetail({
                 <tr>
                   <th scope="col">{t.usage.order}</th>
                   <th scope="col">{t.usage.date}</th>
-                  <th scope="col">{t.usage.items}</th>
-                  <th scope="col">{t.usage.discount}</th>
+                  <th scope="col" className={styles.numeric}>
+                    {t.usage.items}
+                  </th>
+                  <th scope="col" className={styles.numeric}>
+                    {t.usage.discount}
+                  </th>
                   <th scope="col">{t.usage.status}</th>
                 </tr>
               </thead>
               <tbody>
                 {usage.recent.map((row) => (
                   <tr key={row.orderId}>
-                    <td dir="ltr">
+                    <td className={styles.code}>
                       {row.vendorOrderId ? (
                         <Link className={styles.link} href={Routes.vendor.orderDetail(row.vendorOrderId)}>
-                          {row.orderId}
+                          <bdi title={row.orderId}>{row.orderId}</bdi>
                         </Link>
                       ) : (
-                        row.orderId
+                        <bdi title={row.orderId}>{row.orderId}</bdi>
                       )}
                     </td>
-                    <td>{formatCouponDate(row.createdAtMs, locale)}</td>
-                    <td dir="ltr">{formatEgp(row.itemsPiastres)}</td>
-                    <td dir="ltr">{formatEgp(row.discountPiastres)}</td>
+                    <td className={styles.dateCell}>{formatCouponDate(row.createdAtMs, locale)}</td>
+                    <td className={styles.numeric}>{formatEgp(row.itemsPiastres, locale)}</td>
+                    <td className={styles.numeric}>{formatEgp(row.discountPiastres, locale)}</td>
                     <td>{row.status === "reversed" ? t.usage.reversed : t.usage.applied}</td>
                   </tr>
                 ))}

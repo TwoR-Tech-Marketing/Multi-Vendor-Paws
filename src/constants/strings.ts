@@ -792,6 +792,8 @@ export const Strings = {
   coupons: {
     title: "Coupons",
     empty: "You have no coupons yet. Create a coupon to reward your customers.",
+    emptyTitle: "No coupons yet",
+    emptyDescription: "Create a coupon to reward your customers.",
     filteredEmpty: "No coupons with this status.",
     add: "Create coupon",
     edit: "Edit coupon",

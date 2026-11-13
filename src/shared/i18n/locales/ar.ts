@@ -793,6 +793,8 @@ export const arStrings: AppStrings = {
   coupons: {
     title: "الكوبونات",
     empty: "ليس لديك كوبونات بعد. أنشئ كوبونًا لمكافأة عملائك.",
+    emptyTitle: "لا توجد كوبونات بعد",
+    emptyDescription: "أنشئ كوبونًا لمكافأة عملائك.",
     filteredEmpty: "لا توجد كوبونات بهذه الحالة.",
     add: "إنشاء كوبون",
     edit: "تعديل الكوبون",

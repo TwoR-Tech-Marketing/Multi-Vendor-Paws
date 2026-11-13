@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { LogoutConfirmDialog } from "@/components/ui/LogoutConfirmDialog";
 import {
   getCoupon,
@@ -28,7 +30,7 @@ export function CouponDetailSection({ couponId }: { couponId: string }) {
 
   const [nowMs] = useState(() => Date.now());
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<LoadErrorView | null>(null);
   const [detail, setDetail] = useState<CouponDetailData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [confirmPause, setConfirmPause] = useState(false);
@@ -42,9 +44,13 @@ export function CouponDetailSection({ couponId }: { couponId: string }) {
       setDetail(await getCoupon(couponId));
     } catch (error) {
       setLoadError(
-        error && typeof error === "object" && "code" in error
-          ? couponsErrorMessage(error, strings)
-          : t.detailLoadError,
+        toLoadErrorView(
+          error,
+          strings,
+          error && typeof error === "object" && "code" in error
+            ? couponsErrorMessage(error, strings)
+            : t.detailLoadError,
+        ),
       );
     } finally {
       setIsLoading(false);
@@ -79,14 +85,13 @@ export function CouponDetailSection({ couponId }: { couponId: string }) {
   if (loadError || !detail) {
     return (
       <div className={styles.stack}>
-        <div className={styles.alertError} role="alert">
-          {loadError ?? t.detailLoadError}
-        </div>
-        <div className={styles.actions}>
-          <button type="button" className={styles.secondaryButton} onClick={() => void load()}>
-            {strings.common.retry}
-          </button>
-        </div>
+        <section className={styles.panel}>
+          <LoadErrorState
+            view={loadError ?? toLoadErrorView(null, strings, t.detailLoadError, false)}
+            strings={strings}
+            onRetry={() => void load()}
+          />
+        </section>
       </div>
     );
   }

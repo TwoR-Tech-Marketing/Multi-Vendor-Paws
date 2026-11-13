@@ -1,29 +1,35 @@
 import { mapCouponsError } from "@/features/coupons/domain/errors";
 import type { Coupon } from "@/features/coupons/domain/types";
-import { CAIRO_TIME_ZONE } from "@/features/orders/lib/cairoDates";
 import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
+import { formatDate } from "@/shared/lib/format-date";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
-/** "15% off" or "EGP 50.00 off". */
-export function formatCouponValue(coupon: Pick<Coupon, "type" | "value">, strings: AppStrings) {
+/** "15% off" or "50.00 EGP off". */
+export function formatCouponValue(
+  coupon: Pick<Coupon, "type" | "value">,
+  strings: AppStrings,
+  locale: AppLocale,
+) {
   const copy = strings.coupons.value;
   return coupon.type === "percentage"
     ? copy.percentage.replace("{value}", String(coupon.value))
-    : copy.fixed.replace("{amount}", formatEgp(coupon.value));
+    : copy.fixed.replace("{amount}", formatEgp(coupon.value, locale));
 }
 
 /** Cap and minimum order line, empty when neither applies. */
 export function formatCouponConditions(
   coupon: Pick<Coupon, "type" | "maxDiscountPiastres" | "minOrderPiastres">,
   strings: AppStrings,
+  locale: AppLocale,
 ): string {
   const copy = strings.coupons.value;
   const parts: string[] = [];
   if (coupon.type === "percentage" && coupon.maxDiscountPiastres !== null) {
-    parts.push(copy.cap.replace("{amount}", formatEgp(coupon.maxDiscountPiastres)));
+    parts.push(copy.cap.replace("{amount}", formatEgp(coupon.maxDiscountPiastres, locale)));
   }
   if (coupon.minOrderPiastres > 0) {
-    parts.push(copy.minOrder.replace("{amount}", formatEgp(coupon.minOrderPiastres)));
+    parts.push(copy.minOrder.replace("{amount}", formatEgp(coupon.minOrderPiastres, locale)));
   }
   return parts.join(" · ");
 }
@@ -43,10 +49,7 @@ export function formatCouponUsage(
 /** Cairo calendar date with Western digits in both locales. */
 export function formatCouponDate(ms: number | null, locale: string): string {
   if (ms === null) return "";
-  return new Date(ms).toLocaleDateString(locale === "ar" ? "ar-EG-u-nu-latn" : "en", {
-    dateStyle: "medium",
-    timeZone: CAIRO_TIME_ZONE,
-  });
+  return formatDate(new Date(ms), locale === "ar" ? "ar" : "en");
 }
 
 /** Localized copy for any coupons callable error. Never the raw message. */
