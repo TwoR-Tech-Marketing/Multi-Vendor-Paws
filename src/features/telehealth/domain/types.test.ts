@@ -62,7 +62,7 @@ describe("telehealth rules copies", () => {
     expect(rules).toMatch(/match \/\{allPaths=\*\*\} \{\s+allow read, write: if false;/);
   });
 
-  it("declares the three telehealth indexes", () => {
+  it("declares the telehealth indexes (doctor, admin and buyer)", () => {
     const indexes = JSON.parse(read("firestore.indexes.json")) as {
       indexes: { collectionGroup: string; fields: { fieldPath: string; order: string }[] }[];
     };
@@ -73,6 +73,8 @@ describe("telehealth rules copies", () => {
       "status:ASCENDING,queuedAt:ASCENDING",
       "doctorId:ASCENDING,status:ASCENDING,updatedAt:DESCENDING",
       "status:ASCENDING,refundState:ASCENDING,refundFlaggedAt:DESCENDING",
+      "buyerUid:ASCENDING,createdAt:DESCENDING",
+      "buyerUid:ASCENDING,status:ASCENDING,createdAt:DESCENDING",
     ]);
   });
 });
