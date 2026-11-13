@@ -283,7 +283,19 @@
 }
 
 .fileLabel {
-  composes: secondaryButton;
+  composes: button secondary from "../../../components/ui/button/button.module.css";
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.fileLabel:focus-within {
+  outline: 2px solid var(--tp-color-focus);
+  outline-offset: 2px;
+}
+
+.fileLabel[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .skeletonRow {

@@ -203,6 +203,22 @@ describe("composes across modules", () => {
     expect(problems).toEqual([]);
   });
 
+  it("never chains a local composes to a class that composes from another file", () => {
+    const problems: string[] = [];
+    for (const file of listModules(SRC)) {
+      const css = readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+      for (const match of css.matchAll(/composes:\s*([\w\s-]+?);/g)) {
+        for (const name of match[1].trim().split(/\s+/)) {
+          const rule = new RegExp(`\\.${name}\\s*\\{([^}]*)\\}`).exec(css);
+          if (rule && /composes:[^;]*\bfrom\b/.test(rule[1])) {
+            problems.push(`${path.relative(SRC, file)}: ${name}`);
+          }
+        }
+      }
+    }
+    expect(problems).toEqual([]);
+  });
+
   it("puts composes first in its rule", () => {
     const problems: string[] = [];
     for (const file of listModules(SRC)) {

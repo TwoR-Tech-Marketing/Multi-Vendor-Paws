@@ -78,7 +78,7 @@
 }
 
 .removeButton {
-  composes: smallButton;
+  composes: button secondary small from "../../../components/ui/button/button.module.css";
   color: var(--tp-color-status-danger-fg);
 }
 
