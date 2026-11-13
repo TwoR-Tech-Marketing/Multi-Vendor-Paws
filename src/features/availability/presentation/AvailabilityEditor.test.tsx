@@ -174,9 +174,11 @@ describe("HomeVisitSummary", () => {
         branchId="b1"
         homeVisit={{ enabled: true, feePiastres: 15000, radiusMeters: 3500 }}
         strings={en}
+        locale="en"
       />,
     );
     expect(html).toContain("Home visit fee: 150.00 EGP");
+    expect(html).toContain('data-tone="confirmed"');
     expect(html).toContain("Coverage radius: 3.5 km");
     expect(html).toContain('href="/branches/b1"');
   });
@@ -187,9 +189,22 @@ describe("HomeVisitSummary", () => {
         branchId="b1"
         homeVisit={{ enabled: false, feePiastres: 0, radiusMeters: 0 }}
         strings={ar}
+        locale="ar"
       />,
     );
     expect(html).toContain(ar.availability.homeVisitOff);
+  });
+
+  it("shows the fee as amount then unit with isolated figures in Arabic", () => {
+    const html = renderToStaticMarkup(
+      <HomeVisitSummary
+        branchId="b1"
+        homeVisit={{ enabled: true, feePiastres: 15000, radiusMeters: 3500 }}
+        strings={ar}
+        locale="ar"
+      />,
+    );
+    expect(html).toContain("\u2066150.00\u2069 ج.م");
   });
 });
 

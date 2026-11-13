@@ -1,5 +1,7 @@
 "use client";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import type { LoadErrorView } from "@/components/ui/error-state/load-error";
 import { PortalSelect } from "@/components/ui/select/PortalSelect";
 import { SkeletonBox, SkeletonText } from "@/components/ui/skeleton";
 import { formatDayLabel } from "@/features/availability/domain/time";
@@ -19,7 +21,8 @@ type SlotPreviewProps = {
   homeVisitEnabled: boolean;
   preview: SlotPreviewData | null;
   isLoading: boolean;
-  error: string | null;
+  error: LoadErrorView | null;
+  onRetry: () => void;
   hasUnsavedChanges: boolean;
   canPrevWeek: boolean;
   canNextWeek: boolean;
@@ -38,9 +41,9 @@ function PreviewSkeleton({ label }: { label: string }) {
         <div key={row} className={styles.previewDay}>
           <SkeletonText size="md" width={140} />
           <div className={styles.chips}>
-            <SkeletonBox width={88} height={40} borderRadius="var(--radius-sm)" />
-            <SkeletonBox width={88} height={40} borderRadius="var(--radius-sm)" />
-            <SkeletonBox width={88} height={40} borderRadius="var(--radius-sm)" />
+            <SkeletonBox width={88} height={40} borderRadius="var(--tp-radius-control)" />
+            <SkeletonBox width={88} height={40} borderRadius="var(--tp-radius-control)" />
+            <SkeletonBox width={88} height={40} borderRadius="var(--tp-radius-control)" />
           </div>
         </div>
       ))}
@@ -57,6 +60,7 @@ export function SlotPreview({
   preview,
   isLoading,
   error,
+  onRetry,
   hasUnsavedChanges,
   canPrevWeek,
   canNextWeek,
@@ -119,9 +123,7 @@ export function SlotPreview({
       </div>
 
       {error ? (
-        <div className={branchStyles.alertError} role="alert">
-          {error}
-        </div>
+        <LoadErrorState view={error} strings={strings} onRetry={onRetry} compact headingLevel={3} />
       ) : isLoading || !preview ? (
         <PreviewSkeleton label={strings.common.loading} />
       ) : (
