@@ -1,9 +1,12 @@
 import Link from "next/link";
 
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
+import type { LoadErrorView } from "@/components/ui/error-state/load-error";
 import { Routes } from "@/constants/routes";
 import { formatEgp } from "@/features/products/domain/currency";
 import { isScreenVisible } from "@/features/vendor/domain/vendor-type-config";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import styles from "./dashboard.module.css";
 
@@ -14,7 +17,7 @@ type DashboardStatsGridProps = {
   netEarnings: number;
   totalSales: number;
   /** Portal language for money formatting. Defaults to English. */
-  locale?: string;
+  locale?: AppLocale;
 };
 
 /**
@@ -47,4 +50,17 @@ export function DashboardStatsGrid({
       </Link>
     </div>
   );
+}
+
+type DashboardStatsProps = DashboardStatsGridProps & {
+  error: LoadErrorView | null;
+  onRetry: () => void;
+};
+
+/** The stat cards, or a compact error with retry instead of misleading zeros. */
+export function DashboardStats({ error, onRetry, ...grid }: DashboardStatsProps) {
+  if (error) {
+    return <LoadErrorState view={error} strings={grid.strings} onRetry={onRetry} compact />;
+  }
+  return <DashboardStatsGrid {...grid} />;
 }

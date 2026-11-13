@@ -106,7 +106,7 @@ describe("EarningsView", () => {
       paged: true,
       entries: [entry({ entryId: "p1", type: "payout", amountPiastres: -2500, commissionPiastres: 0, netPiastres: -2500, vendorOrderId: null, description: null })],
     });
-    expect(html).toMatch(/-25[\d.]* EGP/);
+    expect(html).toContain("-25.00 EGP");
     expect(html).toContain(en.earnings.typeLabels.payout);
   });
 
@@ -124,9 +124,9 @@ describe("EarningsView", () => {
       },
       entries: [entry({ entryId: "payout_M2026-10", type: "payout", amountPiastres: -2500, commissionPiastres: 0, netPiastres: -2500, vendorOrderId: null, description: "Payout M2026-10" })],
     });
-    expect(html).toMatch(/-25[\d.]* EGP/);
-    expect(html).toMatch(/-1\.99[\d.]* EGP/);
-    expect(html).toMatch(/-0\.5[\d.]* EGP/);
+    expect(html).toContain("-25.00 EGP");
+    expect(html).toContain("-1.99 EGP");
+    expect(html).toContain("-0.50 EGP");
   });
 
   it("aligns the three money columns to the end edge", () => {

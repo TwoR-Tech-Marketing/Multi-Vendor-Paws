@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { EmptyState } from "@/components/ui/empty-state/EmptyState";
-import { ErrorState } from "@/components/ui/error-state/ErrorState";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
 import type { LoadErrorView } from "@/components/ui/error-state/load-error";
 import { Routes } from "@/constants/routes";
 import { formatEgp } from "@/features/products/domain/currency";
@@ -10,6 +10,7 @@ import type { Product } from "@/features/products/domain/types";
 import { IconEdit, IconImage, IconTrash } from "@/features/products/presentation/ProductIcons";
 import { ProductStatusBadge } from "@/features/products/presentation/ProductStatusBadge";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import styles from "./products.module.css";
 
@@ -20,7 +21,7 @@ type ProductsListPanelProps = {
   loadError: LoadErrorView | null;
   isFiltered: boolean;
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   onRetry: () => void;
   onClearFilters: () => void;
   onDelete: (product: Product) => void;
@@ -43,26 +44,20 @@ export function ProductsListPanel({
   return (
     <>
         {loadError && products.length > 0 ? (
-          <ErrorState
-            compact
-            kind={loadError.kind}
-            title={loadError.title}
-            description={loadError.description}
-            retryLabel={strings.states.retry}
+          <LoadErrorState
+            view={loadError}
+            strings={strings}
             onRetry={onRetry}
-            headingLevel={2}
+            compact
           />
         ) : null}
 
         <article className={styles.panel}>
           {loadError && products.length === 0 ? (
-            <ErrorState
-              kind={loadError.kind}
-              title={loadError.title}
-              description={loadError.description}
-              retryLabel={strings.states.retry}
+            <LoadErrorState
+              view={loadError}
+              strings={strings}
               onRetry={onRetry}
-              headingLevel={2}
             />
           ) : products.length === 0 ? (
             <EmptyState
@@ -81,7 +76,7 @@ export function ProductsListPanel({
                     {strings.products.clearFilters}
                   </button>
                 ) : (
-                  <Link href={Routes.vendor.productNew} className={styles.btnPrimary}>
+                  <Link href={Routes.vendor.productNew} className={styles.btnSecondary}>
                     {strings.products.addProduct}
                   </Link>
                 )

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { ErrorState } from "@/components/ui/error-state/ErrorState";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
 import { toLoadErrorView } from "@/components/ui/error-state/load-error";
 import { PendingBranchesHint } from "@/features/branches/presentation/PendingBranchesHint";
 import {
@@ -111,13 +111,10 @@ export function ProfileSection() {
     const view = toLoadErrorView(loadFailure, strings, loadError ?? strings.errors.generic);
     return (
       <div className={portalStyles.panel}>
-        <ErrorState
-          kind={view.kind}
-          title={view.title}
-          description={view.description}
-          retryLabel={strings.states.retry}
+        <LoadErrorState
+          view={view}
+          strings={strings}
           onRetry={() => void loadProfile()}
-          headingLevel={2}
         />
       </div>
     );

@@ -61,7 +61,7 @@ function render(props: Partial<Parameters<typeof OrdersListPanel>[0]> = {}) {
   );
 }
 
-const ERROR = { kind: "error" as const, title: en.states.errorTitle, description: en.orders.loadError };
+const ERROR = { kind: "error" as const, title: en.orders.loadError };
 
 describe("OrdersListPanel", () => {
   it("shows the empty state with the new copy", () => {
@@ -80,7 +80,7 @@ describe("OrdersListPanel", () => {
     const html = render({ error: ERROR });
     expect(html).toContain('role="alert"');
     expect(html).toContain(esc(en.orders.loadError));
-    expect(html).toContain(`>${en.states.retry}</button>`);
+    expect(html).toContain(`>${en.common.retry}</button>`);
     expect(html).not.toContain(en.orders.emptyTitle);
   });
 

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { ErrorState } from "@/components/ui/error-state/ErrorState";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
 import { toLoadErrorView } from "@/components/ui/error-state/load-error";
 import { getProviderDashboard } from "@/features/provider-dashboard/application/provider-dashboard.api";
 import {
@@ -53,14 +53,11 @@ export function ProviderDashboardSection() {
   if (error || !data) {
     const view = toLoadErrorView(failure, strings, strings.dashboard.provider.loadError);
     return (
-      <ErrorState
-        compact
-        kind={view.kind}
-        title={view.title}
-        description={view.description}
-        retryLabel={strings.common.retry}
+      <LoadErrorState
+        view={view}
+        strings={strings}
         onRetry={() => void load(preset)}
-        headingLevel={2}
+        compact
       />
     );
   }

@@ -176,7 +176,7 @@ describe("HomeVisitSummary", () => {
         strings={en}
       />,
     );
-    expect(html).toMatch(/Home visit fee: 150\.00[\d.]* EGP/);
+    expect(html).toContain("Home visit fee: 150.00 EGP");
     expect(html).toContain("Coverage radius: 3.5 km");
     expect(html).toContain('href="/branches/b1"');
   });

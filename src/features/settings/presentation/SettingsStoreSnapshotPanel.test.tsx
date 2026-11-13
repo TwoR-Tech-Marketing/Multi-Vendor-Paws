@@ -50,6 +50,6 @@ describe("SettingsStoreSnapshotPanel", () => {
         vendorType="store"
       />,
     );
-    expect(html).toMatch(/-1\.99[\d.]* EGP/);
+    expect(html).toContain("-1.99 EGP");
   });
 });

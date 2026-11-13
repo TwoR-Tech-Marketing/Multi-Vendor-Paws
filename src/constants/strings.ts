@@ -34,11 +34,8 @@ export const Strings = {
     skipToContent: "Skip to main content",
   },
   states: {
-    errorTitle: "We couldn't load this",
-    errorDescription: "Something went wrong on our side. Please try again.",
     offlineTitle: "No connection",
     offlineDescription: "Check your internet connection, then try again.",
-    retry: "Try again",
     retrying: "Trying again...",
     notProvided: "Not provided",
   },
@@ -1299,8 +1296,7 @@ export const Strings = {
     tableStatus: "Status",
     tableActions: "Actions",
     emptyTitle: "No products yet",
-    emptyDescription:
-      "Add your first product to start selling through the Tender Paws mobile app.",
+    emptyDescription: "Add your first product to start selling to pet owners.",
     emptyFilteredTitle: "No matching products",
     emptyFilteredDescription: "Try adjusting your search or filters.",
     clearFilters: "Clear filters",

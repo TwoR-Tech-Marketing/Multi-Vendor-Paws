@@ -4,6 +4,7 @@ import { Routes } from "@/constants/routes";
 import { formatEgp } from "@/features/products/domain/currency";
 import { isScreenVisible } from "@/features/vendor/domain/vendor-type-config";
 import type { AppStrings } from "@/shared/i18n/types";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import portalStyles from "@/features/vendor/presentation/portal.module.css";
 import styles from "./settings.module.css";
@@ -17,7 +18,7 @@ type SettingsStoreSnapshotPanelProps = {
   /** Store when omitted. Providers have no products or orders cards. */
   vendorType?: string;
   /** Portal language for money formatting. Defaults to English. */
-  locale?: string;
+  locale?: AppLocale;
 };
 
 export function SettingsStoreSnapshotPanel({

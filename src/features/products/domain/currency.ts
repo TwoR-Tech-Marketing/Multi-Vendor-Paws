@@ -1,3 +1,5 @@
+import type { AppLocale } from "@/shared/preferences/domain/types";
+
 /** App-wide currency. Phase 3 launches EGP-only. */
 export const APP_CURRENCY = "EGP" as const;
 
@@ -22,7 +24,11 @@ export function piastresToEgp(piastres: number): number {
   return piastres / 100;
 }
 
-/** Currency unit shown after the amount, per portal language. */
+/**
+ * Currency unit shown after the amount, per portal language. Kept in the
+ * domain beside the formatter (like the ISO code) so every caller, including
+ * exports and notification copy, formats money the same way.
+ */
 export const CURRENCY_UNIT = { en: "EGP", ar: "ج.م" } as const;
 
 /** Left-to-right isolate around the figures so RTL text keeps them together. */
@@ -37,7 +43,7 @@ const PDI = "\u2069";
  * amount, and a non-finite value shows as zero. Fractions of a piastre are
  * truncated.
  */
-export function formatEgp(piastres: number, locale: "en" | "ar" | string = "en"): string {
+export function formatEgp(piastres: number, locale: AppLocale = "en"): string {
   const value = Number.isFinite(piastres) ? Math.trunc(piastres) : 0;
   const digits = (Math.abs(value) / 100).toLocaleString("en-US", {
     minimumFractionDigits: 2,

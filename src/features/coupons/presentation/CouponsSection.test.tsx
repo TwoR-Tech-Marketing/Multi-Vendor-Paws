@@ -71,8 +71,8 @@ describe("CouponList", () => {
     });
     expect(html).toContain("SAVE10");
     expect(html).toContain("10% off");
-    expect(html).toMatch(/up to 50[\d.]* EGP/);
-    expect(html).toMatch(/Min\. order 200[\d.]* EGP/);
+    expect(html).toContain("up to 50.00 EGP");
+    expect(html).toContain("Min. order 200.00 EGP");
     expect(html).toContain("3 of 100");
     expect(html).toContain("0 used");
     expect(html).toContain("Dec 31, 2026");

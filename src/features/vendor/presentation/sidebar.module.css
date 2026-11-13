@@ -181,7 +181,7 @@
   align-items: center;
   gap: var(--tp-space-1);
   font-family: inherit;
-  color: var(--tp-color-status-danger-fg);
+  color: var(--color-logout);
   touch-action: manipulation;
   transition: background-color var(--tp-motion-duration-press) var(--tp-motion-ease-out);
 }

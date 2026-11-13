@@ -93,7 +93,7 @@ describe("BranchList", () => {
     expect(html).toContain("3 services");
     expect(html).toContain(en.branches.homeVisitBadge);
     expect(html).toContain(en.deals.branch.source.vendorDeal);
-    expect(html).toMatch(/10\.00[\d.]* EGP plus 8% per order/);
+    expect(html).toContain("10.00 EGP plus 8% per order");
     expect(html).toContain('href="/branches/b1"');
     expect(html).toContain(en.branches.archive);
   });

@@ -93,10 +93,10 @@ describe("CouponDetail", () => {
       }),
     });
     expect(html).toContain(">98<");
-    expect(html).toMatch(/35\.50[\d.]* EGP/);
+    expect(html).toContain("35.50 EGP");
     expect(html).toContain("Nov 10, 2026");
     expect(html).toContain('href="/orders/vo1"');
-    expect(html).toMatch(/300\.00[\d.]* EGP/);
+    expect(html).toContain("300.00 EGP");
     expect(html).toContain(en.coupons.usage.applied);
     expect(html).toContain(en.coupons.usage.reversed);
     expect(html).toContain(en.coupons.resume);

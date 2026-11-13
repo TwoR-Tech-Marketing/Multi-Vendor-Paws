@@ -2,13 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { ErrorState } from "@/components/ui/error-state/ErrorState";
 import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { ProviderDashboardSection } from "@/features/provider-dashboard/presentation/ProviderDashboardSection";
 import { MissingCoverageBanner } from "@/features/coverage/presentation/MissingCoverageBanner";
 import { fetchDashboardStatsFromApi } from "@/features/financials/application/earnings.api";
 import { DashboardSkeleton } from "@/features/vendor/presentation/DashboardSkeleton";
-import { DashboardStatsGrid } from "@/features/vendor/presentation/DashboardStatsGrid";
+import { DashboardStats } from "@/features/vendor/presentation/DashboardStatsGrid";
 import { getProviderConfig } from "@/features/vendor/domain/vendor-type-config";
 import { usePortalSession } from "@/features/vendor/presentation/PortalSessionContext";
 import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
@@ -52,26 +51,16 @@ export function DashboardSection() {
   return (
     <section className={styles.sectionStack}>
       <MissingCoverageBanner />
-      {error ? (
-        <ErrorState
-          compact
-          kind={error.kind}
-          title={error.title}
-          description={error.description}
-          retryLabel={strings.states.retry}
-          onRetry={() => void loadStats()}
-          headingLevel={2}
-        />
-      ) : (
-        <DashboardStatsGrid
-          strings={strings}
-          vendorType={profile.vendorType}
-          openOrders={openOrders}
-          netEarnings={netEarnings}
-          totalSales={totalSales}
-          locale={locale}
-        />
-      )}
+      <DashboardStats
+        error={error}
+        onRetry={() => void loadStats()}
+        strings={strings}
+        vendorType={profile.vendorType}
+        openOrders={openOrders}
+        netEarnings={netEarnings}
+        totalSales={totalSales}
+        locale={locale}
+      />
       {getProviderConfig(profile.vendorType).reviewCategorySet ? <ProviderDashboardSection /> : null}
     </section>
   );

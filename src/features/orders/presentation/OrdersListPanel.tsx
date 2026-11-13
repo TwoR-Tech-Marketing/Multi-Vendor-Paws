@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { StatusBadge } from "@/components/ui/badge/StatusBadge";
 import { EmptyState } from "@/components/ui/empty-state/EmptyState";
-import { ErrorState } from "@/components/ui/error-state/ErrorState";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
 import type { LoadErrorView } from "@/components/ui/error-state/load-error";
 import { Routes } from "@/constants/routes";
 import type { VendorOrder } from "@/features/orders/domain/types";
@@ -10,6 +10,7 @@ import { OrderStatusBadge } from "@/features/orders/presentation/OrderStatusBadg
 import { formatEgp } from "@/features/products/domain/currency";
 import type { AppStrings } from "@/shared/i18n/types";
 import { formatDateTime } from "@/shared/lib/format-date";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 
 import styles from "./orders.module.css";
 
@@ -22,7 +23,7 @@ type OrdersListPanelProps = {
   error: LoadErrorView | null;
   isFiltered: boolean;
   strings: AppStrings;
-  locale: string;
+  locale: AppLocale;
   onRetry: () => void;
   onClearFilters: () => void;
 };
@@ -43,26 +44,20 @@ export function OrdersListPanel({
   return (
     <>
         {error && orders.length > 0 ? (
-          <ErrorState
-            compact
-            kind={error.kind}
-            title={error.title}
-            description={error.description}
-            retryLabel={strings.states.retry}
+          <LoadErrorState
+            view={error}
+            strings={strings}
             onRetry={onRetry}
-            headingLevel={2}
+            compact
           />
         ) : null}
 
         <article className={styles.panel}>
           {error && orders.length === 0 ? (
-            <ErrorState
-              kind={error.kind}
-              title={error.title}
-              description={error.description}
-              retryLabel={strings.states.retry}
+            <LoadErrorState
+              view={error}
+              strings={strings}
               onRetry={onRetry}
-              headingLevel={2}
             />
           ) : orders.length === 0 ? (
             <EmptyState

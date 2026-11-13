@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { StatusBadge } from "@/components/ui/badge/StatusBadge";
-import { ErrorState } from "@/components/ui/error-state/ErrorState";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
 import { toLoadErrorView, type LoadErrorView } from "@/components/ui/error-state/load-error";
 import { PortalSelect } from "@/components/ui/select/PortalSelect";
 import {
@@ -104,13 +104,10 @@ export function OrderDetailSection({ vendorOrderId }: OrderDetailSectionProps) {
     const view = loadError ?? toLoadErrorView(null, strings, strings.orders.detailLoadError);
     return (
       <article className={styles.panel}>
-        <ErrorState
-          kind={view.kind}
-          title={view.title}
-          description={view.description}
-          retryLabel={strings.states.retry}
+        <LoadErrorState
+          view={view}
+          strings={strings}
           onRetry={() => void loadOrder()}
-          headingLevel={2}
         />
       </article>
     );

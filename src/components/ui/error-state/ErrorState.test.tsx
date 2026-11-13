@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { ErrorState } from "@/components/ui/error-state/ErrorState";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
 import { toLoadErrorView } from "@/components/ui/error-state/load-error";
 import { getStrings } from "@/shared/i18n/get-strings";
 
@@ -16,23 +17,23 @@ describe("ErrorState", () => {
   it("renders an alert with the title, one line and a retry", () => {
     const html = renderToStaticMarkup(
       <ErrorState
-        title={en.states.errorTitle}
-        description={en.orders.loadError}
-        retryLabel={en.states.retry}
+        title={en.orders.loadError}
+        description={en.states.offlineDescription}
+        retryLabel={en.common.retry}
         onRetry={() => {}}
       />,
     );
     expect(html).toContain('role="alert"');
     expect(html).toContain('data-kind="error"');
     expect(html).toContain('data-testid="error-state-art"');
-    expect(html).toContain(`${esc(en.states.errorTitle)}</h3>`);
-    expect(html).toContain(esc(en.orders.loadError));
-    expect(html).toContain(`>${en.states.retry}</button>`);
+    expect(html).toContain(`${esc(en.orders.loadError)}</h3>`);
+    expect(html).toContain(`>${en.states.offlineDescription}</p>`);
+    expect(html).toContain(`>${en.common.retry}</button>`);
   });
 
   it("hides the retry without a handler and uses the offline art for offline", () => {
     const html = renderToStaticMarkup(
-      <ErrorState kind="offline" title={en.states.offlineTitle} retryLabel={en.states.retry} />,
+      <ErrorState kind="offline" title={en.states.offlineTitle} retryLabel={en.common.retry} />,
     );
     expect(html).toContain('data-kind="offline"');
     expect(html).toContain('data-testid="offline-state-art"');
@@ -43,7 +44,7 @@ describe("ErrorState", () => {
     const html = renderToStaticMarkup(
       <ErrorState
         title="x"
-        retryLabel={en.states.retry}
+        retryLabel={en.common.retry}
         retryingLabel={en.states.retrying}
         isRetrying
         onRetry={() => {}}
@@ -79,14 +80,13 @@ describe("toLoadErrorView", () => {
     );
   });
 
-  it("returns the screen message for server errors", () => {
+  it("returns the screen message as one sentence for server errors", () => {
     expect(toLoadErrorView(new Error("internal"), en, en.orders.loadError, false)).toEqual({
       kind: "error",
-      title: en.states.errorTitle,
-      description: en.orders.loadError,
+      title: en.orders.loadError,
     });
-    expect(toLoadErrorView({ code: "internal" }, en, undefined, false).description).toBe(
-      en.states.errorDescription,
+    expect(toLoadErrorView({ code: "internal" }, en, undefined, false).title).toBe(
+      en.errors.generic,
     );
   });
 });
@@ -97,5 +97,35 @@ describe("errorState.module.css", () => {
   it("fades in within the base duration and stops under reduced motion", () => {
     expect(css).toContain("var(--tp-motion-duration-base) var(--tp-motion-ease-out)");
     expect(css).toMatch(/prefers-reduced-motion: reduce\) \{\s*\.errorState \{\s*animation: none/);
+  });
+});
+
+describe("LoadErrorState", () => {
+  it("shows a server error as one sentence with the shared retry", () => {
+    const html = renderToStaticMarkup(
+      <LoadErrorState
+        view={toLoadErrorView(new Error("x"), en, en.products.loadError, false)}
+        strings={en}
+        onRetry={() => {}}
+      />,
+    );
+    expect(html).toContain(`${esc(en.products.loadError)}</h2>`);
+    expect(html).not.toContain("<p class");
+    expect(html).toContain(`>${en.common.retry}</button>`);
+  });
+
+  it("shows the offline title and line in Arabic, compact when asked", () => {
+    const html = renderToStaticMarkup(
+      <LoadErrorState
+        view={toLoadErrorView(null, ar, ar.orders.loadError, true)}
+        strings={ar}
+        onRetry={() => {}}
+        compact
+      />,
+    );
+    expect(html).toContain(ar.states.offlineTitle);
+    expect(html).toContain(ar.states.offlineDescription);
+    expect(html).toContain(ar.common.retry);
+    expect(html).toContain('data-kind="offline"');
   });
 });

@@ -36,11 +36,8 @@ export const arStrings: AppStrings = {
     skipToContent: "انتقل إلى المحتوى الرئيسي",
   },
   states: {
-    errorTitle: "تعذر تحميل هذه البيانات",
-    errorDescription: "حدث خطأ من جهتنا. يرجى المحاولة مرة أخرى.",
     offlineTitle: "لا يوجد اتصال",
     offlineDescription: "تحقق من اتصالك بالإنترنت ثم حاول مرة أخرى.",
-    retry: "حاول مرة أخرى",
     retrying: "جاري المحاولة...",
     notProvided: "غير متوفر",
   },
@@ -1299,8 +1296,7 @@ export const arStrings: AppStrings = {
     tableStatus: "الحالة",
     tableActions: "إجراءات",
     emptyTitle: "لا توجد منتجات بعد",
-    emptyDescription:
-      "أضف أول منتج لك لبدء البيع عبر تطبيق تندر باوز للجوال.",
+    emptyDescription: "أضف منتجك الأول لتبدأ البيع لأصحاب الحيوانات الأليفة.",
     emptyFilteredTitle: "لا توجد منتجات مطابقة",
     emptyFilteredDescription: "جرّب تعديل البحث أو عوامل التصفية.",
     clearFilters: "مسح عوامل التصفية",

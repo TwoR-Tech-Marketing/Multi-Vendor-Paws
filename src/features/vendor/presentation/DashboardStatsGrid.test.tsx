@@ -1,7 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { DashboardStatsGrid } from "@/features/vendor/presentation/DashboardStatsGrid";
+import {
+  DashboardStats,
+  DashboardStatsGrid,
+} from "@/features/vendor/presentation/DashboardStatsGrid";
 import { getStrings } from "@/shared/i18n/get-strings";
 
 const en = getStrings("en");
@@ -34,7 +37,7 @@ describe("DashboardStatsGrid", () => {
     const html = renderToStaticMarkup(
       <DashboardStatsGrid strings={en} vendorType="store" openOrders={0} netEarnings={-2500} totalSales={0} />,
     );
-    expect(html).toMatch(/-25[\d.]* EGP/);
+    expect(html).toContain("-25.00 EGP");
   });
 });
 
@@ -55,5 +58,42 @@ describe("DashboardStatsGrid in Arabic", () => {
     );
     expect(html).toContain("⁦999,999,999.99⁩ ج.م");
     expect(html).toContain("1,284");
+  });
+});
+
+describe("DashboardStats", () => {
+  const base = { strings: en, vendorType: "store", openOrders: 0, netEarnings: 0, totalSales: 0 };
+
+  it("shows a one sentence error with retry instead of zero cards", () => {
+    const html = renderToStaticMarkup(
+      <DashboardStats
+        {...base}
+        error={{ kind: "error", title: en.dashboard.loadError }}
+        onRetry={() => {}}
+      />,
+    );
+    expect(html).toContain('role="alert"');
+    expect(html).toContain(en.common.retry);
+    expect(html).not.toContain(en.dashboard.netEarnings);
+  });
+
+  it("shows the offline copy when the connection dropped", () => {
+    const html = renderToStaticMarkup(
+      <DashboardStats
+        {...base}
+        error={{
+          kind: "offline",
+          title: en.states.offlineTitle,
+          description: en.states.offlineDescription,
+        }}
+        onRetry={() => {}}
+      />,
+    );
+    expect(html).toContain('data-kind="offline"');
+  });
+
+  it("shows the cards when loaded", () => {
+    const html = renderToStaticMarkup(<DashboardStats {...base} error={null} onRetry={() => {}} />);
+    expect(html).toContain(en.dashboard.netEarnings);
   });
 });

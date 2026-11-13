@@ -179,7 +179,7 @@ describe("TelehealthInboxView", () => {
     expect(html).toContain(en.telehealth.onlineHint);
     expect(html).toContain("2 waiting");
     expect(html).toContain("1 active");
-    expect(html).toMatch(/Consultation price: 200[\d.]* EGP/);
+    expect(html).toContain("Consultation price: 200.00 EGP");
     expect(html).toContain(en.telehealth.accept);
   });
 

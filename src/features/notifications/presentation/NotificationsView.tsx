@@ -1,5 +1,6 @@
 import { EmptyState } from "@/components/ui/empty-state/EmptyState";
-import { ErrorState } from "@/components/ui/error-state/ErrorState";
+import { toLoadErrorView } from "@/components/ui/error-state/load-error";
+import { LoadErrorState } from "@/components/ui/error-state/LoadErrorState";
 import type {
   VendorNotification,
   VendorNotificationFilter,
@@ -85,13 +86,10 @@ export function NotificationsView(props: NotificationsViewProps) {
       </div>
 
       {props.loadError ? (
-        <ErrorState
-          kind={props.isOffline ? "offline" : "error"}
-          title={props.isOffline ? strings.states.offlineTitle : strings.states.errorTitle}
-          description={props.isOffline ? strings.states.offlineDescription : props.loadError}
-          retryLabel={strings.common.retry}
+        <LoadErrorState
+          view={toLoadErrorView(null, strings, props.loadError, props.isOffline ?? false)}
+          strings={strings}
           onRetry={props.onRetry}
-          headingLevel={2}
           compact={items.length > 0}
         />
       ) : null}

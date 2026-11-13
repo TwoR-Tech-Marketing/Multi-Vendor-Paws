@@ -4,6 +4,8 @@ import { StatusBadge, type StatusTone } from "@/components/ui/badge/StatusBadge"
 import type { VendorProfile } from "@/features/auth/domain/types";
 import type { VendorSessionKind } from "@/features/auth/infrastructure/resolve-vendor-session";
 import type { AppStrings } from "@/shared/i18n/types";
+import { formatDateTime } from "@/shared/lib/format-date";
+import type { AppLocale } from "@/shared/preferences/domain/types";
 import { usePreferences, useStrings } from "@/shared/preferences/PreferencesContext";
 
 import styles from "./portal.module.css";
@@ -24,19 +26,12 @@ type BannerView = {
   statusLabel: string;
 };
 
-function formatExpiry(expiresAt: Date, locale: string): string {
-  return expiresAt.toLocaleString(locale === "ar" ? "ar-EG-u-nu-latn" : "en-EG", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}
-
 /** Maps the session kind to the banner copy, tone and detail lines. */
 export function resolveAccountStatusBanner(
   strings: AppStrings,
   sessionKind: VendorSessionKind,
   profile: VendorProfile,
-  locale: string,
+  locale: AppLocale,
 ): BannerView {
   const t = strings.accountStatus;
   const reason = (value: string | null | undefined): BannerDetail[] =>
@@ -65,7 +60,7 @@ export function resolveAccountStatusBanner(
   if (sessionKind === "suspended") {
     const expiry =
       !profile.isPermanentRestriction && profile.restrictionExpiresAt
-        ? [{ label: t.accessRestored, value: formatExpiry(profile.restrictionExpiresAt, locale) }]
+        ? [{ label: t.accessRestored, value: formatDateTime(profile.restrictionExpiresAt, locale) }]
         : [];
     return {
       title: t.suspended,

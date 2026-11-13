@@ -102,8 +102,8 @@
   composes: button secondary from "../../../components/ui/button/button.module.css";
   justify-content: space-between;
   min-width: calc(var(--tp-space-16) * 2 + var(--tp-space-8));
-  border-color: color-mix(in srgb, var(--tp-color-status-danger-fg) 40%, transparent);
-  color: var(--tp-color-status-danger-fg);
+  border-color: color-mix(in srgb, var(--color-logout) 40%, transparent);
+  color: var(--color-logout);
 }
 
 .signOutLeft {

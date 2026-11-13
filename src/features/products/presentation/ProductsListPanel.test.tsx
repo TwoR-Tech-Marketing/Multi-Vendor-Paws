@@ -72,7 +72,7 @@ describe("ProductsListPanel", () => {
 
   it("shows a friendly error with retry and no empty state", () => {
     const html = render({
-      loadError: { kind: "error", title: en.states.errorTitle, description: en.products.loadError },
+      loadError: { kind: "error", title: en.products.loadError },
     });
     expect(html).toContain('role="alert"');
     expect(html).toContain(esc(en.products.loadError));
