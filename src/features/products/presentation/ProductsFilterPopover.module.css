@@ -34,7 +34,7 @@
 
 .closeBtn {
   composes: button ghost small from "../../../components/ui/button/button.module.css";
-  width: calc(var(--tp-size-control) - var(--tp-space-2));
+  width: var(--tp-size-control);
   padding: 0;
   color: var(--tp-color-text-muted);
 }
